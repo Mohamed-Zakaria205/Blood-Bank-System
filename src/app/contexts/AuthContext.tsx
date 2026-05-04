@@ -28,10 +28,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      const { token, user: loggedInUser } = await loginApi({ email, password });
+      const { token, refreshToken, user: loggedInUser } = await loginApi({ email, password });
 
-      // Persist token + user
+      // Persist tokens + user
       localStorage.setItem('bloodlink_token', token);
+      if (refreshToken) {
+        localStorage.setItem('bloodlink_refresh_token', refreshToken);
+      }
       localStorage.setItem('bloodlink_user', JSON.stringify(loggedInUser));
       setUser(loggedInUser);
 
@@ -49,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('bloodlink_token');
+    localStorage.removeItem('bloodlink_refresh_token');
     localStorage.removeItem('bloodlink_user');
   }, []);
 

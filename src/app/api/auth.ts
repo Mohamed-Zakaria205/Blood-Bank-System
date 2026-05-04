@@ -5,6 +5,7 @@ import apiClient from "./client";
 import type {
   LoginRequest,
   LoginResponse,
+  RefreshTokenResponse,
   ChangePasswordRequest,
   User,
 } from "../types/auth";
@@ -167,7 +168,11 @@ export async function loginApi(
 
     // Strip password before returning
     const { password: _, ...user } = found;
-    return { token: `mock-jwt-${user.id}`, user };
+    return {
+      token: `mock-jwt-${user.id}`,
+      refreshToken: `mock-refresh-${user.id}-${Date.now()}`,
+      user,
+    };
   }
 
   // ── Real API call ──
@@ -224,4 +229,57 @@ export async function changePasswordApi(
 
   // ── Real API call — backend validates against stored hash ──
   await apiClient.post("/auth/change-password", payload);
+}
+
+/**
+ * Silently refresh the access token using the stored refresh token.
+ *
+ * Mock mode: returns a fresh mock JWT after a short delay (simulates
+ * network latency). The mock refresh token never actually expires.
+ *
+ * Real mode: POSTs the refresh token to /auth/refresh. The backend
+ * validates the refresh token, returns a new access token (and
+ * optionally rotates the refresh token for added security).
+ *
+ * IMPORTANT: This function uses a raw axios.post() call — NOT the
+ * apiClient instance — to avoid triggering the 401 interceptor
+ * recursively (the refresh endpoint itself may return a 401 if the
+ * refresh token is invalid/expired).
+ */
+export async function refreshTokenApi(): Promise<RefreshTokenResponse> {
+  const storedRefresh = localStorage.getItem("bloodlink_refresh_token");
+
+  if (!storedRefresh) {
+    throw { response: { status: 401, data: { message: "No refresh token available" } } };
+  }
+
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 300));
+
+    // In mock mode the refresh token is always valid as long as it
+    // matches the mock-refresh-USR-xxx pattern.
+    if (!storedRefresh.startsWith("mock-refresh-")) {
+      throw { response: { status: 401, data: { message: "Invalid refresh token" } } };
+    }
+
+    const userId = storedRefresh.split("-")[2]; // "USR"
+    const userNum = storedRefresh.split("-")[3]; // "001"
+    const newToken = `mock-jwt-USR-${userNum}-${Date.now()}`;
+    const newRefresh = `mock-refresh-USR-${userNum}-${Date.now()}`;
+
+    return { token: newToken, refreshToken: newRefresh };
+  }
+
+  // ── Real API call ──
+  // Use a bare axios import to avoid the apiClient interceptor loop.
+  const { default: axios } = await import("axios");
+  const baseURL = import.meta.env.VITE_API_URL ?? "/api";
+
+  const { data } = await axios.post<RefreshTokenResponse>(
+    `${baseURL}/auth/refresh`,
+    { refreshToken: storedRefresh },
+    { headers: { "Content-Type": "application/json" }, timeout: 10_000 },
+  );
+
+  return data;
 }

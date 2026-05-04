@@ -31,7 +31,18 @@ export interface LoginRequest {
 /** POST /auth/login — response body */
 export interface LoginResponse {
   token: string;
+  refreshToken?: string;
   user: User;
+}
+
+/**
+ * POST /auth/refresh — response body.
+ * The backend returns a fresh access token (and optionally rotates
+ * the refresh token itself for added security).
+ */
+export interface RefreshTokenResponse {
+  token: string;
+  refreshToken?: string;
 }
 
 /**
