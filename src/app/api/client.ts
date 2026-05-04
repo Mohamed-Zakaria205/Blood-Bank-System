@@ -3,9 +3,23 @@
 // ═══════════════════════════════════════════════════════════
 import axios from "axios";
 
+// ── Base URL resolution ──────────────────────────────────────
+//
+// Development  (.env  VITE_API_URL=/api)
+//   All requests go to /api/* on the same origin.
+//   Vite's dev proxy (vite.config.ts › server.proxy) then forwards
+//   them to http://localhost:3000/api/*, keeping the browser's
+//   origin at localhost:5173 and eliminating CORS pre-flights.
+//
+// Production  (.env.production  VITE_API_URL=https://api.bloodlink.eg/api)
+//   Requests go directly to the deployed backend. The backend must
+//   allow the production origin in its CORS policy.
+//
+// The fallback '/api' is only a safety net for misconfigured envs;
+// it also routes through Vite proxy when running `vite dev`.
+// ──────────────────────────────────────────────────────
 const apiClient = axios.create({
-  baseURL:
-    (import.meta as any).env?.VITE_API_URL || "http://localhost:3000/api",
+  baseURL: import.meta.env.VITE_API_URL ?? "/api",
   headers: {
     "Content-Type": "application/json",
   },
