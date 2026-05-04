@@ -1,0 +1,521 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #030213;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #030213;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: #0F1F1C;
+  --foreground: #E8F5F2;
+  --card: #142824;
+  --card-foreground: #E8F5F2;
+  --popover: #142824;
+  --popover-foreground: #E8F5F2;
+  --primary: #4D9E78;
+  --primary-foreground: #0F1F1C;
+  --secondary: #1A3330;
+  --secondary-foreground: #E8F5F2;
+  --muted: #1A3330;
+  --muted-foreground: #A8C1BC;
+  --accent: #1A3330;
+  --accent-foreground: #E8F5F2;
+  --destructive: rgba(180, 90, 90, 0.6);
+  --destructive-foreground: #D4867C;
+  --border: rgba(168, 193, 188, 0.1);
+  --input: #1A3330;
+  --ring: #4D9E78;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: #4D9E78;
+  --chart-2: #6BAED6;
+  --chart-3: #F6A04A;
+  --chart-4: #9B7DD4;
+  --chart-5: #D47C7C;
+  --sidebar: #0A1914;
+  --sidebar-foreground: #E8F5F2;
+  --sidebar-primary: #4D9E78;
+  --sidebar-primary-foreground: #0F1F1C;
+  --sidebar-accent: #1A3330;
+  --sidebar-accent-foreground: #E8F5F2;
+  --sidebar-border: rgba(168, 193, 188, 0.08);
+  --sidebar-ring: #4D9E78;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   BLOODLINK PREMIUM DARK MODE — Medical Green Palette
+   Background: #0F1F1C  |  Cards: #142824  |  Sidebar: #0A1914
+   ═══════════════════════════════════════════════════════ */
+
+.dark { color-scheme: dark; }
+
+/* Global smooth transition for dark/light switching */
+.dark *,
+.dark *::before,
+.dark *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 250ms;
+  transition-timing-function: ease;
+}
+
+/* ── Page Backgrounds ── */
+.dark .bg-gray-50        { background-color: #0F1F1C !important; }
+.dark .bg-gray-100       { background-color: #1A3330 !important; }
+.dark .bg-gray-200       { background-color: #1F3C38 !important; }
+.dark .bg-white          { background-color: #142824 !important; }
+
+/* ── Text Colors ── */
+.dark .text-gray-900     { color: #E8F5F2 !important; }
+.dark .text-gray-800     { color: #D0E8E4 !important; }
+.dark .text-gray-700     { color: #B8D4CF !important; }
+.dark .text-gray-600     { color: #A8C1BC !important; }
+.dark .text-gray-500     { color: #7A9E99 !important; }
+.dark .text-gray-400     { color: #526B67 !important; }
+.dark .text-gray-300     { color: #3D5550 !important; }
+
+/* ── Borders ── */
+.dark .border-gray-50    { border-color: rgba(168, 193, 188, 0.06) !important; }
+.dark .border-gray-100   { border-color: rgba(168, 193, 188, 0.10) !important; }
+.dark .border-gray-200   { border-color: rgba(168, 193, 188, 0.14) !important; }
+.dark .border-gray-300   { border-color: rgba(168, 193, 188, 0.18) !important; }
+
+.dark .divide-gray-50 > * + *  { border-color: rgba(168, 193, 188, 0.06) !important; }
+.dark .divide-gray-100 > * + * { border-color: rgba(168, 193, 188, 0.10) !important; }
+
+/* ── Hover States ── */
+.dark .hover\:bg-gray-50:hover  { background-color: rgba(168, 193, 188, 0.05) !important; }
+.dark .hover\:bg-gray-100:hover { background-color: rgba(168, 193, 188, 0.08) !important; }
+.dark .hover\:bg-white:hover    { background-color: #1A3330 !important; }
+
+/* ── Inputs / Selects / Textareas ── */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #1A3330 !important;
+  border-color: rgba(168, 193, 188, 0.14) !important;
+  color: #E8F5F2 !important;
+}
+.dark input::placeholder,
+.dark textarea::placeholder { color: #526B67 !important; }
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: rgba(77, 158, 120, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(77, 158, 120, 0.12) !important;
+}
+
+/* ── Shadows — soft, no harsh black ── */
+.dark .shadow-sm  {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35),
+              0 0 0 1px rgba(168, 193, 188, 0.05) !important;
+}
+.dark .shadow-md  {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.45),
+              0 0 0 1px rgba(168, 193, 188, 0.05) !important;
+}
+.dark .shadow-xl  {
+  box-shadow: 0 12px 32px rgba(0,0,0,0.55),
+              0 0 0 1px rgba(168, 193, 188, 0.06) !important;
+}
+.dark .shadow-2xl {
+  box-shadow: 0 20px 48px rgba(0,0,0,0.65),
+              0 0 0 1px rgba(77, 158, 120, 0.08) !important;
+}
+
+/* ── Sidebar & Header ── */
+.dark aside  {
+  background-color: #0A1914 !important;
+  border-color: rgba(168, 193, 188, 0.08) !important;
+}
+.dark header {
+  background-color: #0E1D1A !important;
+  border-color: rgba(168, 193, 188, 0.08) !important;
+  box-shadow: 0 1px 0 rgba(168, 193, 188, 0.06) !important;
+}
+
+/* ── Sidebar — Active Nav Item (indicator bar + soft glow) ── */
+.dark aside nav a[aria-current="page"] {
+  background: rgba(77, 158, 120, 0.13) !important;
+  color: #A8D4BC !important;
+  box-shadow: none !important;
+  border-left: 3px solid #4D9E78 !important;
+  padding-right: calc(0.75rem - 1px);
+}
+.dark aside nav a[aria-current="page"] svg {
+  color: #7DC4A6 !important;
+}
+/* Badge inside active nav item */
+.dark aside nav a[aria-current="page"] span.bg-white\/20 {
+  background: rgba(77, 158, 120, 0.2) !important;
+  color: #A8D4BC !important;
+}
+
+/* ── Sidebar — Hover Nav Item ── */
+.dark aside nav a:not([aria-current="page"]) {
+  transition: background 0.2s ease, color 0.2s ease !important;
+}
+.dark aside nav a:not([aria-current="page"]):hover {
+  background: rgba(168, 193, 188, 0.07) !important;
+  color: #C8E0DC !important;
+}
+.dark aside nav a:not([aria-current="page"]):hover svg {
+  color: #A8C1BC !important;
+}
+
+/* ── Table header ── */
+.dark thead tr,
+.dark .bg-gray-50 thead tr { background-color: #1A3330 !important; }
+.dark tbody tr:hover { background-color: rgba(168, 193, 188, 0.04) !important; }
+
+/* ── Modals / Floating Surfaces ── */
+.dark .fixed.inset-0.bg-black\/50 { background-color: rgba(0, 0, 0, 0.7) !important; }
+.dark .rounded-2xl.shadow-2xl    { background-color: #142824 !important; }
+.dark .fixed .bg-white           { background-color: #142824 !important; }
+.dark .sticky.top-0.bg-white     { background-color: #0E1D1A !important; }
+.dark .z-10.bg-white             { background-color: #0E1D1A !important; }
+
+/* ── Green Accent (muted, medical) ── */
+.dark .text-green-600            { color: #5CAF88 !important; }
+.dark .text-green-700            { color: #4D9E78 !important; }
+.dark .text-green-500            { color: #6DC49A !important; }
+
+.dark .bg-green-50               { background-color: rgba(77, 158, 120, 0.08) !important; }
+.dark .bg-green-100              { background-color: rgba(77, 158, 120, 0.14) !important; }
+
+.dark .border-green-100          { border-color: rgba(77, 158, 120, 0.18) !important; }
+.dark .border-green-200          { border-color: rgba(77, 158, 120, 0.25) !important; }
+
+/* Green buttons with soft glow */
+.dark .bg-green-600 {
+  background-color: #2E6E4D !important;
+  box-shadow: 0 0 18px rgba(77, 158, 120, 0.22),
+              0 2px 8px rgba(0,0,0,0.3) !important;
+}
+.dark .bg-green-700 { background-color: #275F42 !important; }
+.dark .hover\:bg-green-700:hover { background-color: #275F42 !important; }
+.dark .hover\:bg-green-50:hover  { background-color: rgba(77, 158, 120, 0.08) !important; }
+
+/* Active green button state */
+.dark .bg-green-500 { background-color: #357D58 !important; }
+
+/* ── Blue Accent (muted) ── */
+.dark .text-blue-600             { color: #6BAED6 !important; }
+.dark .text-blue-700             { color: #5B9EC6 !important; }
+.dark .bg-blue-50                { background-color: rgba(107, 174, 214, 0.08) !important; }
+.dark .bg-blue-100               { background-color: rgba(107, 174, 214, 0.14) !important; }
+.dark .border-blue-100           { border-color: rgba(107, 174, 214, 0.18) !important; }
+.dark .border-blue-200           { border-color: rgba(107, 174, 214, 0.25) !important; }
+.dark .hover\:bg-blue-50:hover   { background-color: rgba(107, 174, 214, 0.08) !important; }
+
+/* ── Purple Accent (muted) ── */
+.dark .text-purple-600           { color: #9B84CE !important; }
+.dark .text-purple-700           { color: #8B74BE !important; }
+.dark .bg-purple-50              { background-color: rgba(155, 132, 206, 0.08) !important; }
+.dark .bg-purple-100             { background-color: rgba(155, 132, 206, 0.14) !important; }
+.dark .border-purple-100         { border-color: rgba(155, 132, 206, 0.18) !important; }
+
+/* ── Red Accent — soft, not aggressive ── */
+.dark .text-red-600              { color: #C97A74 !important; }
+.dark .text-red-700              { color: #BC6D67 !important; }
+.dark .text-red-500              { color: #D48880 !important; }
+.dark .bg-red-50                 { background-color: rgba(180, 90, 90, 0.08) !important; }
+.dark .bg-red-100                { background-color: rgba(180, 90, 90, 0.14) !important; }
+.dark .border-red-100            { border-color: rgba(180, 90, 90, 0.18) !important; }
+.dark .border-red-200            { border-color: rgba(180, 90, 90, 0.25) !important; }
+.dark .hover\:bg-red-100:hover   { background-color: rgba(180, 90, 90, 0.14) !important; }
+
+/* ── Yellow/Amber Accent (warm, not neon) ── */
+.dark .text-yellow-600           { color: #CFA040 !important; }
+.dark .text-yellow-700           { color: #C09030 !important; }
+.dark .text-yellow-500           { color: #D4B050 !important; }
+.dark .bg-yellow-50              { background-color: rgba(200, 160, 60, 0.08) !important; }
+.dark .bg-yellow-100             { background-color: rgba(200, 160, 60, 0.14) !important; }
+.dark .border-yellow-100         { border-color: rgba(200, 160, 60, 0.18) !important; }
+.dark .bg-yellow-500             { background-color: #9A7220 !important; }
+.dark .bg-yellow-400             { background-color: #A07E28 !important; }
+
+.dark .text-amber-600            { color: #CFA040 !important; }
+.dark .bg-amber-50               { background-color: rgba(200, 160, 60, 0.08) !important; }
+.dark .border-amber-100          { border-color: rgba(200, 160, 60, 0.18) !important; }
+
+/* ── Orange Accent (muted) ── */
+.dark .text-orange-600           { color: #C8855A !important; }
+.dark .text-orange-700           { color: #B8754A !important; }
+.dark .bg-orange-50              { background-color: rgba(200, 133, 90, 0.08) !important; }
+.dark .bg-orange-100             { background-color: rgba(200, 133, 90, 0.14) !important; }
+.dark .border-orange-100         { border-color: rgba(200, 133, 90, 0.18) !important; }
+
+/* ── Teal ── */
+.dark .bg-teal-50                { background-color: rgba(45, 180, 160, 0.08) !important; }
+.dark .text-teal-600             { color: #5BBFB0 !important; }
+
+/* ── Status Badges — Blood Bags ── */
+/* Available (مناسب/آمن) */
+.dark .bg-green-100.text-green-700 {
+  background-color: rgba(77, 158, 120, 0.15) !important;
+}
+/* bg-green-500 status dot */
+.dark .bg-green-500 { background-color: #357D58 !important; }
+
+/* Reserved (محجوز) — muted blue */
+.dark .bg-blue-100.text-blue-700 {
+  background-color: rgba(107, 174, 214, 0.15) !important;
+}
+
+/* Used (مستخدم) — gray */
+.dark .bg-gray-200.text-gray-600 {
+  background-color: rgba(120, 145, 140, 0.15) !important;
+  color: #7A9E99 !important;
+}
+
+/* Expired (منتهي الصلاحية) — soft red */
+.dark .bg-red-100.text-red-700 {
+  background-color: rgba(180, 90, 90, 0.15) !important;
+}
+
+/* Deferred/Rejected (موجل / مرفوض) — warm orange-red */
+.dark .bg-orange-100.text-orange-700 {
+  background-color: rgba(200, 133, 90, 0.15) !important;
+  color: #C8855A !important;
+}
+
+/* Ineligible (غير مؤهل) */
+.dark .bg-red-100.text-red-600 {
+  background-color: rgba(180, 90, 90, 0.15) !important;
+  color: #C97A74 !important;
+}
+
+/* ── Alert Boxes ── */
+/* Expiry / Critical — low opacity red */
+.dark [class*="bg-red-50"][class*="border-red"] {
+  background-color: rgba(180, 90, 90, 0.08) !important;
+  border-color: rgba(180, 90, 90, 0.2) !important;
+}
+/* Warning — warm amber */
+.dark [class*="bg-yellow-50"][class*="border-yellow"] {
+  background-color: rgba(200, 160, 60, 0.08) !important;
+  border-color: rgba(200, 160, 60, 0.2) !important;
+}
+/* Success — calm green */
+.dark [class*="bg-green-50"][class*="border-green"] {
+  background-color: rgba(77, 158, 120, 0.08) !important;
+  border-color: rgba(77, 158, 120, 0.15) !important;
+}
+
+/* ── Notification dropdown ── */
+.dark .bg-white.rounded-2xl.shadow-xl {
+  background-color: #142824 !important;
+  border: 1px solid rgba(168, 193, 188, 0.10);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.55),
+              0 0 0 1px rgba(77, 158, 120, 0.08) !important;
+}
+
+/* ── Focus Ring ── */
+.dark .focus\:ring-green-100:focus {
+  --tw-ring-color: rgba(77, 158, 120, 0.2) !important;
+}
+
+/* ── Scrollbar — medical dark ── */
+.dark ::-webkit-scrollbar        { width: 5px; height: 5px; }
+.dark ::-webkit-scrollbar-track  { background: #0F1F1C; }
+.dark ::-webkit-scrollbar-thumb  {
+  background: rgba(168, 193, 188, 0.18);
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 193, 188, 0.3);
+}
+
+/* ── Login Page ── */
+.dark .login-card {
+  background-color: #142824 !important;
+  box-shadow: 0 0 80px rgba(77, 158, 120, 0.10),
+              0 30px 60px rgba(0,0,0,0.6) !important;
+  border-color: rgba(168, 193, 188, 0.10) !important;
+}
+.dark .login-right-panel {
+  background-color: #0F1F1C !important;
+}
+
+/* ── Pulse Animation — toned down ── */
+.dark .animate-pulse { opacity: 0.75; }
+
+/* ── Gradient overrides for buttons ── */
+.dark [style*="background: linear-gradient(135deg, #15803d"] {
+  background: linear-gradient(135deg, #1E5E3E, #2E7A52) !important;
+  box-shadow: 0 0 20px rgba(77, 158, 120, 0.2),
+              0 4px 12px rgba(0,0,0,0.3) !important;
+}
+.dark [style*="background: linear-gradient(180deg, #16a34a"] {
+  background: linear-gradient(180deg, #1E5E3E, #2E7A52) !important;
+}
+
+/* ── Bar chart bars ── */
+.dark [style*="background: linear-gradient(180deg, #16a34a, #22c55e)"] {
+  background: linear-gradient(180deg, #2E7A52, #4D9E78) !important;
+}
+
+/* ── Recharts overrides ── */
+.dark .recharts-cartesian-grid-horizontal line,
+.dark .recharts-cartesian-grid-vertical line {
+  stroke: rgba(168, 193, 188, 0.08) !important;
+}
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: #142824 !important;
+  border: 1px solid rgba(168, 193, 188, 0.12) !important;
+}
+
+/* ── Blood type chips ── */
+.dark .bg-red-50.text-red-600 {
+  background-color: rgba(180, 90, 90, 0.12) !important;
+  color: #C97A74 !important;
+}
+
+/* ── Mono code badges ── */
+.dark .font-mono.text-green-600.bg-green-50 {
+  background-color: rgba(77, 158, 120, 0.12) !important;
+  color: #6DC49A !important;
+}
+
+/* ── Role badges ── */
+.dark .bg-green-100.text-green-700  { color: #7DC4A6 !important; }
+.dark .bg-blue-100.text-blue-700    { color: #7EB3E0 !important; }
+.dark .bg-purple-100.text-purple-700 { color: #A490CE !important; }
+
+/* ── Progress bars ── */
+.dark .bg-green-500[style*="width"]  { background-color: #357D58 !important; }
+.dark .bg-yellow-500[style*="width"] { background-color: #9A7220 !important; }
+.dark .bg-red-500[style*="width"]    { background-color: #8A4040 !important; }
