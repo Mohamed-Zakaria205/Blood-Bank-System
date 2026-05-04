@@ -5,7 +5,6 @@ import { router } from "./routes";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
-import { AppointmentProvider } from "./contexts/AppointmentContext";
 import "../styles/fonts.css";
 
 // ── React Query client ─────────────────────────────────────
@@ -24,9 +23,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ThemeProvider>
-          <AppointmentProvider>
-            <RouterProvider router={router} />
-          </AppointmentProvider>
+          <RouterProvider router={router} />
         </ThemeProvider>
       </AuthProvider>
       {/* Dev-only panel — inspect cache, queries, mutations */}

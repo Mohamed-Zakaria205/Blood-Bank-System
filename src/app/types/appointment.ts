@@ -1,7 +1,25 @@
 // ═══════════════════════════════════════════════════════════
 // Appointment types
 // ═══════════════════════════════════════════════════════════
-import type { BloodType, DonationType } from './common';
+import type { BloodType, DonationType } from "./common";
+
+/**
+ * In-session notification created on the client when a doctor
+ * cancels an appointment. Not persisted to the backend — purely
+ * ephemeral UI state scoped to the DoctorAppointments page.
+ */
+export interface CancellationNotification {
+  id: string;
+  donorName: string;
+  donorPhone?: string;
+  date: string;
+  time: string;
+  campaignId?: string;
+  cancelledAt: string;
+  cancelledByName: string;
+  reason?: string;
+  read: boolean;
+}
 
 export interface AppointmentBooking {
   id: string;
@@ -9,8 +27,8 @@ export interface AppointmentBooking {
   donorCode?: string;
   phone: string;
   bloodType?: BloodType;
-  source: 'app' | 'manual';
-  status: 'confirmed' | 'cancelled';
+  source: "app" | "manual";
+  status: "confirmed" | "cancelled";
 }
 
 export interface AppointmentSlot {
@@ -25,7 +43,7 @@ export interface AppointmentSlot {
 
 export interface TimeSlot {
   time: string;
-  status: 'available' | 'booked';
+  status: "available" | "booked";
   donorName?: string;
   donorCode?: string;
 }
@@ -35,7 +53,13 @@ export interface AppointmentDay {
   slots: TimeSlot[];
 }
 
-export type Slot15Status = 'available' | 'booked' | 'completed' | 'missed' | 'disabled' | 'cancelled';
+export type Slot15Status =
+  | "available"
+  | "booked"
+  | "completed"
+  | "missed"
+  | "disabled"
+  | "cancelled";
 
 export interface Slot15 {
   id: string;
@@ -46,7 +70,7 @@ export interface Slot15 {
   donorNationalId?: string;
   donorPhone?: string;
   donorBloodType?: BloodType;
-  donorGender?: 'male' | 'female';
+  donorGender?: "male" | "female";
   donorAge?: number;
   donorDistrict?: string;
   donorArea?: string;
