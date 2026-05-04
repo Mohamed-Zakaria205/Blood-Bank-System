@@ -1,19 +1,11 @@
 import { useState } from 'react';
-import { TrendingUp, BarChart3, PieChart, Map, Download } from 'lucide-react';
+import { TrendingUp, BarChart3, Map, Download } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, PieChart as RPieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, RadarChart, Radar, PolarGrid, PolarAngleAxis
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
-import { donationTrends, areaData, bloodTypeDistribution } from '../../data/mockData';
-
-const shortageData = [
-  { month: 'مايو', predicted: 220, current: 198 },
-  { month: 'يونيو', predicted: 180, current: 165 },
-  { month: 'يوليو', predicted: 150, current: 134 },
-  { month: 'أغسطس', predicted: 195, current: null },
-  { month: 'سبتمبر', predicted: 255, current: null },
-  { month: 'أكتوبر', predicted: 285, current: null },
-];
+import { useAnalyticsDashboard } from '../../hooks/useAnalytics';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -30,7 +22,17 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function AdminAnalytics() {
+  const { data: dashboard, isLoading, isError } = useAnalyticsDashboard();
   const [period, setPeriod] = useState('yearly');
+
+  if (isLoading) return <PageLoader message="جاري تحميل التحليلات..." />;
+  if (isError) return <ErrorState message="فشل في تحميل التحليلات، يرجى المحاولة لاحقاً" onRetry={() => window.location.reload()} />;
+  if (!dashboard) return null;
+
+  const { donationTrends, areaStats, bloodTypeDistribution, shortagePredictions, kpis } = dashboard;
+
+  const kpiIcons = ['📈', '⭐', '🩸', '⏱️'];
+  const kpiColors = ['border-green-100', 'border-yellow-100', 'border-red-100', 'border-blue-100'];
 
   return (
     <div className="space-y-6">
@@ -57,14 +59,9 @@ export default function AdminAnalytics() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: 'معدل التبرع اليومي', value: '41', unit: 'وحدة/يوم', change: '+8%', icon: '📈', color: 'border-green-100' },
-          { label: 'رضا المتبرعين', value: '94%', unit: 'تقييم ممتاز', change: '+2%', icon: '⭐', color: 'border-yellow-100' },
-          { label: 'كفاءة المخزون', value: '78%', unit: 'نسبة الاستخدام', change: '-3%', icon: '🩸', color: 'border-red-100' },
-          { label: 'وقت المعالجة', value: '2.4', unit: 'ساعة متوسطاً', change: '-12%', icon: '⏱️', color: 'border-blue-100' },
-        ].map((k, i) => (
-          <div key={i} className={`bg-white rounded-2xl p-5 border ${k.color} shadow-sm`}>
-            <div className="text-2xl mb-3">{k.icon}</div>
+        {kpis.map((k, i) => (
+          <div key={i} className={`bg-white rounded-2xl p-5 border ${kpiColors[i] || 'border-gray-100'} shadow-sm`}>
+            <div className="text-2xl mb-3">{kpiIcons[i] || '📊'}</div>
             <div className="flex items-end gap-2 mb-1">
               <span className="text-[#1E293B]" style={{ fontSize: '28px', fontWeight: 700, lineHeight: 1 }}>{k.value}</span>
               <span className="text-gray-400 mb-1" style={{ fontSize: '12px' }}>{k.unit}</span>
@@ -150,7 +147,7 @@ export default function AdminAnalytics() {
             </div>
           </div>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={areaData} barSize={24}>
+            <BarChart data={areaStats} barSize={24}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" />
               <XAxis dataKey="area" tick={{ fontSize: 11, fill: '#9CA3AF' }} />
               <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} />
@@ -169,7 +166,7 @@ export default function AdminAnalytics() {
           </div>
           <p className="text-gray-400 mb-5" style={{ fontSize: '12px' }}>تحليل تنبؤي لمستويات المخزون</p>
           <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={shortageData}>
+            <AreaChart data={shortagePredictions}>
               <defs>
                 <linearGradient id="gp" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#F57C00" stopOpacity={0.2} />

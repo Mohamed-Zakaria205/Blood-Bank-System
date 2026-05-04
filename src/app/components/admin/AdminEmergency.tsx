@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { AlertTriangle, CheckCircle2, XCircle, Phone, MapPin, Clock, Droplets, X, Send } from 'lucide-react';
-import { emergencyRequests } from '../../data/mockData';
-
-type EmReq = typeof emergencyRequests[0];
+import { AlertTriangle, CheckCircle2, XCircle, Phone, Clock, Droplets, X, Send } from 'lucide-react';
+import { useEmergencyRequests, useFulfillEmergency, useRejectEmergency } from '../../hooks/useEmergency';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
+import type { EmergencyRequest } from '../../types/emergency';
 
 const urgencyConfig: Record<string, { label: string; color: string; bg: string; border: string }> = {
   critical: { label: 'طارئ جداً', color: 'text-red-700', bg: 'bg-red-100', border: 'border-red-200' },
@@ -10,7 +10,7 @@ const urgencyConfig: Record<string, { label: string; color: string; bg: string; 
   medium: { label: 'متوسط', color: 'text-yellow-700', bg: 'bg-yellow-100', border: 'border-yellow-200' },
 };
 
-function FulfillModal({ request, onClose }: { request: EmReq; onClose: () => void }) {
+function FulfillModal({ request, onClose, onSubmit }: { request: EmergencyRequest; onClose: () => void; onSubmit: (units: number, note: string) => void }) {
   const [units, setUnits] = useState(request.units);
   const [note, setNote] = useState('');
   return (
@@ -49,7 +49,7 @@ function FulfillModal({ request, onClose }: { request: EmReq; onClose: () => voi
           </div>
           <div className="flex gap-3">
             <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors" style={{ fontSize: '14px', fontWeight: 600 }}>إلغاء</button>
-            <button onClick={onClose} className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#C62828] to-[#B71C1C] text-white shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2" style={{ fontSize: '14px', fontWeight: 600 }}>
+            <button onClick={() => onSubmit(units, note)} className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#C62828] to-[#B71C1C] text-white shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2" style={{ fontSize: '14px', fontWeight: 600 }}>
               <Send className="w-4 h-4" />إرسال الوحدات
             </button>
           </div>
@@ -60,12 +60,24 @@ function FulfillModal({ request, onClose }: { request: EmReq; onClose: () => voi
 }
 
 export default function AdminEmergency() {
-  const [requests, setRequests] = useState(emergencyRequests);
-  const [fulfillReq, setFulfillReq] = useState<EmReq | null>(null);
+  const { data: requests = [], isLoading, isError } = useEmergencyRequests();
+  const fulfillMutation = useFulfillEmergency();
+  const rejectMutation = useRejectEmergency();
+  const [fulfillReq, setFulfillReq] = useState<EmergencyRequest | null>(null);
 
-  const fulfillRequest = (id: number) => {
-    setRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'fulfilled' } : r));
-    setFulfillReq(null);
+  if (isLoading) return <PageLoader message="جاري تحميل طلبات الطوارئ..." />;
+  if (isError) return <ErrorState message="فشل في تحميل طلبات الطوارئ، يرجى المحاولة لاحقاً" onRetry={() => window.location.reload()} />;
+
+  const handleFulfill = (units: number, note: string) => {
+    if (!fulfillReq) return;
+    fulfillMutation.mutate(
+      { requestId: fulfillReq.id, unitsSent: units, notes: note },
+      { onSettled: () => setFulfillReq(null) },
+    );
+  };
+
+  const handleReject = (id: number) => {
+    rejectMutation.mutate(id);
   };
 
   const pendingCount = requests.filter(r => r.status === 'pending').length;
@@ -73,7 +85,7 @@ export default function AdminEmergency() {
 
   return (
     <div className="space-y-6">
-      {fulfillReq && <FulfillModal request={fulfillReq} onClose={() => setFulfillReq(null)} />}
+      {fulfillReq && <FulfillModal request={fulfillReq} onClose={() => setFulfillReq(null)} onSubmit={handleFulfill} />}
 
       <div className="flex items-center justify-between">
         <div>
@@ -120,6 +132,14 @@ export default function AdminEmergency() {
         ))}
       </div>
 
+      {/* Empty State */}
+      {requests.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 gap-3">
+          <div className="text-4xl">🏥</div>
+          <p className="text-gray-500" style={{ fontSize: '14px', fontWeight: 600 }}>لا توجد طلبات طوارئ حالياً</p>
+        </div>
+      )}
+
       {/* Emergency Requests */}
       <div className="space-y-4">
         {requests.map((req) => {
@@ -140,8 +160,8 @@ export default function AdminEmergency() {
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       <h3 className="text-[#1E293B]" style={{ fontSize: '16px', fontWeight: 700 }}>{req.hospital}</h3>
                       <span className={`px-2.5 py-1 rounded-full ${config.bg} ${config.color}`} style={{ fontSize: '12px', fontWeight: 600 }}>{config.label}</span>
-                      <span className={`px-2.5 py-1 rounded-full ${isPending ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}`} style={{ fontSize: '12px', fontWeight: 600 }}>
-                        {isPending ? 'قيد الانتظار' : 'تمت التلبية'}
+                      <span className={`px-2.5 py-1 rounded-full ${isPending ? 'bg-yellow-100 text-yellow-700' : req.status === 'fulfilled' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`} style={{ fontSize: '12px', fontWeight: 600 }}>
+                        {isPending ? 'قيد الانتظار' : req.status === 'fulfilled' ? 'تمت التلبية' : 'مرفوض'}
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-4 text-gray-500">
@@ -169,14 +189,16 @@ export default function AdminEmergency() {
                     <div className="flex flex-col gap-2">
                       <button
                         onClick={() => setFulfillReq(req)}
-                        className="flex items-center gap-2 bg-gradient-to-r from-[#C62828] to-[#B71C1C] text-white px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all"
+                        disabled={fulfillMutation.isPending}
+                        className="flex items-center gap-2 bg-gradient-to-r from-[#C62828] to-[#B71C1C] text-white px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-60"
                         style={{ fontSize: '13px', fontWeight: 600 }}
                       >
                         <CheckCircle2 className="w-4 h-4" />تلبية الطلب
                       </button>
                       <button
-                        onClick={() => setRequests(prev => prev.map(r => r.id === req.id ? {...r, status: 'rejected'} : r))}
-                        className="flex items-center gap-2 bg-gray-100 text-gray-600 px-4 py-2.5 rounded-xl hover:bg-gray-200 transition-colors"
+                        onClick={() => handleReject(req.id)}
+                        disabled={rejectMutation.isPending}
+                        className="flex items-center gap-2 bg-gray-100 text-gray-600 px-4 py-2.5 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-60"
                         style={{ fontSize: '13px', fontWeight: 600 }}
                       >
                         <XCircle className="w-4 h-4" />رفض
@@ -184,9 +206,18 @@ export default function AdminEmergency() {
                     </div>
                   )}
                   {!isPending && (
-                    <div className="flex items-center gap-2 bg-green-100 px-4 py-2.5 rounded-xl">
-                      <CheckCircle2 className="w-4 h-4 text-green-600" />
-                      <span className="text-green-700" style={{ fontSize: '13px', fontWeight: 600 }}>تمت التلبية</span>
+                    <div className={`flex items-center gap-2 ${req.status === 'fulfilled' ? 'bg-green-100' : 'bg-red-100'} px-4 py-2.5 rounded-xl`}>
+                      {req.status === 'fulfilled' ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4 text-green-600" />
+                          <span className="text-green-700" style={{ fontSize: '13px', fontWeight: 600 }}>تمت التلبية</span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="w-4 h-4 text-red-600" />
+                          <span className="text-red-700" style={{ fontSize: '13px', fontWeight: 600 }}>مرفوض</span>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
