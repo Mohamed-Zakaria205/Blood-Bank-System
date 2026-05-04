@@ -5,7 +5,7 @@ import {
   BarChart3, Settings, LogOut, Menu, X, ChevronDown, Droplet, AlertTriangle, Activity
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { bloodInventory } from '../../data/mockData';
+import { useBloodInventory } from '../../hooks/useInventory';
 import NotificationDropdown, { Notification } from './NotificationDropdown';
 
 const navItems = [
@@ -24,8 +24,9 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const criticalItems = bloodInventory.filter(b => b.status === 'critical');
-  const lowItems = bloodInventory.filter(b => b.status === 'low');
+  const { data: bloodInventory = [] } = useBloodInventory();
+  const criticalItems = bloodInventory.filter((b: any) => b.status === 'critical');
+  const lowItems = bloodInventory.filter((b: any) => b.status === 'low');
 
   const notifications: Notification[] = [
     ...criticalItems.map(b => ({

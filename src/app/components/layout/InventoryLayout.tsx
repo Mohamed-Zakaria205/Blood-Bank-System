@@ -5,7 +5,7 @@ import {
   ChevronDown, Droplet, Clock, AlertTriangle, Activity, Trash2,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useInventory } from '../../contexts/InventoryContext';
+import { useBloodBags } from '../../hooks/useInventory';
 import NotificationDropdown, { Notification } from './NotificationDropdown';
 
 const navItems = [
@@ -18,7 +18,7 @@ const navItems = [
 
 export default function InventoryLayout() {
   const { user, logout } = useAuth();
-  const { bags } = useInventory();
+  const { data: bags = [] } = useBloodBags();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);

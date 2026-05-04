@@ -4,6 +4,9 @@ import {
   FlaskConical, Filter, CreditCard, Check
 } from 'lucide-react';
 import { testResults as initialResults, samples, donors } from '../../data/mockData';
+import { useTestResults, useSamples } from '../../hooks/useLabTests';
+import { useDonors } from '../../hooks/useDonors';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 
 // ────────────────────────────────────────────────────────
 // Helpers

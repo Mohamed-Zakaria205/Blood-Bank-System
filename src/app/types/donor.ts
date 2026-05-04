@@ -40,6 +40,8 @@ export interface Donor {
   campaignId?: string;
   campaignName?: string;
   deferredUntil?: string;
+  donations?: number;
+  points?: number;
 }
 
 /** POST /donors — request body (backend generates id & donorCode) */

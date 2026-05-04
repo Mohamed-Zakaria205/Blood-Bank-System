@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { AlertTriangle, TrendingUp, TrendingDown, Droplets, RefreshCw } from 'lucide-react';
-import { bloodInventory as initialInventory, BloodInventoryItem } from '../../data/mockData';
+import { BloodInventoryItem } from '../../data/mockData';
+import { useBloodInventory } from '../../hooks/useInventory';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const statusColors: Record<string, string> = { normal: 'bg-green-100 text-green-700', low: 'bg-yellow-100 text-yellow-700', critical: 'bg-red-100 text-red-700' };
@@ -8,9 +10,21 @@ const statusLabels: Record<string, string> = { normal: 'طبيعي', low: 'من�
 const barColors: Record<string, string> = { normal: '#22c55e', low: '#f59e0b', critical: '#ef4444' };
 
 export default function AdminInventory() {
-  const [inventory, setInventory] = useState<BloodInventoryItem[]>(initialInventory);
+  const { data: inventoryData = [], isLoading, isError, refetch } = useBloodInventory();
+  const [inventory, setInventory] = useState<BloodInventoryItem[]>([]);
+  const [initialized, setInitialized] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [editUnits, setEditUnits] = useState('');
+
+  // Sync local state with hook data on first load
+  if (!initialized && inventoryData.length > 0) {
+    setInventory(inventoryData);
+    setInitialized(true);
+  }
+
+  if (isLoading) return <PageLoader message="جاري تحميل مخزون الدم..." />;
+  if (isError) return <ErrorState message="تعذر تحميل مخزون الدم" onRetry={() => refetch()} />;
+
 
   const totalUnits = inventory.reduce((s, b) => s + b.units, 0);
   const criticalCount = inventory.filter(b => b.status === 'critical').length;

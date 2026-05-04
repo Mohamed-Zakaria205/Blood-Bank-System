@@ -5,6 +5,7 @@ import {
   ChevronDown, UserPlus, XCircle, Clock, LayoutGrid, Info,
 } from 'lucide-react';
 import { campaigns as initialCampaigns, Campaign, CITIES, Slot15 } from '../../data/mockData';
+import { useCampaigns } from '../../hooks/useCampaigns';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAppointments } from '../../contexts/AppointmentContext';
 import { CancelModal } from '../shared/CancelModal';

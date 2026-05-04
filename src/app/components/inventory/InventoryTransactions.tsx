@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ArrowLeftRight, Search, Filter, Download } from 'lucide-react';
-import { useInventory } from '../../contexts/InventoryContext';
 import { BLOOD_TYPES, BloodType, TransactionType } from '../../data/mockData';
+import { useTransactions } from '../../hooks/useInventory';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 
 const typeColors: Record<TransactionType, string> = {
   issue:    'bg-blue-100 text-blue-700',
@@ -18,10 +19,13 @@ const typeIcons: Record<TransactionType, string> = {
 };
 
 export default function InventoryTransactions() {
-  const { transactions } = useInventory();
+  const { data: transactions = [], isLoading, isError } = useTransactions();
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState<TransactionType | 'all'>('all');
   const [filterBlood, setFilterBlood] = useState<BloodType | 'all'>('all');
+
+  if (isLoading) return <PageLoader />;
+  if (isError) return <ErrorState message="فشل في تحميل العمليات، يرجى المحاولة لاحقاً" onRetry={() => window.location.reload()} />;
 
   const filtered = transactions.filter(t => {
     const matchSearch = t.id.includes(search) || t.bagCodes.some(c => c.includes(search)) ||

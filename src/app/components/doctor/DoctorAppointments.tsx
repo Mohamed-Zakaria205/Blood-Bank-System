@@ -6,6 +6,7 @@ import {
   Bell, BellOff, Ban, ChevronDown, ChevronUp,
 } from 'lucide-react';
 import { Slot15, campaigns } from '../../data/mockData';
+import { useCampaigns } from '../../hooks/useCampaigns';
 import { useAppointments } from '../../contexts/AppointmentContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { CancelModal } from '../shared/CancelModal';

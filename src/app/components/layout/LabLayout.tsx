@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router';
 import { LayoutDashboard, FlaskConical, LogOut, Menu, X, ChevronDown, Droplet, BarChart2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { labTests } from '../../data/mockData';
+import { useLabTests } from '../../hooks/useLabTests';
 import NotificationDropdown, { Notification } from './NotificationDropdown';
 
 const navItems = [
@@ -16,12 +16,13 @@ export default function LabLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const pendingTests = labTests.filter(t => t.status === 'pending');
+  const { data: labTests = [] } = useLabTests();
+  const pendingTests = labTests.filter((t: any) => t.status === 'pending');
   const pendingCount = pendingTests.length;
 
   const notifications: Notification[] = pendingTests.map(t => ({
     id: `lab-${t.id}`,
-    title: `حقيبة ${t.bagId} — فصيلة ${t.bloodType}`,
+    title: `عينة ${t.donorCode} — فصيلة ${t.bloodType}`,
     subtitle: 'في انتظار إدخال نتائج الفحص',
     icon: <FlaskConical className="w-4 h-4" />,
     color: 'yellow' as const,

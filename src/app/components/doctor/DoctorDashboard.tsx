@@ -1,7 +1,10 @@
 import { useNavigate } from 'react-router';
 import { UserPlus, Megaphone, Users, Heart, TrendingUp, ArrowUpRight, Building2, Smartphone, CalendarDays } from 'lucide-react';
-import { donors, campaigns, slot15Data } from '../../data/mockData';
 import { useAuth } from '../../contexts/AuthContext';
+import { useDonors } from '../../hooks/useDonors';
+import { useCampaigns } from '../../hooks/useCampaigns';
+import { useSlot15Data } from '../../hooks/useAppointments';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 
 const weekData = [
   { day: 'الأحد', donors: 3 }, { day: 'الإثنين', donors: 5 }, { day: 'الثلاثاء', donors: 2 },
@@ -11,14 +14,21 @@ const weekData = [
 export default function DoctorDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { data: donors = [], isLoading: loadingDonors, isError, refetch } = useDonors();
+  const { data: campaigns = [], isLoading: loadingCampaigns } = useCampaigns();
+  const { data: slot15Data = [], isLoading: loadingSlots } = useSlot15Data();
 
-  const myDonors = donors.filter(d => d.registeredBy === user?.id);
-  const activeCampaigns = campaigns.filter(c => c.status === 'active');
-  const myCampaigns = campaigns.filter(c => c.createdBy === user?.id);
-  const walkinToday = donors.filter(d => d.registeredAt === '2025-04-26' && d.source === 'walkin').length;
-  const appToday = donors.filter(d => d.registeredAt === '2025-04-26' && d.source === 'app').length;
-  const campaignToday = donors.filter(d => d.registeredAt === '2025-04-26' && d.source === 'campaign').length;
-  const campaignDonors = donors.filter(d => d.source === 'campaign');
+  const isLoading = loadingDonors || loadingCampaigns || loadingSlots;
+  if (isLoading) return <PageLoader message="جاري تحميل لوحة التحكم..." />;
+  if (isError) return <ErrorState message="تعذر تحميل البيانات" onRetry={() => refetch()} />;
+
+  const myDonors = donors.filter((d: any) => d.registeredBy === user?.id);
+  const activeCampaigns = campaigns.filter((c: any) => c.status === 'active');
+  const myCampaigns = campaigns.filter((c: any) => c.createdBy === user?.id);
+  const walkinToday = donors.filter((d: any) => d.registeredAt === '2025-04-26' && d.source === 'walkin').length;
+  const appToday = donors.filter((d: any) => d.registeredAt === '2025-04-26' && d.source === 'app').length;
+  const campaignToday = donors.filter((d: any) => d.registeredAt === '2025-04-26' && d.source === 'campaign').length;
+  const campaignDonors = donors.filter((d: any) => d.source === 'campaign');
 
   // Today's upcoming appointments (13:00 onwards — simulated current time 10:30)
   const TODAY = '2025-04-29';

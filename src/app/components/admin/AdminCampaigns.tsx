@@ -1,6 +1,7 @@
 import { MapPin, Calendar, Users, TrendingUp, Eye } from 'lucide-react';
-import { campaigns } from '../../data/mockData';
 import { useState } from 'react';
+import { useCampaigns } from '../../hooks/useCampaigns';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 
 const statusColors: Record<string, string> = {
   active: 'bg-emerald-100 text-emerald-700',
@@ -9,10 +10,14 @@ const statusColors: Record<string, string> = {
 const statusLabels: Record<string, string> = { active: 'نشطة', completed: 'منتهية' };
 
 export default function AdminCampaigns() {
+  const { data: campaigns = [], isLoading, isError, refetch } = useCampaigns();
   const [filterStatus, setFilterStatus] = useState('');
-  const [selected, setSelected] = useState<typeof campaigns[0] | null>(null);
+  const [selected, setSelected] = useState<any | null>(null);
 
-  const filtered = campaigns.filter(c => !filterStatus || c.status === filterStatus);
+  if (isLoading) return <PageLoader message="جاري تحميل الحملات..." />;
+  if (isError) return <ErrorState message="تعذر تحميل الحملات" onRetry={() => refetch()} />;
+
+  const filtered = campaigns.filter((c: any) => !filterStatus || c.status === filterStatus);
 
   return (
     <div className="space-y-6">

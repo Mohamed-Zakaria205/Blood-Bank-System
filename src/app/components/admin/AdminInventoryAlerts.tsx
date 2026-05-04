@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { AlertTriangle, TrendingUp, Clock, Settings2, Save, Check } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
-import { useInventory } from '../../contexts/InventoryContext';
 import { BLOOD_TYPES, BloodType, bloodInventory, monthlyStats } from '../../data/mockData';
+import { useBloodBags, useTransactions, useHospitalRequests } from '../../hooks/useInventory';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 
 const TODAY = new Date('2025-04-29');
 
@@ -11,7 +12,10 @@ function daysUntil(d: string) {
 }
 
 export default function AdminInventoryAlerts() {
-  const { bags, transactions, requests } = useInventory();
+  const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
+  const { data: transactions = [], isLoading: isLoadingTx, isError: isErrorTx } = useTransactions();
+  const { data: requests = [], isLoading: isLoadingReq, isError: isErrorReq } = useHospitalRequests();
+
   const [thresholds, setThresholds] = useState<Record<BloodType, number>>(() => {
     const init: any = {};
     bloodInventory.forEach(b => { init[b.type] = b.minRequired; });
@@ -19,6 +23,9 @@ export default function AdminInventoryAlerts() {
   });
   const [editThresholds, setEditThresholds] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  if (isLoadingBags || isLoadingTx || isLoadingReq) return <PageLoader />;
+  if (isErrorBags || isErrorTx || isErrorReq) return <ErrorState message="فشل في تحميل التنبيهات، يرجى المحاولة لاحقاً" onRetry={() => window.location.reload()} />;
 
   // Compute live inventory from bags
   const liveInventory = BLOOD_TYPES.map(t => ({

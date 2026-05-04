@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { Search, Filter, Edit2, X, Save, ChevronDown, Building2, Smartphone } from 'lucide-react';
-import { donors as initialDonors, Donor, BLOOD_TYPES, CITIES } from '../../data/mockData';
+import { BLOOD_TYPES, CITIES } from '../../data/mockData';
+import { useDonors } from '../../hooks/useDonors';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
+
+type Donor = any;
 
 const statusColors: Record<string, string> = { eligible: 'bg-green-100 text-green-700', ineligible: 'bg-red-100 text-red-700', deferred: 'bg-orange-100 text-orange-700' };
 const statusLabels: Record<string, string> = { eligible: 'مؤهل', ineligible: 'غير مؤهل', deferred: 'موجل' };
@@ -8,7 +12,9 @@ const donationTypeLabels: Record<string, string> = { whole: 'دم كامل', pla
 const genderLabels: Record<string, string> = { male: 'ذكر', female: 'أنثى' };
 
 export default function AdminDonors() {
-  const [donors, setDonors] = useState<Donor[]>(initialDonors);
+  const { data: donorsData = [], isLoading, isError, refetch } = useDonors();
+  const [donors, setDonors] = useState<Donor[]>([]);
+  const [initialized, setInitialized] = useState(false);
   const [search, setSearch] = useState('');
   const [filterBlood, setFilterBlood] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -16,6 +22,15 @@ export default function AdminDonors() {
   const [editingDonor, setEditingDonor] = useState<Donor | null>(null);
   const [editForm, setEditForm] = useState<Partial<Donor>>({});
   const [saved, setSaved] = useState(false);
+
+  // Sync local state with hook data on first load
+  if (!initialized && donorsData.length > 0) {
+    setDonors(donorsData);
+    setInitialized(true);
+  }
+
+  if (isLoading) return <PageLoader message="جاري تحميل بيانات المتبرعين..." />;
+  if (isError) return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
 
   const filtered = donors.filter(d => {
     const matchSearch = d.name.includes(search) || d.donorCode.includes(search) || d.phone.includes(search);

@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { Search, Package, Check, X, AlertTriangle, Upload, Trash2, ShoppingCart, AlertCircle, ChevronLeft } from 'lucide-react';
-import { useInventory } from '../../contexts/InventoryContext';
 import { BloodBag, BLOOD_TYPES, BloodType } from '../../data/mockData';
+import { useBloodBags, useExportBags, useDisposeBag } from '../../hooks/useInventory';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 
 const TODAY = new Date('2025-04-29');
 function daysUntil(d: string) {
@@ -11,7 +12,9 @@ function daysUntil(d: string) {
 const donTypeLabels: Record<string, string> = { whole: 'دم كامل', plasma: 'بلازما', platelets: 'صفائح' };
 
 export default function InventoryBags() {
-  const { bags, exportMultipleBags, disposeBag } = useInventory();
+  const { data: bags = [], isLoading, isError } = useBloodBags();
+  const exportBagsMutation = useExportBags();
+  const disposeBagMutation = useDisposeBag();
   const [search, setSearch]         = useState('');
   const [filterType, setFilterType] = useState<BloodType | 'all'>('all');
   const [filterStatus, setFilterStatus] = useState<'available' | 'expired_only' | 'all'>('all');
@@ -34,6 +37,9 @@ export default function InventoryBags() {
     reason: '',
   });
   const [exportErrors, setExportErrors] = useState<Record<string, string>>({});
+
+  if (isLoading) return <PageLoader />;
+  if (isError) return <ErrorState message="فشل في تحميل حقائب الدم، يرجى المحاولة لاحقاً" onRetry={() => window.location.reload()} />;
 
   /* ── derived ──────────────────────────────────────────────── */
   const displayBags = useMemo(() => {
@@ -100,18 +106,26 @@ export default function InventoryBags() {
     if (validateExport()) setExportStep(2);
   };
 
-  const handleConfirmExport = () => {
-    exportMultipleBags(selectedBagIds, exportForm);
-    closeExportModal();
-    setSelectedBagIds([]);
-    setExportForm({ recipientName: '', nationalId: '', phone: '', reason: '' });
+  const handleConfirmExport = async () => {
+    try {
+      await exportBagsMutation.mutateAsync({ bagIds: selectedBagIds, recipient: exportForm });
+      closeExportModal();
+      setSelectedBagIds([]);
+      setExportForm({ recipientName: '', nationalId: '', phone: '', reason: '' });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleDispose = () => {
+  const handleDispose = async () => {
     if (!disposeModal) return;
-    disposeBag(disposeModal.id, disposeReason || 'إتلاف وفق البروتوكول');
-    setDisposeModal(null);
-    setDisposeReason('');
+    try {
+      await disposeBagMutation.mutateAsync({ bagId: disposeModal.id, reason: disposeReason || 'إتلاف وفق البروتوكول' });
+      setDisposeModal(null);
+      setDisposeReason('');
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const getBagStatus = (bag: BloodBag) => {
@@ -460,10 +474,10 @@ export default function InventoryBags() {
                 </>
               ) : (
                 <>
-                  <button onClick={handleConfirmExport}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all"
+                  <button onClick={handleConfirmExport} disabled={exportBagsMutation.isPending}
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                     style={{ fontSize: '14px', fontWeight: 700 }}>
-                    <Check className="w-4 h-4" /> تأكيد التصدير النهائي
+                    {exportBagsMutation.isPending ? 'جارٍ التصدير...' : <><Check className="w-4 h-4" /> تأكيد التصدير النهائي</>}
                   </button>
                   <button onClick={() => setExportStep(1)}
                     className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all"
@@ -501,10 +515,10 @@ export default function InventoryBags() {
                 style={{ fontSize: '13px' }} />
             </div>
             <div className="flex gap-3">
-              <button onClick={handleDispose}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all"
+              <button onClick={handleDispose} disabled={disposeBagMutation.isPending}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                 style={{ fontSize: '14px', fontWeight: 700 }}>
-                <Trash2 className="w-4 h-4" /> تأكيد الإتلاف
+                {disposeBagMutation.isPending ? 'جارٍ الإتلاف...' : <><Trash2 className="w-4 h-4" /> تأكيد الإتلاف</>}
               </button>
               <button onClick={() => { setDisposeModal(null); setDisposeReason(''); }}
                 className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all"

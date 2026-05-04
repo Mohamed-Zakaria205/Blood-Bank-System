@@ -4,6 +4,8 @@ import {
   ChevronDown, FlaskConical, Stethoscope, Phone, MapPin, CreditCard, User as UserIcon, Mail, Package
 } from 'lucide-react';
 import { users as initialUsers, User, CITIES } from '../../data/mockData';
+import { useStaff, useCreateStaff, useDeleteStaff } from '../../hooks/useStaff';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 
 type StaffRole = 'doctor' | 'lab' | 'inventory';
 
@@ -30,7 +32,10 @@ const initialForm: StaffForm = {
 };
 
 export default function AdminStaff() {
-  const [staff, setStaff] = useState<User[]>(initialUsers.filter(u => u.role !== 'admin'));
+  const { data: staffData = [], isLoading, isError } = useStaff();
+  const createStaff = useCreateStaff();
+  const deleteStaff = useDeleteStaff();
+
   const [search, setSearch] = useState('');
   const [filterRole, setFilterRole] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -40,6 +45,8 @@ export default function AdminStaff() {
   const [showPass, setShowPass] = useState(false);
   const [form, setForm] = useState<StaffForm>(initialForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const staff = staffData.filter(u => u.role !== 'admin');
 
   const filtered = staff.filter(u => {
     const matchSearch = u.name.includes(search) || u.email.includes(search) || (u.phone || '').includes(search);
@@ -60,29 +67,35 @@ export default function AdminStaff() {
     return Object.keys(e).length === 0;
   };
 
-  const addStaff = () => {
+  const addStaff = async () => {
     if (!validate()) return;
-    const newUser: User = {
-      id: `USR-${Date.now()}`,
-      name: form.fullName.trim(),
-      email: form.email,
-      password: form.password,
-      role: form.role,
-      age: 0,
-      nationalId: form.nationalId,
-      phone: form.phone,
-      address: form.address,
-      city: form.city,
-      status: 'active',
-      createdAt: new Date().toISOString().split('T')[0],
-    };
-    setStaff(prev => [newUser, ...prev]);
-    setShowModal(false);
-    setForm(initialForm);
-    setErrors({});
+    try {
+      await createStaff.mutateAsync({
+        name: form.fullName.trim(),
+        email: form.email,
+        password: form.password,
+        role: form.role as any,
+        nationalId: form.nationalId,
+        phone: form.phone,
+        address: form.address,
+        city: form.city,
+      });
+      setShowModal(false);
+      setForm(initialForm);
+      setErrors({});
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const deleteUser = (id: string) => { setStaff(prev => prev.filter(u => u.id !== id)); setDeleteId(null); };
+  const deleteUser = async (id: string) => { 
+    try {
+      await deleteStaff.mutateAsync(id);
+      setDeleteId(null); 
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const copyEmail = (email: string) => {
     navigator.clipboard.writeText(email).catch(() => {});
@@ -94,6 +107,9 @@ export default function AdminStaff() {
     setForm(p => ({ ...p, [key]: value }));
     setErrors(p => { const e = { ...p }; delete e[key]; return e; });
   };
+
+  if (isLoading) return <PageLoader message="جارٍ تحميل بيانات الكوادر الطبية..." />;
+  if (isError) return <ErrorState message="فشل تحميل الكوادر الطبية" onRetry={() => window.location.reload()} />;
 
   return (
     <div className="space-y-6">

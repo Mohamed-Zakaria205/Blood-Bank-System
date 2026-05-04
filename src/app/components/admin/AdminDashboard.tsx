@@ -1,8 +1,12 @@
 import { useNavigate } from 'react-router';
 import { Users, Megaphone, UserCog, Droplets, TrendingUp, AlertTriangle, ArrowUpRight, Heart, Building2, Smartphone } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { donors, campaigns, users, bloodInventory, monthlyStats } from '../../data/mockData';
 import { useAuth } from '../../contexts/AuthContext';
+import { useDonors } from '../../hooks/useDonors';
+import { useCampaigns } from '../../hooks/useCampaigns';
+import { useStaff } from '../../hooks/useStaff';
+import { useBloodInventory, useMonthlyStats } from '../../hooks/useInventory';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 
 const donationTypeLabels: Record<string, string> = { whole: 'دم كامل', plasma: 'بلازما', platelets: 'صفائح' };
 const statusColors: Record<string, string> = { eligible: 'bg-green-100 text-green-700', ineligible: 'bg-red-100 text-red-700', deferred: 'bg-orange-100 text-orange-700' };
@@ -12,18 +16,32 @@ const bloodStatusColor: Record<string, string> = { normal: 'bg-green-500', low: 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const doctors = users.filter(u => u.role === 'doctor');
-  const labDoctors = users.filter(u => u.role === 'lab');
-  const totalUnits = bloodInventory.reduce((s, b) => s + b.units, 0);
-  const criticalCount = bloodInventory.filter(b => b.status === 'critical').length;
-  const recentDonors = [...donors].sort((a, b) => new Date(b.registeredAt).getTime() - new Date(a.registeredAt).getTime()).slice(0, 6);
-  const campaignDonors = donors.filter(d => d.source === 'campaign');
-  const walkinDonors = donors.filter(d => d.source === 'walkin');
-  const appDonors = donors.filter(d => d.source === 'app');
+
+  // ── React Query hooks ────────────────────────────────────
+  const { data: donors = [], isLoading: loadingDonors, isError: errorDonors, refetch: refetchDonors } = useDonors();
+  const { data: campaignsData = [], isLoading: loadingCampaigns } = useCampaigns();
+  const { data: staffData = [], isLoading: loadingStaff } = useStaff();
+  const { data: bloodInventory = [], isLoading: loadingInventory } = useBloodInventory();
+  const { data: monthlyStatsData = [], isLoading: loadingStats } = useMonthlyStats();
+
+  const isLoading = loadingDonors || loadingCampaigns || loadingStaff || loadingInventory || loadingStats;
+
+  if (isLoading) return <PageLoader message="جاري تحميل لوحة التحكم..." />;
+  if (errorDonors) return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetchDonors()} />;
+
+  // ── Derived data ─────────────────────────────────────────
+  const doctors = staffData.filter((u: any) => u.role === 'doctor');
+  const labDoctors = staffData.filter((u: any) => u.role === 'lab');
+  const totalUnits = bloodInventory.reduce((s: number, b: any) => s + b.units, 0);
+  const criticalCount = bloodInventory.filter((b: any) => b.status === 'critical').length;
+  const recentDonors = [...donors].sort((a: any, b: any) => new Date(b.registeredAt).getTime() - new Date(a.registeredAt).getTime()).slice(0, 6);
+  const campaignDonors = donors.filter((d: any) => d.source === 'campaign');
+  const walkinDonors = donors.filter((d: any) => d.source === 'walkin');
+  const appDonors = donors.filter((d: any) => d.source === 'app');
 
   const stats = [
-    { label: 'إجمالي المتبرعين', value: donors.length, sub: `${donors.filter(d => d.status === 'eligible').length} مؤهل`, icon: Heart, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-100', action: () => navigate('/admin/donors') },
-    { label: 'حملات التبرع', value: campaigns.length, sub: `${campaigns.filter(c => c.status === 'active').length} نشطة`, icon: Megaphone, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100', action: () => navigate('/admin/campaigns') },
+    { label: 'إجمالي المتبرعين', value: donors.length, sub: `${donors.filter((d: any) => d.status === 'eligible').length} مؤهل`, icon: Heart, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-100', action: () => navigate('/admin/donors') },
+    { label: 'حملات التبرع', value: campaignsData.length, sub: `${campaignsData.filter((c: any) => c.status === 'active').length} نشطة`, icon: Megaphone, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100', action: () => navigate('/admin/campaigns') },
     { label: 'الكوادر الطبية', value: doctors.length + labDoctors.length, sub: `${doctors.length} طبيب • ${labDoctors.length} تحاليل`, icon: UserCog, color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-100', action: () => navigate('/admin/staff') },
     { label: 'وحدات الدم المتاحة', value: totalUnits, sub: `${criticalCount} فصائل حرجة`, icon: Droplets, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-100', action: () => navigate('/admin/inventory') },
   ];
@@ -69,7 +87,7 @@ export default function AdminDashboard() {
           <div>
             <div className="text-gray-900" style={{ fontSize: '26px', fontWeight: 800 }}>{walkinDonors.length}</div>
             <div className="text-gray-600" style={{ fontSize: '13px', fontWeight: 600 }}>تبرع داخل البنك</div>
-            <div className="text-gray-400" style={{ fontSize: '11px' }}>{Math.round((walkinDonors.length / donors.length) * 100)}% من الإجمالي</div>
+            <div className="text-gray-400" style={{ fontSize: '11px' }}>{donors.length > 0 ? Math.round((walkinDonors.length / donors.length) * 100) : 0}% من الإجمالي</div>
           </div>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm flex items-center gap-4">
@@ -79,7 +97,7 @@ export default function AdminDashboard() {
           <div>
             <div className="text-gray-900" style={{ fontSize: '26px', fontWeight: 800 }}>{campaignDonors.length}</div>
             <div className="text-gray-600" style={{ fontSize: '13px', fontWeight: 600 }}>عن طريق حملة</div>
-            <div className="text-gray-400" style={{ fontSize: '11px' }}>{Math.round((campaignDonors.length / donors.length) * 100)}% من الإجمالي</div>
+            <div className="text-gray-400" style={{ fontSize: '11px' }}>{donors.length > 0 ? Math.round((campaignDonors.length / donors.length) * 100) : 0}% من الإجمالي</div>
           </div>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-blue-100 shadow-sm flex items-center gap-4">
@@ -89,7 +107,7 @@ export default function AdminDashboard() {
           <div>
             <div className="text-gray-900" style={{ fontSize: '26px', fontWeight: 800 }}>{appDonors.length}</div>
             <div className="text-gray-600" style={{ fontSize: '13px', fontWeight: 600 }}>حجز من التطبيق</div>
-            <div className="text-gray-400" style={{ fontSize: '11px' }}>{Math.round((appDonors.length / donors.length) * 100)}% من الإجمالي</div>
+            <div className="text-gray-400" style={{ fontSize: '11px' }}>{donors.length > 0 ? Math.round((appDonors.length / donors.length) * 100) : 0}% من الإجمالي</div>
           </div>
         </div>
       </div>
@@ -109,7 +127,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={monthlyStats}>
+            <LineChart data={monthlyStatsData}>
               <CartesianGrid key="grid" strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis key="x-axis" dataKey="month" tick={{ fontSize: 11, fill: '#9CA3AF', fontFamily: 'Tajawal' }} />
               <YAxis key="y-axis" tick={{ fontSize: 11, fill: '#9CA3AF' }} />
@@ -127,7 +145,7 @@ export default function AdminDashboard() {
             <button onClick={() => navigate('/admin/inventory')} className="text-green-600 hover:underline" style={{ fontSize: '12px' }}>عرض الكل</button>
           </div>
           <div className="space-y-3">
-            {bloodInventory.map(b => (
+            {bloodInventory.map((b: any) => (
               <div key={`inv-${b.type}`} className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
                   <span className="text-red-600" style={{ fontSize: '12px', fontWeight: 800 }}>{b.type}</span>
@@ -169,7 +187,7 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {recentDonors.map(d => (
+                {recentDonors.map((d: any) => (
                   <tr key={d.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3"><span className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded" style={{ fontSize: '11px', fontWeight: 700 }}>{d.donorCode}</span></td>
                     <td className="px-4 py-3"><span className="text-gray-900" style={{ fontSize: '13px', fontWeight: 600 }}>{d.name}</span></td>
@@ -197,7 +215,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
           <h2 className="text-gray-900 mb-5" style={{ fontSize: '16px', fontWeight: 700 }}>تنبيهات النظام</h2>
           <div className="space-y-3">
-            {bloodInventory.filter(b => b.status !== 'normal').map(b => (
+            {bloodInventory.filter((b: any) => b.status !== 'normal').map((b: any) => (
               <div key={`alert-${b.type}`} className={`flex items-start gap-3 p-3 rounded-xl ${b.status === 'critical' ? 'bg-red-50 border border-red-100' : 'bg-yellow-50 border border-yellow-100'}`}>
                 <AlertTriangle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${b.status === 'critical' ? 'text-red-500' : 'text-yellow-500'}`} />
                 <div>

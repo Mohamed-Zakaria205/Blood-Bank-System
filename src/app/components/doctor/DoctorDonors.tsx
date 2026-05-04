@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { UserPlus, Search, Eye, ChevronDown, X, Building2, Smartphone, Megaphone, Clock, CheckCircle2, XCircle } from 'lucide-react';
-import { donors, Donor, BLOOD_TYPES, CITIES } from '../../data/mockData';
+import { BLOOD_TYPES, CITIES } from '../../data/mockData';
+import { useDonors } from '../../hooks/useDonors';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
+
+type Donor = any;
+type BloodType = string;
 
 const statusColors: Record<string, string> = {
   eligible: 'bg-green-100 text-green-700',
@@ -18,13 +23,17 @@ const genderLabels: Record<string, string> = { male: 'ذكر', female: 'أنثى
 
 export default function DoctorDonors() {
   const navigate = useNavigate();
+  const { data: donors = [], isLoading, isError, refetch } = useDonors();
   const [search, setSearch] = useState('');
   const [filterBlood, setFilterBlood] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterCity, setFilterCity] = useState('');
   const [viewing, setViewing] = useState<Donor | null>(null);
 
-  const filtered = donors.filter(d => {
+  if (isLoading) return <PageLoader message="جاري تحميل بيانات المتبرعين..." />;
+  if (isError) return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
+
+  const filtered = donors.filter((d: any) => {
     const matchSearch = d.name.includes(search) || d.donorCode.includes(search) || d.phone.includes(search);
     const matchBlood = !filterBlood || d.bloodType === filterBlood;
     const matchStatus = !filterStatus || d.status === filterStatus;

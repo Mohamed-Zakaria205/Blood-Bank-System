@@ -26,7 +26,7 @@ export default function AdminSettings() {
   const handleChangePassword = () => {
     setPassError('');
     if (!passwords.current) { setPassError('أدخل كلمة المرور الحالية'); return; }
-    if (passwords.current !== user?.password) { setPassError('كلمة المرور الحالية غير صحيحة'); return; }
+    if (passwords.current !== (user as any)?.password) { setPassError('كلمة المرور الحالية غير صحيحة'); return; }
     if (passwords.newPass.length < 6) { setPassError('كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل'); return; }
     if (passwords.newPass !== passwords.confirm) { setPassError('كلمات المرور غير متطابقة'); return; }
     setSaved(true);

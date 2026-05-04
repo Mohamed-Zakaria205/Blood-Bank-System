@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Building2, CheckCircle, X, Package, AlertTriangle, Search, Plus } from 'lucide-react';
-import { useInventory } from '../../contexts/InventoryContext';
+import { useInventory as useInventoryContext } from '../../contexts/InventoryContext';
 import { BloodBag, HOSPITALS, BLOOD_TYPES, BloodType } from '../../data/mockData';
+import { useBloodBags, useHospitalRequests, useFulfillRequest } from '../../hooks/useInventory';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 
 const urgencyColors: Record<string, string> = {
   normal: 'bg-blue-100 text-blue-700',
@@ -18,13 +20,21 @@ const statusColors: Record<string, string> = {
 const statusLabels: Record<string, string> = { pending: 'قيد المراجعة', approved: 'معتمد', fulfilled: 'تم الصرف', rejected: 'مرفوض' };
 
 export default function InventoryRequests() {
-  const { bags, requests, fulfillRequest, updateRequestStatus, addRequest } = useInventory();
+  // Keep useInventoryContext for now for `addRequest`
+  const { addRequest } = useInventoryContext();
+  const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
+  const { data: requests = [], isLoading: isLoadingRequests, isError: isErrorRequests } = useHospitalRequests();
+  const fulfillRequestMutation = useFulfillRequest();
+  
   const [fulfillModal, setFulfillModal] = useState<string | null>(null);
   const [selectedBags, setSelectedBags] = useState<string[]>([]);
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'fulfilled'>('all');
   const [search, setSearch] = useState('');
   const [addModal, setAddModal] = useState(false);
   const [newReq, setNewReq] = useState({ hospitalName: '', bloodType: 'O+' as BloodType, quantity: 1, urgency: 'normal' as any, notes: '' });
+
+  if (isLoadingBags || isLoadingRequests) return <PageLoader />;
+  if (isErrorBags || isErrorRequests) return <ErrorState message="فشل في تحميل الطلبات، يرجى المحاولة لاحقاً" onRetry={() => window.location.reload()} />;
 
   const filtered = requests.filter(r => {
     const matchStatus = filterStatus === 'all' || r.status === filterStatus;
@@ -38,11 +48,15 @@ export default function InventoryRequests() {
   const currentReq = requests.find(r => r.id === fulfillModal);
   const compatibleBags = currentReq ? getCompatibleBags(currentReq.bloodType) : [];
 
-  const handleFulfill = () => {
+  const handleFulfill = async () => {
     if (!fulfillModal || selectedBags.length === 0) return;
-    fulfillRequest(fulfillModal, selectedBags);
-    setFulfillModal(null);
-    setSelectedBags([]);
+    try {
+      await fulfillRequestMutation.mutateAsync({ requestId: fulfillModal, bagIds: selectedBags });
+      setFulfillModal(null);
+      setSelectedBags([]);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleAddRequest = () => {
@@ -201,10 +215,10 @@ export default function InventoryRequests() {
               })}
             </div>
             <div className="flex gap-3">
-              <button onClick={handleFulfill} disabled={selectedBags.length === 0}
-                className={`flex-1 py-2.5 text-white rounded-xl transition-all ${selectedBags.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
+              <button onClick={handleFulfill} disabled={selectedBags.length === 0 || fulfillRequestMutation.isPending}
+                className={`flex-1 py-2.5 text-white rounded-xl transition-all ${selectedBags.length === 0 || fulfillRequestMutation.isPending ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
                 style={{ fontSize: '14px', fontWeight: 600 }}>
-                تأكيد الصرف ({selectedBags.length} حقيبة)
+                {fulfillRequestMutation.isPending ? 'جارٍ الصرف...' : `تأكيد الصرف (${selectedBags.length} حقيبة)`}
               </button>
               <button onClick={() => { setFulfillModal(null); setSelectedBags([]); }}
                 className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all" style={{ fontSize: '14px', fontWeight: 600 }}>إلغاء</button>

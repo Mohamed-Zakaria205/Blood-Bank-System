@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router';
 import { Package, History, TrendingUp, TrendingDown, AlertTriangle, Clock, CheckCircle, ArrowUpRight, Droplets } from 'lucide-react';
-import { useInventory } from '../../contexts/InventoryContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { BLOOD_TYPES, BloodType } from '../../data/mockData';
+import { useBloodBags, useOutflowRecords } from '../../hooks/useInventory';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 
 const TODAY = new Date('2025-04-29');
 function daysUntil(d: string) {
@@ -12,7 +13,11 @@ function daysUntil(d: string) {
 export default function InventoryDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { bags, outflowRecords } = useInventory();
+  const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
+  const { data: outflowRecords = [], isLoading: isLoadingOutflow, isError: isErrorOutflow } = useOutflowRecords();
+
+  if (isLoadingBags || isLoadingOutflow) return <PageLoader />;
+  if (isErrorBags || isErrorOutflow) return <ErrorState message="فشل في تحميل بيانات لوحة التحكم، يرجى المحاولة لاحقاً" onRetry={() => window.location.reload()} />;
 
   const available   = bags.filter(b => b.status === 'available').length;
   const expired     = bags.filter(b => b.status === 'available' && new Date(b.expiryDate) < TODAY).length;

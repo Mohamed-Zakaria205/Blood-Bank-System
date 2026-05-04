@@ -8,6 +8,9 @@ import {
 } from 'lucide-react';
 import { BLOOD_TYPES, DISEASES, CITIES, campaigns, slot15Data } from '../../data/mockData';
 import { useAuth } from '../../contexts/AuthContext';
+import { useCampaigns } from '../../hooks/useCampaigns';
+import { useSlot15Data } from '../../hooks/useAppointments';
+import { useCreateDonor } from '../../hooks/useDonors';
 
 interface SimpleForm {
   name: string;
@@ -95,9 +98,11 @@ export default function DonorRegistrationForm() {
   const [form, setForm] = useState<SimpleForm>(getInitialForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [donorCode] = useState(`DNR-2025-${String(Math.floor(Math.random() * 9000) + 1000)}`);
   const [step, setStep] = useState<1 | 2>(1);
   const [bagVolume, setBagVolume] = useState('400'); // ← added outside selected element
+  const createDonor = useCreateDonor();
 
   const activeCampaigns = campaigns.filter(c => c.status === 'active');
 
@@ -126,8 +131,39 @@ export default function DonorRegistrationForm() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = () => {
-    if (validate()) setSuccess(true);
+  const handleSubmit = async () => {
+    if (!validate()) return;
+    setSubmitting(true);
+    try {
+      await createDonor.mutateAsync({
+        name: form.name,
+        gender: form.gender as any,
+        age: Number(form.age),
+        phone: form.phone,
+        nationalId: form.nationalId,
+        governorate: form.governorate,
+        district: form.district,
+        area: form.area,
+        bloodType: form.bloodType || undefined,
+        donationType: form.donationType as any,
+        diseases: form.diseases,
+        source: form.source,
+        campaignId: form.campaignId || undefined,
+        status: form.status,
+        weight: Number(form.weight) || undefined,
+        bloodPressure: form.bloodPressure || undefined,
+        hemoglobin: Number(form.hemoglobin) || undefined,
+        isAllergic: form.isAllergic,
+        rejectionReason: form.rejectionReason || undefined,
+        lockoutUntil: form.lockoutUntil || undefined,
+        deferredUntil: form.deferredUntil || undefined,
+      });
+      setSuccess(true);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleNextStep = () => {
@@ -855,10 +891,20 @@ export default function DonorRegistrationForm() {
             style={{ fontSize: '14px', fontWeight: 600 }}>
             <ChevronRight className="w-5 h-5" /> رجوع
           </button>
-          <button type="button" onClick={handleSubmit}
-            className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-all shadow-sm"
+          <button type="button" onClick={handleSubmit} disabled={submitting}
+            className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-all shadow-sm disabled:opacity-70"
             style={{ fontSize: '14px', fontWeight: 700 }}>
-            <Check className="w-5 h-5" /> تسجيل المتبرع
+            {submitting ? (
+              <><span className="flex items-center justify-center gap-2">
+                <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                جارٍ الحفظ...
+              </span></>
+            ) : (
+              <><Check className="w-5 h-5" /> تسجيل المتبرع</>
+            )}
           </button>
         </div>
 

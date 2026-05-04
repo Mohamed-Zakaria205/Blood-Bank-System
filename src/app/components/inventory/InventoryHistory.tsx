@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { History, Search, Upload, Trash2, Download, TrendingDown, Package, Eye, X, User, Phone, CreditCard, FileText, Clock, UserCheck } from 'lucide-react';
-import { useInventory } from '../../contexts/InventoryContext';
 import { OutflowActionType, OutflowRecord, BLOOD_TYPES, BloodType } from '../../data/mockData';
+import { useBloodBags, useOutflowRecords } from '../../hooks/useInventory';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 
 const donTypeLabels: Record<string, string> = { whole: 'دم كامل', plasma: 'بلازما', platelets: 'صفائح' };
 
@@ -125,12 +126,16 @@ function DetailModal({ record, onClose }: { record: OutflowRecord; onClose: () =
 }
 
 export default function InventoryHistory() {
-  const { outflowRecords, bags } = useInventory();
+  const { data: outflowRecords = [], isLoading: isLoadingOutflow, isError: isErrorOutflow } = useOutflowRecords();
+  const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
   const [filterAction, setFilterAction] = useState<OutflowActionType | 'all'>('all');
   const [filterController, setFilterController] = useState('');
   const [filterBloodType, setFilterBloodType] = useState<BloodType | 'all'>('all');
   const [search, setSearch] = useState('');
   const [detailRecord, setDetailRecord] = useState<OutflowRecord | null>(null);
+
+  if (isLoadingBags || isLoadingOutflow) return <PageLoader />;
+  if (isErrorBags || isErrorOutflow) return <ErrorState message="فشل في تحميل سجل الصادر، يرجى المحاولة لاحقاً" onRetry={() => window.location.reload()} />;
 
   const controllers = [...new Set(outflowRecords.map(r => r.performedByName))];
 

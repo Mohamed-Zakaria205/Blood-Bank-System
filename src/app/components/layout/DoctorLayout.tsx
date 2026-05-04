@@ -5,7 +5,8 @@ import {
   LogOut, Menu, X, ChevronDown, Droplet,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { donors, campaigns } from '../../data/mockData';
+import { useDonors } from '../../hooks/useDonors';
+import { useCampaigns } from '../../hooks/useCampaigns';
 import NotificationDropdown, { Notification } from './NotificationDropdown';
 
 const navItems = [
@@ -23,8 +24,10 @@ export default function DoctorLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const activeCampaigns = campaigns.filter(c => c.status === 'active');
-  const todayDonors = donors.filter(d => d.registeredAt === '2025-04-26');
+  const { data: donors = [] } = useDonors();
+  const { data: campaigns = [] } = useCampaigns();
+  const activeCampaigns = campaigns.filter((c: any) => c.status === 'active');
+  const todayDonors = donors.filter((d: any) => d.registeredAt === '2025-04-26');
 
   const notifications: Notification[] = [
     ...activeCampaigns.map(c => ({

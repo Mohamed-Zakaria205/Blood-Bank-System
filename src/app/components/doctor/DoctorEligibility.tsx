@@ -4,6 +4,8 @@ import {
   AlertTriangle, Send, Users, Zap, Smartphone
 } from 'lucide-react';
 import { donors, BLOOD_TYPES, BloodType, Donor } from '../../data/mockData';
+import { useDonors } from '../../hooks/useDonors';
+import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 
 // ──────────────────────────────────────────
 // Eligibility engine
@@ -50,6 +52,7 @@ const statusCfg = {
 interface NotifModal { donor: Donor; type: 'emergency' | 'ready' }
 
 export default function DoctorEligibility() {
+  const { data: donorsData = [], isLoading, isError, refetch } = useDonors();
   const [search, setSearch]           = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'eligible' | 'soon' | 'not_yet'>('all');
   const [filterBlood, setFilterBlood] = useState<BloodType | 'all'>('all');
@@ -58,7 +61,7 @@ export default function DoctorEligibility() {
   const [notifType, setNotifType]     = useState<'emergency' | 'ready'>('ready');
 
   const enriched = useMemo(() =>
-    donors.map(d => ({ ...d, elig: calcEligibility(d) })), []);
+    donorsData.map((d: Donor) => ({ ...d, elig: calcEligibility(d) })), [donorsData]);
 
   const filtered = useMemo(() => {
     return enriched.filter(d => {
