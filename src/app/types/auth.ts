@@ -2,7 +2,7 @@
 // Auth types — Login, token, user session
 // ═══════════════════════════════════════════════════════════
 
-export type UserRole = 'admin' | 'doctor' | 'lab' | 'inventory';
+export type UserRole = "admin" | "doctor" | "lab" | "inventory";
 
 /**
  * The user object returned by the backend after login.
@@ -18,7 +18,7 @@ export interface User {
   phone: string;
   address: string;
   city: string;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   createdAt: string;
 }
 
@@ -32,4 +32,14 @@ export interface LoginRequest {
 export interface LoginResponse {
   token: string;
   user: User;
+}
+
+/**
+ * POST /auth/change-password — request body.
+ * The backend validates currentPassword server-side against the stored
+ * hash. The frontend never holds the plaintext password on the User object.
+ */
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
 }
