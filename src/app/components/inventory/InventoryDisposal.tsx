@@ -12,13 +12,25 @@ import {
   AlertOctagon,
   ShieldOff,
 } from "lucide-react";
-import { BloodBag, BLOOD_TYPES, BloodType } from "../../data/mockData";
+import type { BloodBag, BloodType } from "../../types";
 import {
   useBloodBags,
   useOutflowRecords,
   useDisposeBag,
 } from "../../hooks/useInventory";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
+
+// ── Local constants (will move to constants.ts in Phase 2) ─
+const BLOOD_TYPES: BloodType[] = [
+  "A+",
+  "A-",
+  "B+",
+  "B-",
+  "AB+",
+  "AB-",
+  "O+",
+  "O-",
+];
 
 /* ── constants ──────────────────────────────────────────── */
 const TODAY = new Date("2025-04-29");
