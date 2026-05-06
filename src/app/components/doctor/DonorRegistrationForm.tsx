@@ -30,7 +30,7 @@ import { useCampaigns } from "../../hooks/useCampaigns";
 import { useSlot15Data } from "../../hooks/useAppointments";
 import { useCreateDonor } from "../../hooks/useDonors";
 import { toast } from "sonner";
-import { useForm } from "react-hook-form";
+import { useForm, Path, PathValue } from "react-hook-form";
 import { Form } from "../ui/form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -201,7 +201,8 @@ export default function DonorRegistrationForm() {
     key: K,
     value: SimpleForm[K],
   ) => {
-    setValue(key, value, { shouldDirty: true, shouldValidate: true });
+    setValue(key as Path<SimpleForm>, value as PathValue<SimpleForm, Path<SimpleForm>>,
+      { shouldDirty: true, shouldValidate: true });
     if (key === "source" && value !== "campaign") {
       setValue("campaignId", "", { shouldDirty: true, shouldValidate: true });
     }
