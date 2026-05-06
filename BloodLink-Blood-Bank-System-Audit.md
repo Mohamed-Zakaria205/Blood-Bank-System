@@ -5009,8 +5009,8 @@ Before the action plan, here's what is solid and should not be changed:
 | 9   | ✅**Re-point type imports**: Change all `import { BloodBag } from '../../data/mockData'` to `import type { BloodBag } from '../../types'` across 8 components.                | Inventory & Lab components                  |
 | 10  | ✅ **Replace `type Donor = any`** in `AdminDonors`, `DoctorDonors`, `AdminUsers` with `import type { Donor } from '../../types'`. Eliminate all `(d: any)`, `(u: any)` casts. | 3 components                                |
 | 11  | ✅**Decouple `DoctorEligibility`, `LabResults`, `DonorRegistrationForm`, `DoctorCampaigns`** from direct mockData array imports. Use the corresponding React Query hooks.     | 4 components                                |
-| 12  | ✅ **Fix mock mutations** in `api/donors.ts` and `api/campaigns.ts` to mutate the in-memory array so refetch returns the new data.                                               | `api/donors.ts`, `api/campaigns.ts`         |
-| 13  | **Unify `LabTest.result` and `TestResult`** field names (`hcv`/`hbv` vs. `hepatitisC`/`hepatitisB`). Create a shared `LabResultData` interface.                               | `types/lab.ts`                              |
+| 12  | ✅ **Fix mock mutations** in `api/donors.ts` and `api/campaigns.ts` to mutate the in-memory array so refetch returns the new data.                                            | `api/donors.ts`, `api/campaigns.ts`         |
+| 13  | ✅**Unify `LabTest.result` and `TestResult`** field names (`hcv`/`hbv` vs. `hepatitisC`/`hepatitisB`). Create a shared `LabResultData` interface.                             | `types/lab.ts`                              |
 | 14  | **Fix `CreateDonorRequest`** — add `registeredAt`, `donations`, `points` to the `Omit<>` list.                                                                                | `types/donor.ts`                            |
 
 ---

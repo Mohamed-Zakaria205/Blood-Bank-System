@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // Donor types
 // ═══════════════════════════════════════════════════════════
-import type { BloodType, DonationType, DonorStatus } from './common';
+import type { BloodType, DonationType, DonorStatus } from "./common";
 
 export interface MedicalQuestions {
   feelingWell: boolean;
@@ -19,7 +19,7 @@ export interface Donor {
   id: string;
   donorCode: string;
   name: string;
-  gender: 'male' | 'female';
+  gender: "male" | "female";
   age: number;
   nationalId: string;
   phone: string;
@@ -32,11 +32,16 @@ export interface Donor {
   donationType: DonationType;
   medicalQuestions?: MedicalQuestions;
   diseases: string[];
-  additionalData?: { weight?: number; height?: number; hemoglobin?: number; bloodPressure?: string };
+  additionalData?: {
+    weight?: number;
+    height?: number;
+    hemoglobin?: number;
+    bloodPressure?: string;
+  };
   status: DonorStatus;
   registeredBy?: string;
   registeredAt?: string;
-  source: 'walkin' | 'app' | 'campaign';
+  source: "walkin" | "app" | "campaign";
   campaignId?: string;
   campaignName?: string;
   deferredUntil?: string;
@@ -52,4 +57,7 @@ export interface Donor {
 }
 
 /** POST /donors — request body (backend generates id & donorCode) */
-export type CreateDonorRequest = Omit<Donor, 'id' | 'donorCode'>;
+export type CreateDonorRequest = Omit<
+  Donor,
+  "id" | "donorCode" | "registeredAt" | "donations" | "points"
+>;
