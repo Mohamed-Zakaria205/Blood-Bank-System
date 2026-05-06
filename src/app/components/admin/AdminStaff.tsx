@@ -178,7 +178,13 @@ export default function AdminStaff() {
   };
 
   if (isLoading)
-    return <PageLoader message="جارٍ تحميل بيانات الكوادر الطبية..." />;
+    return (
+      <div className="space-y-6 p-2">
+        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <CardSkeleton count={3} />
+        <TableSkeleton rows={5} cols={6} />
+      </div>
+    );
   if (isError)
     return (
       <ErrorState
