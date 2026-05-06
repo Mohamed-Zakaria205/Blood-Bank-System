@@ -12,7 +12,7 @@ import {
   Activity,
   ChevronRight,
 } from "lucide-react";
-import type { LabTest } from "../../types";
+import type { BloodType, LabTest } from "../../types";
 import { BLOOD_TYPES } from "../../constants";
 import { useLabTests, useSubmitLabResult } from "../../hooks/useLabTests";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
@@ -125,7 +125,7 @@ export default function LabDashboard() {
       await submitLabResult.mutateAsync({
         testId: entryModal.id,
         result: {
-          confirmedBloodType: form.confirmedBloodType,
+          confirmedBloodType: form.confirmedBloodType as BloodType,
           hcv: form.hcv,
           hbv: form.hbv,
           syphilis: form.syphilis,

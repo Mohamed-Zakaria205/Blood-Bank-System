@@ -249,8 +249,8 @@ export interface TestResult {
   donorName: string;
   bloodType: BloodType;
   confirmedBloodType: BloodType;
-  hepatitisB: "negative" | "positive";
-  hepatitisC: "negative" | "positive";
+  hcv: "negative" | "positive";
+  hbv: "negative" | "positive";
   syphilis: "negative" | "positive";
   hiv: "negative" | "positive";
   result: "safe" | "unsafe";
@@ -2742,8 +2742,8 @@ export const testResults: TestResult[] = [
     donorName: "مصطفى حامد البسيوني",
     bloodType: "B+",
     confirmedBloodType: "B+",
-    hepatitisB: "negative",
-    hepatitisC: "negative",
+    hcv: "negative",
+    hbv: "negative",
     syphilis: "negative",
     hiv: "negative",
     result: "safe",
@@ -2758,8 +2758,8 @@ export const testResults: TestResult[] = [
     donorName: "رامي سلامة عوض",
     bloodType: "O+",
     confirmedBloodType: "O+",
-    hepatitisB: "negative",
-    hepatitisC: "negative",
+    hcv: "negative",
+    hbv: "negative",
     syphilis: "negative",
     hiv: "negative",
     result: "safe",
