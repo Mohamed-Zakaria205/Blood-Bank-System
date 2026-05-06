@@ -16,11 +16,7 @@ import {
   Clock,
   UserCheck,
 } from "lucide-react";
-import {
-  OutflowActionType,
-  OutflowRecord,
-  BloodType,
-} from "../../data/mockData";
+import { OutflowActionType, OutflowRecord, BloodType } from "../../types";
 import { BLOOD_TYPES } from "../../constants";
 import { useBloodBags, useOutflowRecords } from "../../hooks/useInventory";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";

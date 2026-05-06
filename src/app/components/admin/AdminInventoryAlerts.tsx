@@ -20,7 +20,8 @@ import {
   Legend,
 } from "recharts";
 import { BLOOD_TYPES } from "../../constants";
-import { BloodType, bloodInventory, monthlyStats } from "../../data/mockData";
+import type { BloodType } from "../../types";
+import { bloodInventory, monthlyStats } from "../../data/mockData";
 import {
   useBloodBags,
   useTransactions,

@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { BLOOD_TYPES } from "../../constants";
-import { BloodType } from "../../data/mockData";
+import type { BloodType } from "../../types";
 import { useBloodBags, useOutflowRecords } from "../../hooks/useInventory";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ArrowLeftRight, Search, Filter, Download } from "lucide-react";
 import { BLOOD_TYPES } from "../../constants";
-import { BloodType, TransactionType } from "../../data/mockData";
+import type { BloodType, TransactionType } from "../../types";
 import { useTransactions } from "../../hooks/useInventory";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
 

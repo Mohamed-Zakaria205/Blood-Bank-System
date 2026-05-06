@@ -12,7 +12,7 @@ import {
   Activity,
   ChevronRight,
 } from "lucide-react";
-import { LabTest } from "../../data/mockData";
+import type { LabTest } from "../../types";
 import { BLOOD_TYPES } from "../../constants";
 import { useLabTests, useSubmitLabResult } from "../../hooks/useLabTests";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
