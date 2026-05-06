@@ -11,11 +11,16 @@ import {
 
 const USE_MOCK = true;
 
+/** In-memory stores so mutations persist across refetches */
+let mockLabTests: LabTest[] = [...MOCK_LAB_TESTS];
+let mockSamples: Sample[] = [...MOCK_SAMPLES];
+let mockTestResults: TestResult[] = [...MOCK_TEST_RESULTS];
+
 // ── Lab Tests (blood bag screening) ────────────────────────
 export async function fetchLabTests(): Promise<LabTest[]> {
   if (USE_MOCK) {
     await new Promise(r => setTimeout(r, 300));
-    return MOCK_LAB_TESTS;
+    return mockLabTests;
   }
   const { data } = await apiClient.get<LabTest[]>('/lab/tests');
   return data;
@@ -32,10 +37,10 @@ export async function submitLabTestResult(testId: string, result: {
 }): Promise<LabTest> {
   if (USE_MOCK) {
     await new Promise(r => setTimeout(r, 600));
-    const test = MOCK_LAB_TESTS.find(t => t.id === testId);
-    if (!test) throw { response: { status: 404, data: { message: 'الفحص غير موجود' } } };
-    return {
-      ...test,
+    const idx = mockLabTests.findIndex(t => t.id === testId);
+    if (idx === -1) throw { response: { status: 404, data: { message: 'الفحص غير موجود' } } };
+    const updated: LabTest = {
+      ...mockLabTests[idx],
       status: 'completed' as const,
       result: {
         ...result,
@@ -44,6 +49,9 @@ export async function submitLabTestResult(testId: string, result: {
         completedBy: 'current-user',
       },
     };
+    // ✅ Mutate the in-memory array so refetch returns the updated test
+    mockLabTests = mockLabTests.map(t => (t.id === testId ? updated : t));
+    return updated;
   }
   const { data } = await apiClient.post<LabTest>(`/lab/tests/${testId}/result`, result);
   return data;
@@ -53,7 +61,7 @@ export async function submitLabTestResult(testId: string, result: {
 export async function fetchSamples(): Promise<Sample[]> {
   if (USE_MOCK) {
     await new Promise(r => setTimeout(r, 300));
-    return MOCK_SAMPLES;
+    return mockSamples;
   }
   const { data } = await apiClient.get<Sample[]>('/lab/samples');
   return data;
@@ -63,7 +71,7 @@ export async function fetchSamples(): Promise<Sample[]> {
 export async function fetchTestResults(): Promise<TestResult[]> {
   if (USE_MOCK) {
     await new Promise(r => setTimeout(r, 300));
-    return MOCK_TEST_RESULTS;
+    return mockTestResults;
   }
   const { data } = await apiClient.get<TestResult[]>('/lab/results');
   return data;

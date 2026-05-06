@@ -176,7 +176,6 @@ export default function DoctorCampaigns() {
   const { data: campaignsData = [], isLoading, isError, refetch } = useCampaigns();
   const createCampaignMutation = useCreateCampaign();
   const cancelMutation = useCancelAppointment();
-  const [localCampaigns, setLocalCampaigns] = useState<Campaign[]>([]);
   const [filterStatus, setFilterStatus] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -184,8 +183,8 @@ export default function DoctorCampaigns() {
   const [cancelTarget, setCancelTarget] = useState<Slot15 | null>(null);
   const navigate = useNavigate();
 
-  // Merge hook data with locally-created campaigns (optimistic UI)
-  const campaigns = [...campaignsData, ...localCampaigns];
+  // React Query data — mutations push into the API mock store and invalidateQueries picks up the change
+  const campaigns = campaignsData;
 
   if (isLoading) return <PageLoader message="جاري تحميل بيانات الحملات..." />;
   if (isError) return <ErrorState message="تعذر تحميل بيانات الحملات" onRetry={() => refetch()} />;
@@ -252,8 +251,7 @@ export default function DoctorCampaigns() {
       createdByName: user?.name || "طبيب",
       description: form.description,
     };
-    // Optimistically add to local state while mutation runs in background
-    setLocalCampaigns((prev) => [newCampaign, ...prev]);
+    // Let the API mock store handle persistence — React Query invalidation picks it up
     createCampaignMutation.mutate(newCampaign);
     setSuccess(true);
     setTimeout(() => {

@@ -7,10 +7,13 @@ import { campaigns as MOCK_CAMPAIGNS } from '../data/mockData';
 
 const USE_MOCK = true;
 
+/** In-memory store that mirrors the mock array so mutations persist across refetches */
+let mockStore: Campaign[] = [...MOCK_CAMPAIGNS];
+
 export async function fetchCampaigns(): Promise<Campaign[]> {
   if (USE_MOCK) {
     await new Promise(r => setTimeout(r, 300));
-    return MOCK_CAMPAIGNS;
+    return mockStore;
   }
   const { data } = await apiClient.get<Campaign[]>('/campaigns');
   return data;
@@ -19,7 +22,10 @@ export async function fetchCampaigns(): Promise<Campaign[]> {
 export async function createCampaign(payload: CreateCampaignRequest): Promise<Campaign> {
   if (USE_MOCK) {
     await new Promise(r => setTimeout(r, 400));
-    return { ...payload, id: `CAM-${Date.now()}` };
+    const newCampaign: Campaign = { ...payload, id: `CAM-${Date.now()}` };
+    // ✅ Push into the in-memory array so refetch returns the new campaign
+    mockStore = [newCampaign, ...mockStore];
+    return newCampaign;
   }
   const { data } = await apiClient.post<Campaign>('/campaigns', payload);
   return data;
