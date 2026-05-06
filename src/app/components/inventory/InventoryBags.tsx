@@ -18,18 +18,7 @@ import {
   useDisposeBag,
 } from "../../hooks/useInventory";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
-
-// ── Local constants (will move to constants.ts in Phase 2) ─
-const BLOOD_TYPES: BloodType[] = [
-  "A+",
-  "A-",
-  "B+",
-  "B-",
-  "AB+",
-  "AB-",
-  "O+",
-  "O-",
-];
+import { BLOOD_TYPES } from "../../constants";
 
 const TODAY = new Date("2025-04-29");
 function daysUntil(d: string) {

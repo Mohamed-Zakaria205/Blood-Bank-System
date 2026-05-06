@@ -16,27 +16,7 @@ import {
   useFulfillRequest,
 } from "../../hooks/useInventory";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
-
-// ── Local constants (will move to constants.ts in Phase 2) ─
-const BLOOD_TYPES: BloodType[] = [
-  "A+",
-  "A-",
-  "B+",
-  "B-",
-  "AB+",
-  "AB-",
-  "O+",
-  "O-",
-];
-const HOSPITALS = [
-  "مستشفى بني سويف العام",
-  "مستشفى ناصر المركزي",
-  "مستشفى ببا المركزي",
-  "مستشفى إهناسيا",
-  "مستشفى الفشن",
-  "مركز أورام بني سويف",
-  "مستشفى سمسطا",
-];
+import { BLOOD_TYPES, HOSPITALS } from "../../constants";
 
 const urgencyColors: Record<string, string> = {
   normal: "bg-blue-100 text-blue-700",

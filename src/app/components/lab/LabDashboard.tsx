@@ -12,7 +12,8 @@ import {
   Activity,
   ChevronRight,
 } from "lucide-react";
-import { LabTest, BLOOD_TYPES } from "../../data/mockData";
+import { LabTest } from "../../data/mockData";
+import { BLOOD_TYPES } from "../../constants";
 import { useLabTests, useSubmitLabResult } from "../../hooks/useLabTests";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
 import { useAuth } from "../../contexts/AuthContext";

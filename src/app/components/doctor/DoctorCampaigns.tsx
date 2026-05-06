@@ -19,9 +19,9 @@ import {
 import {
   campaigns as initialCampaigns,
   Campaign,
-  CITIES,
   Slot15,
 } from "../../data/mockData";
+import { CITIES } from "../../constants";
 import { useCampaigns } from "../../hooks/useCampaigns";
 import { useAuth } from "../../contexts/AuthContext";
 import {

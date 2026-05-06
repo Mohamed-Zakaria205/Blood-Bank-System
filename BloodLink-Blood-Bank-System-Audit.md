@@ -4970,13 +4970,13 @@ Before the action plan, here's what is solid and should not be changed:
 
 | # | Task | File(s) |
 |---|---|---|
-| 1 | **Delete `InventoryContext.tsx`**. Migrate all mutation logic into `useInventory.ts` mutations. Update `InventoryRequests.tsx`, `InventoryBags.tsx`, `InventoryDisposal.tsx` to use hooks only. | `InventoryContext.tsx`, `useInventory.ts` |
-| 2 | **Delete `AppointmentContext.tsx`**. Wire `DoctorAppointments.tsx` to `useSlot15Data()` + `useCancelAppointment()`. Rebuild notification state using a `useQuery`-based approach. | `AppointmentContext.tsx`, `DoctorAppointments.tsx` |
-| 3 | **Fix `AdminSettings` password change**. Remove `(user as any)?.password`. Create `POST /auth/change-password` endpoint and a corresponding `changePasswordApi()` function + `useChangePassword` mutation. | `AdminSettings.tsx`, new `api/auth.ts` |
-| 4 | **Add Vite proxy** in `vite.config.ts` to avoid CORS errors in dev. | `vite.config.ts` |
-| 5 | **Add refresh token logic** in `api/client.ts`. Implement a request queue that pauses during token refresh and retries failed requests. | `api/client.ts` |
-| 6 | **Create `api/emergency.ts` and `api/analytics.ts`** with proper React Query hooks. Wire `AdminEmergency.tsx` and `AdminAnalytics.tsx` to them. | new files |
-| 7 | **Fix environment variable typing**: Add `/// <reference types="vite/client" />` to `vite-env.d.ts`. Remove the `(import.meta as any)` cast. | `api/client.ts`, `vite-env.d.ts` |
+| 1 | ✅ **Delete `InventoryContext.tsx`**. Migrate all mutation logic into `useInventory.ts` mutations. Update `InventoryRequests.tsx`, `InventoryBags.tsx`, `InventoryDisposal.tsx` to use hooks only. | `InventoryContext.tsx`, `useInventory.ts` |
+| 2 | ✅ **Delete `AppointmentContext.tsx`**. Wire `DoctorAppointments.tsx` to `useSlot15Data()` + `useCancelAppointment()`. Rebuild notification state using a `useQuery`-based approach. | `AppointmentContext.tsx`, `DoctorAppointments.tsx` |
+| 3 | ✅ **Fix `AdminSettings` password change**. Remove `(user as any)?.password`. Create `POST /auth/change-password` endpoint and a corresponding `changePasswordApi()` function + `useChangePassword` mutation. | `AdminSettings.tsx`, new `api/auth.ts` |
+| 4 | ✅ **Add Vite proxy** in `vite.config.ts` to avoid CORS errors in dev. | `vite.config.ts` |
+| 5 | ✅ **Add refresh token logic** in `api/client.ts`. Implement a request queue that pauses during token refresh and retries failed requests. | `api/client.ts` |
+| 6 | ✅ **Create `api/emergency.ts` and `api/analytics.ts`** with proper React Query hooks. Wire `AdminEmergency.tsx` and `AdminAnalytics.tsx` to them. | new files |
+| 7 | ✅ **Fix environment variable typing**: Add `/// <reference types="vite/client" />` to `vite-env.d.ts`. Remove the `(import.meta as any)` cast. | `api/client.ts`, `vite-env.d.ts` |
 
 ---
 
