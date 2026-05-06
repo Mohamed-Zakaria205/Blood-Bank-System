@@ -25,7 +25,6 @@ import {
   Timer,
 } from "lucide-react";
 import { BLOOD_TYPES, DISEASES, CITIES } from "../../constants";
-import { campaigns, slot15Data } from "../../data/mockData";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCampaigns } from "../../hooks/useCampaigns";
 import { useSlot15Data } from "../../hooks/useAppointments";
@@ -96,10 +95,12 @@ export default function DonorRegistrationForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
+  const { data: campaignsData = [] } = useCampaigns();
+  const { data: slot15DataFromHook = [] } = useSlot15Data();
 
   // Pre-fill from appointment if ?apt=S15-xxx
   const aptId = searchParams.get("apt");
-  const appointment = aptId ? slot15Data.find((s) => s.id === aptId) : null;
+  const appointment = aptId ? slot15DataFromHook.find((s) => s.id === aptId) : null;
 
   const getInitialForm = (): SimpleForm => {
     if (appointment) {
@@ -132,7 +133,7 @@ export default function DonorRegistrationForm() {
   const [bagVolume, setBagVolume] = useState("400"); // ← added outside selected element
   const createDonor = useCreateDonor();
 
-  const activeCampaigns = campaigns.filter((c) => c.status === "active");
+  const activeCampaigns = campaignsData.filter((c) => c.status === "active");
 
   const updateField = (key: keyof SimpleForm, value: any) => {
     setForm((p) => ({ ...p, [key]: value }));
@@ -183,10 +184,9 @@ export default function DonorRegistrationForm() {
         age: Number(form.age),
         phone: form.phone,
         nationalId: form.nationalId,
-        governorate: form.governorate,
-        district: form.district,
-        area: form.area,
-        bloodType: form.bloodType || undefined,
+        city: form.governorate,
+        address: [form.area, form.district].filter(Boolean).join(" - "),
+        bloodType: (form.bloodType || undefined) as any,
         donationType: form.donationType as any,
         diseases: form.diseases,
         source: form.source,

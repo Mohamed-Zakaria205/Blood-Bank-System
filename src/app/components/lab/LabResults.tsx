@@ -3,18 +3,11 @@ import {
   Search, CheckCircle2, XCircle, Clock, Eye, X,
   FlaskConical, Filter, CreditCard, Check
 } from 'lucide-react';
-import { testResults as initialResults, samples, donors } from '../../data/mockData';
 import { useTestResults, useSamples } from '../../hooks/useLabTests';
 import { useDonors } from '../../hooks/useDonors';
 import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
-
-// ────────────────────────────────────────────────────────
-// Helpers
-// ────────────────────────────────────────────────────────
-function getDonorNationalId(donorCode: string): string {
-  const donor = donors.find(d => d.donorCode === donorCode);
-  return donor?.nationalId || '—';
-}
+import type { TestResult, Sample } from '../../types/lab';
+import type { Donor } from '../../types/donor';
 
 /** 4 standard screening tests */
 const SCREENING_TESTS = [
@@ -27,11 +20,19 @@ const SCREENING_TESTS = [
 // ────────────────────────────────────────────────────────
 // Build combined list (pending samples + completed results)
 // ────────────────────────────────────────────────────────
-function buildCombinedList() {
-  const completed = initialResults.map(r => ({
+function buildCombinedList(
+  testResults: TestResult[],
+  samplesData: Sample[],
+  donorsData: Donor[],
+) {
+  function getDonorNationalId(donorCode: string): string {
+    const donor = donorsData.find(d => d.donorCode === donorCode);
+    return donor?.nationalId || '—';
+  }
+
+  const completed = testResults.map(r => ({
     id: r.id,
     sampleId: r.sampleId,
-    /** كود العينة = كود المتبرع */
     sampleCode: r.donorCode,
     donorCode: r.donorCode,
     donorName: r.donorName,
@@ -50,12 +51,11 @@ function buildCombinedList() {
   }));
 
   const completedSampleIds = new Set(completed.map(r => r.sampleId));
-  const pendingEntries = samples
+  const pendingEntries = samplesData
     .filter(s => !completedSampleIds.has(s.id))
     .map(s => ({
       id: `PENDING-${s.id}`,
       sampleId: s.id,
-      /** كود العينة = كود المتبرع */
       sampleCode: s.donorCode,
       donorCode: s.donorCode,
       donorName: s.donorName,
@@ -231,11 +231,21 @@ function DetailModal({ entry, onClose }: { entry: CombinedEntry; onClose: () => 
 // Main Component
 // ────────────────────────────────────────────────────────
 export default function LabResults() {
+  const { data: testResultsData = [], isLoading: isLoadingResults, isError: isErrorResults, refetch: refetchResults } = useTestResults();
+  const { data: samplesData = [], isLoading: isLoadingSamples, isError: isErrorSamples, refetch: refetchSamples } = useSamples();
+  const { data: donorsData = [], isLoading: isLoadingDonors } = useDonors();
+
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
   const [viewEntry, setViewEntry] = useState<CombinedEntry | null>(null);
 
-  const allEntries = buildCombinedList();
+  const isLoading = isLoadingResults || isLoadingSamples || isLoadingDonors;
+  const isError = isErrorResults || isErrorSamples;
+
+  if (isLoading) return <PageLoader message="جاري تحميل نتائج الفحوصات..." />;
+  if (isError) return <ErrorState message="تعذر تحميل نتائج الفحوصات" onRetry={() => { refetchResults(); refetchSamples(); }} />;
+
+  const allEntries = buildCombinedList(testResultsData, samplesData, donorsData);
 
   const filtered = allEntries.filter(r => {
     const q = search.toLowerCase().trim();

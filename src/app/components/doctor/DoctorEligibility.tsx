@@ -13,7 +13,8 @@ import {
   Zap,
   Smartphone,
 } from "lucide-react";
-import { donors, BloodType, Donor } from "../../data/mockData";
+import type { Donor } from "../../types/donor";
+import type { BloodType } from "../../types/common";
 import { BLOOD_TYPES } from "../../constants";
 import { useDonors } from "../../hooks/useDonors";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
@@ -114,6 +115,9 @@ interface NotifModal {
 
 export default function DoctorEligibility() {
   const { data: donorsData = [], isLoading, isError, refetch } = useDonors();
+
+  if (isLoading) return <PageLoader message="جاري تحميل بيانات المتبرعين..." />;
+  if (isError) return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<
     "all" | "eligible" | "soon" | "not_yet"

@@ -16,19 +16,17 @@ import {
   LayoutGrid,
   Info,
 } from "lucide-react";
-import {
-  campaigns as initialCampaigns,
-  Campaign,
-  Slot15,
-} from "../../data/mockData";
 import { CITIES } from "../../constants";
-import { useCampaigns } from "../../hooks/useCampaigns";
+import { useCampaigns, useCreateCampaign } from "../../hooks/useCampaigns";
 import { useAuth } from "../../contexts/AuthContext";
 import {
   useSlot15Data,
   useCancelAppointment,
 } from "../../hooks/useAppointments";
 import { CancelModal } from "../shared/CancelModal";
+import type { Campaign } from "../../types/campaign";
+import type { Slot15 } from "../../types/appointment";
+import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
 
 const statusColors: Record<string, string> = {
   active: "bg-emerald-100 text-emerald-700",
@@ -175,14 +173,22 @@ function SlotPreviewCard({
 export default function DoctorCampaigns() {
   const { user } = useAuth();
   const { data: slots = [] } = useSlot15Data();
+  const { data: campaignsData = [], isLoading, isError, refetch } = useCampaigns();
+  const createCampaignMutation = useCreateCampaign();
   const cancelMutation = useCancelAppointment();
-  const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns);
+  const [localCampaigns, setLocalCampaigns] = useState<Campaign[]>([]);
   const [filterStatus, setFilterStatus] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [success, setSuccess] = useState(false);
   const [expandedCampaign, setExpandedCampaign] = useState<string | null>(null);
   const [cancelTarget, setCancelTarget] = useState<Slot15 | null>(null);
   const navigate = useNavigate();
+
+  // Merge hook data with locally-created campaigns (optimistic UI)
+  const campaigns = [...campaignsData, ...localCampaigns];
+
+  if (isLoading) return <PageLoader message="جاري تحميل بيانات الحملات..." />;
+  if (isError) return <ErrorState message="تعذر تحميل بيانات الحملات" onRetry={() => refetch()} />;
 
   // ── Form state ───────────────────────────────────────
   const FORM_DEFAULTS = {
@@ -246,7 +252,9 @@ export default function DoctorCampaigns() {
       createdByName: user?.name || "طبيب",
       description: form.description,
     };
-    setCampaigns((prev) => [newCampaign, ...prev]);
+    // Optimistically add to local state while mutation runs in background
+    setLocalCampaigns((prev) => [newCampaign, ...prev]);
+    createCampaignMutation.mutate(newCampaign);
     setSuccess(true);
     setTimeout(() => {
       setSuccess(false);

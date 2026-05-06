@@ -121,7 +121,7 @@ function DonorModal({ donor, onClose }: { donor: Donor; onClose: () => void }) {
             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
               <Heart className="w-4 h-4 text-gray-400" />
               <span className="text-[#374151]" style={{ fontSize: "14px" }}>
-                آخر تبرع: {donor.lastDonation}
+                آخر تبرع: {donor.lastDonationDate || "غير محدد"}
               </span>
             </div>
           </div>
