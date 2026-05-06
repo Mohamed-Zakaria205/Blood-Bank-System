@@ -14,6 +14,14 @@ export interface MedicalQuestions {
   pregnant: boolean;
 }
 
+/** Physical / lab measurements collected during registration */
+export interface AdditionalData {
+  weight?: number;
+  height?: number;
+  hemoglobin?: number;
+  bloodPressure?: string;
+}
+
 /** Full donor entity (returned by the backend) */
 export interface Donor {
   id: string;
@@ -32,31 +40,26 @@ export interface Donor {
   donationType: DonationType;
   medicalQuestions?: MedicalQuestions;
   diseases: string[];
-  additionalData?: {
-    weight?: number;
-    height?: number;
-    hemoglobin?: number;
-    bloodPressure?: string;
-  };
+  additionalData?: AdditionalData;
   status: DonorStatus;
+  isAllergic?: boolean;
+  rejectionReason?: string;
+  deferredUntil?: string;
+  lockoutUntil?: string;
+  // ── Backend-generated / meta fields ─────────────────────
   registeredBy?: string;
   registeredAt?: string;
   source: "walkin" | "app" | "campaign";
   campaignId?: string;
   campaignName?: string;
-  deferredUntil?: string;
   donations?: number;
   points?: number;
-  // ── Registration-time fields ──────────────────────────
-  weight?: number;
-  bloodPressure?: string;
-  hemoglobin?: number;
-  isAllergic?: boolean;
-  rejectionReason?: string;
-  lockoutUntil?: string;
 }
 
-/** POST /donors — request body (backend generates id & donorCode) */
+/**
+ * POST /donors — request body.
+ * Backend auto-generates: id, donorCode, registeredAt, donations, points.
+ */
 export type CreateDonorRequest = Omit<
   Donor,
   "id" | "donorCode" | "registeredAt" | "donations" | "points"
