@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { BLOOD_TYPES, CITIES } from "../../constants";
 import { useDonors } from "../../hooks/useDonors";
-import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
+import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
 
 import type { Donor } from "../../types";
 type BloodType = string;
@@ -46,7 +46,13 @@ export default function DoctorDonors() {
   const [filterCity, setFilterCity] = useState("");
   const [viewing, setViewing] = useState<Donor | null>(null);
 
-  if (isLoading) return <PageLoader message="جاري تحميل بيانات المتبرعين..." />;
+  if (isLoading) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={3} />
+      <TableSkeleton rows={7} cols={10} />
+    </div>
+  );
   if (isError)
     return (
       <ErrorState

@@ -17,7 +17,7 @@ import type { Donor } from "../../types/donor";
 import type { BloodType } from "../../types/common";
 import { BLOOD_TYPES } from "../../constants";
 import { useDonors } from "../../hooks/useDonors";
-import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
+import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
 
 // ──────────────────────────────────────────
 // Eligibility engine
@@ -116,7 +116,13 @@ interface NotifModal {
 export default function DoctorEligibility() {
   const { data: donorsData = [], isLoading, isError, refetch } = useDonors();
 
-  if (isLoading) return <PageLoader message="جاري تحميل بيانات المتبرعين..." />;
+  if (isLoading) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={3} />
+      <TableSkeleton rows={5} cols={6} />
+    </div>
+  );
   if (isError) return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<

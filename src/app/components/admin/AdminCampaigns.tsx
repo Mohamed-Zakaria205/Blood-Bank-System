@@ -1,7 +1,7 @@
 import { MapPin, Calendar, Users, TrendingUp, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useCampaigns } from '../../hooks/useCampaigns';
-import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
+import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 
 const statusColors: Record<string, string> = {
   active: 'bg-emerald-100 text-emerald-700',
@@ -14,7 +14,13 @@ export default function AdminCampaigns() {
   const [filterStatus, setFilterStatus] = useState('');
   const [selected, setSelected] = useState<any | null>(null);
 
-  if (isLoading) return <PageLoader message="جاري تحميل الحملات..." />;
+  if (isLoading) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={3} />
+      <TableSkeleton rows={5} cols={6} />
+    </div>
+  );
   if (isError) return <ErrorState message="تعذر تحميل الحملات" onRetry={() => refetch()} />;
 
   const filtered = campaigns.filter((c: any) => !filterStatus || c.status === filterStatus);

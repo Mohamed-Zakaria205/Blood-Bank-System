@@ -27,7 +27,7 @@ import {
   useTransactions,
   useHospitalRequests,
 } from "../../hooks/useInventory";
-import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
+import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
 
 const TODAY = new Date("2025-04-29");
 
@@ -66,7 +66,13 @@ export default function AdminInventoryAlerts() {
   const [editThresholds, setEditThresholds] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  if (isLoadingBags || isLoadingTx || isLoadingReq) return <PageLoader />;
+  if (isLoadingBags || isLoadingTx || isLoadingReq) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={3} />
+      <TableSkeleton rows={5} cols={6} />
+    </div>
+  );
   if (isErrorBags || isErrorTx || isErrorReq)
     return (
       <ErrorState

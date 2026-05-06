@@ -28,7 +28,7 @@ import {
 import { useCampaigns } from "../../hooks/useCampaigns";
 import { useAuth } from "../../contexts/AuthContext";
 import { CancelModal } from "../shared/CancelModal";
-import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
+import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
 
 // ── Constants ──────────────────────────────────────────
 const TODAY = "2025-05-02";
@@ -599,7 +599,13 @@ export default function DoctorAppointments() {
   const [cancelTarget, setCancelTarget] = useState<Slot15 | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  if (isLoading) return <PageLoader message="جاري تحميل المواعيد..." />;
+  if (isLoading) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={3} />
+      <TableSkeleton rows={5} cols={6} />
+    </div>
+  );
   if (isError)
     return (
       <ErrorState message="تعذر تحميل المواعيد" onRetry={() => refetch()} />

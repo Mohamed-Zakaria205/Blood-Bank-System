@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { CITIES } from "../../constants";
 import { useStaff, useCreateStaff, useDeleteStaff } from "../../hooks/useStaff";
-import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
+import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
 import { useForm } from "react-hook-form";
 import { Form } from "../ui/form";
 import { z } from "zod";

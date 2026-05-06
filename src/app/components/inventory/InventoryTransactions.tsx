@@ -3,7 +3,7 @@ import { ArrowLeftRight, Search, Filter, Download } from "lucide-react";
 import { BLOOD_TYPES } from "../../constants";
 import type { BloodType, TransactionType } from "../../types";
 import { useTransactions } from "../../hooks/useInventory";
-import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
+import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
 
 const typeColors: Record<TransactionType, string> = {
   issue: "bg-blue-100 text-blue-700",
@@ -33,7 +33,13 @@ export default function InventoryTransactions() {
   const [filterType, setFilterType] = useState<TransactionType | "all">("all");
   const [filterBlood, setFilterBlood] = useState<BloodType | "all">("all");
 
-  if (isLoading) return <PageLoader />;
+  if (isLoading) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={3} />
+      <TableSkeleton rows={5} cols={6} />
+    </div>
+  );
   if (isError)
     return (
       <ErrorState

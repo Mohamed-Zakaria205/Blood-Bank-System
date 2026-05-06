@@ -14,7 +14,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { BLOOD_TYPES } from "../../constants";
 import type { BloodType } from "../../types";
 import { useBloodBags, useOutflowRecords } from "../../hooks/useInventory";
-import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
+import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
 
 const TODAY = new Date("2025-04-29");
 function daysUntil(d: string) {
@@ -37,7 +37,13 @@ export default function InventoryDashboard() {
     isError: isErrorOutflow,
   } = useOutflowRecords();
 
-  if (isLoadingBags || isLoadingOutflow) return <PageLoader />;
+  if (isLoadingBags || isLoadingOutflow) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={3} />
+      <TableSkeleton rows={5} cols={6} />
+    </div>
+  );
   if (isErrorBags || isErrorOutflow)
     return (
       <ErrorState

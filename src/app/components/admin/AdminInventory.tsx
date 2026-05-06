@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import type { BloodInventoryItem } from "../../types";
 import { useBloodInventory } from "../../hooks/useInventory";
-import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
+import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
 import {
   BarChart,
   Bar,
@@ -53,7 +53,13 @@ export default function AdminInventory() {
     setInitialized(true);
   }
 
-  if (isLoading) return <PageLoader message="جاري تحميل مخزون الدم..." />;
+  if (isLoading) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={3} />
+      <TableSkeleton rows={5} cols={6} />
+    </div>
+  );
   if (isError)
     return (
       <ErrorState message="تعذر تحميل مخزون الدم" onRetry={() => refetch()} />

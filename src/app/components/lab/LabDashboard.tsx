@@ -15,7 +15,7 @@ import {
 import type { BloodType, LabTest } from "../../types";
 import { BLOOD_TYPES } from "../../constants";
 import { useLabTests, useSubmitLabResult } from "../../hooks/useLabTests";
-import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
+import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router";
 
@@ -150,7 +150,13 @@ export default function LabDashboard() {
     setForm((p) => (p ? { ...p, [key]: value } : p));
   };
 
-  if (isLoading) return <PageLoader message="جارٍ تحميل بيانات المختبر..." />;
+  if (isLoading) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={3} />
+      <TableSkeleton rows={5} cols={6} />
+    </div>
+  );
   if (isError)
     return (
       <ErrorState

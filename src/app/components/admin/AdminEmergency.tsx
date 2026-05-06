@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AlertTriangle, CheckCircle2, XCircle, Phone, Clock, Droplets, X, Send } from 'lucide-react';
 import { useEmergencyRequests, useFulfillEmergency, useRejectEmergency } from '../../hooks/useEmergency';
-import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
+import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import type { EmergencyRequest } from '../../types/emergency';
 
 const urgencyConfig: Record<string, { label: string; color: string; bg: string; border: string }> = {
@@ -65,7 +65,13 @@ export default function AdminEmergency() {
   const rejectMutation = useRejectEmergency();
   const [fulfillReq, setFulfillReq] = useState<EmergencyRequest | null>(null);
 
-  if (isLoading) return <PageLoader message="جاري تحميل طلبات الطوارئ..." />;
+  if (isLoading) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={3} />
+      <TableSkeleton rows={5} cols={6} />
+    </div>
+  );
   if (isError) return <ErrorState message="فشل في تحميل طلبات الطوارئ، يرجى المحاولة لاحقاً" onRetry={() => window.location.reload()} />;
 
   const handleFulfill = (units: number, note: string) => {

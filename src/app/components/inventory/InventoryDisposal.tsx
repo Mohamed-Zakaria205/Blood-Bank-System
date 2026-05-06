@@ -18,7 +18,7 @@ import {
   useOutflowRecords,
   useDisposeBag,
 } from "../../hooks/useInventory";
-import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
+import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
 import { BLOOD_TYPES, HOSPITALS } from "../../constants";
 
 /* ── constants ──────────────────────────────────────────── */
@@ -162,7 +162,13 @@ export default function InventoryDisposal() {
   const [histBloodType, setHistBloodType] = useState<BloodType | "all">("all");
   const [histStaff, setHistStaff] = useState("");
 
-  if (isLoadingBags || isLoadingOutflow) return <PageLoader />;
+  if (isLoadingBags || isLoadingOutflow) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={3} />
+      <TableSkeleton rows={5} cols={6} />
+    </div>
+  );
   if (isErrorBags || isErrorOutflow)
     return (
       <ErrorState

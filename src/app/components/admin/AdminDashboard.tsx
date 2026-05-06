@@ -6,7 +6,7 @@ import { useDonors } from '../../hooks/useDonors';
 import { useCampaigns } from '../../hooks/useCampaigns';
 import { useStaff } from '../../hooks/useStaff';
 import { useBloodInventory, useMonthlyStats } from '../../hooks/useInventory';
-import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
+import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 
 const donationTypeLabels: Record<string, string> = { whole: 'دم كامل', plasma: 'بلازما', platelets: 'صفائح' };
 const statusColors: Record<string, string> = { eligible: 'bg-green-100 text-green-700', ineligible: 'bg-red-100 text-red-700', deferred: 'bg-orange-100 text-orange-700' };
@@ -26,7 +26,16 @@ export default function AdminDashboard() {
 
   const isLoading = loadingDonors || loadingCampaigns || loadingStaff || loadingInventory || loadingStats;
 
-  if (isLoading) return <PageLoader message="جاري تحميل لوحة التحكم..." />;
+  if (isLoading) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={4} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2"><TableSkeleton rows={4} cols={5} /></div>
+        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm animate-pulse"><div className="h-48 bg-gray-100 rounded-xl" /></div>
+      </div>
+    </div>
+  );
   if (errorDonors) return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetchDonors()} />;
 
   // ── Derived data ─────────────────────────────────────────

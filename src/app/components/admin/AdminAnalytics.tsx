@@ -5,7 +5,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import { useAnalyticsDashboard } from '../../hooks/useAnalytics';
-import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
+import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -25,7 +25,13 @@ export default function AdminAnalytics() {
   const { data: dashboard, isLoading, isError } = useAnalyticsDashboard();
   const [period, setPeriod] = useState('yearly');
 
-  if (isLoading) return <PageLoader message="جاري تحميل التحليلات..." />;
+  if (isLoading) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={4} />
+      <TableSkeleton rows={5} cols={6} />
+    </div>
+  );
   if (isError) return <ErrorState message="فشل في تحميل التحليلات، يرجى المحاولة لاحقاً" onRetry={() => window.location.reload()} />;
   if (!dashboard) return null;
 

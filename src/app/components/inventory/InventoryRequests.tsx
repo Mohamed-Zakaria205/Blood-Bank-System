@@ -15,7 +15,7 @@ import {
   useAddHospitalRequest,
   useFulfillRequest,
 } from "../../hooks/useInventory";
-import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
+import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
 import { BLOOD_TYPES, HOSPITALS } from "../../constants";
 
 const urgencyColors: Record<string, string> = {
@@ -70,7 +70,13 @@ export default function InventoryRequests() {
     notes: "",
   });
 
-  if (isLoadingBags || isLoadingRequests) return <PageLoader />;
+  if (isLoadingBags || isLoadingRequests) return (
+    <div className="space-y-6 p-2">
+      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+      <CardSkeleton count={3} />
+      <TableSkeleton rows={5} cols={6} />
+    </div>
+  );
   if (isErrorBags || isErrorRequests)
     return (
       <ErrorState
