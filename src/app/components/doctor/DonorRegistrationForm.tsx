@@ -29,6 +29,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useCampaigns } from "../../hooks/useCampaigns";
 import { useSlot15Data } from "../../hooks/useAppointments";
 import { useCreateDonor } from "../../hooks/useDonors";
+import { toast } from "sonner";
 
 interface SimpleForm {
   name: string;
@@ -97,10 +98,13 @@ export default function DonorRegistrationForm() {
   const [searchParams] = useSearchParams();
   const { data: campaignsData = [] } = useCampaigns();
   const { data: slot15DataFromHook = [] } = useSlot15Data();
+  const createDonor = useCreateDonor();
 
   // Pre-fill from appointment if ?apt=S15-xxx
   const aptId = searchParams.get("apt");
-  const appointment = aptId ? slot15DataFromHook.find((s) => s.id === aptId) : null;
+  const appointment = aptId
+    ? slot15DataFromHook.find((s) => s.id === aptId)
+    : null;
 
   const getInitialForm = (): SimpleForm => {
     if (appointment) {
@@ -124,14 +128,14 @@ export default function DonorRegistrationForm() {
 
   const [form, setForm] = useState<SimpleForm>(getInitialForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [donorCode] = useState(
     `DNR-2025-${String(Math.floor(Math.random() * 9000) + 1000)}`,
   );
   const [step, setStep] = useState<1 | 2>(1);
   const [bagVolume, setBagVolume] = useState("400"); // ← added outside selected element
-  const createDonor = useCreateDonor();
+
+  const success = createDonor.isSuccess;
 
   const activeCampaigns = campaignsData.filter((c) => c.status === "active");
 
@@ -174,11 +178,11 @@ export default function DonorRegistrationForm() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!validate()) return;
     setSubmitting(true);
-    try {
-      await createDonor.mutateAsync({
+    createDonor.mutate(
+      {
         name: form.name,
         gender: form.gender as any,
         age: Number(form.age),
@@ -201,13 +205,19 @@ export default function DonorRegistrationForm() {
         rejectionReason: form.rejectionReason || undefined,
         lockoutUntil: form.lockoutUntil || undefined,
         deferredUntil: form.deferredUntil || undefined,
-      });
-      setSuccess(true);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSubmitting(false);
-    }
+      },
+      {
+        onSuccess: () => {
+          toast.success("تم تسجيل المتبرع بنجاح");
+        },
+        onError: () => {
+          toast.error("تعذر تسجيل المتبرع، حاول مرة أخرى");
+        },
+        onSettled: () => {
+          setSubmitting(false);
+        },
+      },
+    );
   };
 
   const handleNextStep = () => {
@@ -362,7 +372,7 @@ export default function DonorRegistrationForm() {
             <div className="flex gap-3">
               <button
                 onClick={() => {
-                  setSuccess(false);
+                  createDonor.reset();
                   setForm(initialForm);
                   setBagVolume("400");
                 }}
@@ -642,7 +652,7 @@ export default function DonorRegistrationForm() {
           <div className="flex gap-3">
             <button
               onClick={() => {
-                setSuccess(false);
+                createDonor.reset();
                 setForm(initialForm);
                 setBagVolume("400");
               }}
