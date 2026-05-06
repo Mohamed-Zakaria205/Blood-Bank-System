@@ -191,15 +191,6 @@ export default function DoctorCampaigns() {
   // React Query data — mutations push into the API mock store and invalidateQueries picks up the change
   const campaigns = campaignsData;
 
-  if (isLoading) return <PageLoader message="جاري تحميل بيانات الحملات..." />;
-  if (isError)
-    return (
-      <ErrorState
-        message="تعذر تحميل بيانات الحملات"
-        onRetry={() => refetch()}
-      />
-    );
-
   // ── Form state ───────────────────────────────────────
   const FORM_DEFAULTS = {
     title: "",
@@ -233,6 +224,15 @@ export default function DoctorCampaigns() {
   const filtered = campaigns.filter(
     (c) => !filterStatus || c.status === filterStatus,
   );
+
+  if (isLoading) return <PageLoader message="جاري تحميل بيانات الحملات..." />;
+  if (isError)
+    return (
+      <ErrorState
+        message="تعذر تحميل بيانات الحملات"
+        onRetry={() => refetch()}
+      />
+    );
 
   const validate = () => {
     const e: Record<string, string> = {};
