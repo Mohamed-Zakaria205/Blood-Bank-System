@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   UserPlus,
   Search,
@@ -18,10 +18,13 @@ import {
   Mail,
   Package,
 } from "lucide-react";
-import { users as initialUsers, User } from "../../data/mockData";
 import { CITIES } from "../../constants";
 import { useStaff, useCreateStaff, useDeleteStaff } from "../../hooks/useStaff";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
+import { useForm } from "react-hook-form";
+import { Form } from "../ui/form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type StaffRole = "doctor" | "lab" | "inventory";
 
@@ -66,16 +69,25 @@ const roleConfig: Record<
   },
 };
 
-interface StaffForm {
-  fullName: string;
-  nationalId: string;
-  phone: string;
-  address: string;
-  city: string;
-  email: string;
-  password: string;
-  role: StaffRole;
-}
+const staffSchema = z.object({
+  fullName: z
+    .string()
+    .trim()
+    .min(1, "أدخل الاسم الثلاثي على الأقل")
+    .refine(
+      (value) => value.split(/\s+/).filter(Boolean).length >= 2,
+      "أدخل الاسم الثلاثي على الأقل",
+    ),
+  nationalId: z.string().regex(/^\d{14}$/, "رقم الهوية يجب أن يكون 14 رقماً"),
+  phone: z.string().min(11, "رقم الهاتف يجب أن يكون 11 رقماً على الأقل"),
+  address: z.string().trim().min(1, "أدخل العنوان"),
+  city: z.string(),
+  email: z.string().trim().email("أدخل بريداً إلكترونياً صحيحاً"),
+  password: z.string().min(6, "كلمة المرور 6 أحرف على الأقل"),
+  role: z.enum(["doctor", "lab", "inventory"]),
+});
+
+type StaffForm = z.infer<typeof staffSchema>;
 
 const initialForm: StaffForm = {
   fullName: "",
@@ -100,8 +112,24 @@ export default function AdminStaff() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const [showPass, setShowPass] = useState(false);
-  const [form, setForm] = useState<StaffForm>(initialForm);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const formMethods = useForm<StaffForm>({
+    defaultValues: initialForm,
+    mode: "onTouched",
+    resolver: zodResolver(staffSchema),
+  });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = formMethods;
+  const roleValue = watch("role");
+
+  useEffect(() => {
+    register("role");
+  }, [register]);
 
   const staff = staffData.filter((u) => u.role !== "admin");
 
@@ -115,47 +143,24 @@ export default function AdminStaff() {
     return matchSearch && matchRole && matchStatus;
   });
 
-  const validate = () => {
-    const e: Record<string, string> = {};
-    if (!form.fullName.trim() || form.fullName.trim().split(" ").length < 2)
-      e.fullName = "أدخل الاسم الثلاثي على الأقل";
-    if (
-      !form.nationalId ||
-      form.nationalId.length !== 14 ||
-      !/^\d+$/.test(form.nationalId)
-    )
-      e.nationalId = "رقم الهوية يجب أن يكون 14 رقماً";
-    if (!form.phone || form.phone.length < 11)
-      e.phone = "رقم الهاتف يجب أن يكون 11 رقماً على الأقل";
-    if (!form.address.trim()) e.address = "أدخل العنوان";
-    if (!form.email.trim() || !form.email.includes("@"))
-      e.email = "أدخل بريداً إلكترونياً صحيحاً";
-    if (!form.password || form.password.length < 6)
-      e.password = "كلمة المرور 6 أحرف على الأقل";
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
-  const addStaff = async () => {
-    if (!validate()) return;
+  const addStaff = handleSubmit(async (values) => {
     try {
       await createStaff.mutateAsync({
-        name: form.fullName.trim(),
-        email: form.email,
-        password: form.password,
-        role: form.role as any,
-        nationalId: form.nationalId,
-        phone: form.phone,
-        address: form.address,
-        city: form.city,
+        name: values.fullName.trim(),
+        email: values.email,
+        password: values.password,
+        role: values.role as any,
+        nationalId: values.nationalId,
+        phone: values.phone,
+        address: values.address,
+        city: values.city,
       });
       setShowModal(false);
-      setForm(initialForm);
-      setErrors({});
+      reset(initialForm);
     } catch (err) {
       console.error(err);
     }
-  };
+  });
 
   const deleteUser = async (id: string) => {
     try {
@@ -170,15 +175,6 @@ export default function AdminStaff() {
     navigator.clipboard.writeText(email).catch(() => {});
     setCopied(email);
     setTimeout(() => setCopied(null), 2000);
-  };
-
-  const updateForm = (key: keyof StaffForm, value: string) => {
-    setForm((p) => ({ ...p, [key]: value }));
-    setErrors((p) => {
-      const e = { ...p };
-      delete e[key];
-      return e;
-    });
   };
 
   if (isLoading)
@@ -488,303 +484,315 @@ export default function AdminStaff() {
               </button>
             </div>
 
-            <div className="p-6 space-y-5">
-              {/* Role Selector */}
-              <div>
-                <label
-                  className="block text-gray-700 mb-2"
-                  style={{ fontSize: "13px", fontWeight: 600 }}
-                >
-                  نوع الحساب *
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  {(["doctor", "lab", "inventory"] as StaffRole[]).map((r) => {
-                    const cfg = roleConfig[r];
-                    return (
-                      <button
-                        key={r}
-                        type="button"
-                        onClick={() => updateForm("role", r)}
-                        className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${form.role === r ? `${cfg.borderColor} ${cfg.bgColor}` : "border-gray-200 bg-white hover:border-gray-300"}`}
-                      >
-                        <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${form.role === r ? cfg.bgColor : "bg-gray-100"}`}
-                        >
-                          <cfg.icon
-                            className={`w-5 h-5 ${form.role === r ? cfg.color : "text-gray-400"}`}
-                          />
-                        </div>
-                        <div className="text-right">
-                          <p
-                            className={
-                              form.role === r ? cfg.color : "text-gray-600"
+            <Form {...formMethods}>
+              <form onSubmit={addStaff} className="p-6 space-y-5">
+                {/* Role Selector */}
+                <div>
+                  <label
+                    className="block text-gray-700 mb-2"
+                    style={{ fontSize: "13px", fontWeight: 600 }}
+                  >
+                    نوع الحساب *
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {(["doctor", "lab", "inventory"] as StaffRole[]).map(
+                      (r) => {
+                        const cfg = roleConfig[r];
+                        return (
+                          <button
+                            key={r}
+                            type="button"
+                            onClick={() =>
+                              setValue("role", r, {
+                                shouldDirty: true,
+                                shouldValidate: true,
+                              })
                             }
-                            style={{ fontSize: "14px", fontWeight: 700 }}
+                            className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${roleValue === r ? `${cfg.borderColor} ${cfg.bgColor}` : "border-gray-200 bg-white hover:border-gray-300"}`}
                           >
-                            {cfg.label}
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="border-t border-gray-100" />
-
-              {/* Personal Info Section */}
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <UserIcon className="w-4 h-4 text-green-600" />
-                  <span
-                    className="text-gray-700"
-                    style={{ fontSize: "13px", fontWeight: 700 }}
-                  >
-                    البيانات الشخصية
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Full Name */}
-                  <div className="sm:col-span-2">
-                    <label
-                      className="block text-gray-700 mb-1.5"
-                      style={{ fontSize: "13px", fontWeight: 600 }}
-                    >
-                      الاسم الكامل *
-                    </label>
-                    <input
-                      type="text"
-                      value={form.fullName}
-                      onChange={(e) => updateForm("fullName", e.target.value)}
-                      placeholder="مثال: د. أحمد محمد عبد الله"
-                      className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.fullName ? "border-red-300" : "border-gray-200"}`}
-                      style={{ fontSize: "13px" }}
-                    />
-                    {errors.fullName && (
-                      <p
-                        className="text-red-500 mt-1"
-                        style={{ fontSize: "11px" }}
-                      >
-                        {errors.fullName}
-                      </p>
+                            <div
+                              className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${roleValue === r ? cfg.bgColor : "bg-gray-100"}`}
+                            >
+                              <cfg.icon
+                                className={`w-5 h-5 ${roleValue === r ? cfg.color : "text-gray-400"}`}
+                              />
+                            </div>
+                            <div className="text-right">
+                              <p
+                                className={
+                                  roleValue === r ? cfg.color : "text-gray-600"
+                                }
+                                style={{ fontSize: "14px", fontWeight: 700 }}
+                              >
+                                {cfg.label}
+                              </p>
+                            </div>
+                          </button>
+                        );
+                      },
                     )}
-                  </div>
-
-                  {/* National ID */}
-                  <div>
-                    <label
-                      className="block text-gray-700 mb-1.5"
-                      style={{ fontSize: "13px", fontWeight: 600 }}
-                    >
-                      <CreditCard className="w-3.5 h-3.5 inline ml-1 text-green-600" />
-                      رقم الهوية الوطنية *
-                    </label>
-                    <input
-                      type="text"
-                      value={form.nationalId}
-                      onChange={(e) =>
-                        updateForm(
-                          "nationalId",
-                          e.target.value.replace(/\D/g, "").slice(0, 14),
-                        )
-                      }
-                      placeholder="14 رقماً"
-                      className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.nationalId ? "border-red-300" : "border-gray-200"}`}
-                      style={{ fontSize: "13px" }}
-                      dir="ltr"
-                    />
-                    {errors.nationalId && (
-                      <p
-                        className="text-red-500 mt-1"
-                        style={{ fontSize: "11px" }}
-                      >
-                        {errors.nationalId}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Phone */}
-                  <div>
-                    <label
-                      className="block text-gray-700 mb-1.5"
-                      style={{ fontSize: "13px", fontWeight: 600 }}
-                    >
-                      <Phone className="w-3.5 h-3.5 inline ml-1 text-green-600" />
-                      رقم الهاتف *
-                    </label>
-                    <input
-                      type="tel"
-                      value={form.phone}
-                      onChange={(e) => updateForm("phone", e.target.value)}
-                      placeholder="01xxxxxxxxx"
-                      className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.phone ? "border-red-300" : "border-gray-200"}`}
-                      style={{ fontSize: "13px" }}
-                      dir="ltr"
-                    />
-                    {errors.phone && (
-                      <p
-                        className="text-red-500 mt-1"
-                        style={{ fontSize: "11px" }}
-                      >
-                        {errors.phone}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Address */}
-                  <div>
-                    <label
-                      className="block text-gray-700 mb-1.5"
-                      style={{ fontSize: "13px", fontWeight: 600 }}
-                    >
-                      <MapPin className="w-3.5 h-3.5 inline ml-1 text-green-600" />
-                      العنوان *
-                    </label>
-                    <input
-                      type="text"
-                      value={form.address}
-                      onChange={(e) => updateForm("address", e.target.value)}
-                      placeholder="شارع، حي، رقم..."
-                      className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.address ? "border-red-300" : "border-gray-200"}`}
-                      style={{ fontSize: "13px" }}
-                    />
-                    {errors.address && (
-                      <p
-                        className="text-red-500 mt-1"
-                        style={{ fontSize: "11px" }}
-                      >
-                        {errors.address}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* City */}
-                  <div>
-                    <label
-                      className="block text-gray-700 mb-1.5"
-                      style={{ fontSize: "13px", fontWeight: 600 }}
-                    >
-                      المدينة
-                    </label>
-                    <select
-                      value={form.city}
-                      onChange={(e) => updateForm("city", e.target.value)}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
-                      style={{ fontSize: "13px" }}
-                    >
-                      {CITIES.map((c) => (
-                        <option key={c} value={c}>
-                          {c}
-                        </option>
-                      ))}
-                    </select>
                   </div>
                 </div>
-              </div>
 
-              <div className="border-t border-gray-100" />
+                <div className="border-t border-gray-100" />
 
-              {/* Account Info Section */}
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <Mail className="w-4 h-4 text-green-600" />
-                  <span
-                    className="text-gray-700"
-                    style={{ fontSize: "13px", fontWeight: 700 }}
-                  >
-                    بيانات الحساب
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Email */}
-                  <div>
-                    <label
-                      className="block text-gray-700 mb-1.5"
-                      style={{ fontSize: "13px", fontWeight: 600 }}
+                {/* Personal Info Section */}
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <UserIcon className="w-4 h-4 text-green-600" />
+                    <span
+                      className="text-gray-700"
+                      style={{ fontSize: "13px", fontWeight: 700 }}
                     >
-                      البريد الإلكتروني *
-                    </label>
-                    <input
-                      type="email"
-                      value={form.email}
-                      onChange={(e) => updateForm("email", e.target.value)}
-                      placeholder="example@bloodlink.benisuef.eg"
-                      className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.email ? "border-red-300" : "border-gray-200"}`}
-                      style={{ fontSize: "13px" }}
-                      dir="ltr"
-                    />
-                    {errors.email && (
-                      <p
-                        className="text-red-500 mt-1"
-                        style={{ fontSize: "11px" }}
-                      >
-                        {errors.email}
-                      </p>
-                    )}
+                      البيانات الشخصية
+                    </span>
                   </div>
-
-                  {/* Password */}
-                  <div>
-                    <label
-                      className="block text-gray-700 mb-1.5"
-                      style={{ fontSize: "13px", fontWeight: 600 }}
-                    >
-                      كلمة المرور *
-                    </label>
-                    <div className="relative">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Full Name */}
+                    <div className="sm:col-span-2">
+                      <label
+                        className="block text-gray-700 mb-1.5"
+                        style={{ fontSize: "13px", fontWeight: 600 }}
+                      >
+                        الاسم الكامل *
+                      </label>
                       <input
-                        type={showPass ? "text" : "password"}
-                        value={form.password}
-                        onChange={(e) => updateForm("password", e.target.value)}
-                        placeholder="6 أحرف على الأقل"
-                        className={`w-full px-4 pl-10 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 ${errors.password ? "border-red-300" : "border-gray-200"}`}
+                        type="text"
+                        {...register("fullName")}
+                        placeholder="مثال: د. أحمد محمد عبد الله"
+                        className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.fullName ? "border-red-300" : "border-gray-200"}`}
                         style={{ fontSize: "13px" }}
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowPass(!showPass)}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                      >
-                        {showPass ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </button>
+                      {errors.fullName?.message && (
+                        <p
+                          className="text-red-500 mt-1"
+                          style={{ fontSize: "11px" }}
+                        >
+                          {errors.fullName.message}
+                        </p>
+                      )}
                     </div>
-                    {errors.password && (
-                      <p
-                        className="text-red-500 mt-1"
-                        style={{ fontSize: "11px" }}
+
+                    {/* National ID */}
+                    <div>
+                      <label
+                        className="block text-gray-700 mb-1.5"
+                        style={{ fontSize: "13px", fontWeight: 600 }}
                       >
-                        {errors.password}
-                      </p>
-                    )}
+                        <CreditCard className="w-3.5 h-3.5 inline ml-1 text-green-600" />
+                        رقم الهوية الوطنية *
+                      </label>
+                      <input
+                        type="text"
+                        {...register("nationalId", {
+                          setValueAs: (value) =>
+                            typeof value === "string"
+                              ? value.replace(/\D/g, "").slice(0, 14)
+                              : value,
+                        })}
+                        placeholder="14 رقماً"
+                        maxLength={14}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.nationalId ? "border-red-300" : "border-gray-200"}`}
+                        style={{ fontSize: "13px" }}
+                        dir="ltr"
+                      />
+                      {errors.nationalId?.message && (
+                        <p
+                          className="text-red-500 mt-1"
+                          style={{ fontSize: "11px" }}
+                        >
+                          {errors.nationalId.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Phone */}
+                    <div>
+                      <label
+                        className="block text-gray-700 mb-1.5"
+                        style={{ fontSize: "13px", fontWeight: 600 }}
+                      >
+                        <Phone className="w-3.5 h-3.5 inline ml-1 text-green-600" />
+                        رقم الهاتف *
+                      </label>
+                      <input
+                        type="tel"
+                        {...register("phone", {
+                          setValueAs: (value) =>
+                            typeof value === "string"
+                              ? value.replace(/\D/g, "").slice(0, 11)
+                              : value,
+                        })}
+                        placeholder="01xxxxxxxxx"
+                        maxLength={11}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.phone ? "border-red-300" : "border-gray-200"}`}
+                        style={{ fontSize: "13px" }}
+                        dir="ltr"
+                      />
+                      {errors.phone?.message && (
+                        <p
+                          className="text-red-500 mt-1"
+                          style={{ fontSize: "11px" }}
+                        >
+                          {errors.phone.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Address */}
+                    <div>
+                      <label
+                        className="block text-gray-700 mb-1.5"
+                        style={{ fontSize: "13px", fontWeight: 600 }}
+                      >
+                        <MapPin className="w-3.5 h-3.5 inline ml-1 text-green-600" />
+                        العنوان *
+                      </label>
+                      <input
+                        type="text"
+                        {...register("address")}
+                        placeholder="شارع، حي، رقم..."
+                        className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.address ? "border-red-300" : "border-gray-200"}`}
+                        style={{ fontSize: "13px" }}
+                      />
+                      {errors.address?.message && (
+                        <p
+                          className="text-red-500 mt-1"
+                          style={{ fontSize: "11px" }}
+                        >
+                          {errors.address.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* City */}
+                    <div>
+                      <label
+                        className="block text-gray-700 mb-1.5"
+                        style={{ fontSize: "13px", fontWeight: 600 }}
+                      >
+                        المدينة
+                      </label>
+                      <select
+                        {...register("city")}
+                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
+                        style={{ fontSize: "13px" }}
+                      >
+                        {CITIES.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-100">
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setForm(initialForm);
-                  setErrors({});
-                }}
-                className="px-5 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
-                style={{ fontSize: "14px", fontWeight: 600 }}
-              >
-                إلغاء
-              </button>
-              <button
-                onClick={addStaff}
-                className="flex items-center gap-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-all shadow-sm"
-                style={{ fontSize: "14px", fontWeight: 600 }}
-              >
-                <UserPlus className="w-4 h-4" /> إضافة الحساب
-              </button>
-            </div>
+                <div className="border-t border-gray-100" />
+
+                {/* Account Info Section */}
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Mail className="w-4 h-4 text-green-600" />
+                    <span
+                      className="text-gray-700"
+                      style={{ fontSize: "13px", fontWeight: 700 }}
+                    >
+                      بيانات الحساب
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Email */}
+                    <div>
+                      <label
+                        className="block text-gray-700 mb-1.5"
+                        style={{ fontSize: "13px", fontWeight: 600 }}
+                      >
+                        البريد الإلكتروني *
+                      </label>
+                      <input
+                        type="email"
+                        {...register("email")}
+                        placeholder="example@bloodlink.benisuef.eg"
+                        className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.email ? "border-red-300" : "border-gray-200"}`}
+                        style={{ fontSize: "13px" }}
+                        dir="ltr"
+                      />
+                      {errors.email?.message && (
+                        <p
+                          className="text-red-500 mt-1"
+                          style={{ fontSize: "11px" }}
+                        >
+                          {errors.email.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Password */}
+                    <div>
+                      <label
+                        className="block text-gray-700 mb-1.5"
+                        style={{ fontSize: "13px", fontWeight: 600 }}
+                      >
+                        كلمة المرور *
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPass ? "text" : "password"}
+                          {...register("password")}
+                          placeholder="6 أحرف على الأقل"
+                          className={`w-full px-4 pl-10 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 ${errors.password ? "border-red-300" : "border-gray-200"}`}
+                          style={{ fontSize: "13px" }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPass(!showPass)}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        >
+                          {showPass ? (
+                            <EyeOff className="w-4 h-4" />
+                          ) : (
+                            <Eye className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
+                      {errors.password?.message && (
+                        <p
+                          className="text-red-500 mt-1"
+                          style={{ fontSize: "11px" }}
+                        >
+                          {errors.password.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-100">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowModal(false);
+                      reset(initialForm);
+                    }}
+                    className="px-5 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
+                    style={{ fontSize: "14px", fontWeight: 600 }}
+                  >
+                    إلغاء
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex items-center gap-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-all shadow-sm"
+                    style={{ fontSize: "14px", fontWeight: 600 }}
+                  >
+                    <UserPlus className="w-4 h-4" /> إضافة الحساب
+                  </button>
+                </div>
+              </form>
+            </Form>
           </div>
         </div>
       )}
