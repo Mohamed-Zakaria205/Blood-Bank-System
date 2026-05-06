@@ -17,7 +17,7 @@ import { BLOOD_TYPES, CITIES } from "../../constants";
 import { useDonors } from "../../hooks/useDonors";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
 
-type Donor = any;
+import type { Donor } from "../../types";
 type BloodType = string;
 
 const statusColors: Record<string, string> = {
@@ -55,7 +55,7 @@ export default function DoctorDonors() {
       />
     );
 
-  const filtered = donors.filter((d: any) => {
+  const filtered = donors.filter((d) => {
     const matchSearch =
       d.name.includes(search) ||
       d.donorCode.includes(search) ||

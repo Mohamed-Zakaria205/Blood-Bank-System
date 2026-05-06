@@ -15,7 +15,7 @@ import {
 import { useDonors } from "../../hooks/useDonors";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
 
-type Donor = any;
+import type { Donor } from "../../types";
 
 const bloodTypeColors: Record<string, string> = {
   "A+": "bg-red-100 text-red-700",
@@ -154,7 +154,7 @@ export default function AdminUsers() {
       />
     );
 
-  const filtered = donors.filter((d: any) => {
+  const filtered = donors.filter((d) => {
     const matchSearch = d.name.includes(search) || d.city.includes(search);
     const matchBlood = bloodFilter === "all" || d.bloodType === bloodFilter;
     const matchStatus = statusFilter === "all" || d.status === statusFilter;
@@ -342,7 +342,7 @@ export default function AdminUsers() {
                         className="text-[#1E293B]"
                         style={{ fontSize: "14px", fontWeight: 600 }}
                       >
-                        {(donor as any).donations || 1}
+                        {donor.donations || 1}
                       </span>
                     </div>
                   </td>
@@ -359,7 +359,7 @@ export default function AdminUsers() {
                         className="text-[#1E293B]"
                         style={{ fontSize: "13px", fontWeight: 600 }}
                       >
-                        {(donor as any).points || 50}
+                        {donor.points || 50}
                       </span>
                     </div>
                   </td>

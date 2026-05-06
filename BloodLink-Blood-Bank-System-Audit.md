@@ -61,11 +61,13 @@ Let me do a thorough exploration of your project before writing the audit report
 Status: Completed
 
 # Folders:
+
 Blood-Bank-System\guidelines
 Blood-Bank-System\node_modules
 Blood-Bank-System\src
 
 # Files:
+
 Blood-Bank-System\.gitignore
 Blood-Bank-System\ATTRIBUTIONS.md
 Blood-Bank-System\README.md
@@ -77,18 +79,18 @@ Blood-Bank-System\pnpm-workspace.yaml
 Blood-Bank-System\postcss.config.mjs
 Blood-Bank-System\vite.config.ts
 
-
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src` directory's contents**
 Status: Completed
 
 # Folders:
+
 Blood-Bank-System\src\app
 Blood-Bank-System\src\imports
 Blood-Bank-System\src\styles
 
 # Files:
-Blood-Bank-System\src\main.tsx
 
+Blood-Bank-System\src\main.tsx
 
 **Tool Call: Read file `package.json`**
 Status: Completed
@@ -190,11 +192,11 @@ Status: Completed
 
 ```
 
-
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app` directory's contents**
 Status: Completed
 
 # Folders:
+
 Blood-Bank-System\src\app\api
 Blood-Bank-System\src\app\components
 Blood-Bank-System\src\app\contexts
@@ -203,15 +205,15 @@ Blood-Bank-System\src\app\hooks
 Blood-Bank-System\src\app\types
 
 # Files:
+
 Blood-Bank-System\src\app\App.tsx
 Blood-Bank-System\src\app\routes.tsx
-
 
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app\api` directory's contents**
 Status: Completed
 
-
 # Files:
+
 Blood-Bank-System\src\app\api\appointments.ts
 Blood-Bank-System\src\app\api\auth.ts
 Blood-Bank-System\src\app\api\campaigns.ts
@@ -221,12 +223,11 @@ Blood-Bank-System\src\app\api\inventory.ts
 Blood-Bank-System\src\app\api\lab.ts
 Blood-Bank-System\src\app\api\staff.ts
 
-
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app\types` directory's contents**
 Status: Completed
 
-
 # Files:
+
 Blood-Bank-System\src\app\types\appointment.ts
 Blood-Bank-System\src\app\types\auth.ts
 Blood-Bank-System\src\app\types\campaign.ts
@@ -236,12 +237,11 @@ Blood-Bank-System\src\app\types\index.ts
 Blood-Bank-System\src\app\types\inventory.ts
 Blood-Bank-System\src\app\types\lab.ts
 
-
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app\hooks` directory's contents**
 Status: Completed
 
-
 # Files:
+
 Blood-Bank-System\src\app\hooks\useAppointments.ts
 Blood-Bank-System\src\app\hooks\useCampaigns.ts
 Blood-Bank-System\src\app\hooks\useDonors.ts
@@ -249,19 +249,18 @@ Blood-Bank-System\src\app\hooks\useInventory.ts
 Blood-Bank-System\src\app\hooks\useLabTests.ts
 Blood-Bank-System\src\app\hooks\useStaff.ts
 
-
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app\data` directory's contents**
 Status: Completed
 
-
 # Files:
-Blood-Bank-System\src\app\data\mockData.ts
 
+Blood-Bank-System\src\app\data\mockData.ts
 
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app\components` directory's contents**
 Status: Completed
 
 # Folders:
+
 Blood-Bank-System\src\app\components\admin
 Blood-Bank-System\src\app\components\auth
 Blood-Bank-System\src\app\components\doctor
@@ -273,23 +272,21 @@ Blood-Bank-System\src\app\components\mobile
 Blood-Bank-System\src\app\components\shared
 Blood-Bank-System\src\app\components\ui
 
-
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app\contexts` directory's contents**
 Status: Completed
 
-
 # Files:
+
 Blood-Bank-System\src\app\contexts\AppointmentContext.tsx
 Blood-Bank-System\src\app\contexts\AuthContext.tsx
 Blood-Bank-System\src\app\contexts\InventoryContext.tsx
 Blood-Bank-System\src\app\contexts\ThemeContext.tsx
 
-
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app\components\admin` directory's contents**
 Status: Completed
 
-
 # Files:
+
 Blood-Bank-System\src\app\components\admin\AdminAnalytics.tsx
 Blood-Bank-System\src\app\components\admin\AdminCampaigns.tsx
 Blood-Bank-System\src\app\components\admin\AdminDashboard.tsx
@@ -302,29 +299,26 @@ Blood-Bank-System\src\app\components\admin\AdminSettings.tsx
 Blood-Bank-System\src\app\components\admin\AdminStaff.tsx
 Blood-Bank-System\src\app\components\admin\AdminUsers.tsx
 
-
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app\components\auth` directory's contents**
 Status: Completed
 
-
 # Files:
-Blood-Bank-System\src\app\components\auth\LoginPage.tsx
 
+Blood-Bank-System\src\app\components\auth\LoginPage.tsx
 
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app\components\shared` directory's contents**
 Status: Completed
 
-
 # Files:
+
 Blood-Bank-System\src\app\components\shared\CancelModal.tsx
 Blood-Bank-System\src\app\components\shared\LoadingSkeleton.tsx
-
 
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app\components\doctor` directory's contents**
 Status: Completed
 
-
 # Files:
+
 Blood-Bank-System\src\app\components\doctor\DoctorAppointments.tsx
 Blood-Bank-System\src\app\components\doctor\DoctorCampaigns.tsx
 Blood-Bank-System\src\app\components\doctor\DoctorDashboard.tsx
@@ -332,21 +326,19 @@ Blood-Bank-System\src\app\components\doctor\DoctorDonors.tsx
 Blood-Bank-System\src\app\components\doctor\DoctorEligibility.tsx
 Blood-Bank-System\src\app\components\doctor\DonorRegistrationForm.tsx
 
-
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app\components\lab` directory's contents**
 Status: Completed
 
-
 # Files:
+
 Blood-Bank-System\src\app\components\lab\LabDashboard.tsx
 Blood-Bank-System\src\app\components\lab\LabResults.tsx
-
 
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app\components\inventory` directory's contents**
 Status: Completed
 
-
 # Files:
+
 Blood-Bank-System\src\app\components\inventory\InventoryBags.tsx
 Blood-Bank-System\src\app\components\inventory\InventoryDashboard.tsx
 Blood-Bank-System\src\app\components\inventory\InventoryDisposal.tsx
@@ -354,18 +346,16 @@ Blood-Bank-System\src\app\components\inventory\InventoryHistory.tsx
 Blood-Bank-System\src\app\components\inventory\InventoryRequests.tsx
 Blood-Bank-System\src\app\components\inventory\InventoryTransactions.tsx
 
-
 **Tool Call: List the `D:\Graduation!!!\Blood-Bank-System\src\app\components\layout` directory's contents**
 Status: Completed
 
-
 # Files:
+
 Blood-Bank-System\src\app\components\layout\AdminLayout.tsx
 Blood-Bank-System\src\app\components\layout\DoctorLayout.tsx
 Blood-Bank-System\src\app\components\layout\InventoryLayout.tsx
 Blood-Bank-System\src\app\components\layout\LabLayout.tsx
 Blood-Bank-System\src\app\components\layout\NotificationDropdown.tsx
-
 
 ## Assistant
 
@@ -418,7 +408,6 @@ apiClient.interceptors.response.use(
 export default apiClient;
 
 ```
-
 
 **Tool Call: Read file `src\app\api\auth.ts`**
 Status: Completed
@@ -521,7 +510,6 @@ export async function loginApi(credentials: LoginRequest): Promise<LoginResponse
 
 ```
 
-
 **Tool Call: Read file `src\app\api\donors.ts`**
 Status: Completed
 
@@ -571,7 +559,6 @@ export async function createDonor(payload: CreateDonorRequest): Promise<Donor> {
 
 ```
 
-
 **Tool Call: Read file `src\app\types\index.ts`**
 Status: Completed
 
@@ -589,7 +576,6 @@ export * from './lab';
 export * from './appointment';
 
 ```
-
 
 **Tool Call: Read file `src\app\types\auth.ts`**
 Status: Completed
@@ -632,7 +618,6 @@ export interface LoginResponse {
 }
 
 ```
-
 
 **Tool Call: Read file `src\app\types\donor.ts`**
 Status: Completed
@@ -689,7 +674,6 @@ export type CreateDonorRequest = Omit<Donor, 'id' | 'donorCode'>;
 
 ```
 
-
 **Tool Call: Read file `src\app\types\common.ts`**
 Status: Completed
 
@@ -733,7 +717,6 @@ export type OutflowActionType = 'exported' | 'disposed';
 export type DestinationType = 'hospital' | 'patient';
 
 ```
-
 
 **Tool Call: Read file `src\app\types\inventory.ts`**
 Status: Completed
@@ -826,7 +809,6 @@ export interface MonthlyStats {
 
 ```
 
-
 **Tool Call: Read file `src\app\types\lab.ts`**
 Status: Completed
 
@@ -890,7 +872,6 @@ export interface TestResult {
 }
 
 ```
-
 
 **Tool Call: Read file `src\app\types\appointment.ts`**
 Status: Completed
@@ -961,7 +942,6 @@ export interface Slot15 {
 
 ```
 
-
 **Tool Call: Read file `src\app\types\campaign.ts`**
 Status: Completed
 
@@ -989,7 +969,6 @@ export interface Campaign {
 export type CreateCampaignRequest = Omit<Campaign, 'id'>;
 
 ```
-
 
 **Tool Call: Read file `src\app\hooks\useDonors.ts`**
 Status: Completed
@@ -1031,7 +1010,6 @@ export function useCreateDonor() {
 }
 
 ```
-
 
 **Tool Call: Read file `src\app\hooks\useAppointments.ts`**
 Status: Completed
@@ -1075,7 +1053,6 @@ export function useCancelAppointment() {
 }
 
 ```
-
 
 **Tool Call: Read file `src\app\hooks\useInventory.ts`**
 Status: Completed
@@ -1188,7 +1165,6 @@ export function useMonthlyStats() {
 
 ```
 
-
 **Tool Call: Read file `src\app\api\appointments.ts`**
 Status: Completed
 
@@ -1233,7 +1209,6 @@ export async function cancelAppointment(slotId: string, reason: string): Promise
 
 ```
 
-
 **Tool Call: Read file `src\app\api\campaigns.ts`**
 Status: Completed
 
@@ -1266,7 +1241,6 @@ export async function createCampaign(payload: CreateCampaignRequest): Promise<Ca
 }
 
 ```
-
 
 **Tool Call: Read file `src\app\api\inventory.ts`**
 Status: Completed
@@ -1379,7 +1353,6 @@ export async function fetchMonthlyStats(): Promise<MonthlyStats[]> {
 
 ```
 
-
 **Tool Call: Read file `src\app\api\lab.ts`**
 Status: Completed
 
@@ -1457,7 +1430,6 @@ export async function fetchTestResults(): Promise<TestResult[]> {
 
 ```
 
-
 **Tool Call: Read file `src\app\api\staff.ts`**
 Status: Completed
 
@@ -1521,7 +1493,6 @@ export async function deleteStaff(id: string): Promise<void> {
 }
 
 ```
-
 
 **Tool Call: Read file `src\app\contexts\AuthContext.tsx`**
 Status: Completed
@@ -1598,7 +1569,6 @@ export function useAuth() {
 export type { UserRole };
 
 ```
-
 
 **Tool Call: Read file `src\app\contexts\AppointmentContext.tsx`**
 Status: Completed
@@ -1713,7 +1683,6 @@ export function useAppointments() {
 }
 
 ```
-
 
 **Tool Call: Read file `src\app\contexts\InventoryContext.tsx`**
 Status: Completed
@@ -1944,7 +1913,6 @@ export function useInventory() {
   return ctx;
 }
 ```
-
 
 ## Assistant
 
@@ -2282,7 +2250,6 @@ NEXT STEPS: To read a specific symbol's implementation, call read_file with the 
 For example, to read a function shown as [L100-150], use start_line: 100 and end_line: 150.
 ```
 
-
 **Tool Call: Read file `src\app\components\auth\LoginPage.tsx`**
 Status: Completed
 
@@ -2505,7 +2472,6 @@ NEXT STEPS: To read a specific symbol's implementation, call read_file with the 
 For example, to read a function shown as [L100-150], use start_line: 100 and end_line: 150.
 ```
 
-
 **Tool Call: Read file `src\app\components\shared\LoadingSkeleton.tsx`**
 Status: Completed
 
@@ -2599,7 +2565,6 @@ export function TableSkeleton({ rows = 5, cols = 6 }: { rows?: number; cols?: nu
 }
 
 ```
-
 
 **Tool Call: Read file `src\app\components\doctor\DonorRegistrationForm.tsx` (lines 69-170)**
 Status: Completed
@@ -2710,7 +2675,6 @@ export default function DonorRegistrationForm() {
 
 ```
 
-
 **Tool Call: Read file `src\app\components\auth\LoginPage.tsx` (lines 74-130)**
 Status: Completed
 
@@ -2775,7 +2739,6 @@ export default function LoginPage() {
 
 ```
 
-
 **Tool Call: Search files for regex `import.*mockData|from.*mockData|from.*data/mockData`**
 Status: Completed
 
@@ -2784,6 +2747,7 @@ Showing matches 1-20 (there were more matches found; use offset: 20 to see next 
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminAnalytics.tsx
 
 ### L1-11
+
 ```
 import { useState } from 'react';
 import { TrendingUp, BarChart3, PieChart, Map, Download } from 'lucide-react';
@@ -2803,6 +2767,7 @@ const shortageData = [
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminDonors.tsx
 
 ### L1-11
+
 ```
 import { useState } from 'react';
 import { Search, Filter, Edit2, X, Save, ChevronDown, Building2, Smartphone } from 'lucide-react';
@@ -2822,6 +2787,7 @@ const donationTypeLabels: Record<string, string> = { whole: 'دم كامل', pla
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminEmergency.tsx
 
 ### L1-11
+
 ```
 import { useState } from 'react';
 import { AlertTriangle, CheckCircle2, XCircle, Phone, MapPin, Clock, Droplets, X, Send } from 'lucide-react';
@@ -2841,6 +2807,7 @@ const urgencyConfig: Record<string, { label: string; color: string; bg: string; 
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminInventory.tsx
 
 ### L1-11
+
 ```
 import { useState } from 'react';
 import { AlertTriangle, TrendingUp, TrendingDown, Droplets, RefreshCw } from 'lucide-react';
@@ -2860,6 +2827,7 @@ const barColors: Record<string, string> = { normal: '#22c55e', low: '#f59e0b', c
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminInventoryAlerts.tsx
 
 ### L1-11
+
 ```
 import { useState } from 'react';
 import { AlertTriangle, TrendingUp, Clock, Settings2, Save, Check } from 'lucide-react';
@@ -2879,6 +2847,7 @@ function daysUntil(d: string) {
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminStaff.tsx
 
 ### L1-11
+
 ```
 import { useState } from 'react';
 import {
@@ -2898,6 +2867,7 @@ type StaffRole = 'doctor' | 'lab' | 'inventory';
 ## Matches in Blood-Bank-System\src\app\components\doctor\DoctorAppointments.tsx
 
 ### L1-11
+
 ```
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
@@ -2917,6 +2887,7 @@ import { useAuth } from '../../contexts/AuthContext';
 ## Matches in Blood-Bank-System\src\app\components\doctor\DoctorCampaigns.tsx
 
 ### L1-11
+
 ```
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
@@ -2936,6 +2907,7 @@ import { CancelModal } from '../shared/CancelModal';
 ## Matches in Blood-Bank-System\src\app\components\doctor\DoctorDonors.tsx
 
 ### L1-11
+
 ```
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -2955,6 +2927,7 @@ const statusColors: Record<string, string> = {
 ## Matches in Blood-Bank-System\src\app\components\doctor\DoctorEligibility.tsx
 
 ### L1-11
+
 ```
 import { useState, useMemo } from 'react';
 import {
@@ -2974,6 +2947,7 @@ import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 ## Matches in Blood-Bank-System\src\app\components\doctor\DonorRegistrationForm.tsx
 
 ### L1-11
+
 ```
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
@@ -2993,6 +2967,7 @@ import { useCampaigns } from '../../hooks/useCampaigns';
 ## Matches in Blood-Bank-System\src\app\components\inventory\InventoryBags.tsx
 
 ### L1-11
+
 ```
 import { useState, useMemo } from 'react';
 import { Search, Package, Check, X, AlertTriangle, Upload, Trash2, ShoppingCart, AlertCircle, ChevronLeft } from 'lucide-react';
@@ -3012,6 +2987,7 @@ function daysUntil(d: string) {
 ## Matches in Blood-Bank-System\src\app\components\inventory\InventoryDashboard.tsx
 
 ### L1-11
+
 ```
 import { useNavigate } from 'react-router';
 import { Package, History, TrendingUp, TrendingDown, AlertTriangle, Clock, CheckCircle, ArrowUpRight, Droplets } from 'lucide-react';
@@ -3031,6 +3007,7 @@ function daysUntil(d: string) {
 ## Matches in Blood-Bank-System\src\app\components\inventory\InventoryDisposal.tsx
 
 ### L13-17
+
 ```
   ShieldOff,
 } from "lucide-react";
@@ -3042,6 +3019,7 @@ import {
 ## Matches in Blood-Bank-System\src\app\components\inventory\InventoryHistory.tsx
 
 ### L1-11
+
 ```
 import { useState } from 'react';
 import { History, Search, Upload, Trash2, Download, TrendingDown, Package, Eye, X, User, Phone, CreditCard, FileText, Clock, UserCheck } from 'lucide-react';
@@ -3061,6 +3039,7 @@ function DetailModal({ record, onClose }: { record: OutflowRecord; onClose: () =
 ## Matches in Blood-Bank-System\src\app\components\inventory\InventoryRequests.tsx
 
 ### L1-11
+
 ```
 import { useState } from 'react';
 import { Building2, CheckCircle, X, Package, AlertTriangle, Search, Plus } from 'lucide-react';
@@ -3080,6 +3059,7 @@ const urgencyColors: Record<string, string> = {
 ## Matches in Blood-Bank-System\src\app\components\inventory\InventoryTransactions.tsx
 
 ### L1-11
+
 ```
 import { useState } from 'react';
 import { ArrowLeftRight, Search, Filter, Download } from 'lucide-react';
@@ -3099,6 +3079,7 @@ const typeColors: Record<TransactionType, string> = {
 ## Matches in Blood-Bank-System\src\app\components\lab\LabDashboard.tsx
 
 ### L13-17
+
 ```
   ChevronRight,
 } from "lucide-react";
@@ -3110,6 +3091,7 @@ import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
 ## Matches in Blood-Bank-System\src\app\components\lab\LabResults.tsx
 
 ### L1-11
+
 ```
 import { useState } from 'react';
 import {
@@ -3129,6 +3111,7 @@ import { PageLoader, ErrorState } from '../shared/LoadingSkeleton';
 ## Matches in Blood-Bank-System\src\app\components\mobile\MobileApp.tsx
 
 ### L1-11
+
 ```
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -3145,7 +3128,6 @@ type Screen = 'login' | 'register' | 'home' | 'book' | 'eligibility' | 'history'
 
 1012 lines remaining in ancestor node. Read the file to see all.
 
-
 **Tool Call: Search files for regex `import.*mockData|from.*mockData|from.*data/mockData`**
 Status: Completed
 
@@ -3154,6 +3136,7 @@ Found 6 matches:
 ## Matches in Blood-Bank-System\src\app\api\appointments.ts
 
 ### L6-9
+
 ```
 import {
   appointmentSlots as MOCK_SLOTS,
@@ -3164,6 +3147,7 @@ import {
 ## Matches in Blood-Bank-System\src\app\api\campaigns.ts
 
 ### L1-11
+
 ```
 // ═══════════════════════════════════════════════════════════
 // Campaigns API service
@@ -3183,6 +3167,7 @@ export async function fetchCampaigns(): Promise<Campaign[]> {
 ## Matches in Blood-Bank-System\src\app\api\donors.ts
 
 ### L1-11
+
 ```
 // ═══════════════════════════════════════════════════════════
 // Donors API service
@@ -3202,6 +3187,7 @@ export async function fetchDonors(): Promise<Donor[]> {
 ## Matches in Blood-Bank-System\src\app\api\inventory.ts
 
 ### L9-16
+
 ```
 import {
   bloodBags as MOCK_BAGS,
@@ -3216,6 +3202,7 @@ import {
 ## Matches in Blood-Bank-System\src\app\api\lab.ts
 
 ### L6-10
+
 ```
 import {
   labTests as MOCK_LAB_TESTS,
@@ -3227,6 +3214,7 @@ import {
 ## Matches in Blood-Bank-System\src\app\api\staff.ts
 
 ### L1-11
+
 ```
 // ═══════════════════════════════════════════════════════════
 // Staff (users) API service
@@ -3242,7 +3230,6 @@ export async function fetchStaff(): Promise<User[]> {
 ```
 
 47 lines remaining in ancestor node. Read the file to see all.
-
 
 ## Assistant
 
@@ -3294,7 +3281,6 @@ export function useDeleteStaff() {
 
 ```
 
-
 **Tool Call: Read file `src\app\hooks\useCampaigns.ts`**
 Status: Completed
 
@@ -3326,7 +3312,6 @@ export function useCreateCampaign() {
 }
 
 ```
-
 
 **Tool Call: Read file `src\app\hooks\useLabTests.ts`**
 Status: Completed
@@ -3392,7 +3377,6 @@ export function useTestResults() {
 
 ```
 
-
 **Tool Call: Read file `src\app\App.tsx`**
 Status: Completed
 
@@ -3436,7 +3420,6 @@ export default function App() {
   );
 }
 ```
-
 
 **Tool Call: Read file `src\app\routes.tsx`**
 Status: Completed
@@ -3621,7 +3604,6 @@ export const router = createBrowserRouter([
 ]);
 ```
 
-
 ## Assistant
 
 <thinking>
@@ -3666,7 +3648,6 @@ function FulfillModal({ request, onClose }: { request: EmReq; onClose: () => voi
             <div className="flex items-center gap-3">
 
 ```
-
 
 **Tool Call: Read file `src\app\components\admin\AdminStaff.tsx` (lines 1-50)**
 Status: Completed
@@ -3725,7 +3706,6 @@ export default function AdminStaff() {
 
 ```
 
-
 **Tool Call: Read file `src\app\components\admin\AdminDashboard.tsx` (lines 1-30)**
 Status: Completed
 
@@ -3763,7 +3743,6 @@ export default function AdminDashboard() {
 
 ```
 
-
 **Tool Call: Search files for regex `type\s+\w+\s*=\s*any|:\s*any[,;\s\)]`**
 Status: Completed
 
@@ -3772,6 +3751,7 @@ Found 20 matches:
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminAnalytics.tsx
 
 ### const CustomTooltip › L18-26
+
 ```
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -3789,6 +3769,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminCampaigns.tsx
 
 ### function AdminCampaigns() › const filtered › L12-22
+
 ```
 export default function AdminCampaigns() {
   const { data: campaigns = [], isLoading, isError, refetch } = useCampaigns();
@@ -3808,6 +3789,7 @@ export default function AdminCampaigns() {
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminDashboard.tsx
 
 ### function AdminDashboard() › const doctors › L31-47
+
 ```
 
   // ── Derived data ─────────────────────────────────────────
@@ -3829,6 +3811,7 @@ export default function AdminCampaigns() {
 ```
 
 ### function AdminDashboard() › L147-157
+
 ```
           <div className="space-y-3">
             {bloodInventory.map((b: any) => (
@@ -3846,6 +3829,7 @@ export default function AdminCampaigns() {
 9 lines remaining in ancestor node. Read the file to see all.
 
 ### function AdminDashboard() › L189-199
+
 ```
               <tbody className="divide-y divide-gray-50">
                 {recentDonors.map((d: any) => (
@@ -3863,6 +3847,7 @@ export default function AdminCampaigns() {
 10 lines remaining in ancestor node. Read the file to see all.
 
 ### function AdminDashboard() › L217-227
+
 ```
           <div className="space-y-3">
             {bloodInventory.filter((b: any) => b.status !== 'normal').map((b: any) => (
@@ -3882,6 +3867,7 @@ export default function AdminCampaigns() {
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminDonors.tsx
 
 ### type Donor › L1-11
+
 ```
 import { useState } from 'react';
 import { Search, Filter, Edit2, X, Save, ChevronDown, Building2, Smartphone } from 'lucide-react';
@@ -3901,6 +3887,7 @@ const donationTypeLabels: Record<string, string> = { whole: 'دم كامل', pla
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminInventory.tsx
 
 ### function AdminInventory() › L98-107
+
 ```
               <Bar
                 key="bar-units"
@@ -3917,6 +3904,7 @@ const donationTypeLabels: Record<string, string> = { whole: 'دم كامل', pla
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminInventoryAlerts.tsx
 
 ### function AdminInventoryAlerts() › const init › L19-23
+
 ```
   const [thresholds, setThresholds] = useState<Record<BloodType, number>>(() => {
     const init: any = {};
@@ -3928,6 +3916,7 @@ const donationTypeLabels: Record<string, string> = { whole: 'دم كامل', pla
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminStaff.tsx
 
 ### const roleConfig › L12-16
+
 ```
 const roleConfig: Record<StaffRole, { label: string; badge: string; prefix: string; color: string; borderColor: string; bgColor: string; icon: any }> = {
   doctor:    { label: 'طبيب', badge: 'bg-teal-100 text-teal-700', prefix: 'dr', color: 'text-teal-700', borderColor: 'border-teal-200', bgColor: 'bg-teal-50', icon: Stethoscope },
@@ -3939,6 +3928,7 @@ const roleConfig: Record<StaffRole, { label: string; badge: string; prefix: stri
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminUsers.tsx
 
 ### type Donor › L16-20
+
 ```
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
 
@@ -3948,6 +3938,7 @@ const bloodTypeColors: Record<string, string> = {
 ```
 
 ### function AdminUsers() › const filtered › L155-159
+
 ```
     );
 
@@ -3959,6 +3950,7 @@ const bloodTypeColors: Record<string, string> = {
 ## Matches in Blood-Bank-System\src\app\components\doctor\DoctorDashboard.tsx
 
 ### function DoctorDashboard() › const myDonors › L23-33
+
 ```
   if (isError) return <ErrorState message="تعذر تحميل البيانات" onRetry={() => refetch()} />;
 
@@ -3976,6 +3968,7 @@ const bloodTypeColors: Record<string, string> = {
 ## Matches in Blood-Bank-System\src\app\components\doctor\DoctorDonors.tsx
 
 ### type Donor › L1-11
+
 ```
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -3993,6 +3986,7 @@ const statusColors: Record<string, string> = {
 288 lines remaining in ancestor node. Read the file to see all.
 
 ### function DoctorDonors() › const filtered › L34-38
+
 ```
   if (isError) return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
 
@@ -4004,6 +3998,7 @@ const statusColors: Record<string, string> = {
 ## Matches in Blood-Bank-System\src\app\components\doctor\DonorRegistrationForm.tsx
 
 ### function DonorRegistrationForm() › const updateField › L107-111
+
 ```
   const activeCampaigns = campaigns.filter(c => c.status === 'active');
 
@@ -4015,6 +4010,7 @@ const statusColors: Record<string, string> = {
 ## Matches in Blood-Bank-System\src\app\components\layout\AdminLayout.tsx
 
 ### function AdminLayout() › const criticalItems › L21-31
+
 ```
 export default function AdminLayout() {
   const { user, logout } = useAuth();
@@ -4034,6 +4030,7 @@ export default function AdminLayout() {
 ## Matches in Blood-Bank-System\src\app\components\layout\DoctorLayout.tsx
 
 ### function DoctorLayout() › const activeCampaigns › L21-31
+
 ```
 export default function DoctorLayout() {
   const { user, logout } = useAuth();
@@ -4053,6 +4050,7 @@ export default function DoctorLayout() {
 ## Matches in Blood-Bank-System\src\app\components\layout\LabLayout.tsx
 
 ### function LabLayout() › const pendingTests › L13-23
+
 ```
 export default function LabLayout() {
   const { user, logout } = useAuth();
@@ -4072,6 +4070,7 @@ export default function LabLayout() {
 ## Matches in Blood-Bank-System\src\app\contexts\AuthContext.tsx
 
 ### function AuthProvider( ) › const login › L29-39
+
 ```
     try {
       setIsLoading(true);
@@ -4088,7 +4087,6 @@ export default function LabLayout() {
 
 7 lines remaining in ancestor node. Read the file to see all.
 
-
 **Tool Call: Search files for regex `useState.*password|password.*useState|setPassword|password.*string`**
 Status: Completed
 
@@ -4097,6 +4095,7 @@ Found 12 matches:
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminSettings.tsx
 
 ### function AdminSettings() › const passwords › L6-16
+
 ```
 export default function AdminSettings() {
   const { user } = useAuth();
@@ -4114,6 +4113,7 @@ export default function AdminSettings() {
 282 lines remaining in ancestor node. Read the file to see all.
 
 ### function AdminSettings() › const handleChangePassword › L26-35
+
 ```
   const handleChangePassword = () => {
     setPassError('');
@@ -4128,6 +4128,7 @@ export default function AdminSettings() {
 ```
 
 ### function AdminSettings() › L120-123
+
 ```
                     <input type="password" value={passwords[f.key as keyof typeof passwords]}
                       onChange={e => setPasswords(p => ({...p, [f.key]: e.target.value}))}
@@ -4138,6 +4139,7 @@ export default function AdminSettings() {
 ## Matches in Blood-Bank-System\src\app\components\admin\AdminStaff.tsx
 
 ### interface StaffForm › L18-27
+
 ```
 interface StaffForm {
   fullName: string;
@@ -4154,6 +4156,7 @@ interface StaffForm {
 ## Matches in Blood-Bank-System\src\app\components\auth\LoginPage.tsx
 
 ### function LoginPage() › const password › L74-84
+
 ```
 export default function LoginPage() {
   const navigate  = useNavigate();
@@ -4171,6 +4174,7 @@ export default function LoginPage() {
 407 lines remaining in ancestor node. Read the file to see all.
 
 ### function LoginPage() › const fillDemo › L96-101
+
 ```
   const fillDemo = (acc: typeof demoAccounts[0]) => {
     setEmail(acc.email);
@@ -4181,6 +4185,7 @@ export default function LoginPage() {
 ```
 
 ### function LoginPage() › L404-414
+
 ```
                 <input
                   id="password"
@@ -4200,6 +4205,7 @@ export default function LoginPage() {
 ## Matches in Blood-Bank-System\src\app\components\mobile\MobileApp.tsx
 
 ### function LoginScreen( ) › const password › L23-33
+
 ```
 function LoginScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
   const [email, setEmail] = useState('donor@bloodbank.sa');
@@ -4217,6 +4223,7 @@ function LoginScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
 58 lines remaining in ancestor node. Read the file to see all.
 
 ### function LoginScreen( ) › L64-69
+
 ```
           <div>
             <label className="block text-[#374151] mb-1.5" style={{ fontSize: '13px', fontWeight: 600 }}>كلمة المرور</label>
@@ -4227,6 +4234,7 @@ function LoginScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
 ```
 
 ### function RegisterScreen( ) › L93-103
+
 ```
 function RegisterScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
   const [step, setStep] = useState(1);
@@ -4246,6 +4254,7 @@ function RegisterScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
 ## Matches in Blood-Bank-System\src\app\contexts\AuthContext.tsx
 
 ### interface AuthContextType › L6-11
+
 ```
 interface AuthContextType {
   user: User | null;
@@ -4256,6 +4265,7 @@ interface AuthContextType {
 ```
 
 ### function AuthProvider( ) › const login › L26-30
+
 ```
   const [isLoading, setIsLoading] = useState(false);
 
@@ -4263,7 +4273,6 @@ interface AuthContextType {
     try {
       setIsLoading(true);
 ```
-
 
 ## Assistant
 
@@ -4316,7 +4325,6 @@ export default defineConfig({
 
 ```
 
-
 **Tool Call: 1 match**
 Status: Completed
 
@@ -4340,7 +4348,6 @@ Status: Completed
 
 ```
 
-
 **Tool Call: Read file `.env`**
 Status: Failed
 
@@ -4363,6 +4370,7 @@ Found 14 matches:
 ## Matches in Blood-Bank-System\src\app\components\doctor\DoctorAppointments.tsx
 
 ### function AppointmentRow( ) › L256-260
+
 ```
             <button
               onClick={e => { e.stopPropagation(); onRegister(); }}
@@ -4372,6 +4380,7 @@ Found 14 matches:
 ```
 
 ### function DoctorAppointments() › const renderToday › L396-400
+
 ```
                 <AppointmentCard
                   slot={slot}
@@ -4381,6 +4390,7 @@ Found 14 matches:
 ```
 
 ### function DoctorAppointments() › const renderWeek › L443-448
+
 ```
                   <AppointmentRow
                     key={slot.id}
@@ -4391,6 +4401,7 @@ Found 14 matches:
 ```
 
 ### function DoctorAppointments() › const renderMonth › L483-488
+
 ```
                   <AppointmentRow
                     key={slot.id}
@@ -4403,6 +4414,7 @@ Found 14 matches:
 ## Matches in Blood-Bank-System\src\app\components\inventory\InventoryHistory.tsx
 
 ### function InventoryHistory() › const filterController › L128-148
+
 ```
 export default function InventoryHistory() {
   const { data: outflowRecords = [], isLoading: isLoadingOutflow, isError: isErrorOutflow } = useOutflowRecords();
@@ -4430,6 +4442,7 @@ export default function InventoryHistory() {
 158 lines remaining in ancestor node. Read the file to see all.
 
 ### function InventoryHistory() › L229-246
+
 ```
         <div className="flex flex-wrap gap-2 items-center">
           {([['all', 'الكل'], ['exported', 'تصدير فقط'], ['disposed', 'إتلاف فقط']] as [OutflowActionType | 'all', string][]).map(([val, label]) => (
@@ -4456,6 +4469,7 @@ export default function InventoryHistory() {
 ## Matches in Blood-Bank-System\src\app\components\ui\form.tsx
 
 ### L6-14
+
 ```
 import {
   Controller,
@@ -4469,6 +4483,7 @@ import {
 ```
 
 ### const FormField › L32-41
+
 ```
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
@@ -4485,6 +4500,7 @@ const FormField = <
 2 lines remaining in ancestor node. Read the file to see all.
 
 ### const useFormField › L45-54
+
 ```
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext);
@@ -4501,6 +4517,7 @@ const useFormField = () => {
 12 lines remaining in ancestor node. Read the file to see all.
 
 ### function FormLabel( ) › L93-103
+
 ```
 }: React.ComponentProps<typeof LabelPrimitive.Root>) {
   const { error, formItemId } = useFormField();
@@ -4518,12 +4535,14 @@ const useFormField = () => {
 2 lines remaining in ancestor node. Read the file to see all.
 
 ### function FormControl( ) › L108-109
+
 ```
   const { error, formItemId, formDescriptionId, formMessageId } =
     useFormField();
 ```
 
 ### function FormDescription( ) › L126-136
+
 ```
 function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
   const { formDescriptionId } = useFormField();
@@ -4541,6 +4560,7 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
 1 lines remaining in ancestor node. Read the file to see all.
 
 ### function FormMessage( ) › L139-149
+
 ```
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { error, formMessageId } = useFormField();
@@ -4558,6 +4578,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
 8 lines remaining in ancestor node. Read the file to see all.
 
 ### L159-168
+
 ```
 export {
   useFormField,
@@ -4571,7 +4592,6 @@ export {
 };
 ```
 
-
 ## Assistant
 
 <thinking>
@@ -4582,9 +4602,9 @@ Now I have a comprehensive picture of the entire project. Let me compile the ful
 ### 1. **UI/UX - Loading States, Skeleton Screens, Empty States**
 
 **Good:**
+
 - `LoadingSkeleton.tsx` exists with `PageLoader`, `ErrorState`, `CardSkeleton`, `TableSkeleton` components
 - `AdminDashboard`, `DoctorDonors`, `AdminDonors`, `LabDashboard`, `InventoryBags`, `InventoryDisposal`, `InventoryHistory`, etc. all use `PageLoader` and `ErrorState`
-
 
 - **Issues:**
 - No `ErrorBoundary` class component exists anywhere—only manual `ErrorState` checks
@@ -4606,6 +4626,7 @@ Beyond the data imports, there's a structural issue where some components are pu
 I'm also noticing that `react-hook-form` is already installed and there's a wrapper component for it in the UI directory, so there's an opportunity to standardize form handling across the application. cn form component).
 
 **But no forms use it!** All forms use manual `useState` logic:
+
 1. `DonorRegistrationForm.tsx` — uses `useState<SimpleForm>`, manual `validate()`, manual error state `Record<string, string>`. BUT it does use `useCreateDonor()` mutation. So it's "mutation-ready" but not using react-hook-form.
 2. `AdminStaff.tsx` — uses `useState<StaffForm>` with manual validation, has `useCreateStaff()` mutation.
 3. `LoginPage.tsx` — uses `useState` for email/password, manual error state.
@@ -4686,8 +4707,8 @@ The context initializes state directly from the mockData import — it does not 
 **File:** `AdminSettings.tsx`, line 29
 
 ```D:\Graduation!!!\Blood-Bank-System\src\app\components\admin\AdminSettings.tsx#L28-29
-if (passwords.current !== (user as any)?.password) { 
-  setPassError('كلمة المرور الحالية غير صحيحة'); return; 
+if (passwords.current !== (user as any)?.password) {
+  setPassError('كلمة المرور الحالية غير صحيحة'); return;
 }
 ```
 
@@ -4781,16 +4802,16 @@ There are two distinct categories of mockData imports that need to be separated:
 
 **Category A — Types imported from mockData instead of `types/`** (must be fixed before going live):
 
-| Component | Imported from mockData |
-|---|---|
-| `AdminInventory.tsx` | `BloodInventoryItem` |
-| `InventoryBags.tsx` | `BloodBag`, `BloodType` |
-| `InventoryDisposal.tsx` | `BloodBag`, `BloodType` |
-| `InventoryHistory.tsx` | `OutflowActionType`, `OutflowRecord`, `BloodType` |
-| `InventoryRequests.tsx` | `BloodBag`, `BloodType` |
-| `InventoryTransactions.tsx` | `BloodType`, `TransactionType` |
-| `LabDashboard.tsx` | `LabTest`, `BloodType` |
-| `AdminStaff.tsx` | `User` |
+| Component                   | Imported from mockData                            |
+| --------------------------- | ------------------------------------------------- |
+| `AdminInventory.tsx`        | `BloodInventoryItem`                              |
+| `InventoryBags.tsx`         | `BloodBag`, `BloodType`                           |
+| `InventoryDisposal.tsx`     | `BloodBag`, `BloodType`                           |
+| `InventoryHistory.tsx`      | `OutflowActionType`, `OutflowRecord`, `BloodType` |
+| `InventoryRequests.tsx`     | `BloodBag`, `BloodType`                           |
+| `InventoryTransactions.tsx` | `BloodType`, `TransactionType`                    |
+| `LabDashboard.tsx`          | `LabTest`, `BloodType`                            |
+| `AdminStaff.tsx`            | `User`                                            |
 
 These types **already exist** in your `types/` directory. They just need their import path corrected.
 
@@ -4799,14 +4820,14 @@ These types **already exist** in your `types/` directory. They just need their i
 
 **Category C — Entity data still imported directly** (bypasses React Query entirely):
 
-| Component | Direct Data Import | Should Use |
-|---|---|---|
-| `DoctorEligibility.tsx` | `donors` from mockData | `useDonors()` |
-| `LabResults.tsx` | `testResults`, `samples`, `donors` | `useTestResults()`, `useSamples()`, `useDonors()` |
-| `DonorRegistrationForm.tsx` | `campaigns`, `slot15Data` | `useCampaigns()`, `useSlot15Data()` |
-| `DoctorCampaigns.tsx` | `campaigns as initialCampaigns` | `useCampaigns()` |
-| `DoctorAppointments.tsx` | `campaigns` | `useCampaigns()` |
-| `AdminInventoryAlerts.tsx` | `bloodInventory`, `monthlyStats` | `useBloodInventory()`, `useMonthlyStats()` |
+| Component                   | Direct Data Import                 | Should Use                                        |
+| --------------------------- | ---------------------------------- | ------------------------------------------------- |
+| `DoctorEligibility.tsx`     | `donors` from mockData             | `useDonors()`                                     |
+| `LabResults.tsx`            | `testResults`, `samples`, `donors` | `useTestResults()`, `useSamples()`, `useDonors()` |
+| `DonorRegistrationForm.tsx` | `campaigns`, `slot15Data`          | `useCampaigns()`, `useSlot15Data()`               |
+| `DoctorCampaigns.tsx`       | `campaigns as initialCampaigns`    | `useCampaigns()`                                  |
+| `DoctorAppointments.tsx`    | `campaigns`                        | `useCampaigns()`                                  |
+| `AdminInventoryAlerts.tsx`  | `bloodInventory`, `monthlyStats`   | `useBloodInventory()`, `useMonthlyStats()`        |
 
 ---
 
@@ -4968,40 +4989,39 @@ Before the action plan, here's what is solid and should not be changed:
 
 ### Phase 1 — Pre-Integration (Do Before Flipping `USE_MOCK`) 🔴
 
-| # | Task | File(s) |
-|---|---|---|
-| 1 | ✅ **Delete `InventoryContext.tsx`**. Migrate all mutation logic into `useInventory.ts` mutations. Update `InventoryRequests.tsx`, `InventoryBags.tsx`, `InventoryDisposal.tsx` to use hooks only. | `InventoryContext.tsx`, `useInventory.ts` |
-| 2 | ✅ **Delete `AppointmentContext.tsx`**. Wire `DoctorAppointments.tsx` to `useSlot15Data()` + `useCancelAppointment()`. Rebuild notification state using a `useQuery`-based approach. | `AppointmentContext.tsx`, `DoctorAppointments.tsx` |
-| 3 | ✅ **Fix `AdminSettings` password change**. Remove `(user as any)?.password`. Create `POST /auth/change-password` endpoint and a corresponding `changePasswordApi()` function + `useChangePassword` mutation. | `AdminSettings.tsx`, new `api/auth.ts` |
-| 4 | ✅ **Add Vite proxy** in `vite.config.ts` to avoid CORS errors in dev. | `vite.config.ts` |
-| 5 | ✅ **Add refresh token logic** in `api/client.ts`. Implement a request queue that pauses during token refresh and retries failed requests. | `api/client.ts` |
-| 6 | ✅ **Create `api/emergency.ts` and `api/analytics.ts`** with proper React Query hooks. Wire `AdminEmergency.tsx` and `AdminAnalytics.tsx` to them. | new files |
-| 7 | ✅ **Fix environment variable typing**: Add `/// <reference types="vite/client" />` to `vite-env.d.ts`. Remove the `(import.meta as any)` cast. | `api/client.ts`, `vite-env.d.ts` |
+| #   | Task                                                                                                                                                                                                          | File(s)                                            |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| 1   | ✅ **Delete `InventoryContext.tsx`**. Migrate all mutation logic into `useInventory.ts` mutations. Update `InventoryRequests.tsx`, `InventoryBags.tsx`, `InventoryDisposal.tsx` to use hooks only.            | `InventoryContext.tsx`, `useInventory.ts`          |
+| 2   | ✅ **Delete `AppointmentContext.tsx`**. Wire `DoctorAppointments.tsx` to `useSlot15Data()` + `useCancelAppointment()`. Rebuild notification state using a `useQuery`-based approach.                          | `AppointmentContext.tsx`, `DoctorAppointments.tsx` |
+| 3   | ✅ **Fix `AdminSettings` password change**. Remove `(user as any)?.password`. Create `POST /auth/change-password` endpoint and a corresponding `changePasswordApi()` function + `useChangePassword` mutation. | `AdminSettings.tsx`, new `api/auth.ts`             |
+| 4   | ✅ **Add Vite proxy** in `vite.config.ts` to avoid CORS errors in dev.                                                                                                                                        | `vite.config.ts`                                   |
+| 5   | ✅ **Add refresh token logic** in `api/client.ts`. Implement a request queue that pauses during token refresh and retries failed requests.                                                                    | `api/client.ts`                                    |
+| 6   | ✅ **Create `api/emergency.ts` and `api/analytics.ts`** with proper React Query hooks. Wire `AdminEmergency.tsx` and `AdminAnalytics.tsx` to them.                                                            | new files                                          |
+| 7   | ✅ **Fix environment variable typing**: Add `/// <reference types="vite/client" />` to `vite-env.d.ts`. Remove the `(import.meta as any)` cast.                                                               | `api/client.ts`, `vite-env.d.ts`                   |
 
 ---
 
 ### Phase 2 — Component Cleanup 🟠
 
-| # | Task | File(s) |
-|---|---|---|
-| 8 | **Extract `BLOOD_TYPES`, `CITIES`, `DISEASES`, `HOSPITALS` to `constants.ts`**. Update all 14+ import sites. | new `constants.ts`, all affected components |
-| 9 | **Re-point type imports**: Change all `import { BloodBag } from '../../data/mockData'` to `import type { BloodBag } from '../../types'` across 8 components. | Inventory & Lab components |
-| 10 | **Replace `type Donor = any`** in `AdminDonors`, `DoctorDonors`, `AdminUsers` with `import type { Donor } from '../../types'`. Eliminate all `(d: any)`, `(u: any)` casts. | 3 components |
-| 11 | **Decouple `DoctorEligibility`, `LabResults`, `DonorRegistrationForm`, `DoctorCampaigns`** from direct mockData array imports. Use the corresponding React Query hooks. | 4 components |
-| 12 | **Fix mock mutations** in `api/donors.ts` and `api/campaigns.ts` to mutate the in-memory array so refetch returns the new data. | `api/donors.ts`, `api/campaigns.ts` |
-| 13 | **Unify `LabTest.result` and `TestResult`** field names (`hcv`/`hbv` vs. `hepatitisC`/`hepatitisB`). Create a shared `LabResultData` interface. | `types/lab.ts` |
-| 14 | **Fix `CreateDonorRequest`** — add `registeredAt`, `donations`, `points` to the `Omit<>` list. | `types/donor.ts` |
+| #   | Task                                                                                                                                                                          | File(s)                                     |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| 8   | ✅**Extract `BLOOD_TYPES`, `CITIES`, `DISEASES`, `HOSPITALS` to `constants.ts`**. Update all 14+ import sites.                                                                | new `constants.ts`, all affected components |
+| 9   | ✅**Re-point type imports**: Change all `import { BloodBag } from '../../data/mockData'` to `import type { BloodBag } from '../../types'` across 8 components.                | Inventory & Lab components                  |
+| 10  | ✅ **Replace `type Donor = any`** in `AdminDonors`, `DoctorDonors`, `AdminUsers` with `import type { Donor } from '../../types'`. Eliminate all `(d: any)`, `(u: any)` casts. | 3 components                                |
+| 11  | **Decouple `DoctorEligibility`, `LabResults`, `DonorRegistrationForm`, `DoctorCampaigns`** from direct mockData array imports. Use the corresponding React Query hooks.       | 4 components                                |
+| 12  | **Fix mock mutations** in `api/donors.ts` and `api/campaigns.ts` to mutate the in-memory array so refetch returns the new data.                                               | `api/donors.ts`, `api/campaigns.ts`         |
+| 13  | **Unify `LabTest.result` and `TestResult`** field names (`hcv`/`hbv` vs. `hepatitisC`/`hepatitisB`). Create a shared `LabResultData` interface.                               | `types/lab.ts`                              |
+| 14  | **Fix `CreateDonorRequest`** — add `registeredAt`, `donations`, `points` to the `Omit<>` list.                                                                                | `types/donor.ts`                            |
 
 ---
 
 ### Phase 3 — UX Polish 🟡
 
-| # | Task | File(s) |
-|---|---|---|
-| 15 | **Add `<Toaster />`** from Sonner to `App.tsx`. Replace all `setSuccess(true)` patterns with `toast.success('...')` / `toast.error('...')` in mutation callbacks. | `App.tsx`, all forms |
-| 16 | **Migrate all forms to `react-hook-form`**. `DonorRegistrationForm` is the highest priority (921 lines with manual validation). Use the existing `src/app/components/ui/form.tsx` wrapper. Consider adding Zod for schema validation. | `DonorRegistrationForm.tsx`, `AdminStaff.tsx`, `LoginPage.tsx` |
-| 17 | **Use `TableSkeleton` / `CardSkeleton`** instead of `PageLoader` in components that render tabular or card-grid data. | All admin/doctor/lab/inventory pages |
-| 18 | **Add empty state JSX** in every table's `{data.length === 0 && <EmptyState />}` branch. | All table components |
-| 19 | **Add a root-level `ErrorBoundary`** in `routes.tsx` wrapping each role's layout. | `routes.tsx`, new `ErrorBoundary.tsx` |
-| 20 | **Add `.env.example`** with all `VITE_*` variable names documented but without real values. | root directory |
-
+| #   | Task                                                                                                                                                                                                                                  | File(s)                                                        |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| 15  | **Add `<Toaster />`** from Sonner to `App.tsx`. Replace all `setSuccess(true)` patterns with `toast.success('...')` / `toast.error('...')` in mutation callbacks.                                                                     | `App.tsx`, all forms                                           |
+| 16  | **Migrate all forms to `react-hook-form`**. `DonorRegistrationForm` is the highest priority (921 lines with manual validation). Use the existing `src/app/components/ui/form.tsx` wrapper. Consider adding Zod for schema validation. | `DonorRegistrationForm.tsx`, `AdminStaff.tsx`, `LoginPage.tsx` |
+| 17  | **Use `TableSkeleton` / `CardSkeleton`** instead of `PageLoader` in components that render tabular or card-grid data.                                                                                                                 | All admin/doctor/lab/inventory pages                           |
+| 18  | **Add empty state JSX** in every table's `{data.length === 0 && <EmptyState />}` branch.                                                                                                                                              | All table components                                           |
+| 19  | **Add a root-level `ErrorBoundary`** in `routes.tsx` wrapping each role's layout.                                                                                                                                                     | `routes.tsx`, new `ErrorBoundary.tsx`                          |
+| 20  | **Add `.env.example`** with all `VITE_*` variable names documented but without real values.                                                                                                                                           | root directory                                                 |

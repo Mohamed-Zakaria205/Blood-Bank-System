@@ -13,7 +13,7 @@ import { BLOOD_TYPES, CITIES } from "../../constants";
 import { useDonors } from "../../hooks/useDonors";
 import { PageLoader, ErrorState } from "../shared/LoadingSkeleton";
 
-type Donor = any;
+import type { Donor } from "../../types";
 
 const statusColors: Record<string, string> = {
   eligible: "bg-green-100 text-green-700",
@@ -429,7 +429,7 @@ export default function AdminDonors() {
                     onChange={(e) =>
                       setEditForm((p) => ({
                         ...p,
-                        bloodType: e.target.value as any,
+                        bloodType: e.target.value as Donor["bloodType"],
                       }))
                     }
                     className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
@@ -476,7 +476,7 @@ export default function AdminDonors() {
                     onChange={(e) =>
                       setEditForm((p) => ({
                         ...p,
-                        status: e.target.value as any,
+                        status: e.target.value as Donor["status"],
                       }))
                     }
                     className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
