@@ -9,5 +9,4 @@ export * from './campaign';
 export * from './inventory';
 export * from './lab';
 export * from './appointment';
-export * from './emergency';
 export * from './analytics';
