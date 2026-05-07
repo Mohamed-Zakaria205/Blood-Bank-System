@@ -26,6 +26,7 @@ import InventoryDashboard from './components/inventory/InventoryDashboard';
 import InventoryBags from './components/inventory/InventoryBags';
 import InventoryHistory from './components/inventory/InventoryHistory';
 import InventoryDisposal from './components/inventory/InventoryDisposal';
+import ErrorBoundary from './components/shared/ErrorBoundary';
 
 // Root layout — providers live in App.tsx above RouterProvider
 function RootLayout() {
@@ -104,6 +105,7 @@ function InventoryGuard() {
 export const router = createBrowserRouter([
   {
     Component: RootLayout,
+    errorElement: <ErrorBoundary />,
     children: [
       { path: '/', Component: RootRedirect },
       { path: '/login', Component: LoginPage },
