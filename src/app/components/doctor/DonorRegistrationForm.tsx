@@ -1150,7 +1150,7 @@ export default function DonorRegistrationForm() {
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   <div>
                     <label
-                      className="block text-gray-600 mb-1.5 flex items-center gap-1"
+                      className=" text-gray-600 mb-1.5 flex items-center gap-1"
                       style={{ fontSize: '12px', fontWeight: 600 }}
                     >
                       <Scale className="w-3.5 h-3.5 text-blue-500" /> الوزن (كغ)
@@ -1166,7 +1166,7 @@ export default function DonorRegistrationForm() {
                   </div>
                   <div>
                     <label
-                      className="block text-gray-600 mb-1.5 flex items-center gap-1"
+                      className=" text-gray-600 mb-1.5 flex items-center gap-1"
                       style={{ fontSize: '12px', fontWeight: 600 }}
                     >
                       <Heart className="w-3.5 h-3.5 text-red-500" /> ضغط الدم
@@ -1181,7 +1181,7 @@ export default function DonorRegistrationForm() {
                   </div>
                   <div>
                     <label
-                      className="block text-gray-600 mb-1.5 flex items-center gap-1"
+                      className=" text-gray-600 mb-1.5 flex items-center gap-1"
                       style={{ fontSize: '12px', fontWeight: 600 }}
                     >
                       <Droplets className="w-3.5 h-3.5 text-purple-500" /> الهيموجلوبين
@@ -1362,7 +1362,7 @@ export default function DonorRegistrationForm() {
                   <div className="mt-3 space-y-3 p-4 bg-orange-50 border border-orange-100 rounded-xl">
                     <div>
                       <label
-                        className="block text-orange-700 mb-1.5 flex items-center gap-1"
+                        className="text-orange-700 mb-1.5 flex items-center gap-1"
                         style={{ fontSize: '12px', fontWeight: 600 }}
                       >
                         <AlertTriangle className="w-3.5 h-3.5" /> سبب التأجيل{' '}
@@ -1378,7 +1378,7 @@ export default function DonorRegistrationForm() {
                     </div>
                     <div>
                       <label
-                        className="block text-orange-700 mb-1.5 flex items-center gap-1"
+                        className="text-orange-700 mb-1.5 flex items-center gap-1"
                         style={{ fontSize: '12px', fontWeight: 600 }}
                       >
                         <Clock className="w-3.5 h-3.5" /> موجل حتى{' '}
@@ -1400,7 +1400,7 @@ export default function DonorRegistrationForm() {
                   <div className="mt-3 space-y-3 p-4 bg-red-50 border border-red-100 rounded-xl">
                     <div>
                       <label
-                        className="block text-red-700 mb-1.5 flex items-center gap-1"
+                        className=" text-red-700 mb-1.5 flex items-center gap-1"
                         style={{ fontSize: '12px', fontWeight: 600 }}
                       >
                         <AlertTriangle className="w-3.5 h-3.5" /> سبب ال��فض{' '}
@@ -1421,7 +1421,7 @@ export default function DonorRegistrationForm() {
                     </div>
                     <div>
                       <label
-                        className="block text-red-700 mb-1.5 flex items-center gap-1"
+                        className=" text-red-700 mb-1.5 flex items-center gap-1"
                         style={{ fontSize: '12px', fontWeight: 600 }}
                       >
                         <CalendarDays className="w-3.5 h-3.5" /> محظور حتى (LockoutUntil){' '}
