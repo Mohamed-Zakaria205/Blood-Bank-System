@@ -1,53 +1,65 @@
 import { createBrowserRouter, Navigate, Outlet, useNavigate } from 'react-router';
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { useAuth } from './contexts/AuthContext';
+import { PageLoader } from './components/shared/LoadingSkeleton';
 
-// ── Auth ──
+// ── Auth (eagerly loaded — needed immediately) ──
 import LoginPage from './components/auth/LoginPage';
 import RoleGuard from './components/auth/RoleGuard';
 
-// ── Layouts ──
-import AdminLayout from './components/layout/AdminLayout';
-import DoctorLayout from './components/layout/DoctorLayout';
-import LabLayout from './components/layout/LabLayout';
-import InventoryLayout from './components/layout/InventoryLayout';
-
-// ── Admin Pages ──
-import AdminDashboard from './components/admin/AdminDashboard';
-import AdminDonors from './components/admin/AdminDonors';
-import AdminStaff from './components/admin/AdminStaff';
-import AdminCampaigns from './components/admin/AdminCampaigns';
-import AdminInventory from './components/admin/AdminInventory';
-import AdminReports from './components/admin/AdminReports';
-import AdminSettings from './components/admin/AdminSettings';
-import AdminInventoryAlerts from './components/admin/AdminInventoryAlerts';
-
-// ── Doctor Pages ──
-import DoctorDashboard from './components/doctor/DoctorDashboard';
-import DoctorDonors from './components/doctor/DoctorDonors';
-import DonorRegistrationForm from './components/doctor/DonorRegistrationForm';
-import DoctorCampaigns from './components/doctor/DoctorCampaigns';
-import DoctorAppointments from './components/doctor/DoctorAppointments';
-import DoctorEligibility from './components/doctor/DoctorEligibility';
-
-// ── Lab Pages ──
-import LabDashboard from './components/lab/LabDashboard';
-import LabResults from './components/lab/LabResults';
-
-// ── Inventory Pages ──
-import InventoryDashboard from './components/inventory/InventoryDashboard';
-import InventoryBags from './components/inventory/InventoryBags';
-import InventoryHistory from './components/inventory/InventoryHistory';
-import InventoryDisposal from './components/inventory/InventoryDisposal';
-
-// ── Shared ──
+// ── Shared (eagerly loaded — needed for error boundaries) ──
 import ErrorBoundary from './components/shared/ErrorBoundary';
+
+// ── Layouts (lazy loaded per role) ──
+const AdminLayout = lazy(() => import('./components/layout/AdminLayout'));
+const DoctorLayout = lazy(() => import('./components/layout/DoctorLayout'));
+const LabLayout = lazy(() => import('./components/layout/LabLayout'));
+const InventoryLayout = lazy(() => import('./components/layout/InventoryLayout'));
+
+// ── Admin Pages (lazy loaded) ──
+const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
+const AdminDonors = lazy(() => import('./components/admin/AdminDonors'));
+const AdminStaff = lazy(() => import('./components/admin/AdminStaff'));
+const AdminCampaigns = lazy(() => import('./components/admin/AdminCampaigns'));
+const AdminInventory = lazy(() => import('./components/admin/AdminInventory'));
+const AdminReports = lazy(() => import('./components/admin/AdminReports'));
+const AdminSettings = lazy(() => import('./components/admin/AdminSettings'));
+const AdminInventoryAlerts = lazy(() => import('./components/admin/AdminInventoryAlerts'));
+
+// ── Doctor Pages (lazy loaded) ──
+const DoctorDashboard = lazy(() => import('./components/doctor/DoctorDashboard'));
+const DoctorDonors = lazy(() => import('./components/doctor/DoctorDonors'));
+const DonorRegistrationForm = lazy(() => import('./components/doctor/DonorRegistrationForm'));
+const DoctorCampaigns = lazy(() => import('./components/doctor/DoctorCampaigns'));
+const DoctorAppointments = lazy(() => import('./components/doctor/DoctorAppointments'));
+const DoctorEligibility = lazy(() => import('./components/doctor/DoctorEligibility'));
+
+// ── Lab Pages (lazy loaded) ──
+const LabDashboard = lazy(() => import('./components/lab/LabDashboard'));
+const LabResults = lazy(() => import('./components/lab/LabResults'));
+
+// ── Inventory Pages (lazy loaded) ──
+const InventoryDashboard = lazy(() => import('./components/inventory/InventoryDashboard'));
+const InventoryBags = lazy(() => import('./components/inventory/InventoryBags'));
+const InventoryHistory = lazy(() => import('./components/inventory/InventoryHistory'));
+const InventoryDisposal = lazy(() => import('./components/inventory/InventoryDisposal'));
+
+// ── Suspense wrapper — shows PageLoader while a lazy chunk is loading ──
+function SuspenseOutlet() {
+  return (
+    <Suspense fallback={<PageLoader message="جاري تحميل الصفحة..." />}>
+      <Outlet />
+    </Suspense>
+  );
+}
 
 // ── Root layout — providers live in App.tsx above RouterProvider ──
 function RootLayout() {
   return (
     <div dir="rtl" className="min-h-screen" style={{ fontFamily: "'Tajawal', sans-serif" }}>
-      <Outlet />
+      <Suspense fallback={<PageLoader />}>
+        <Outlet />
+      </Suspense>
     </div>
   );
 }
@@ -85,13 +97,15 @@ export const router = createBrowserRouter([
           {
             Component: AdminLayout,
             children: [
-              { index: true, Component: AdminDashboard },
-              { path: 'donors', Component: AdminDonors },
-              { path: 'staff', Component: AdminStaff },
-              { path: 'campaigns', Component: AdminCampaigns },
-              { path: 'inventory', Component: AdminInventory },
-              { path: 'reports', Component: AdminReports },
-              { path: 'settings', Component: AdminSettings },
+              { Component: SuspenseOutlet, children: [
+                { index: true, Component: AdminDashboard },
+                { path: 'donors', Component: AdminDonors },
+                { path: 'staff', Component: AdminStaff },
+                { path: 'campaigns', Component: AdminCampaigns },
+                { path: 'inventory', Component: AdminInventory },
+                { path: 'reports', Component: AdminReports },
+                { path: 'settings', Component: AdminSettings },
+              ]},
             ],
           },
         ],
@@ -105,12 +119,14 @@ export const router = createBrowserRouter([
           {
             Component: DoctorLayout,
             children: [
-              { index: true, Component: DoctorDashboard },
-              { path: 'donors', Component: DoctorDonors },
-              { path: 'register', Component: DonorRegistrationForm },
-              { path: 'campaigns', Component: DoctorCampaigns },
-              { path: 'appointments', Component: DoctorAppointments },
-              { path: 'eligibility', Component: DoctorEligibility },
+              { Component: SuspenseOutlet, children: [
+                { index: true, Component: DoctorDashboard },
+                { path: 'donors', Component: DoctorDonors },
+                { path: 'register', Component: DonorRegistrationForm },
+                { path: 'campaigns', Component: DoctorCampaigns },
+                { path: 'appointments', Component: DoctorAppointments },
+                { path: 'eligibility', Component: DoctorEligibility },
+              ]},
             ],
           },
         ],
@@ -124,8 +140,10 @@ export const router = createBrowserRouter([
           {
             Component: LabLayout,
             children: [
-              { index: true, Component: LabDashboard },
-              { path: 'results', Component: LabResults },
+              { Component: SuspenseOutlet, children: [
+                { index: true, Component: LabDashboard },
+                { path: 'results', Component: LabResults },
+              ]},
             ],
           },
         ],
@@ -139,11 +157,13 @@ export const router = createBrowserRouter([
           {
             Component: InventoryLayout,
             children: [
-              { index: true, Component: InventoryDashboard },
-              { path: 'bags', Component: InventoryBags },
-              { path: 'history', Component: InventoryHistory },
-              { path: 'disposal', Component: InventoryDisposal },
-              { path: 'inventory-alerts', Component: AdminInventoryAlerts },
+              { Component: SuspenseOutlet, children: [
+                { index: true, Component: InventoryDashboard },
+                { path: 'bags', Component: InventoryBags },
+                { path: 'history', Component: InventoryHistory },
+                { path: 'disposal', Component: InventoryDisposal },
+                { path: 'inventory-alerts', Component: AdminInventoryAlerts },
+              ]},
             ],
           },
         ],
