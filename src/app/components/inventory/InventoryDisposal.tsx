@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo } from 'react';
 import {
   Search,
   Trash2,
@@ -11,86 +11,80 @@ import {
   XCircle,
   AlertOctagon,
   ShieldOff,
-} from "lucide-react";
-import type { BloodBag, BloodType } from "../../types";
-import {
-  useBloodBags,
-  useOutflowRecords,
-  useDisposeBag,
-} from "../../hooks/useInventory";
-import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
-import { EmptyState } from "../shared/EmptyState";
-import { BLOOD_TYPES, HOSPITALS } from "../../constants";
+} from 'lucide-react';
+import type { BloodBag, BloodType } from '../../types';
+import { useBloodBags, useOutflowRecords, useDisposeBag } from '../../hooks/useInventory';
+import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
+import { EmptyState } from '../shared/EmptyState';
+import { BLOOD_TYPES, HOSPITALS } from '../../constants';
 
 /* ── constants ──────────────────────────────────────────── */
-const TODAY = new Date("2025-04-29");
+const TODAY = new Date('2025-04-29');
 function daysUntil(d: string) {
-  return Math.ceil(
-    (new Date(d).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24),
-  );
+  return Math.ceil((new Date(d).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24));
 }
 
 const donTypeLabels: Record<string, string> = {
-  whole: "دم كامل",
-  plasma: "بلازما",
-  platelets: "صفائح",
+  whole: 'دم كامل',
+  plasma: 'بلازما',
+  platelets: 'صفائح',
 };
 
 export const DISPOSAL_REASONS = [
   {
-    value: "expired",
-    label: "انتهاء الصلاحية",
-    icon: "⏰",
-    suggested: "disposed" as const,
+    value: 'expired',
+    label: 'انتهاء الصلاحية',
+    icon: '⏰',
+    suggested: 'disposed' as const,
   },
   {
-    value: "damaged",
-    label: "تلف الحقيبة",
-    icon: "💔",
-    suggested: "disposed" as const,
+    value: 'damaged',
+    label: 'تلف الحقيبة',
+    icon: '💔',
+    suggested: 'disposed' as const,
   },
   {
-    value: "contaminated",
-    label: "تلوث العينة",
-    icon: "⚗️",
-    suggested: "disposed" as const,
+    value: 'contaminated',
+    label: 'تلوث العينة',
+    icon: '⚗️',
+    suggested: 'disposed' as const,
   },
   {
-    value: "lab_failed",
-    label: "فشل في التحاليل المخبرية",
-    icon: "🧪",
-    suggested: "rejected" as const,
+    value: 'lab_failed',
+    label: 'فشل في التحاليل المخبرية',
+    icon: '🧪',
+    suggested: 'rejected' as const,
   },
   {
-    value: "storage",
-    label: "مشكلة في التخزين",
-    icon: "❄️",
-    suggested: "disposed" as const,
+    value: 'storage',
+    label: 'مشكلة في التخزين',
+    icon: '❄️',
+    suggested: 'disposed' as const,
   },
-  { value: "other", label: "أخرى", icon: "📋", suggested: "disposed" as const },
+  { value: 'other', label: 'أخرى', icon: '📋', suggested: 'disposed' as const },
 ];
 
 function getCategoryLabel(cat?: string) {
-  return DISPOSAL_REASONS.find((r) => r.value === cat)?.label ?? cat ?? "—";
+  return DISPOSAL_REASONS.find((r) => r.value === cat)?.label ?? cat ?? '—';
 }
 
 function getCurrentUserName() {
   try {
-    const u = JSON.parse(localStorage.getItem("bloodlink_user") || "{}");
-    return u.name ?? "أمين المخزن";
+    const u = JSON.parse(localStorage.getItem('bloodlink_user') || '{}');
+    return u.name ?? 'أمين المخزن';
   } catch {
-    return "أمين المخزن";
+    return 'أمين المخزن';
   }
 }
 
 /* ── sub-component: BagRow ──────────────────────────────── */
 function BagStatusChip({ bag }: { bag: BloodBag }) {
   const days = daysUntil(bag.expiryDate);
-  if (bag.status === "rejected")
+  if (bag.status === 'rejected')
     return (
       <span
         className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 whitespace-nowrap"
-        style={{ fontSize: "10px", fontWeight: 700 }}
+        style={{ fontSize: '10px', fontWeight: 700 }}
       >
         مرفوضة مخبرياً
       </span>
@@ -99,7 +93,7 @@ function BagStatusChip({ bag }: { bag: BloodBag }) {
     return (
       <span
         className="px-2 py-0.5 rounded-full bg-red-100 text-red-700 whitespace-nowrap"
-        style={{ fontSize: "10px", fontWeight: 700 }}
+        style={{ fontSize: '10px', fontWeight: 700 }}
       >
         منتهية الصلاحية
       </span>
@@ -108,7 +102,7 @@ function BagStatusChip({ bag }: { bag: BloodBag }) {
     return (
       <span
         className="px-2 py-0.5 rounded-full bg-red-50 text-red-600 whitespace-nowrap"
-        style={{ fontSize: "10px", fontWeight: 700 }}
+        style={{ fontSize: '10px', fontWeight: 700 }}
       >
         تنتهي خلال {days} أيام
       </span>
@@ -117,7 +111,7 @@ function BagStatusChip({ bag }: { bag: BloodBag }) {
     return (
       <span
         className="px-2 py-0.5 rounded-full bg-orange-50 text-orange-600 whitespace-nowrap"
-        style={{ fontSize: "10px", fontWeight: 700 }}
+        style={{ fontSize: '10px', fontWeight: 700 }}
       >
         تنتهي خلال {days} أيام
       </span>
@@ -125,7 +119,7 @@ function BagStatusChip({ bag }: { bag: BloodBag }) {
   return (
     <span
       className="px-2 py-0.5 rounded-full bg-green-50 text-green-700 whitespace-nowrap"
-      style={{ fontSize: "10px", fontWeight: 700 }}
+      style={{ fontSize: '10px', fontWeight: 700 }}
     >
       متاحة
     </span>
@@ -134,11 +128,7 @@ function BagStatusChip({ bag }: { bag: BloodBag }) {
 
 /* ── main component ─────────────────────────────────────── */
 export default function InventoryDisposal() {
-  const {
-    data: bags = [],
-    isLoading: isLoadingBags,
-    isError: isErrorBags,
-  } = useBloodBags();
+  const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
   const {
     data: outflowRecords = [],
     isLoading: isLoadingOutflow,
@@ -147,29 +137,28 @@ export default function InventoryDisposal() {
   const disposeBagMutation = useDisposeBag();
 
   /* form state */
-  const [bagSearch, setBagSearch] = useState("");
+  const [bagSearch, setBagSearch] = useState('');
   const [selectedBagIds, setSelectedBagIds] = useState<string[]>([]);
-  const [category, setCategory] = useState("");
-  const [targetStatus, setTargetStatus] = useState<"disposed" | "rejected">(
-    "disposed",
-  );
-  const [notes, setNotes] = useState("");
+  const [category, setCategory] = useState('');
+  const [targetStatus, setTargetStatus] = useState<'disposed' | 'rejected'>('disposed');
+  const [notes, setNotes] = useState('');
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [showConfirm, setShowConfirm] = useState(false);
 
   /* history state */
-  const [histSearch, setHistSearch] = useState("");
-  const [histCategory, setHistCategory] = useState("all");
-  const [histBloodType, setHistBloodType] = useState<BloodType | "all">("all");
-  const [histStaff, setHistStaff] = useState("");
+  const [histSearch, setHistSearch] = useState('');
+  const [histCategory, setHistCategory] = useState('all');
+  const [histBloodType, setHistBloodType] = useState<BloodType | 'all'>('all');
+  const [histStaff, setHistStaff] = useState('');
 
-  if (isLoadingBags || isLoadingOutflow) return (
-    <div className="space-y-6 p-2">
-      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
-      <CardSkeleton count={3} />
-      <TableSkeleton rows={5} cols={6} />
-    </div>
-  );
+  if (isLoadingBags || isLoadingOutflow)
+    return (
+      <div className="space-y-6 p-2">
+        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <CardSkeleton count={3} />
+        <TableSkeleton rows={5} cols={6} />
+      </div>
+    );
   if (isErrorBags || isErrorOutflow)
     return (
       <ErrorState
@@ -183,33 +172,21 @@ export default function InventoryDisposal() {
     () =>
       bags.filter((b) => {
         const d = daysUntil(b.expiryDate);
-        return b.status === "available" && d >= 0 && d <= 5;
+        return b.status === 'available' && d >= 0 && d <= 5;
       }).length,
     [bags],
   );
   const expiredCount = useMemo(
-    () =>
-      bags.filter(
-        (b) => b.status === "available" && daysUntil(b.expiryDate) < 0,
-      ).length,
+    () => bags.filter((b) => b.status === 'available' && daysUntil(b.expiryDate) < 0).length,
     [bags],
   );
-  const rejectedCount = useMemo(
-    () => bags.filter((b) => b.status === "rejected").length,
-    [bags],
-  );
-  const disposedCount = useMemo(
-    () => bags.filter((b) => b.status === "disposed").length,
-    [bags],
-  );
+  const rejectedCount = useMemo(() => bags.filter((b) => b.status === 'rejected').length, [bags]);
+  const disposedCount = useMemo(() => bags.filter((b) => b.status === 'disposed').length, [bags]);
   const flaggedCount = nearExpiryCount + expiredCount + rejectedCount;
 
   const candidateBags = useMemo(() => {
     const eligible = bags.filter(
-      (b) =>
-        b.status !== "disposed" &&
-        b.status !== "issued" &&
-        b.status !== "expired",
+      (b) => b.status !== 'disposed' && b.status !== 'issued' && b.status !== 'expired',
     );
     const searched = bagSearch.trim()
       ? eligible.filter(
@@ -221,7 +198,7 @@ export default function InventoryDisposal() {
 
     return searched.sort((a, b) => {
       const priority = (bag: BloodBag) => {
-        if (bag.status === "rejected") return 0;
+        if (bag.status === 'rejected') return 0;
         const d = daysUntil(bag.expiryDate);
         if (d < 0) return 1;
         if (d <= 3) return 2;
@@ -241,7 +218,7 @@ export default function InventoryDisposal() {
   );
 
   const disposalRecords = useMemo(
-    () => outflowRecords.filter((r) => r.actionType === "disposed"),
+    () => outflowRecords.filter((r) => r.actionType === 'disposed'),
     [outflowRecords],
   );
 
@@ -253,15 +230,13 @@ export default function InventoryDisposal() {
   const filteredHistory = useMemo(
     () =>
       disposalRecords.filter((r) => {
-        if (histBloodType !== "all" && r.bloodType !== histBloodType)
-          return false;
-        if (histCategory !== "all" && r.disposalCategory !== histCategory)
-          return false;
+        if (histBloodType !== 'all' && r.bloodType !== histBloodType) return false;
+        if (histCategory !== 'all' && r.disposalCategory !== histCategory) return false;
         if (histStaff && r.performedByName !== histStaff) return false;
         if (
           histSearch &&
           !r.bagCode.includes(histSearch) &&
-          !(r.performedByName ?? "").includes(histSearch) &&
+          !(r.performedByName ?? '').includes(histSearch) &&
           !r.reason.includes(histSearch)
         )
           return false;
@@ -273,24 +248,22 @@ export default function InventoryDisposal() {
   /* ── handlers ─────────────────────────────────────────── */
   const toggleSelect = (bagId: string) => {
     setSelectedBagIds((prev) =>
-      prev.includes(bagId)
-        ? prev.filter((id) => id !== bagId)
-        : [...prev, bagId],
+      prev.includes(bagId) ? prev.filter((id) => id !== bagId) : [...prev, bagId],
     );
-    if (formErrors.bags) setFormErrors((p) => ({ ...p, bags: "" }));
+    if (formErrors.bags) setFormErrors((p) => ({ ...p, bags: '' }));
   };
 
   const handleCategoryChange = (val: string) => {
     setCategory(val);
     const r = DISPOSAL_REASONS.find((r) => r.value === val);
     if (r) setTargetStatus(r.suggested);
-    if (formErrors.category) setFormErrors((p) => ({ ...p, category: "" }));
+    if (formErrors.category) setFormErrors((p) => ({ ...p, category: '' }));
   };
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (selectedBagIds.length === 0) e.bags = "يجب تحديد حقيبة واحدة على الأقل";
-    if (!category) e.category = "يجب اختيار سبب الإتلاف";
+    if (selectedBagIds.length === 0) e.bags = 'يجب تحديد حقيبة واحدة على الأقل';
+    if (!category) e.category = 'يجب اختيار سبب الإتلاف';
     setFormErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -300,18 +273,15 @@ export default function InventoryDisposal() {
   };
 
   const handleConfirmDispose = async () => {
-    const label =
-      DISPOSAL_REASONS.find((r) => r.value === category)?.label ?? category;
+    const label = DISPOSAL_REASONS.find((r) => r.value === category)?.label ?? category;
     try {
       await Promise.all(
-        selectedBagIds.map((id) =>
-          disposeBagMutation.mutateAsync({ bagId: id, reason: label }),
-        ),
+        selectedBagIds.map((id) => disposeBagMutation.mutateAsync({ bagId: id, reason: label })),
       );
       setShowConfirm(false);
       setSelectedBagIds([]);
-      setCategory("");
-      setNotes("");
+      setCategory('');
+      setNotes('');
       setFormErrors({});
     } catch (err) {
       console.error(err);
@@ -319,31 +289,24 @@ export default function InventoryDisposal() {
   };
 
   const clearHistFilters = () => {
-    setHistSearch("");
-    setHistBloodType("all");
-    setHistCategory("all");
-    setHistStaff("");
+    setHistSearch('');
+    setHistBloodType('all');
+    setHistCategory('all');
+    setHistStaff('');
   };
   const hasHistFilters =
-    histSearch ||
-    histBloodType !== "all" ||
-    histCategory !== "all" ||
-    histStaff;
+    histSearch || histBloodType !== 'all' || histCategory !== 'all' || histStaff;
 
   /* ── render ───────────────────────────────────────────── */
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1
-          className="text-gray-900"
-          style={{ fontSize: "22px", fontWeight: 800 }}
-        >
+        <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
           إتلاف وإخراج الحقائب
         </h1>
-        <p className="text-gray-500" style={{ fontSize: "14px" }}>
-          تسجيل إتلاف الحقائب التالفة أو المنتهية أو المرفوضة مع الحفاظ على سجل
-          تدقيق كامل
+        <p className="text-gray-500" style={{ fontSize: '14px' }}>
+          تسجيل إتلاف الحقائب التالفة أو المنتهية أو المرفوضة مع الحفاظ على سجل تدقيق كامل
         </p>
       </div>
 
@@ -351,52 +314,44 @@ export default function InventoryDisposal() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           {
-            label: "قريبة الانتهاء",
+            label: 'قريبة الانتهاء',
             value: nearExpiryCount,
-            color: "text-orange-600",
-            bg: "bg-orange-50 border-orange-200",
+            color: 'text-orange-600',
+            bg: 'bg-orange-50 border-orange-200',
             Icon: Clock,
           },
           {
-            label: "منتهية الصلاحية",
+            label: 'منتهية الصلاحية',
             value: expiredCount,
-            color: "text-red-600",
-            bg: "bg-red-50 border-red-200",
+            color: 'text-red-600',
+            bg: 'bg-red-50 border-red-200',
             Icon: AlertTriangle,
           },
           {
-            label: "مرفوضة مخبرياً",
+            label: 'مرفوضة مخبرياً',
             value: rejectedCount,
-            color: "text-purple-600",
-            bg: "bg-purple-50 border-purple-200",
+            color: 'text-purple-600',
+            bg: 'bg-purple-50 border-purple-200',
             Icon: XCircle,
           },
           {
-            label: "إجمالي المُتلَف",
+            label: 'إجمالي المُتلَف',
             value: disposedCount,
-            color: "text-gray-500",
-            bg: "bg-gray-50 border-gray-200",
+            color: 'text-gray-500',
+            bg: 'bg-gray-50 border-gray-200',
             Icon: CheckCircle,
           },
         ].map((s) => (
-          <div
-            key={s.label}
-            className={`${s.bg} border rounded-2xl p-5 shadow-sm`}
-          >
-            <div
-              className={`w-10 h-10 ${s.bg} rounded-xl flex items-center justify-center mb-3`}
-            >
+          <div key={s.label} className={`${s.bg} border rounded-2xl p-5 shadow-sm`}>
+            <div className={`w-10 h-10 ${s.bg} rounded-xl flex items-center justify-center mb-3`}>
               <s.Icon className={`w-5 h-5 ${s.color}`} />
             </div>
-            <div
-              className={s.color}
-              style={{ fontSize: "28px", fontWeight: 800 }}
-            >
+            <div className={s.color} style={{ fontSize: '28px', fontWeight: 800 }}>
               {s.value}
             </div>
             <div
               className={`${s.color} opacity-80 mt-0.5`}
-              style={{ fontSize: "12px", fontWeight: 600 }}
+              style={{ fontSize: '12px', fontWeight: 600 }}
             >
               {s.label}
             </div>
@@ -409,24 +364,16 @@ export default function InventoryDisposal() {
         <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-2xl">
           <AlertOctagon className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
           <div>
-            <p
-              className="text-red-700"
-              style={{ fontSize: "13px", fontWeight: 700 }}
-            >
+            <p className="text-red-700" style={{ fontSize: '13px', fontWeight: 700 }}>
               {flaggedCount} حقيبة تحتاج إجراء عاجل
             </p>
-            <p
-              className="text-red-500"
-              style={{ fontSize: "11px", marginTop: "2px" }}
-            >
+            <p className="text-red-500" style={{ fontSize: '11px', marginTop: '2px' }}>
               {expiredCount > 0 && `${expiredCount} منتهية الصلاحية`}
-              {expiredCount > 0 && nearExpiryCount > 0 && " · "}
+              {expiredCount > 0 && nearExpiryCount > 0 && ' · '}
               {nearExpiryCount > 0 && `${nearExpiryCount} قريبة الانتهاء`}
-              {(expiredCount > 0 || nearExpiryCount > 0) &&
-                rejectedCount > 0 &&
-                " · "}
+              {(expiredCount > 0 || nearExpiryCount > 0) && rejectedCount > 0 && ' · '}
               {rejectedCount > 0 && `${rejectedCount} مرفوضة مخبرياً`}
-              {" — حددها من القائمة أدناه لتسجيل الإتلاف"}
+              {' — حددها من القائمة أدناه لتسجيل الإتلاف'}
             </p>
           </div>
         </div>
@@ -437,19 +384,16 @@ export default function InventoryDisposal() {
         {/* Form header */}
         <div
           className="flex items-center gap-3 px-6 py-4 border-b border-gray-100"
-          style={{ background: "linear-gradient(to left, #fff7f7, #fff)" }}
+          style={{ background: 'linear-gradient(to left, #fff7f7, #fff)' }}
         >
           <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
             <Trash2 className="w-5 h-5 text-red-600" />
           </div>
           <div>
-            <h2
-              className="text-gray-900"
-              style={{ fontSize: "15px", fontWeight: 700 }}
-            >
+            <h2 className="text-gray-900" style={{ fontSize: '15px', fontWeight: 700 }}>
               تسجيل إتلاف جديد
             </h2>
-            <p className="text-gray-500" style={{ fontSize: "11px" }}>
+            <p className="text-gray-500" style={{ fontSize: '11px' }}>
               حدد الحقيبة (أو أكثر) وأدخل تفاصيل الإتلاف
             </p>
           </div>
@@ -460,7 +404,7 @@ export default function InventoryDisposal() {
           <div>
             <label
               className="block text-gray-700 mb-2"
-              style={{ fontSize: "13px", fontWeight: 600 }}
+              style={{ fontSize: '13px', fontWeight: 600 }}
             >
               تحديد الحقيبة / الحقائب <span className="text-red-500">*</span>
             </label>
@@ -473,19 +417,19 @@ export default function InventoryDisposal() {
                 onChange={(e) => setBagSearch(e.target.value)}
                 placeholder="بحث بكود الحقيبة أو فصيلة الدم..."
                 className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-red-300"
-                style={{ fontSize: "13px" }}
+                style={{ fontSize: '13px' }}
               />
             </div>
 
             {/* Bag table */}
             <div
               className="border border-gray-100 rounded-xl overflow-hidden"
-              style={{ maxHeight: "220px", overflowY: "auto" }}
+              style={{ maxHeight: '220px', overflowY: 'auto' }}
             >
               {candidateBags.length === 0 ? (
                 <div className="py-10 text-center">
                   <Package className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                  <p className="text-gray-400" style={{ fontSize: "13px" }}>
+                  <p className="text-gray-400" style={{ fontSize: '13px' }}>
                     لا توجد حقائب مطابقة للبحث
                   </p>
                 </div>
@@ -498,25 +442,23 @@ export default function InventoryDisposal() {
                         <tr
                           key={bag.id}
                           onClick={() => toggleSelect(bag.id)}
-                          className={`cursor-pointer transition-colors hover:bg-gray-50 ${isSelected ? "bg-red-50/70" : ""}`}
+                          className={`cursor-pointer transition-colors hover:bg-gray-50 ${isSelected ? 'bg-red-50/70' : ''}`}
                         >
                           <td className="px-3 py-2.5 w-10">
                             <div
                               className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                                 isSelected
-                                  ? "bg-red-600 border-red-600"
-                                  : "border-gray-300 hover:border-red-400"
+                                  ? 'bg-red-600 border-red-600'
+                                  : 'border-gray-300 hover:border-red-400'
                               }`}
                             >
-                              {isSelected && (
-                                <Check className="w-3 h-3 text-white" />
-                              )}
+                              {isSelected && <Check className="w-3 h-3 text-white" />}
                             </div>
                           </td>
                           <td className="px-3 py-2.5">
                             <span
                               className="font-mono text-green-700 bg-green-50 px-2 py-0.5 rounded"
-                              style={{ fontSize: "11px", fontWeight: 700 }}
+                              style={{ fontSize: '11px', fontWeight: 700 }}
                             >
                               {bag.bagCode}
                             </span>
@@ -524,24 +466,18 @@ export default function InventoryDisposal() {
                           <td className="px-3 py-2.5">
                             <span
                               className="px-2 py-0.5 bg-red-50 text-red-600 rounded"
-                              style={{ fontSize: "12px", fontWeight: 800 }}
+                              style={{ fontSize: '12px', fontWeight: 800 }}
                             >
                               {bag.bloodType}
                             </span>
                           </td>
-                          <td
-                            className="px-3 py-2.5 text-gray-400"
-                            style={{ fontSize: "11px" }}
-                          >
+                          <td className="px-3 py-2.5 text-gray-400" style={{ fontSize: '11px' }}>
                             {donTypeLabels[bag.donationType]}
                           </td>
                           <td className="px-3 py-2.5">
                             <BagStatusChip bag={bag} />
                           </td>
-                          <td
-                            className="px-3 py-2.5 text-gray-400"
-                            style={{ fontSize: "10px" }}
-                          >
+                          <td className="px-3 py-2.5 text-gray-400" style={{ fontSize: '10px' }}>
                             {bag.expiryDate}
                           </td>
                         </tr>
@@ -562,14 +498,11 @@ export default function InventoryDisposal() {
                   >
                     <span
                       className="font-mono text-red-700"
-                      style={{ fontSize: "11px", fontWeight: 700 }}
+                      style={{ fontSize: '11px', fontWeight: 700 }}
                     >
                       {bag.bagCode}
                     </span>
-                    <span
-                      className="text-red-400"
-                      style={{ fontSize: "10px", fontWeight: 700 }}
-                    >
+                    <span className="text-red-400" style={{ fontSize: '10px', fontWeight: 700 }}>
                       {bag.bloodType}
                     </span>
                     <button
@@ -586,7 +519,7 @@ export default function InventoryDisposal() {
               </div>
             )}
             {formErrors.bags && (
-              <p className="text-red-500 mt-1" style={{ fontSize: "11px" }}>
+              <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
                 {formErrors.bags}
               </p>
             )}
@@ -598,15 +531,15 @@ export default function InventoryDisposal() {
             <div>
               <label
                 className="block text-gray-700 mb-1.5"
-                style={{ fontSize: "13px", fontWeight: 600 }}
+                style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 سبب الإتلاف <span className="text-red-500">*</span>
               </label>
               <select
                 value={category}
                 onChange={(e) => handleCategoryChange(e.target.value)}
-                className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-red-300 ${formErrors.category ? "border-red-300" : "border-gray-200"}`}
-                style={{ fontSize: "13px" }}
+                className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-red-300 ${formErrors.category ? 'border-red-300' : 'border-gray-200'}`}
+                style={{ fontSize: '13px' }}
               >
                 <option value="">— اختر السبب —</option>
                 {DISPOSAL_REASONS.map((r) => (
@@ -616,7 +549,7 @@ export default function InventoryDisposal() {
                 ))}
               </select>
               {formErrors.category && (
-                <p className="text-red-500 mt-1" style={{ fontSize: "11px" }}>
+                <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
                   {formErrors.category}
                 </p>
               )}
@@ -626,39 +559,27 @@ export default function InventoryDisposal() {
             <div>
               <label
                 className="block text-gray-700 mb-1.5"
-                style={{ fontSize: "13px", fontWeight: 600 }}
+                style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 الحالة الجديدة للحقيبة
               </label>
               <div className="flex gap-4 pt-2">
                 {(
                   [
-                    ["disposed", "🗑️ مُتلَف"],
-                    ["rejected", "🚫 مرفوض"],
+                    ['disposed', '🗑️ مُتلَف'],
+                    ['rejected', '🚫 مرفوض'],
                   ] as [string, string][]
                 ).map(([val, lbl]) => (
-                  <label
-                    key={val}
-                    className="flex items-center gap-2 cursor-pointer select-none"
-                  >
+                  <label key={val} className="flex items-center gap-2 cursor-pointer select-none">
                     <div
-                      onClick={() =>
-                        setTargetStatus(val as "disposed" | "rejected")
-                      }
+                      onClick={() => setTargetStatus(val as 'disposed' | 'rejected')}
                       className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
-                        targetStatus === val
-                          ? "border-red-600"
-                          : "border-gray-300"
+                        targetStatus === val ? 'border-red-600' : 'border-gray-300'
                       }`}
                     >
-                      {targetStatus === val && (
-                        <div className="w-2 h-2 rounded-full bg-red-600" />
-                      )}
+                      {targetStatus === val && <div className="w-2 h-2 rounded-full bg-red-600" />}
                     </div>
-                    <span
-                      className="text-gray-700"
-                      style={{ fontSize: "13px" }}
-                    >
+                    <span className="text-gray-700" style={{ fontSize: '13px' }}>
                       {lbl}
                     </span>
                   </label>
@@ -671,7 +592,7 @@ export default function InventoryDisposal() {
           <div>
             <label
               className="block text-gray-700 mb-1.5"
-              style={{ fontSize: "13px", fontWeight: 600 }}
+              style={{ fontSize: '13px', fontWeight: 600 }}
             >
               ملاحظات إضافية <span className="text-gray-400">(اختياري)</span>
             </label>
@@ -681,17 +602,17 @@ export default function InventoryDisposal() {
               rows={2}
               placeholder="أي تفاصيل إضافية حول سبب الإتلاف أو حالة الحقيبة..."
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-red-300 resize-none"
-              style={{ fontSize: "13px" }}
+              style={{ fontSize: '13px' }}
             />
           </div>
 
           {/* Staff info */}
           <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-100 rounded-xl">
-            <span style={{ fontSize: "14px" }}>📋</span>
-            <p className="text-gray-500" style={{ fontSize: "11px" }}>
-              سيتم تسجيل هذا الإتلاف تلقائياً باسم{" "}
-              <strong className="text-gray-700">{getCurrentUserName()}</strong>{" "}
-              مع التاريخ والوقت الحالي
+            <span style={{ fontSize: '14px' }}>📋</span>
+            <p className="text-gray-500" style={{ fontSize: '11px' }}>
+              سيتم تسجيل هذا الإتلاف تلقائياً باسم{' '}
+              <strong className="text-gray-700">{getCurrentUserName()}</strong> مع التاريخ والوقت
+              الحالي
             </p>
           </div>
 
@@ -700,15 +621,15 @@ export default function InventoryDisposal() {
             onClick={handleOpenConfirm}
             className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl transition-all ${
               selectedBagIds.length > 0
-                ? "bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow-md"
-                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                ? 'bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow-md'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             }`}
-            style={{ fontSize: "14px", fontWeight: 700 }}
+            style={{ fontSize: '14px', fontWeight: 700 }}
           >
             <Trash2 className="w-4 h-4" />
             {selectedBagIds.length > 0
-              ? `تسجيل إتلاف ${selectedBagIds.length === 1 ? "الحقيبة" : `${selectedBagIds.length} حقائب`}`
-              : "حدد حقيبة واحدة على الأقل"}
+              ? `تسجيل إتلاف ${selectedBagIds.length === 1 ? 'الحقيبة' : `${selectedBagIds.length} حقائب`}`
+              : 'حدد حقيبة واحدة على الأقل'}
           </button>
         </div>
       </div>
@@ -717,13 +638,10 @@ export default function InventoryDisposal() {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         {/* History header */}
         <div className="px-6 py-4 border-b border-gray-100">
-          <h2
-            className="text-gray-900"
-            style={{ fontSize: "16px", fontWeight: 700 }}
-          >
+          <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
             سجل الإتلاف الكامل
           </h2>
-          <p className="text-gray-500" style={{ fontSize: "12px" }}>
+          <p className="text-gray-500" style={{ fontSize: '12px' }}>
             {disposalRecords.length} عملية إتلاف مسجلة
           </p>
         </div>
@@ -738,14 +656,14 @@ export default function InventoryDisposal() {
                 onChange={(e) => setHistSearch(e.target.value)}
                 placeholder="بحث بكود الحقيبة أو المنفذ..."
                 className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
-                style={{ fontSize: "13px" }}
+                style={{ fontSize: '13px' }}
               />
             </div>
             <select
               value={histBloodType}
               onChange={(e) => setHistBloodType(e.target.value as any)}
               className="px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
-              style={{ fontSize: "13px" }}
+              style={{ fontSize: '13px' }}
             >
               <option value="all">كل الفصائل</option>
               {BLOOD_TYPES.map((t) => (
@@ -760,7 +678,7 @@ export default function InventoryDisposal() {
               value={histCategory}
               onChange={(e) => setHistCategory(e.target.value)}
               className="px-3 py-2 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
-              style={{ fontSize: "13px" }}
+              style={{ fontSize: '13px' }}
             >
               <option value="all">كل الأسباب</option>
               {DISPOSAL_REASONS.map((r) => (
@@ -774,12 +692,12 @@ export default function InventoryDisposal() {
                 value={histStaff}
                 onChange={(e) => setHistStaff(e.target.value)}
                 className="px-3 py-2 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
-                style={{ fontSize: "13px" }}
+                style={{ fontSize: '13px' }}
               >
                 <option value="">كل المنفذين</option>
                 {staffList.map((s) => (
                   <option key={s} value={s}>
-                    {s.split(" ").slice(1, 3).join(" ")}
+                    {s.split(' ').slice(1, 3).join(' ')}
                   </option>
                 ))}
               </select>
@@ -788,7 +706,7 @@ export default function InventoryDisposal() {
               <button
                 onClick={clearHistFilters}
                 className="px-3 py-2 text-gray-400 hover:text-red-500 hover:bg-red-50 border border-gray-200 rounded-xl transition-all"
-                style={{ fontSize: "12px", fontWeight: 600 }}
+                style={{ fontSize: '12px', fontWeight: 600 }}
               >
                 × مسح الفلاتر
               </button>
@@ -802,20 +720,20 @@ export default function InventoryDisposal() {
             <thead>
               <tr className="bg-gray-50">
                 {[
-                  "رقم السجل",
-                  "كود الحقيبة",
-                  "الفصيلة",
-                  "النوع",
-                  "سبب الإتلاف",
-                  "الحالة",
-                  "ملاحظات",
-                  "المنفذ",
-                  "التاريخ",
+                  'رقم السجل',
+                  'كود الحقيبة',
+                  'الفصيلة',
+                  'النوع',
+                  'سبب الإتلاف',
+                  'الحالة',
+                  'ملاحظات',
+                  'المنفذ',
+                  'التاريخ',
                 ].map((h) => (
                   <th
                     key={h}
                     className="px-4 py-3 text-right text-gray-500 whitespace-nowrap"
-                    style={{ fontSize: "11px", fontWeight: 600 }}
+                    style={{ fontSize: '11px', fontWeight: 600 }}
                   >
                     {h}
                   </th>
@@ -826,14 +744,11 @@ export default function InventoryDisposal() {
               {filteredHistory.map((r) => {
                 const catLabel = getCategoryLabel(r.disposalCategory);
                 return (
-                  <tr
-                    key={r.id}
-                    className="hover:bg-red-50/20 transition-colors"
-                  >
+                  <tr key={r.id} className="hover:bg-red-50/20 transition-colors">
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span
                         className="font-mono text-red-600 bg-red-50 px-2 py-0.5 rounded"
-                        style={{ fontSize: "11px", fontWeight: 700 }}
+                        style={{ fontSize: '11px', fontWeight: 700 }}
                       >
                         {r.id}
                       </span>
@@ -841,7 +756,7 @@ export default function InventoryDisposal() {
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span
                         className="font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded"
-                        style={{ fontSize: "11px" }}
+                        style={{ fontSize: '11px' }}
                       >
                         {r.bagCode}
                       </span>
@@ -849,51 +764,49 @@ export default function InventoryDisposal() {
                     <td className="px-4 py-3">
                       <span
                         className="px-2 py-0.5 bg-red-50 text-red-600 rounded"
-                        style={{ fontSize: "12px", fontWeight: 800 }}
+                        style={{ fontSize: '12px', fontWeight: 800 }}
                       >
                         {r.bloodType}
                       </span>
                     </td>
                     <td
                       className="px-4 py-3 text-gray-500 whitespace-nowrap"
-                      style={{ fontSize: "11px" }}
+                      style={{ fontSize: '11px' }}
                     >
                       {donTypeLabels[r.donationType] ?? r.donationType}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span
                         className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-orange-50 border border-orange-100 text-orange-700 rounded-full"
-                        style={{ fontSize: "11px", fontWeight: 600 }}
+                        style={{ fontSize: '11px', fontWeight: 600 }}
                       >
-                        {DISPOSAL_REASONS.find(
-                          (d) => d.value === r.disposalCategory,
-                        )?.icon ?? "📋"}{" "}
+                        {DISPOSAL_REASONS.find((d) => d.value === r.disposalCategory)?.icon ?? '📋'}{' '}
                         {catLabel}
                       </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span
                         className="px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600"
-                        style={{ fontSize: "11px", fontWeight: 600 }}
+                        style={{ fontSize: '11px', fontWeight: 600 }}
                       >
                         مُتلَف
                       </span>
                     </td>
                     <td
                       className="px-4 py-3 text-gray-400 max-w-xs truncate"
-                      style={{ fontSize: "11px" }}
+                      style={{ fontSize: '11px' }}
                     >
-                      {r.notes || "—"}
+                      {r.notes || '—'}
                     </td>
                     <td
                       className="px-4 py-3 text-gray-600 whitespace-nowrap"
-                      style={{ fontSize: "11px" }}
+                      style={{ fontSize: '11px' }}
                     >
-                      {r.performedByName.split(" ").slice(1, 3).join(" ")}
+                      {r.performedByName.split(' ').slice(1, 3).join(' ')}
                     </td>
                     <td
                       className="px-4 py-3 text-gray-400 whitespace-nowrap"
-                      style={{ fontSize: "11px" }}
+                      style={{ fontSize: '11px' }}
                     >
                       {r.timestamp}
                     </td>
@@ -903,11 +816,7 @@ export default function InventoryDisposal() {
               {filteredHistory.length === 0 && (
                 <EmptyState
                   colSpan={9}
-                  message={
-                    hasHistFilters
-                      ? "لا توجد سجلات مطابقة للبحث"
-                      : "لا توجد سجلات إتلاف"
-                  }
+                  message={hasHistFilters ? 'لا توجد سجلات مطابقة للبحث' : 'لا توجد سجلات إتلاف'}
                 />
               )}
             </tbody>
@@ -925,13 +834,10 @@ export default function InventoryDisposal() {
                 <AlertTriangle className="w-6 h-6 text-red-600" />
               </div>
               <div>
-                <h3
-                  className="text-gray-900"
-                  style={{ fontSize: "17px", fontWeight: 700 }}
-                >
+                <h3 className="text-gray-900" style={{ fontSize: '17px', fontWeight: 700 }}>
                   تأكيد الإتلاف النهائي
                 </h3>
-                <p className="text-red-600" style={{ fontSize: "12px" }}>
+                <p className="text-red-600" style={{ fontSize: '12px' }}>
                   هذا الإجراء لا يمكن التراجع عنه — سيت�� تسجيله في سجل التدقيق
                 </p>
               </div>
@@ -940,10 +846,7 @@ export default function InventoryDisposal() {
             <div className="p-6 space-y-4">
               {/* Bags list */}
               <div>
-                <p
-                  className="text-gray-500 mb-2"
-                  style={{ fontSize: "11px", fontWeight: 600 }}
-                >
+                <p className="text-gray-500 mb-2" style={{ fontSize: '11px', fontWeight: 600 }}>
                   الحقائب المحددة للإتلاف ({selectedBagsData.length})
                 </p>
                 <div className="space-y-1.5 max-h-36 overflow-y-auto">
@@ -954,20 +857,17 @@ export default function InventoryDisposal() {
                     >
                       <span
                         className="font-mono text-green-700 bg-green-50 px-2 py-0.5 rounded"
-                        style={{ fontSize: "11px", fontWeight: 700 }}
+                        style={{ fontSize: '11px', fontWeight: 700 }}
                       >
                         {bag.bagCode}
                       </span>
                       <span
                         className="px-1.5 py-0.5 bg-red-100 text-red-700 rounded"
-                        style={{ fontSize: "11px", fontWeight: 800 }}
+                        style={{ fontSize: '11px', fontWeight: 800 }}
                       >
                         {bag.bloodType}
                       </span>
-                      <span
-                        className="text-gray-500"
-                        style={{ fontSize: "11px" }}
-                      >
+                      <span className="text-gray-500" style={{ fontSize: '11px' }}>
                         {donTypeLabels[bag.donationType]}
                       </span>
                       <span className="mr-auto">
@@ -982,39 +882,29 @@ export default function InventoryDisposal() {
               <div className="bg-gray-50 rounded-xl border border-gray-100 divide-y divide-gray-100">
                 {[
                   {
-                    icon: "🗂️",
-                    label: "سبب الإتلاف",
-                    value:
-                      DISPOSAL_REASONS.find((r) => r.value === category)
-                        ?.label ?? "—",
+                    icon: '🗂️',
+                    label: 'سبب الإتلاف',
+                    value: DISPOSAL_REASONS.find((r) => r.value === category)?.label ?? '—',
                   },
                   {
-                    icon: "🏷️",
-                    label: "الحالة الجديدة",
-                    value:
-                      targetStatus === "disposed" ? "مُتلَف 🗑️" : "مرفوض 🚫",
+                    icon: '🏷️',
+                    label: 'الحالة الجديدة',
+                    value: targetStatus === 'disposed' ? 'مُتلَف 🗑️' : 'مرفوض 🚫',
                   },
-                  { icon: "👨‍⚕️", label: "المنفذ", value: getCurrentUserName() },
-                  ...(notes
-                    ? [{ icon: "📝", label: "الملاحظات", value: notes }]
-                    : []),
+                  { icon: '👨‍⚕️', label: 'المنفذ', value: getCurrentUserName() },
+                  ...(notes ? [{ icon: '📝', label: 'الملاحظات', value: notes }] : []),
                 ].map((item) => (
-                  <div
-                    key={item.label}
-                    className="flex items-start gap-3 px-4 py-2.5"
-                  >
-                    <span style={{ fontSize: "14px", lineHeight: 1.6 }}>
-                      {item.icon}
-                    </span>
+                  <div key={item.label} className="flex items-start gap-3 px-4 py-2.5">
+                    <span style={{ fontSize: '14px', lineHeight: 1.6 }}>{item.icon}</span>
                     <span
                       className="text-gray-400 w-28 flex-shrink-0 pt-0.5"
-                      style={{ fontSize: "12px" }}
+                      style={{ fontSize: '12px' }}
                     >
                       {item.label}
                     </span>
                     <span
                       className="text-gray-800 flex-1"
-                      style={{ fontSize: "13px", fontWeight: 600 }}
+                      style={{ fontSize: '13px', fontWeight: 600 }}
                     >
                       {item.value}
                     </span>
@@ -1025,9 +915,9 @@ export default function InventoryDisposal() {
               {/* Final warning */}
               <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl">
                 <AlertOctagon className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                <p className="text-amber-700" style={{ fontSize: "11px" }}>
-                  لن تظهر هذه الحقائب في المخزون المتاح بعد تأكيد الإتلاف. يمكن
-                  مراجعتها في سجل الإتلاف.
+                <p className="text-amber-700" style={{ fontSize: '11px' }}>
+                  لن تظهر هذه الحقائب في المخزون المتاح بعد تأكيد الإتلاف. يمكن مراجعتها في سجل
+                  الإتلاف.
                 </p>
               </div>
             </div>
@@ -1038,10 +928,10 @@ export default function InventoryDisposal() {
                 onClick={handleConfirmDispose}
                 disabled={disposeBagMutation.isPending}
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
-                style={{ fontSize: "14px", fontWeight: 700 }}
+                style={{ fontSize: '14px', fontWeight: 700 }}
               >
                 {disposeBagMutation.isPending ? (
-                  "جارٍ الحفظ..."
+                  'جارٍ الحفظ...'
                 ) : (
                   <>
                     <Trash2 className="w-4 h-4" /> تأكيد الإتلاف
@@ -1051,7 +941,7 @@ export default function InventoryDisposal() {
               <button
                 onClick={() => setShowConfirm(false)}
                 className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all"
-                style={{ fontSize: "14px", fontWeight: 600 }}
+                style={{ fontSize: '14px', fontWeight: 600 }}
               >
                 إلغاء
               </button>

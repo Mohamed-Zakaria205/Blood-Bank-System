@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // Donor types
 // ═══════════════════════════════════════════════════════════
-import type { BloodType, DonationType, DonorStatus } from "./common";
+import type { BloodType, DonationType, DonorStatus } from './common';
 
 export interface MedicalQuestions {
   feelingWell: boolean;
@@ -27,7 +27,7 @@ export interface Donor {
   id: string;
   donorCode: string;
   name: string;
-  gender: "male" | "female";
+  gender: 'male' | 'female';
   age: number;
   nationalId: string;
   phone: string;
@@ -49,7 +49,7 @@ export interface Donor {
   // ── Backend-generated / meta fields ─────────────────────
   registeredBy?: string;
   registeredAt?: string;
-  source: "walkin" | "app" | "campaign";
+  source: 'walkin' | 'app' | 'campaign';
   campaignId?: string;
   campaignName?: string;
   donations?: number;
@@ -62,5 +62,5 @@ export interface Donor {
  */
 export type CreateDonorRequest = Omit<
   Donor,
-  "id" | "donorCode" | "registeredAt" | "donations" | "points"
+  'id' | 'donorCode' | 'registeredAt' | 'donations' | 'points'
 >;

@@ -12,7 +12,7 @@ let mockStore: Donor[] = [...MOCK_DONORS];
 
 export async function fetchDonors(): Promise<Donor[]> {
   if (USE_MOCK) {
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 300));
     return mockStore;
   }
   const { data } = await apiClient.get<Donor[]>('/donors');
@@ -21,8 +21,8 @@ export async function fetchDonors(): Promise<Donor[]> {
 
 export async function fetchDonorById(id: string): Promise<Donor> {
   if (USE_MOCK) {
-    await new Promise(r => setTimeout(r, 200));
-    const donor = mockStore.find(d => d.id === id);
+    await new Promise((r) => setTimeout(r, 200));
+    const donor = mockStore.find((d) => d.id === id);
     if (!donor) throw { response: { status: 404, data: { message: 'المتبرع غير موجود' } } };
     return donor;
   }
@@ -32,7 +32,7 @@ export async function fetchDonorById(id: string): Promise<Donor> {
 
 export async function createDonor(payload: CreateDonorRequest): Promise<Donor> {
   if (USE_MOCK) {
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise((r) => setTimeout(r, 400));
     const newDonor: Donor = {
       ...payload,
       id: `DON-${Date.now()}`,

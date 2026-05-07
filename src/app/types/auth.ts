@@ -2,7 +2,7 @@
 // Auth types — Login, token, user session
 // ═══════════════════════════════════════════════════════════
 
-export type UserRole = "admin" | "doctor" | "lab" | "inventory";
+export type UserRole = 'admin' | 'doctor' | 'lab' | 'inventory';
 
 /**
  * The user object returned by the backend after login.
@@ -18,7 +18,7 @@ export interface User {
   phone: string;
   address: string;
   city: string;
-  status: "active" | "inactive";
+  status: 'active' | 'inactive';
   createdAt: string;
 }
 

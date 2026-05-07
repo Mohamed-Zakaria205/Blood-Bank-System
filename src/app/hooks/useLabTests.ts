@@ -1,19 +1,14 @@
 // ═══════════════════════════════════════════════════════════
 // React Query hooks — Lab (tests, samples, results)
 // ═══════════════════════════════════════════════════════════
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  fetchLabTests,
-  submitLabTestResult,
-  fetchSamples,
-  fetchTestResults,
-} from "../api/lab";
-import type { LabResultData } from "../types/lab";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchLabTests, submitLabTestResult, fetchSamples, fetchTestResults } from '../api/lab';
+import type { LabResultData } from '../types/lab';
 
 /** Fetch all lab tests (pending + completed) */
 export function useLabTests() {
   return useQuery({
-    queryKey: ["lab-tests"],
+    queryKey: ['lab-tests'],
     queryFn: fetchLabTests,
   });
 }
@@ -33,10 +28,10 @@ export function useSubmitLabResult() {
       };
     }) => submitLabTestResult(testId, result),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["lab-tests"] });
-      qc.invalidateQueries({ queryKey: ["samples"] });
-      qc.invalidateQueries({ queryKey: ["test-results"] });
-      qc.invalidateQueries({ queryKey: ["bags"] });
+      qc.invalidateQueries({ queryKey: ['lab-tests'] });
+      qc.invalidateQueries({ queryKey: ['samples'] });
+      qc.invalidateQueries({ queryKey: ['test-results'] });
+      qc.invalidateQueries({ queryKey: ['bags'] });
     },
   });
 }
@@ -44,7 +39,7 @@ export function useSubmitLabResult() {
 /** Fetch all samples */
 export function useSamples() {
   return useQuery({
-    queryKey: ["samples"],
+    queryKey: ['samples'],
     queryFn: fetchSamples,
   });
 }
@@ -52,7 +47,7 @@ export function useSamples() {
 /** Fetch all test results */
 export function useTestResults() {
   return useQuery({
-    queryKey: ["test-results"],
+    queryKey: ['test-results'],
     queryFn: fetchTestResults,
   });
 }

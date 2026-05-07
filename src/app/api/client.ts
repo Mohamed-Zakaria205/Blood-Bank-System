@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // Axios client — single instance used by all API calls
 // ═══════════════════════════════════════════════════════════
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 // ── Base URL resolution ──────────────────────────────────────
 //
@@ -19,9 +19,9 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 // it also routes through Vite proxy when running `vite dev`.
 // ──────────────────────────────────────────────────────
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "/api",
+  baseURL: import.meta.env.VITE_API_URL ?? '/api',
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
   timeout: 15_000, // 15 s
 });
@@ -29,7 +29,7 @@ const apiClient = axios.create({
 // ── Request interceptor: attach JWT token ──────────────────
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("bloodlink_token");
+    const token = localStorage.getItem('bloodlink_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -95,10 +95,10 @@ function processQueue(error: unknown, token: string | null = null) {
  * Called when the refresh token itself is invalid/expired.
  */
 function forceLogout() {
-  localStorage.removeItem("bloodlink_token");
-  localStorage.removeItem("bloodlink_refresh_token");
-  localStorage.removeItem("bloodlink_user");
-  window.location.href = "/login";
+  localStorage.removeItem('bloodlink_token');
+  localStorage.removeItem('bloodlink_refresh_token');
+  localStorage.removeItem('bloodlink_user');
+  window.location.href = '/login';
 }
 
 apiClient.interceptors.response.use(
@@ -117,7 +117,7 @@ apiClient.interceptors.response.use(
     }
 
     // Don't try to refresh if there's no refresh token stored
-    const storedRefresh = localStorage.getItem("bloodlink_refresh_token");
+    const storedRefresh = localStorage.getItem('bloodlink_refresh_token');
     if (!storedRefresh) {
       forceLogout();
       return Promise.reject(error);
@@ -141,14 +141,13 @@ apiClient.interceptors.response.use(
 
     try {
       // Lazy import to break the circular dependency chain
-      const { refreshTokenApi } = await import("./auth");
-      const { token: newToken, refreshToken: newRefresh } =
-        await refreshTokenApi();
+      const { refreshTokenApi } = await import('./auth');
+      const { token: newToken, refreshToken: newRefresh } = await refreshTokenApi();
 
       // Persist the fresh tokens
-      localStorage.setItem("bloodlink_token", newToken);
+      localStorage.setItem('bloodlink_token', newToken);
       if (newRefresh) {
-        localStorage.setItem("bloodlink_refresh_token", newRefresh);
+        localStorage.setItem('bloodlink_refresh_token', newRefresh);
       }
 
       // Update the default header for future requests

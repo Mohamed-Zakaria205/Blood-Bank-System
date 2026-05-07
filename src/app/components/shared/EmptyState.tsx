@@ -1,13 +1,13 @@
 // ═══════════════════════════════════════════════════════════
 // Shared Empty State for tables
 // ═══════════════════════════════════════════════════════════
-import { Inbox } from "lucide-react";
+import { Inbox } from 'lucide-react';
 
-export function EmptyState({ 
-  message = 'لا توجد بيانات', 
-  colSpan = 10 
-}: { 
-  message?: string; 
+export function EmptyState({
+  message = 'لا توجد بيانات',
+  colSpan = 10,
+}: {
+  message?: string;
   colSpan?: number;
 }) {
   return (

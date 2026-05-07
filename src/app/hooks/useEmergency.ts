@@ -21,8 +21,7 @@ export function useEmergencyRequests() {
 export function useFulfillEmergency() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (payload: FulfillEmergencyPayload) =>
-      fulfillEmergencyRequest(payload),
+    mutationFn: (payload: FulfillEmergencyPayload) => fulfillEmergencyRequest(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['emergency-requests'] });
       // Fulfilling an emergency likely affects inventory

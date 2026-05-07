@@ -9,7 +9,9 @@ export function PageLoader({ message = 'جاري التحميل...' }: { message
       <div className="relative w-12 h-12">
         <div className="w-12 h-12 rounded-full border-4 border-green-100 border-t-green-600 animate-spin" />
       </div>
-      <p className="text-gray-500" style={{ fontSize: '14px', fontWeight: 600 }}>{message}</p>
+      <p className="text-gray-500" style={{ fontSize: '14px', fontWeight: 600 }}>
+        {message}
+      </p>
     </div>
   );
 }
@@ -21,8 +23,12 @@ export function ErrorState({ message, onRetry }: { message?: string; onRetry?: (
       <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center">
         <span className="text-3xl">⚠️</span>
       </div>
-      <p className="text-gray-700" style={{ fontSize: '16px', fontWeight: 700 }}>حدث خطأ</p>
-      <p className="text-gray-500" style={{ fontSize: '14px' }}>{message || 'تعذر تحميل البيانات'}</p>
+      <p className="text-gray-700" style={{ fontSize: '16px', fontWeight: 700 }}>
+        حدث خطأ
+      </p>
+      <p className="text-gray-500" style={{ fontSize: '14px' }}>
+        {message || 'تعذر تحميل البيانات'}
+      </p>
       {onRetry && (
         <button
           onClick={onRetry}
@@ -41,7 +47,10 @@ export function CardSkeleton({ count = 4 }: { count?: number }) {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm animate-pulse">
+        <div
+          key={i}
+          className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm animate-pulse"
+        >
           <div className="w-11 h-11 bg-gray-200 rounded-xl mb-4" />
           <div className="h-8 w-16 bg-gray-200 rounded mb-2" />
           <div className="h-4 w-24 bg-gray-100 rounded" />
@@ -74,7 +83,10 @@ export function TableSkeleton({ rows = 5, cols = 6 }: { rows?: number; cols?: nu
               <tr key={i} className="border-b border-gray-50">
                 {Array.from({ length: cols }).map((_, j) => (
                   <td key={j} className="px-4 py-3">
-                    <div className={`h-4 bg-gray-100 rounded`} style={{ width: `${60 + Math.random() * 40}%` }} />
+                    <div
+                      className={`h-4 bg-gray-100 rounded`}
+                      style={{ width: `${60 + Math.random() * 40}%` }}
+                    />
                   </td>
                 ))}
               </tr>

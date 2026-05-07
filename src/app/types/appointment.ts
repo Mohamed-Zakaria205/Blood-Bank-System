@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // Appointment types
 // ═══════════════════════════════════════════════════════════
-import type { BloodType, DonationType } from "./common";
+import type { BloodType, DonationType } from './common';
 
 /**
  * In-session notification created on the client when a doctor
@@ -27,8 +27,8 @@ export interface AppointmentBooking {
   donorCode?: string;
   phone: string;
   bloodType?: BloodType;
-  source: "app" | "manual";
-  status: "confirmed" | "cancelled";
+  source: 'app' | 'manual';
+  status: 'confirmed' | 'cancelled';
 }
 
 export interface AppointmentSlot {
@@ -43,7 +43,7 @@ export interface AppointmentSlot {
 
 export interface TimeSlot {
   time: string;
-  status: "available" | "booked";
+  status: 'available' | 'booked';
   donorName?: string;
   donorCode?: string;
 }
@@ -54,12 +54,12 @@ export interface AppointmentDay {
 }
 
 export type Slot15Status =
-  | "available"
-  | "booked"
-  | "completed"
-  | "missed"
-  | "disabled"
-  | "cancelled";
+  | 'available'
+  | 'booked'
+  | 'completed'
+  | 'missed'
+  | 'disabled'
+  | 'cancelled';
 
 export interface Slot15 {
   id: string;
@@ -70,7 +70,7 @@ export interface Slot15 {
   donorNationalId?: string;
   donorPhone?: string;
   donorBloodType?: BloodType;
-  donorGender?: "male" | "female";
+  donorGender?: 'male' | 'female';
   donorAge?: number;
   donorDistrict?: string;
   donorArea?: string;

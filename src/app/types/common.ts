@@ -29,7 +29,13 @@ export type DonationType = 'whole' | 'plasma' | 'platelets';
 export type DonorStatus = 'eligible' | 'ineligible' | 'deferred';
 export type CampaignStatus = 'active' | 'completed';
 export type InventoryStatus = 'normal' | 'low' | 'critical';
-export type BloodBagStatus = 'available' | 'reserved' | 'issued' | 'expired' | 'rejected' | 'disposed';
+export type BloodBagStatus =
+  | 'available'
+  | 'reserved'
+  | 'issued'
+  | 'expired'
+  | 'rejected'
+  | 'disposed';
 export type TransactionType = 'issue' | 'return' | 'disposal' | 'receive' | 'reserve';
 export type RequestUrgency = 'normal' | 'urgent' | 'emergency';
 export type RequestStatus = 'pending' | 'approved' | 'fulfilled' | 'rejected';

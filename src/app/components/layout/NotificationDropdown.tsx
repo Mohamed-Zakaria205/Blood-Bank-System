@@ -17,10 +17,10 @@ interface Props {
 }
 
 const colorMap = {
-  red:    { bg: 'rgba(248,113,113,0.12)', icon: '#ef4444', text: '#dc2626', sub: '#f87171' },
-  yellow: { bg: 'rgba(251,191,36,0.12)',  icon: '#d97706', text: '#b45309', sub: '#fbbf24' },
-  green:  { bg: 'rgba(34,197,94,0.12)',   icon: '#16a34a', text: '#15803d', sub: '#22c55e' },
-  blue:   { bg: 'rgba(96,165,250,0.12)',  icon: '#2563eb', text: '#1d4ed8', sub: '#60a5fa' },
+  red: { bg: 'rgba(248,113,113,0.12)', icon: '#ef4444', text: '#dc2626', sub: '#f87171' },
+  yellow: { bg: 'rgba(251,191,36,0.12)', icon: '#d97706', text: '#b45309', sub: '#fbbf24' },
+  green: { bg: 'rgba(34,197,94,0.12)', icon: '#16a34a', text: '#15803d', sub: '#22c55e' },
+  blue: { bg: 'rgba(96,165,250,0.12)', icon: '#2563eb', text: '#1d4ed8', sub: '#60a5fa' },
 };
 
 export default function NotificationDropdown({ notifications, open, onToggle, onClose }: Props) {
@@ -99,7 +99,9 @@ export default function NotificationDropdown({ notifications, open, onToggle, on
             {notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 gap-2">
                 <Bell className="w-8 h-8" style={{ color: 'var(--muted-foreground, #9ca3af)' }} />
-                <p style={{ fontSize: '13px', color: 'var(--muted-foreground, #6b7280)' }}>لا توجد إشعارات</p>
+                <p style={{ fontSize: '13px', color: 'var(--muted-foreground, #6b7280)' }}>
+                  لا توجد إشعارات
+                </p>
               </div>
             ) : (
               notifications.map((n, i) => {
@@ -109,7 +111,8 @@ export default function NotificationDropdown({ notifications, open, onToggle, on
                     key={n.id}
                     className="flex items-start gap-3 px-4 py-3 transition-colors"
                     style={{
-                      borderBottom: i < notifications.length - 1 ? `1px solid var(--border, #e5e7eb)` : 'none',
+                      borderBottom:
+                        i < notifications.length - 1 ? `1px solid var(--border, #e5e7eb)` : 'none',
                     }}
                   >
                     <div
@@ -119,7 +122,14 @@ export default function NotificationDropdown({ notifications, open, onToggle, on
                       <span style={{ color: c.icon }}>{n.icon}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground, #111)', marginBottom: '2px' }}>
+                      <p
+                        style={{
+                          fontSize: '13px',
+                          fontWeight: 600,
+                          color: 'var(--foreground, #111)',
+                          marginBottom: '2px',
+                        }}
+                      >
                         {n.title}
                       </p>
                       <p style={{ fontSize: '12px', color: 'var(--muted-foreground, #6b7280)' }}>
@@ -138,7 +148,9 @@ export default function NotificationDropdown({ notifications, open, onToggle, on
               className="px-4 py-2 border-t text-center"
               style={{ borderColor: 'var(--border, #e5e7eb)' }}
             >
-              <span style={{ fontSize: '12px', color: '#16a34a', fontWeight: 600, cursor: 'pointer' }}>
+              <span
+                style={{ fontSize: '12px', color: '#16a34a', fontWeight: 600, cursor: 'pointer' }}
+              >
                 تمت المراجعة
               </span>
             </div>

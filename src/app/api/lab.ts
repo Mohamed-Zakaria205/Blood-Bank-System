@@ -1,13 +1,13 @@
 // ═══════════════════════════════════════════════════════════
 // Lab API service — tests, samples, results
 // ═══════════════════════════════════════════════════════════
-import apiClient from "./client";
-import type { LabResultData, LabTest, Sample, TestResult } from "../types/lab";
+import apiClient from './client';
+import type { LabResultData, LabTest, Sample, TestResult } from '../types/lab';
 import {
   labTests as MOCK_LAB_TESTS,
   samples as MOCK_SAMPLES,
   testResults as MOCK_TEST_RESULTS,
-} from "../data/mockData";
+} from '../data/mockData';
 
 const USE_MOCK = true;
 
@@ -22,7 +22,7 @@ export async function fetchLabTests(): Promise<LabTest[]> {
     await new Promise((r) => setTimeout(r, 300));
     return mockLabTests;
   }
-  const { data } = await apiClient.get<LabTest[]>("/lab/tests");
+  const { data } = await apiClient.get<LabTest[]>('/lab/tests');
   return data;
 }
 
@@ -36,25 +36,21 @@ export async function submitLabTestResult(
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 600));
     const idx = mockLabTests.findIndex((t) => t.id === testId);
-    if (idx === -1)
-      throw { response: { status: 404, data: { message: "الفحص غير موجود" } } };
+    if (idx === -1) throw { response: { status: 404, data: { message: 'الفحص غير موجود' } } };
     const updated: LabTest = {
       ...mockLabTests[idx],
-      status: "completed" as const,
+      status: 'completed' as const,
       result: {
         ...result,
-        completedAt: new Date().toLocaleString("ar-EG"),
-        completedBy: "current-user",
+        completedAt: new Date().toLocaleString('ar-EG'),
+        completedBy: 'current-user',
       },
     };
     // ✅ Mutate the in-memory array so refetch returns the updated test
     mockLabTests = mockLabTests.map((t) => (t.id === testId ? updated : t));
     return updated;
   }
-  const { data } = await apiClient.post<LabTest>(
-    `/lab/tests/${testId}/result`,
-    result,
-  );
+  const { data } = await apiClient.post<LabTest>(`/lab/tests/${testId}/result`, result);
   return data;
 }
 
@@ -64,7 +60,7 @@ export async function fetchSamples(): Promise<Sample[]> {
     await new Promise((r) => setTimeout(r, 300));
     return mockSamples;
   }
-  const { data } = await apiClient.get<Sample[]>("/lab/samples");
+  const { data } = await apiClient.get<Sample[]>('/lab/samples');
   return data;
 }
 
@@ -74,6 +70,6 @@ export async function fetchTestResults(): Promise<TestResult[]> {
     await new Promise((r) => setTimeout(r, 300));
     return mockTestResults;
   }
-  const { data } = await apiClient.get<TestResult[]>("/lab/results");
+  const { data } = await apiClient.get<TestResult[]>('/lab/results');
   return data;
 }

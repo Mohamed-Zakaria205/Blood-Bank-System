@@ -2,10 +2,7 @@
 // Emergency API service — hospital emergency blood requests
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
-import type {
-  EmergencyRequest,
-  FulfillEmergencyPayload,
-} from '../types/emergency';
+import type { EmergencyRequest, FulfillEmergencyPayload } from '../types/emergency';
 
 // ── Mock mode flag ─────────────────────────────────────────
 const USE_MOCK = true;
@@ -102,9 +99,7 @@ export async function fulfillEmergencyRequest(
 }
 
 // ── Reject an emergency request ────────────────────────────
-export async function rejectEmergencyRequest(
-  requestId: number,
-): Promise<EmergencyRequest> {
+export async function rejectEmergencyRequest(requestId: number): Promise<EmergencyRequest> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
     const req = MOCK_EMERGENCY.find((r) => r.id === requestId);
@@ -116,8 +111,6 @@ export async function rejectEmergencyRequest(
     req.status = 'rejected';
     return { ...req };
   }
-  const { data } = await apiClient.post<EmergencyRequest>(
-    `/emergency/${requestId}/reject`,
-  );
+  const { data } = await apiClient.post<EmergencyRequest>(`/emergency/${requestId}/reject`);
   return data;
 }

@@ -2,8 +2,14 @@
 // Inventory types — blood bags, transactions, requests, outflow
 // ═══════════════════════════════════════════════════════════
 import type {
-  BloodType, DonationType, BloodBagStatus, TransactionType,
-  RequestUrgency, RequestStatus, InventoryStatus, OutflowActionType,
+  BloodType,
+  DonationType,
+  BloodBagStatus,
+  TransactionType,
+  RequestUrgency,
+  RequestStatus,
+  InventoryStatus,
+  OutflowActionType,
 } from './common';
 
 export interface BloodInventoryItem {

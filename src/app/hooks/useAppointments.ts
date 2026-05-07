@@ -2,9 +2,7 @@
 // React Query hooks — Appointments
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  fetchAppointmentSlots, fetchSlot15Data, cancelAppointment,
-} from '../api/appointments';
+import { fetchAppointmentSlots, fetchSlot15Data, cancelAppointment } from '../api/appointments';
 
 /** Fetch appointment slots (with bookings) */
 export function useAppointmentSlots() {

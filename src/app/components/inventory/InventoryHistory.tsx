@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   History,
   Search,
@@ -15,31 +15,25 @@ import {
   FileText,
   Clock,
   UserCheck,
-} from "lucide-react";
-import { OutflowActionType, OutflowRecord, BloodType } from "../../types";
-import { BLOOD_TYPES } from "../../constants";
-import { useBloodBags, useOutflowRecords } from "../../hooks/useInventory";
-import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
-import { EmptyState } from "../shared/EmptyState";
+} from 'lucide-react';
+import { OutflowActionType, OutflowRecord, BloodType } from '../../types';
+import { BLOOD_TYPES } from '../../constants';
+import { useBloodBags, useOutflowRecords } from '../../hooks/useInventory';
+import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
+import { EmptyState } from '../shared/EmptyState';
 
 const donTypeLabels: Record<string, string> = {
-  whole: "دم كامل",
-  plasma: "بلازما",
-  platelets: "صفائح",
+  whole: 'دم كامل',
+  plasma: 'بلازما',
+  platelets: 'صفائح',
 };
 
-function DetailModal({
-  record,
-  onClose,
-}: {
-  record: OutflowRecord;
-  onClose: () => void;
-}) {
-  const isExport = record.actionType === "exported";
+function DetailModal({ record, onClose }: { record: OutflowRecord; onClose: () => void }) {
+  const isExport = record.actionType === 'exported';
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
+      style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
     >
       <div
         className="bg-white rounded-2xl shadow-2xl w-full max-w-md"
@@ -47,11 +41,11 @@ function DetailModal({
       >
         {/* Header */}
         <div
-          className={`flex items-center justify-between px-6 py-4 rounded-t-2xl border-b ${isExport ? "bg-blue-50 border-blue-100" : "bg-red-50 border-red-100"}`}
+          className={`flex items-center justify-between px-6 py-4 rounded-t-2xl border-b ${isExport ? 'bg-blue-50 border-blue-100' : 'bg-red-50 border-red-100'}`}
         >
           <div className="flex items-center gap-3">
             <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center ${isExport ? "bg-blue-100" : "bg-red-100"}`}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center ${isExport ? 'bg-blue-100' : 'bg-red-100'}`}
             >
               {isExport ? (
                 <Upload className="w-4 h-4 text-blue-600" />
@@ -61,12 +55,12 @@ function DetailModal({
             </div>
             <div>
               <p
-                className={`${isExport ? "text-blue-700" : "text-red-700"}`}
-                style={{ fontSize: "15px", fontWeight: 700 }}
+                className={`${isExport ? 'text-blue-700' : 'text-red-700'}`}
+                style={{ fontSize: '15px', fontWeight: 700 }}
               >
-                {isExport ? "تفاصيل عملية التصدير" : "تفاصيل عملية الإتلاف"}
+                {isExport ? 'تفاصيل عملية التصدير' : 'تفاصيل عملية الإتلاف'}
               </p>
-              <p className="text-gray-400" style={{ fontSize: "11px" }}>
+              <p className="text-gray-400" style={{ fontSize: '11px' }}>
                 {record.id}
               </p>
             </div>
@@ -82,39 +76,36 @@ function DetailModal({
         <div className="p-6 space-y-4">
           {/* Bag info */}
           <div className="p-4 bg-gray-50 rounded-xl space-y-2">
-            <p
-              className="text-gray-500"
-              style={{ fontSize: "11px", fontWeight: 600 }}
-            >
+            <p className="text-gray-500" style={{ fontSize: '11px', fontWeight: 600 }}>
               معلومات الحقيبة
             </p>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600" style={{ fontSize: "12px" }}>
+              <span className="text-gray-600" style={{ fontSize: '12px' }}>
                 كود الحقيبة
               </span>
               <span
                 className="font-mono text-gray-800 bg-gray-200 px-2 py-0.5 rounded"
-                style={{ fontSize: "12px", fontWeight: 700 }}
+                style={{ fontSize: '12px', fontWeight: 700 }}
               >
                 {record.bagCode}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600" style={{ fontSize: "12px" }}>
+              <span className="text-gray-600" style={{ fontSize: '12px' }}>
                 الفصيلة
               </span>
               <span
                 className="px-2 py-0.5 bg-red-50 text-red-600 rounded"
-                style={{ fontSize: "13px", fontWeight: 800 }}
+                style={{ fontSize: '13px', fontWeight: 800 }}
               >
                 {record.bloodType}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600" style={{ fontSize: "12px" }}>
+              <span className="text-gray-600" style={{ fontSize: '12px' }}>
                 نوع الدم
               </span>
-              <span className="text-gray-700" style={{ fontSize: "12px" }}>
+              <span className="text-gray-700" style={{ fontSize: '12px' }}>
                 {donTypeLabels[record.donationType] ?? record.donationType}
               </span>
             </div>
@@ -123,10 +114,7 @@ function DetailModal({
           {/* Recipient info (export only) */}
           {isExport && (
             <div className="space-y-3">
-              <p
-                className="text-gray-500"
-                style={{ fontSize: "11px", fontWeight: 600 }}
-              >
+              <p className="text-gray-500" style={{ fontSize: '11px', fontWeight: 600 }}>
                 بيانات المستلم
               </p>
               <div className="flex items-start gap-3">
@@ -134,14 +122,11 @@ function DetailModal({
                   <User className="w-4 h-4 text-blue-500" />
                 </div>
                 <div>
-                  <p className="text-gray-500" style={{ fontSize: "11px" }}>
+                  <p className="text-gray-500" style={{ fontSize: '11px' }}>
                     اسم المريض
                   </p>
-                  <p
-                    className="text-gray-900"
-                    style={{ fontSize: "14px", fontWeight: 600 }}
-                  >
-                    {record.recipientName || "—"}
+                  <p className="text-gray-900" style={{ fontSize: '14px', fontWeight: 600 }}>
+                    {record.recipientName || '—'}
                   </p>
                 </div>
               </div>
@@ -150,14 +135,14 @@ function DetailModal({
                   <CreditCard className="w-4 h-4 text-purple-500" />
                 </div>
                 <div>
-                  <p className="text-gray-500" style={{ fontSize: "11px" }}>
+                  <p className="text-gray-500" style={{ fontSize: '11px' }}>
                     الرقم القومي
                   </p>
                   <p
                     className="text-gray-900 font-mono"
-                    style={{ fontSize: "13px", fontWeight: 600 }}
+                    style={{ fontSize: '13px', fontWeight: 600 }}
                   >
-                    {record.nationalId || "—"}
+                    {record.nationalId || '—'}
                   </p>
                 </div>
               </div>
@@ -166,14 +151,14 @@ function DetailModal({
                   <Phone className="w-4 h-4 text-green-500" />
                 </div>
                 <div>
-                  <p className="text-gray-500" style={{ fontSize: "11px" }}>
+                  <p className="text-gray-500" style={{ fontSize: '11px' }}>
                     رقم الهاتف
                   </p>
                   <p
                     className="text-gray-900 font-mono"
-                    style={{ fontSize: "13px", fontWeight: 600 }}
+                    style={{ fontSize: '13px', fontWeight: 600 }}
                   >
-                    {record.phone || "—"}
+                    {record.phone || '—'}
                   </p>
                 </div>
               </div>
@@ -186,10 +171,10 @@ function DetailModal({
               <FileText className="w-4 h-4 text-orange-500" />
             </div>
             <div>
-              <p className="text-gray-500" style={{ fontSize: "11px" }}>
-                {isExport ? "سبب التصدير" : "سبب الإتلاف"}
+              <p className="text-gray-500" style={{ fontSize: '11px' }}>
+                {isExport ? 'سبب التصدير' : 'سبب الإتلاف'}
               </p>
-              <p className="text-gray-800" style={{ fontSize: "13px" }}>
+              <p className="text-gray-800" style={{ fontSize: '13px' }}>
                 {record.reason}
               </p>
             </div>
@@ -202,13 +187,10 @@ function DetailModal({
                 <UserCheck className="w-4 h-4 text-gray-500" />
               </div>
               <div>
-                <p className="text-gray-500" style={{ fontSize: "11px" }}>
+                <p className="text-gray-500" style={{ fontSize: '11px' }}>
                   المنفذ
                 </p>
-                <p
-                  className="text-gray-800"
-                  style={{ fontSize: "13px", fontWeight: 600 }}
-                >
+                <p className="text-gray-800" style={{ fontSize: '13px', fontWeight: 600 }}>
                   {record.performedByName}
                 </p>
               </div>
@@ -218,12 +200,12 @@ function DetailModal({
                 <Clock className="w-4 h-4 text-gray-500" />
               </div>
               <div>
-                <p className="text-gray-500" style={{ fontSize: "11px" }}>
+                <p className="text-gray-500" style={{ fontSize: '11px' }}>
                   التاريخ والوقت
                 </p>
                 <p
                   className="text-gray-800 font-mono"
-                  style={{ fontSize: "13px", fontWeight: 600 }}
+                  style={{ fontSize: '13px', fontWeight: 600 }}
                 >
                   {record.timestamp}
                 </p>
@@ -236,7 +218,7 @@ function DetailModal({
           <button
             onClick={onClose}
             className="w-full py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all"
-            style={{ fontSize: "14px", fontWeight: 600 }}
+            style={{ fontSize: '14px', fontWeight: 600 }}
           >
             إغلاق
           </button>
@@ -252,28 +234,21 @@ export default function InventoryHistory() {
     isLoading: isLoadingOutflow,
     isError: isErrorOutflow,
   } = useOutflowRecords();
-  const {
-    data: bags = [],
-    isLoading: isLoadingBags,
-    isError: isErrorBags,
-  } = useBloodBags();
-  const [filterAction, setFilterAction] = useState<OutflowActionType | "all">(
-    "all",
-  );
-  const [filterController, setFilterController] = useState("");
-  const [filterBloodType, setFilterBloodType] = useState<BloodType | "all">(
-    "all",
-  );
-  const [search, setSearch] = useState("");
+  const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
+  const [filterAction, setFilterAction] = useState<OutflowActionType | 'all'>('all');
+  const [filterController, setFilterController] = useState('');
+  const [filterBloodType, setFilterBloodType] = useState<BloodType | 'all'>('all');
+  const [search, setSearch] = useState('');
   const [detailRecord, setDetailRecord] = useState<OutflowRecord | null>(null);
 
-  if (isLoadingBags || isLoadingOutflow) return (
-    <div className="space-y-6 p-2">
-      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
-      <CardSkeleton count={3} />
-      <TableSkeleton rows={5} cols={6} />
-    </div>
-  );
+  if (isLoadingBags || isLoadingOutflow)
+    return (
+      <div className="space-y-6 p-2">
+        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <CardSkeleton count={3} />
+        <TableSkeleton rows={5} cols={6} />
+      </div>
+    );
   if (isErrorBags || isErrorOutflow)
     return (
       <ErrorState
@@ -282,62 +257,45 @@ export default function InventoryHistory() {
       />
     );
 
-  const controllers = [
-    ...new Set(outflowRecords.map((r) => r.performedByName)),
-  ];
+  const controllers = [...new Set(outflowRecords.map((r) => r.performedByName))];
 
   const filtered = outflowRecords.filter((r) => {
-    if (filterAction !== "all" && r.actionType !== filterAction) return false;
-    if (filterController && r.performedByName !== filterController)
-      return false;
-    if (filterBloodType !== "all" && r.bloodType !== filterBloodType)
-      return false;
+    if (filterAction !== 'all' && r.actionType !== filterAction) return false;
+    if (filterController && r.performedByName !== filterController) return false;
+    if (filterBloodType !== 'all' && r.bloodType !== filterBloodType) return false;
     if (
       search &&
       !r.bagCode.includes(search) &&
       !r.bloodType.includes(search) &&
-      !(r.recipientName ?? "").includes(search)
+      !(r.recipientName ?? '').includes(search)
     )
       return false;
     return true;
   });
 
-  const totalExported = outflowRecords.filter(
-    (r) => r.actionType === "exported",
-  ).length;
-  const totalDisposed = outflowRecords.filter(
-    (r) => r.actionType === "disposed",
-  ).length;
-  const availableNow = bags.filter((b) => b.status === "available").length;
+  const totalExported = outflowRecords.filter((r) => r.actionType === 'exported').length;
+  const totalDisposed = outflowRecords.filter((r) => r.actionType === 'disposed').length;
+  const availableNow = bags.filter((b) => b.status === 'available').length;
   const total = availableNow + totalExported + totalDisposed;
-  const expiredRatio =
-    total > 0 ? Math.round((totalDisposed / total) * 100) : 0;
+  const expiredRatio = total > 0 ? Math.round((totalDisposed / total) * 100) : 0;
 
   return (
     <div className="space-y-6">
-      {detailRecord && (
-        <DetailModal
-          record={detailRecord}
-          onClose={() => setDetailRecord(null)}
-        />
-      )}
+      {detailRecord && <DetailModal record={detailRecord} onClose={() => setDetailRecord(null)} />}
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1
-            className="text-gray-900"
-            style={{ fontSize: "22px", fontWeight: 800 }}
-          >
+          <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
             سجل الصادر
           </h1>
-          <p className="text-gray-500" style={{ fontSize: "14px" }}>
+          <p className="text-gray-500" style={{ fontSize: '14px' }}>
             {outflowRecords.length} عملية مسجلة (تصدير + إتلاف)
           </p>
         </div>
         <button
           className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
-          style={{ fontSize: "13px", fontWeight: 600 }}
+          style={{ fontSize: '13px', fontWeight: 600 }}
         >
           <Download className="w-4 h-4" /> تصدير التقرير
         </button>
@@ -347,52 +305,44 @@ export default function InventoryHistory() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           {
-            label: "إجمالي الحقائب الفعّالة",
+            label: 'إجمالي الحقائب الفعّالة',
             value: availableNow,
             icon: Package,
-            color: "text-green-600",
-            bg: "bg-green-50 border-green-100",
+            color: 'text-green-600',
+            bg: 'bg-green-50 border-green-100',
           },
           {
-            label: "مُصدَّرة",
+            label: 'مُصدَّرة',
             value: totalExported,
             icon: Upload,
-            color: "text-blue-600",
-            bg: "bg-blue-50 border-blue-100",
+            color: 'text-blue-600',
+            bg: 'bg-blue-50 border-blue-100',
           },
           {
-            label: "مُتلَفة",
+            label: 'مُتلَفة',
             value: totalDisposed,
             icon: Trash2,
-            color: "text-red-600",
-            bg: "bg-red-50 border-red-100",
+            color: 'text-red-600',
+            bg: 'bg-red-50 border-red-100',
           },
           {
-            label: "نسبة الهدر",
+            label: 'نسبة الهدر',
             value: `${expiredRatio}%`,
             icon: TrendingDown,
-            color: expiredRatio > 20 ? "text-red-600" : "text-orange-500",
-            bg:
-              expiredRatio > 20
-                ? "bg-red-50 border-red-100"
-                : "bg-orange-50 border-orange-100",
+            color: expiredRatio > 20 ? 'text-red-600' : 'text-orange-500',
+            bg: expiredRatio > 20 ? 'bg-red-50 border-red-100' : 'bg-orange-50 border-orange-100',
           },
         ].map((s, i) => (
           <div key={i} className={`${s.bg} border rounded-2xl p-5 shadow-sm`}>
-            <div
-              className={`w-10 h-10 ${s.bg} rounded-xl flex items-center justify-center mb-3`}
-            >
+            <div className={`w-10 h-10 ${s.bg} rounded-xl flex items-center justify-center mb-3`}>
               <s.icon className={`w-5 h-5 ${s.color}`} />
             </div>
-            <div
-              className={s.color}
-              style={{ fontSize: "26px", fontWeight: 800 }}
-            >
+            <div className={s.color} style={{ fontSize: '26px', fontWeight: 800 }}>
               {s.value}
             </div>
             <div
               className={`${s.color} opacity-80 mt-0.5`}
-              style={{ fontSize: "12px", fontWeight: 600 }}
+              style={{ fontSize: '12px', fontWeight: 600 }}
             >
               {s.label}
             </div>
@@ -403,13 +353,10 @@ export default function InventoryHistory() {
       {/* Ratio bar */}
       <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
         <div className="flex items-center justify-between mb-3">
-          <span
-            className="text-gray-700"
-            style={{ fontSize: "14px", fontWeight: 700 }}
-          >
+          <span className="text-gray-700" style={{ fontSize: '14px', fontWeight: 700 }}>
             نسبة التوزيع الكلي
           </span>
-          <span className="text-gray-500" style={{ fontSize: "12px" }}>
+          <span className="text-gray-500" style={{ fontSize: '12px' }}>
             إجمالي: {total} حقيبة
           </span>
         </div>
@@ -438,13 +385,13 @@ export default function InventoryHistory() {
         </div>
         <div className="flex items-center gap-4 mt-2">
           {[
-            { color: "bg-green-500", label: `متاح (${availableNow})` },
-            { color: "bg-blue-500", label: `مُصدَّر (${totalExported})` },
-            { color: "bg-red-500", label: `مُتلَف (${totalDisposed})` },
+            { color: 'bg-green-500', label: `متاح (${availableNow})` },
+            { color: 'bg-blue-500', label: `مُصدَّر (${totalExported})` },
+            { color: 'bg-red-500', label: `مُتلَف (${totalDisposed})` },
           ].map((l) => (
             <div key={l.label} className="flex items-center gap-1.5">
               <div className={`w-2.5 h-2.5 rounded-full ${l.color}`} />
-              <span className="text-gray-500" style={{ fontSize: "11px" }}>
+              <span className="text-gray-500" style={{ fontSize: '11px' }}>
                 {l.label}
               </span>
             </div>
@@ -462,14 +409,14 @@ export default function InventoryHistory() {
               onChange={(e) => setSearch(e.target.value)}
               placeholder="بحث بكود الحقيبة أو الفصيلة أو المستلم..."
               className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
-              style={{ fontSize: "13px" }}
+              style={{ fontSize: '13px' }}
             />
           </div>
           <select
             value={filterBloodType}
             onChange={(e) => setFilterBloodType(e.target.value as any)}
             className="px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
-            style={{ fontSize: "13px" }}
+            style={{ fontSize: '13px' }}
           >
             <option value="all">كل الفصائل</option>
             {BLOOD_TYPES.map((t) => (
@@ -483,16 +430,16 @@ export default function InventoryHistory() {
         <div className="flex flex-wrap gap-2 items-center">
           {(
             [
-              ["all", "الكل"],
-              ["exported", "تصدير فقط"],
-              ["disposed", "إتلاف فقط"],
-            ] as [OutflowActionType | "all", string][]
+              ['all', 'الكل'],
+              ['exported', 'تصدير فقط'],
+              ['disposed', 'إتلاف فقط'],
+            ] as [OutflowActionType | 'all', string][]
           ).map(([val, label]) => (
             <button
               key={val}
               onClick={() => setFilterAction(val)}
-              className={`px-4 py-2 rounded-xl transition-all ${filterAction === val ? "bg-green-600 text-white" : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"}`}
-              style={{ fontSize: "13px", fontWeight: 600 }}
+              className={`px-4 py-2 rounded-xl transition-all ${filterAction === val ? 'bg-green-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+              style={{ fontSize: '13px', fontWeight: 600 }}
             >
               {label}
             </button>
@@ -502,29 +449,26 @@ export default function InventoryHistory() {
               value={filterController}
               onChange={(e) => setFilterController(e.target.value)}
               className="px-3 py-2 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
-              style={{ fontSize: "13px" }}
+              style={{ fontSize: '13px' }}
             >
               <option value="">كل المنفذين</option>
               {controllers.map((c) => (
                 <option key={c} value={c}>
-                  {c.split(" ").slice(1, 3).join(" ")}
+                  {c.split(' ').slice(1, 3).join(' ')}
                 </option>
               ))}
             </select>
           )}
-          {(filterAction !== "all" ||
-            filterController ||
-            filterBloodType !== "all" ||
-            search) && (
+          {(filterAction !== 'all' || filterController || filterBloodType !== 'all' || search) && (
             <button
               onClick={() => {
-                setFilterAction("all");
-                setFilterController("");
-                setFilterBloodType("all");
-                setSearch("");
+                setFilterAction('all');
+                setFilterController('');
+                setFilterBloodType('all');
+                setSearch('');
               }}
               className="px-3 py-2 text-gray-400 hover:text-red-500 hover:bg-red-50 border border-gray-200 rounded-xl transition-all"
-              style={{ fontSize: "12px", fontWeight: 600 }}
+              style={{ fontSize: '12px', fontWeight: 600 }}
             >
               × مسح الفلاتر
             </button>
@@ -539,19 +483,19 @@ export default function InventoryHistory() {
             <thead>
               <tr className="bg-gray-50">
                 {[
-                  "رقم السجل",
-                  "كود الحقيبة",
-                  "الفصيلة",
-                  "النوع",
-                  "المستلم",
-                  "المنفذ",
-                  "التاريخ",
-                  "التفاصيل",
+                  'رقم السجل',
+                  'كود الحقيبة',
+                  'الفصيلة',
+                  'النوع',
+                  'المستلم',
+                  'المنفذ',
+                  'التاريخ',
+                  'التفاصيل',
                 ].map((h) => (
                   <th
                     key={h}
                     className="px-4 py-3 text-right text-gray-500 whitespace-nowrap"
-                    style={{ fontSize: "11px", fontWeight: 600 }}
+                    style={{ fontSize: '11px', fontWeight: 600 }}
                   >
                     {h}
                   </th>
@@ -564,7 +508,7 @@ export default function InventoryHistory() {
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
                       className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded"
-                      style={{ fontSize: "11px", fontWeight: 700 }}
+                      style={{ fontSize: '11px', fontWeight: 700 }}
                     >
                       {r.id}
                     </span>
@@ -572,7 +516,7 @@ export default function InventoryHistory() {
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
                       className="font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded"
-                      style={{ fontSize: "11px" }}
+                      style={{ fontSize: '11px' }}
                     >
                       {r.bagCode}
                     </span>
@@ -580,17 +524,17 @@ export default function InventoryHistory() {
                   <td className="px-4 py-3">
                     <span
                       className="px-2 py-0.5 bg-red-50 text-red-600 rounded"
-                      style={{ fontSize: "12px", fontWeight: 800 }}
+                      style={{ fontSize: '12px', fontWeight: 800 }}
                     >
                       {r.bloodType}
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full ${r.actionType === "exported" ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-600"}`}
-                      style={{ fontSize: "11px", fontWeight: 700 }}
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full ${r.actionType === 'exported' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-600'}`}
+                      style={{ fontSize: '11px', fontWeight: 700 }}
                     >
-                      {r.actionType === "exported" ? (
+                      {r.actionType === 'exported' ? (
                         <>
                           <Upload className="w-3 h-3" /> تصدير
                         </>
@@ -603,19 +547,19 @@ export default function InventoryHistory() {
                   </td>
                   <td
                     className="px-4 py-3 text-gray-700 whitespace-nowrap"
-                    style={{ fontSize: "12px", fontWeight: 500 }}
+                    style={{ fontSize: '12px', fontWeight: 500 }}
                   >
-                    {r.recipientName ?? "—"}
+                    {r.recipientName ?? '—'}
                   </td>
                   <td
                     className="px-4 py-3 text-gray-600 whitespace-nowrap"
-                    style={{ fontSize: "11px" }}
+                    style={{ fontSize: '11px' }}
                   >
-                    {r.performedByName.split(" ").slice(1, 3).join(" ")}
+                    {r.performedByName.split(' ').slice(1, 3).join(' ')}
                   </td>
                   <td
                     className="px-4 py-3 text-gray-400 whitespace-nowrap"
-                    style={{ fontSize: "11px" }}
+                    style={{ fontSize: '11px' }}
                   >
                     {r.timestamp}
                   </td>
@@ -623,16 +567,14 @@ export default function InventoryHistory() {
                     <button
                       onClick={() => setDetailRecord(r)}
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-all"
-                      style={{ fontSize: "11px", fontWeight: 600 }}
+                      style={{ fontSize: '11px', fontWeight: 600 }}
                     >
                       <Eye className="w-3.5 h-3.5" /> عرض
                     </button>
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && (
-                <EmptyState colSpan={8} message="لا توجد سجلات" />
-              )}
+              {filtered.length === 0 && <EmptyState colSpan={8} message="لا توجد سجلات" />}
             </tbody>
           </table>
         </div>

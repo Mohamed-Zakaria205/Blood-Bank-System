@@ -23,7 +23,6 @@ export function useChangePassword() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: (payload: ChangePasswordRequest) =>
-      changePasswordApi(user?.id ?? '', payload),
+    mutationFn: (payload: ChangePasswordRequest) => changePasswordApi(user?.id ?? '', payload),
   });
 }

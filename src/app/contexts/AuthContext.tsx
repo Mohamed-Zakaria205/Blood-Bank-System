@@ -41,8 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: true };
     } catch (err: any) {
       const message =
-        err?.response?.data?.message ||
-        'بيانات الدخول غير صحيحة، يرجى المحاولة مجدداً';
+        err?.response?.data?.message || 'بيانات الدخول غير صحيحة، يرجى المحاولة مجدداً';
       return { success: false, error: message };
     } finally {
       setIsLoading(false);
