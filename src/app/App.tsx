@@ -29,7 +29,7 @@ export default function App() {
         </ThemeProvider>
       </AuthProvider>
       {/* Dev-only panel — inspect cache, queries, mutations */}
-      <ReactQueryDevtools initialIsOpen={false} />
+      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   );
 }
