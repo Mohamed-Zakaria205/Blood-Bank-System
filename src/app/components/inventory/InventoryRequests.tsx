@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Building2, CheckCircle, X, Package, AlertTriangle, Search, Plus } from 'lucide-react';
-import type { BloodBag, BloodType } from '../../types';
+import type { BloodBag, BloodType, RequestUrgency } from '../../types';
 import {
   useBloodBags,
   useHospitalRequests,
@@ -54,7 +54,7 @@ export default function InventoryRequests() {
     hospitalName: '',
     bloodType: 'O+' as BloodType,
     quantity: 1,
-    urgency: 'normal' as any,
+    urgency: 'normal' as RequestUrgency,
     notes: '',
   });
 

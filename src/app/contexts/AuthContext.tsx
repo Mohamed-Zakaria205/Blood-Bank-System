@@ -39,9 +39,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(loggedInUser);
 
       return { success: true };
-    } catch (err: any) {
+    } catch (err: unknown) {
       const message =
-        err?.response?.data?.message || 'بيانات الدخول غير صحيحة، يرجى المحاولة مجدداً';
+        (err instanceof Error ? err.message : null) || 'بيانات الدخول غير صحيحة، يرجى المحاولة مجدداً';
       return { success: false, error: message };
     } finally {
       setIsLoading(false);

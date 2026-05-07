@@ -196,7 +196,7 @@ export default function AdminInventory() {
                       rx={6}
                       ry={6}
                       fill={barColors[item?.status ?? 'normal']}
-                    />
+                    />  
                   );
                 }}
               />

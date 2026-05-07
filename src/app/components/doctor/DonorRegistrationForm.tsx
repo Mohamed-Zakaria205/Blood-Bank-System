@@ -25,6 +25,8 @@ import {
   Timer,
 } from 'lucide-react';
 import { BLOOD_TYPES, DISEASES, CITIES } from '../../constants';
+import type { BloodType, DonationType, DonorStatus } from '../../types/common';
+import type { Donor } from '../../types/donor';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCampaigns } from '../../hooks/useCampaigns';
 import { useSlot15Data } from '../../hooks/useAppointments';
@@ -205,18 +207,18 @@ export default function DonorRegistrationForm() {
     createDonor.mutate(
       {
         name: values.name,
-        gender: values.gender as any,
+        gender: values.gender as Donor['gender'],
         age: Number(values.age),
         phone: values.phone,
         nationalId: values.nationalId,
         city: values.governorate,
         address: [values.area, values.district].filter(Boolean).join(' - '),
-        bloodType: (values.bloodType || undefined) as any,
-        donationType: values.donationType as any,
+        bloodType: values.bloodType as BloodType,
+        donationType: values.donationType as DonationType,
         diseases: values.diseases,
         source: values.source,
         campaignId: values.campaignId || undefined,
-        status: values.status as any,
+        status: values.status as DonorStatus,
         additionalData: {
           weight: Number(values.weight) || undefined,
           bloodPressure: values.bloodPressure || undefined,
@@ -253,7 +255,7 @@ export default function DonorRegistrationForm() {
     if (getValues('source') === 'campaign') {
       step1Fields.push('campaignId');
     }
-    const isValid = await trigger(step1Fields as any);
+    const isValid = await trigger(step1Fields);
     if (isValid) {
       setStep(2);
     }

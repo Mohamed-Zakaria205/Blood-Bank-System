@@ -87,24 +87,25 @@ export default function AdminDashboard() {
     return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetchDonors()} />;
 
   // ── Derived data ─────────────────────────────────────────
-  const doctors = staffData.filter((u: any) => u.role === 'doctor');
-  const labDoctors = staffData.filter((u: any) => u.role === 'lab');
-  const totalUnits = bloodInventory.reduce((s: number, b: any) => s + b.units, 0);
-  const criticalCount = bloodInventory.filter((b: any) => b.status === 'critical').length;
+  const doctors = staffData.filter((u) => u.role === 'doctor');
+  const labDoctors = staffData.filter((u) => u.role === 'lab');
+  const totalUnits = bloodInventory.reduce((s, b) => s + b.units, 0);
+  const criticalCount = bloodInventory.filter((b) => b.status === 'critical').length;
   const recentDonors = [...donors]
     .sort(
-      (a: any, b: any) => new Date(b.registeredAt).getTime() - new Date(a.registeredAt).getTime(),
+      (a, b) =>
+        new Date(b.registeredAt ?? '').getTime() - new Date(a.registeredAt ?? '').getTime(),
     )
     .slice(0, 6);
-  const campaignDonors = donors.filter((d: any) => d.source === 'campaign');
-  const walkinDonors = donors.filter((d: any) => d.source === 'walkin');
-  const appDonors = donors.filter((d: any) => d.source === 'app');
+  const campaignDonors = donors.filter((d) => d.source === 'campaign');
+  const walkinDonors = donors.filter((d) => d.source === 'walkin');
+  const appDonors = donors.filter((d) => d.source === 'app');
 
   const stats = [
     {
       label: 'إجمالي المتبرعين',
       value: donors.length,
-      sub: `${donors.filter((d: any) => d.status === 'eligible').length} مؤهل`,
+      sub: `${donors.filter((d) => d.status === 'eligible').length} مؤهل`,
       icon: Heart,
       color: 'text-green-600',
       bg: 'bg-green-50',
@@ -114,7 +115,7 @@ export default function AdminDashboard() {
     {
       label: 'حملات التبرع',
       value: campaignsData.length,
-      sub: `${campaignsData.filter((c: any) => c.status === 'active').length} نشطة`,
+      sub: `${campaignsData.filter((c) => c.status === 'active').length} نشطة`,
       icon: Megaphone,
       color: 'text-blue-600',
       bg: 'bg-blue-50',
@@ -330,7 +331,7 @@ export default function AdminDashboard() {
             </button>
           </div>
           <div className="space-y-3">
-            {bloodInventory.map((b: any) => (
+            {bloodInventory.map((b) => (
               <div key={`inv-${b.type}`} className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
                   <span className="text-red-600" style={{ fontSize: '12px', fontWeight: 800 }}>
@@ -402,7 +403,7 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {recentDonors.map((d: any) => (
+                {recentDonors.map((d) => (
                   <tr key={d.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3">
                       <span
@@ -469,8 +470,8 @@ export default function AdminDashboard() {
           </h2>
           <div className="space-y-3">
             {bloodInventory
-              .filter((b: any) => b.status !== 'normal')
-              .map((b: any) => (
+              .filter((b) => b.status !== 'normal')
+              .map((b) => (
                 <div
                   key={`alert-${b.type}`}
                   className={`flex items-start gap-3 p-3 rounded-xl ${b.status === 'critical' ? 'bg-red-50 border border-red-100' : 'bg-yellow-50 border border-yellow-100'}`}

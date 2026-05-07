@@ -854,7 +854,7 @@ export default function LabDashboard() {
                 <div className="space-y-2">
                   {viewModal.result &&
                     screeningTests.map((test) => {
-                      const val = (viewModal.result as any)[test.key];
+                      const val = viewModal.result![test.key];
                       const isPositive = val === 'positive';
                       return (
                         <div

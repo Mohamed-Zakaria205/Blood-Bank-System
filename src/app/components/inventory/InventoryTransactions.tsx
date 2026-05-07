@@ -61,10 +61,10 @@ export default function InventoryTransactions() {
     return matchSearch && matchType && matchBlood;
   });
 
-  const counts: Record<TransactionType, number> = {} as any;
-  (['issue', 'return', 'disposal', 'receive', 'reserve'] as TransactionType[]).forEach((t) => {
-    counts[t] = transactions.filter((x) => x.type === t).length;
-  });
+  const counts = (['issue', 'return', 'disposal', 'receive', 'reserve'] as const).reduce(
+    (acc, t) => { acc[t] = transactions.filter((x) => x.type === t).length; return acc; },
+    {} as Record<TransactionType, number>,
+  );
 
   return (
     <div className="space-y-6">
@@ -118,7 +118,7 @@ export default function InventoryTransactions() {
         </div>
         <select
           value={filterBlood}
-          onChange={(e) => setFilterBlood(e.target.value as any)}
+          onChange={(e) => setFilterBlood(e.target.value as BloodType | 'all')}
           className="px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
           style={{ fontSize: '13px' }}
         >

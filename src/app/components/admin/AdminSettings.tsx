@@ -89,8 +89,8 @@ export default function AdminSettings() {
       setPasswords({ current: '', newPass: '', confirm: '' });
       setPassSuccess(true);
       setTimeout(() => setPassSuccess(false), 3000);
-    } catch (err: any) {
-      const msg = err?.response?.data?.message;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : undefined;
       setPassError(msg || 'فشل تغيير كلمة المرور، يرجى المحاولة مجدداً');
     }
   };

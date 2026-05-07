@@ -24,7 +24,7 @@ export default function AdminCampaigns() {
     );
   if (isError) return <ErrorState message="تعذر تحميل الحملات" onRetry={() => refetch()} />;
 
-  const filtered = campaigns.filter((c: any) => !filterStatus || c.status === filterStatus);
+  const filtered = campaigns.filter((c) => !filterStatus || c.status === filterStatus);
 
   return (
     <div className="space-y-6">

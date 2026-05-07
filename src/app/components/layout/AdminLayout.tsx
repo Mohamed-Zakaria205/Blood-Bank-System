@@ -37,8 +37,8 @@ export default function AdminLayout() {
   const [notifOpen, setNotifOpen] = useState(false);
 
   const { data: bloodInventory = [] } = useBloodInventory();
-  const criticalItems = bloodInventory.filter((b: any) => b.status === 'critical');
-  const lowItems = bloodInventory.filter((b: any) => b.status === 'low');
+  const criticalItems = bloodInventory.filter((b) => b.status === 'critical');
+  const lowItems = bloodInventory.filter((b) => b.status === 'low');
 
   const notifications: Notification[] = [
     ...criticalItems.map((b) => ({

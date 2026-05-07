@@ -38,7 +38,7 @@ const roleConfig: Record<
     color: string;
     borderColor: string;
     bgColor: string;
-    icon: any;
+    icon: React.ComponentType<{ className?: string }>;
   }
 > = {
   doctor: {
@@ -148,7 +148,7 @@ export default function AdminStaff() {
         name: values.fullName.trim(),
         email: values.email,
         password: values.password,
-        role: values.role as any,
+        role: values.role as StaffRole,
         nationalId: values.nationalId,
         phone: values.phone,
         address: values.address,

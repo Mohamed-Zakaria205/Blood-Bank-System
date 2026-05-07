@@ -35,8 +35,8 @@ export default function DoctorLayout() {
 
   const { data: donors = [] } = useDonors();
   const { data: campaigns = [] } = useCampaigns();
-  const activeCampaigns = campaigns.filter((c: any) => c.status === 'active');
-  const todayDonors = donors.filter((d: any) => d.registeredAt === '2025-04-26');
+  const activeCampaigns = campaigns.filter((c) => c.status === 'active');
+  const todayDonors = donors.filter((d) => d.registeredAt === '2025-04-26');
 
   const notifications: Notification[] = [
     ...activeCampaigns.map((c) => ({

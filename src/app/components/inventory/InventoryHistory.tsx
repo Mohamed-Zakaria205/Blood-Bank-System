@@ -414,7 +414,7 @@ export default function InventoryHistory() {
           </div>
           <select
             value={filterBloodType}
-            onChange={(e) => setFilterBloodType(e.target.value as any)}
+            onChange={(e) => setFilterBloodType(e.target.value as BloodType | 'all')}
             className="px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
             style={{ fontSize: '13px' }}
           >

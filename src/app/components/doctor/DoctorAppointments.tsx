@@ -868,7 +868,7 @@ export default function DoctorAppointments() {
           <div
             key={s.key}
             onClick={() =>
-              setFilterStatus(filterStatus === (s.key as any) ? 'all' : (s.key as any))
+              setFilterStatus(filterStatus === (s.key as EffectiveStatus) ? 'all' : (s.key as EffectiveStatus))
             }
             className={`p-4 rounded-2xl border cursor-pointer transition-all ${s.color} ${filterStatus === s.key ? 'ring-2 ring-offset-1 ring-current shadow-md' : 'hover:shadow-sm'}`}
           >

@@ -2,7 +2,7 @@
 // Staff (users) API service
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
-import type { User } from '../types/auth';
+import type { User, UserRole } from '../types/auth';
 import { users as MOCK_USERS } from '../data/mockData';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
@@ -33,7 +33,7 @@ export async function createStaff(payload: {
       id: `USR-${Date.now()}`,
       name: payload.name,
       email: payload.email,
-      role: payload.role as any,
+      role: payload.role as UserRole,
       age: 0,
       nationalId: payload.nationalId,
       phone: payload.phone,

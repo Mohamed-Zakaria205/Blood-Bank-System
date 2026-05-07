@@ -59,10 +59,10 @@ export default function InventoryDashboard() {
   const totalDisposed = outflowRecords.filter((r) => r.actionType === 'disposed').length;
 
   // Available by blood type
-  const byType: Record<BloodType, number> = {} as any;
-  BLOOD_TYPES.forEach((t) => {
-    byType[t] = bags.filter((b) => b.bloodType === t && b.status === 'available').length;
-  });
+  const byType = BLOOD_TYPES.reduce(
+    (acc, t) => { acc[t] = bags.filter((b) => b.bloodType === t && b.status === 'available').length; return acc; },
+    {} as Record<BloodType, number>,
+  );
   const maxUnits = Math.max(...Object.values(byType), 1);
 
   // Insights

@@ -17,14 +17,20 @@ import {
 import { useAnalyticsDashboard } from '../../hooks/useAnalytics';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface TooltipPayloadEntry {
+  color: string;
+  name: string;
+  value: number;
+}
+
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: TooltipPayloadEntry[]; label?: string }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white rounded-xl shadow-xl border border-gray-100 p-3" dir="rtl">
         <p className="text-[#1E293B] mb-1" style={{ fontSize: '13px', fontWeight: 600 }}>
           {label}
         </p>
-        {payload.map((p: any, i: number) => (
+        {payload.map((p: TooltipPayloadEntry, i: number) => (
           <p key={i} style={{ color: p.color, fontSize: '12px' }}>
             {p.name}: {p.value}
           </p>

@@ -35,11 +35,10 @@ export default function AdminInventoryAlerts() {
   } = useHospitalRequests();
 
   const [thresholds, setThresholds] = useState<Record<BloodType, number>>(() => {
-    const init: any = {};
-    bloodInventory.forEach((b) => {
-      init[b.type] = b.minRequired;
-    });
-    return init;
+    return bloodInventory.reduce(
+      (acc, b) => { acc[b.type] = b.minRequired; return acc; },
+      {} as Record<BloodType, number>,
+    );
   });
   const [editThresholds, setEditThresholds] = useState(false);
   const [saved, setSaved] = useState(false);

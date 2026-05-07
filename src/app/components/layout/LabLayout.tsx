@@ -26,7 +26,7 @@ export default function LabLayout() {
   const [notifOpen, setNotifOpen] = useState(false);
 
   const { data: labTests = [] } = useLabTests();
-  const pendingTests = labTests.filter((t: any) => t.status === 'pending');
+  const pendingTests = labTests.filter((t) => t.status === 'pending');
   const pendingCount = pendingTests.length;
 
   const notifications: Notification[] = pendingTests.map((t) => ({
