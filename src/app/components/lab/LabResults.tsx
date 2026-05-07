@@ -13,7 +13,12 @@ import {
 } from "lucide-react";
 import { useTestResults, useSamples } from "../../hooks/useLabTests";
 import { useDonors } from "../../hooks/useDonors";
-import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
+import {
+  ErrorState,
+  CardSkeleton,
+  TableSkeleton,
+} from "../shared/LoadingSkeleton";
+import { EmptyState } from "../shared/EmptyState";
 import type { TestResult, Sample } from "../../types/lab";
 import type { Donor } from "../../types/donor";
 
@@ -402,13 +407,14 @@ export default function LabResults() {
   const isLoading = isLoadingResults || isLoadingSamples || isLoadingDonors;
   const isError = isErrorResults || isErrorSamples;
 
-  if (isLoading) return (
-    <div className="space-y-6 p-2">
-      <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
-      <CardSkeleton count={3} />
-      <TableSkeleton rows={5} cols={6} />
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div className="space-y-6 p-2">
+        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <CardSkeleton count={3} />
+        <TableSkeleton rows={5} cols={6} />
+      </div>
+    );
   if (isError)
     return (
       <ErrorState
@@ -918,28 +924,18 @@ export default function LabResults() {
                   </td>
                 </tr>
               ))}
+              {filtered.length === 0 && (
+                <EmptyState
+                  colSpan={11}
+                  message={
+                    search
+                      ? `لا توجد نتائج لـ "${search}"`
+                      : "لا توجد نتائج في هذه الفئة"
+                  }
+                />
+              )}
             </tbody>
           </table>
-
-          {filtered.length === 0 && (
-            <div className="py-16 text-center">
-              <div className="text-4xl mb-3">🔍</div>
-              <p className="text-gray-400" style={{ fontSize: "14px" }}>
-                {search
-                  ? `لا توجد نتائج لـ "${search}"`
-                  : "لا توجد نتائج في هذه الفئة"}
-              </p>
-              {search && (
-                <button
-                  onClick={() => setSearch("")}
-                  className="mt-2 text-green-600 hover:underline"
-                  style={{ fontSize: "12px" }}
-                >
-                  مسح البحث
-                </button>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </div>

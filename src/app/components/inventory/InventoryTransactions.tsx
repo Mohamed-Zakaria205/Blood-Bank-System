@@ -4,6 +4,7 @@ import { BLOOD_TYPES } from "../../constants";
 import type { BloodType, TransactionType } from "../../types";
 import { useTransactions } from "../../hooks/useInventory";
 import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
+import { EmptyState } from "../shared/EmptyState";
 
 const typeColors: Record<TransactionType, string> = {
   issue: "bg-blue-100 text-blue-700",
@@ -255,16 +256,11 @@ export default function InventoryTransactions() {
                   </td>
                 </tr>
               ))}
+              {filtered.length === 0 && (
+                <EmptyState colSpan={9} message="لا توجد عمليات مسجلة" />
+              )}
             </tbody>
           </table>
-          {filtered.length === 0 && (
-            <div className="py-12 text-center">
-              <ArrowLeftRight className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-              <p className="text-gray-400" style={{ fontSize: "14px" }}>
-                لا توجد عمليات مسجلة
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>

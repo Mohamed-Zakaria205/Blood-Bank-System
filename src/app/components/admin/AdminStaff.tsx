@@ -21,6 +21,7 @@ import {
 import { CITIES } from "../../constants";
 import { useStaff, useCreateStaff, useDeleteStaff } from "../../hooks/useStaff";
 import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
+import { EmptyState } from "../shared/EmptyState";
 import { useForm } from "react-hook-form";
 import { Form } from "../ui/form";
 import { z } from "zod";
@@ -442,15 +443,7 @@ export default function AdminStaff() {
                 );
               })}
               {filtered.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={8}
-                    className="py-16 text-center text-gray-400"
-                    style={{ fontSize: "14px" }}
-                  >
-                    لا توجد نتائج
-                  </td>
-                </tr>
+                <EmptyState colSpan={8} message="لا توجد نتائج" />
               )}
             </tbody>
           </table>

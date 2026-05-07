@@ -7,6 +7,7 @@ import { useCampaigns } from '../../hooks/useCampaigns';
 import { useStaff } from '../../hooks/useStaff';
 import { useBloodInventory, useMonthlyStats } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
+import { EmptyState } from '../shared/EmptyState';
 
 const donationTypeLabels: Record<string, string> = { whole: 'دم كامل', plasma: 'بلازما', platelets: 'صفائح' };
 const statusColors: Record<string, string> = { eligible: 'bg-green-100 text-green-700', ineligible: 'bg-red-100 text-red-700', deferred: 'bg-orange-100 text-orange-700' };
@@ -215,6 +216,9 @@ export default function AdminDashboard() {
                     </td>
                   </tr>
                 ))}
+                {recentDonors.length === 0 && (
+                  <EmptyState colSpan={7} message="لا توجد بيانات للمتبرعين" />
+                )}
               </tbody>
             </table>
           </div>

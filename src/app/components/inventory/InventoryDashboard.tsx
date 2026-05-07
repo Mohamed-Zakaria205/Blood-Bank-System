@@ -15,6 +15,7 @@ import { BLOOD_TYPES } from "../../constants";
 import type { BloodType } from "../../types";
 import { useBloodBags, useOutflowRecords } from "../../hooks/useInventory";
 import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
+import { EmptyState } from "../shared/EmptyState";
 
 const TODAY = new Date("2025-04-29");
 function daysUntil(d: string) {
@@ -457,16 +458,11 @@ export default function InventoryDashboard() {
                   </td>
                 </tr>
               ))}
+              {outflowRecords.length === 0 && (
+                <EmptyState colSpan={7} message="لا توجد حركات مسجلة" />
+              )}
             </tbody>
           </table>
-          {outflowRecords.length === 0 && (
-            <div className="py-12 text-center">
-              <CheckCircle className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-              <p className="text-gray-400" style={{ fontSize: "14px" }}>
-                لا توجد حركات مسجلة
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>

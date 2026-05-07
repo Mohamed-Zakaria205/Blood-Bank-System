@@ -28,6 +28,7 @@ import {
   useHospitalRequests,
 } from "../../hooks/useInventory";
 import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
+import { EmptyState } from "../shared/EmptyState";
 
 const TODAY = new Date("2025-04-29");
 
@@ -436,9 +437,8 @@ export default function AdminInventoryAlerts() {
       </div>
 
       {/* Near-expiry table */}
-      {nearExpiry.length > 0 && (
-        <div className="bg-white rounded-2xl border border-orange-200 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-orange-100 flex items-center gap-2">
+      <div className="bg-white rounded-2xl border border-orange-200 shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-orange-100 flex items-center gap-2">
             <Clock className="w-5 h-5 text-orange-500" />
             <h2
               className="text-gray-900"
@@ -509,11 +509,13 @@ export default function AdminInventoryAlerts() {
                       </tr>
                     );
                   })}
+                {nearExpiry.length === 0 && (
+                  <EmptyState colSpan={4} message="لا توجد حقائب قريبة الانتهاء" />
+                )}
               </tbody>
             </table>
           </div>
         </div>
-      )}
 
       {/* Consumption by blood type */}
       <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">

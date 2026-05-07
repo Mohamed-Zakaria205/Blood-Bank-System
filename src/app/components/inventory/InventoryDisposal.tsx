@@ -19,6 +19,7 @@ import {
   useDisposeBag,
 } from "../../hooks/useInventory";
 import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
+import { EmptyState } from "../shared/EmptyState";
 import { BLOOD_TYPES, HOSPITALS } from "../../constants";
 
 /* ── constants ──────────────────────────────────────────── */
@@ -899,25 +900,18 @@ export default function InventoryDisposal() {
                   </tr>
                 );
               })}
+              {filteredHistory.length === 0 && (
+                <EmptyState
+                  colSpan={9}
+                  message={
+                    hasHistFilters
+                      ? "لا توجد سجلات مطابقة للبحث"
+                      : "لا توجد سجلات إتلاف"
+                  }
+                />
+              )}
             </tbody>
           </table>
-          {filteredHistory.length === 0 && (
-            <div className="py-14 text-center">
-              <ShieldOff className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-              <p className="text-gray-400" style={{ fontSize: "14px" }}>
-                لا توجد سجلات إتلاف
-              </p>
-              {hasHistFilters && (
-                <button
-                  onClick={clearHistFilters}
-                  className="mt-2 text-green-600 hover:underline"
-                  style={{ fontSize: "13px" }}
-                >
-                  مسح الفلاتر
-                </button>
-              )}
-            </div>
-          )}
         </div>
       </div>
 

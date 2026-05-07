@@ -12,6 +12,7 @@ import {
 import { BLOOD_TYPES, CITIES } from "../../constants";
 import { useDonors } from "../../hooks/useDonors";
 import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
+import { EmptyState } from "../shared/EmptyState";
 
 import type { Donor } from "../../types";
 
@@ -342,15 +343,7 @@ export default function AdminDonors() {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={10}
-                    className="py-16 text-center text-gray-400"
-                    style={{ fontSize: "14px" }}
-                  >
-                    لا توجد نتائج مطابقة
-                  </td>
-                </tr>
+                <EmptyState colSpan={8} message="لا توجد نتائج مطابقة" />
               )}
             </tbody>
           </table>

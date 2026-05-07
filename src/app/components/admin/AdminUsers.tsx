@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useDonors } from "../../hooks/useDonors";
 import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
+import { EmptyState } from "../shared/EmptyState";
 
 import type { Donor } from "../../types";
 
@@ -298,6 +299,9 @@ export default function AdminUsers() {
               </tr>
             </thead>
             <tbody>
+              {filtered.length === 0 && (
+                <EmptyState colSpan={9} />
+              )}
               {filtered.map((donor) => (
                 <tr
                   key={donor.id}

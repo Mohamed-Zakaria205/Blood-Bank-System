@@ -20,6 +20,7 @@ import { OutflowActionType, OutflowRecord, BloodType } from "../../types";
 import { BLOOD_TYPES } from "../../constants";
 import { useBloodBags, useOutflowRecords } from "../../hooks/useInventory";
 import { ErrorState, CardSkeleton, TableSkeleton } from "../shared/LoadingSkeleton";
+import { EmptyState } from "../shared/EmptyState";
 
 const donTypeLabels: Record<string, string> = {
   whole: "دم كامل",
@@ -629,16 +630,11 @@ export default function InventoryHistory() {
                   </td>
                 </tr>
               ))}
+              {filtered.length === 0 && (
+                <EmptyState colSpan={8} message="لا توجد سجلات" />
+              )}
             </tbody>
           </table>
-          {filtered.length === 0 && (
-            <div className="py-14 text-center">
-              <History className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-              <p className="text-gray-400" style={{ fontSize: "14px" }}>
-                لا توجد سجلات
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>
