@@ -1,41 +1,48 @@
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router';
 import {
-  LayoutDashboard,
-  FlaskConical,
   LogOut,
   Menu,
   X,
-  ChevronDown,
   Droplet,
-  BarChart2,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useLabTests } from '../../hooks/useLabTests';
 import NotificationDropdown, { Notification } from './NotificationDropdown';
 
-const navItems = [
-  { path: '/lab', label: 'فحص حقائب الدم', icon: LayoutDashboard, end: true },
-  { path: '/lab/results', label: 'نتائج الفحوصات', icon: BarChart2, end: false },
-];
+export interface NavItem {
+  path: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  end?: boolean;
+  badgeCount?: number;
+  badgeColor?: string;
+}
 
-export default function LabLayout() {
+export interface DashboardLayoutProps {
+  navItems: NavItem[];
+  roleLabel: string;
+  accentColor: string;
+  accentGradient?: string;
+  notifications: Notification[];
+  headerAlert?: ReactNode;
+  sidebarExtra?: ReactNode;
+  showDateInHeader?: boolean;
+}
+
+export default function DashboardLayout({
+  navItems,
+  roleLabel,
+  accentColor,
+  accentGradient,
+  notifications,
+  headerAlert,
+  sidebarExtra,
+  showDateInHeader = true,
+}: DashboardLayoutProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-
-  const { data: labTests = [] } = useLabTests();
-  const pendingTests = labTests.filter((t) => t.status === 'pending');
-  const pendingCount = pendingTests.length;
-
-  const notifications: Notification[] = pendingTests.map((t) => ({
-    id: `lab-${t.id}`,
-    title: `عينة ${t.donorCode} — فصيلة ${t.bloodType}`,
-    subtitle: 'في انتظار إدخال نتائج الفحص',
-    icon: <FlaskConical className="w-4 h-4" />,
-    color: 'yellow' as const,
-  }));
 
   const handleLogout = () => {
     logout();
@@ -49,7 +56,7 @@ export default function LabLayout() {
         <div className="flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg, #15803d, #22c55e)' }}
+            style={accentGradient ? { background: accentGradient } : { backgroundColor: accentColor }}
           >
             <Droplet className="w-5 h-5 text-white" />
           </div>
@@ -58,48 +65,27 @@ export default function LabLayout() {
               BloodLink
             </p>
             <p className="text-gray-500" style={{ fontSize: '11px' }}>
-              قسم التحاليل المخبرية
+              بنك الدم - بني سويف
             </p>
           </div>
         </div>
       </div>
 
-      {/* Status card */}
-      <div className="px-4 py-3">
-        <div className="p-3 bg-yellow-50 border border-yellow-100 rounded-xl space-y-2">
-          <div className="flex items-center gap-2">
-            <FlaskConical className="w-4 h-4 text-yellow-600" />
-            <span className="text-yellow-700" style={{ fontSize: '12px', fontWeight: 700 }}>
-              دكتور تحاليل
-            </span>
-          </div>
-          <div className="flex items-center justify-between pt-1 border-t border-yellow-100">
-            <span className="text-yellow-600" style={{ fontSize: '11px' }}>
-              حقائب معلقة
-            </span>
-            {pendingCount > 0 ? (
-              <span
-                className="px-2 py-0.5 bg-yellow-500 text-white rounded-full animate-pulse"
-                style={{ fontSize: '11px', fontWeight: 700 }}
-              >
-                {pendingCount}
-              </span>
-            ) : (
-              <span
-                className="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full"
-                style={{ fontSize: '11px', fontWeight: 700 }}
-              >
-                لا شيء
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
+      {/* Sidebar extra content (e.g., Register Donor button for doctors) */}
+      {sidebarExtra && <div className="px-4 py-3">{sidebarExtra}</div>}
 
-      {/* Nav */}
-      <nav className="flex-1 p-4 space-y-1">
-        <p className="text-gray-400 px-3 mb-3" style={{ fontSize: '11px', fontWeight: 600 }}>
-          القائمة
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        <p
+          className="text-gray-400 px-3 mb-3"
+          style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+          }}
+        >
+          القائمة الرئيسية
         </p>
         {navItems.map((item) => (
           <NavLink
@@ -109,10 +95,13 @@ export default function LabLayout() {
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
                 isActive
-                  ? 'bg-green-600 text-white shadow-md'
+                  ? 'text-white shadow-md'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               }`
             }
+            style={({ isActive }) => ({
+              backgroundColor: isActive ? accentColor : undefined,
+            })}
             onClick={() => setSidebarOpen(false)}
           >
             {({ isActive }) => (
@@ -121,14 +110,14 @@ export default function LabLayout() {
                   className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-500'}`}
                 />
                 <span style={{ fontSize: '14px', fontWeight: isActive ? 700 : 500 }}>
-                  {item.path === '/lab/samples' ? 'العينات' : item.label}
+                  {item.label}
                 </span>
-                {pendingCount > 0 && item.path === '/lab' && (
+                {item.badgeCount !== undefined && item.badgeCount > 0 && (
                   <span
-                    className={`mr-auto px-1.5 py-0.5 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-yellow-100 text-yellow-700'}`}
+                    className={`mr-auto text-xs px-1.5 py-0.5 rounded-full ${isActive ? 'bg-white/20 text-white' : item.badgeColor || 'bg-red-100 text-red-600'}`}
                     style={{ fontSize: '11px', fontWeight: 700 }}
                   >
-                    {pendingCount}
+                    {item.badgeCount}
                   </span>
                 )}
               </>
@@ -137,15 +126,18 @@ export default function LabLayout() {
         ))}
       </nav>
 
-      {/* Restricted notice */}
-      <div className="px-4 pb-2"></div>
-
       {/* User info */}
       <div className="p-4 border-t border-gray-100">
         <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
-          <div className="w-9 h-9 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-green-700" style={{ fontSize: '14px', fontWeight: 700 }}>
-              {user?.name?.charAt(2) || 'ت'}
+          <div
+            className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ backgroundColor: `${accentColor}20` }}
+          >
+            <span
+              className="text-green-700"
+              style={{ fontSize: '14px', fontWeight: 700, color: accentColor }}
+            >
+              {user?.name?.charAt(2) || 'م'}
             </span>
           </div>
           <div className="flex-1 min-w-0">
@@ -153,10 +145,15 @@ export default function LabLayout() {
               {user?.name}
             </p>
             <span
-              className="inline-block px-2 py-0.5 bg-green-100 text-green-700 rounded-full"
-              style={{ fontSize: '10px', fontWeight: 700 }}
+              className="inline-block px-2 py-0.5 rounded-full"
+              style={{
+                fontSize: '10px',
+                fontWeight: 700,
+                backgroundColor: `${accentColor}20`,
+                color: accentColor,
+              }}
             >
-              دكتور تحاليل
+              {roleLabel}
             </span>
           </div>
           <button
@@ -170,8 +167,21 @@ export default function LabLayout() {
     </div>
   );
 
+  // Format date for header
+  const formatDate = () => {
+    const today = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    };
+    return today.toLocaleDateString('ar-SA', options);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
+      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/40 z-30 lg:hidden"
@@ -209,26 +219,21 @@ export default function LabLayout() {
               >
                 <Menu className="w-5 h-5" />
               </button>
-              <div
-                className="hidden lg:flex items-center gap-2 text-gray-500"
-                style={{ fontSize: '13px' }}
-              >
-                <span className="text-green-600" style={{ fontWeight: 600 }}>
-                  BloodLink
-                </span>
-                <span>/</span>
-                <span>قسم التحاليل — الأحد، 26 أبريل 2025</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {pendingCount > 0 && (
-                <div className="hidden sm:flex items-center gap-1.5 bg-green-50 border border-green-100 px-3 py-1.5 rounded-lg">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-green-700" style={{ fontSize: '12px', fontWeight: 600 }}>
-                    {pendingCount} حقيبة معلقة
+              {showDateInHeader && (
+                <div
+                  className="hidden lg:flex items-center gap-2 text-gray-500"
+                  style={{ fontSize: '13px' }}
+                >
+                  <span className="text-green-600" style={{ fontWeight: 600 }}>
+                    BloodLink
                   </span>
+                  <span>/</span>
+                  <span>{formatDate()}</span>
                 </div>
               )}
+            </div>
+            <div className="flex items-center gap-2">
+              {headerAlert}
               <NotificationDropdown
                 notifications={notifications}
                 open={notifOpen}
@@ -236,9 +241,15 @@ export default function LabLayout() {
                 onClose={() => setNotifOpen(false)}
               />
               <div className="flex items-center gap-2 pr-2 border-r border-gray-200">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="text-green-700" style={{ fontSize: '12px', fontWeight: 700 }}>
-                    {user?.name?.charAt(2) || 'ت'}
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: `${accentColor}20` }}
+                >
+                  <span
+                    className="text-green-700"
+                    style={{ fontSize: '12px', fontWeight: 700, color: accentColor }}
+                  >
+                    {user?.name?.charAt(2) || 'م'}
                   </span>
                 </div>
                 <div className="hidden sm:block">
@@ -246,10 +257,15 @@ export default function LabLayout() {
                     {user?.name?.split(' ').slice(0, 2).join(' ')}
                   </p>
                   <span
-                    className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 rounded-full"
-                    style={{ fontSize: '10px', fontWeight: 700 }}
+                    className="inline-block px-1.5 py-0.5 rounded-full"
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      backgroundColor: `${accentColor}20`,
+                      color: accentColor,
+                    }}
                   >
-                    دكتور تحاليل
+                    {roleLabel}
                   </span>
                 </div>
               </div>
@@ -257,6 +273,7 @@ export default function LabLayout() {
           </div>
         </header>
 
+        {/* Page content */}
         <main className="flex-1 p-4 lg:p-6">
           <Outlet />
         </main>
