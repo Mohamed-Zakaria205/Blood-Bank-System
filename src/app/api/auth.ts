@@ -256,7 +256,6 @@ export async function refreshTokenApi(): Promise<RefreshTokenResponse> {
       throw { response: { status: 401, data: { message: 'Invalid refresh token' } } };
     }
 
-    const userId = storedRefresh.split('-')[2]; // "USR"
     const userNum = storedRefresh.split('-')[3]; // "001"
     const newToken = `mock-jwt-USR-${userNum}-${Date.now()}`;
     const newRefresh = `mock-refresh-USR-${userNum}-${Date.now()}`;

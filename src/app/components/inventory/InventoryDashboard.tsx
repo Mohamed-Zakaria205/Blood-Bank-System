@@ -1,12 +1,10 @@
 import { useNavigate } from 'react-router';
 import {
   Package,
-  History,
   TrendingUp,
   TrendingDown,
   AlertTriangle,
   Clock,
-  CheckCircle,
   ArrowUpRight,
   Droplets,
 } from 'lucide-react';

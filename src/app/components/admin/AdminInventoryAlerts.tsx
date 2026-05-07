@@ -29,7 +29,6 @@ export default function AdminInventoryAlerts() {
   const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
   const { data: transactions = [], isLoading: isLoadingTx, isError: isErrorTx } = useTransactions();
   const {
-    data: requests = [],
     isLoading: isLoadingReq,
     isError: isErrorReq,
   } = useHospitalRequests();
@@ -69,15 +68,14 @@ export default function AdminInventoryAlerts() {
 
   const outOfStock = liveInventory.filter((i) => i.available === 0);
   const critical = liveInventory.filter((i) => i.available > 0 && i.available < i.min * 0.5);
-  const low = liveInventory.filter((i) => i.available >= i.min * 0.5 && i.available < i.min);
+
   const nearExpiry = bags.filter((b) => {
     if (b.status !== 'available') return false;
     const d = daysUntil(b.expiryDate);
     return d >= 0 && d <= 5;
   });
   const wasted = bags.filter((b) => b.status === 'disposed' || b.status === 'expired');
-  const fulfilled = requests.filter((r) => r.status === 'fulfilled').length;
-  const pending = requests.filter((r) => r.status === 'pending' || r.status === 'approved').length;
+
 
   // Consumption trend: issues per blood type
   const issuedByType = BLOOD_TYPES.map((t) => ({

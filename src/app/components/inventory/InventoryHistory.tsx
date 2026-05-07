@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  History,
   Search,
   Upload,
   Trash2,

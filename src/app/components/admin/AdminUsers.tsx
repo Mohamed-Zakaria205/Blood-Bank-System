@@ -2,12 +2,9 @@ import { useState } from 'react';
 import {
   Search,
   Plus,
-  Filter,
   Eye,
   Edit2,
   Heart,
-  CheckCircle2,
-  XCircle,
   X,
   MapPin,
   Phone,

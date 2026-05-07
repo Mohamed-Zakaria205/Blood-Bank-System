@@ -22,9 +22,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Check,
-  Timer,
 } from 'lucide-react';
-import { BLOOD_TYPES, DISEASES, CITIES } from '../../constants';
+import { BLOOD_TYPES, DISEASES } from '../../constants';
 import type { BloodType, DonationType, DonorStatus } from '../../types/common';
 import type { Donor } from '../../types/donor';
 import { useAuth } from '../../contexts/AuthContext';
@@ -113,7 +112,7 @@ const initialForm: SimpleForm = {
 
 export default function DonorRegistrationForm() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  useAuth();
   const [searchParams] = useSearchParams();
   const { data: campaignsData = [] } = useCampaigns();
   const { data: slot15DataFromHook = [] } = useSlot15Data();

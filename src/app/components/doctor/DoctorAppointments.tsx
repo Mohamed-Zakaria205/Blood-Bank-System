@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import {
-  CalendarDays,
   Clock,
   User,
   CheckCircle2,
@@ -17,7 +16,6 @@ import {
   Bell,
   BellOff,
   Ban,
-  ChevronDown,
   ChevronUp,
 } from 'lucide-react';
 import type { Slot15, CancellationNotification } from '../../types';

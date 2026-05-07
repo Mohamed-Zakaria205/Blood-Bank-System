@@ -33,16 +33,7 @@ const donationTypeLabels: Record<string, string> = {
   plasma: 'بلازما',
   platelets: 'صفائح',
 };
-const statusColors: Record<string, string> = {
-  eligible: 'bg-green-100 text-green-700',
-  ineligible: 'bg-red-100 text-red-700',
-  deferred: 'bg-orange-100 text-orange-700',
-};
-const statusLabels: Record<string, string> = {
-  eligible: 'مؤهل',
-  ineligible: 'غير مؤهل',
-  deferred: 'موجل',
-};
+
 const bloodStatusColor: Record<string, string> = {
   normal: 'bg-green-500',
   low: 'bg-yellow-500',

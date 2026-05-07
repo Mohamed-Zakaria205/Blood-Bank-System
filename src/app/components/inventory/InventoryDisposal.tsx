@@ -10,13 +10,12 @@ import {
   Check,
   XCircle,
   AlertOctagon,
-  ShieldOff,
 } from 'lucide-react';
 import type { BloodBag, BloodType } from '../../types';
 import { useBloodBags, useOutflowRecords, useDisposeBag } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
-import { BLOOD_TYPES, HOSPITALS } from '../../constants';
+import { BLOOD_TYPES } from '../../constants';
 
 /* ── constants ──────────────────────────────────────────── */
 const TODAY = new Date('2025-04-29');

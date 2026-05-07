@@ -16,8 +16,9 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useChangePassword } from '../../hooks/useAuth';
 
 export default function AdminSettings() {
-  const { user } = useAuth();
+  useAuth();
   const { isDark, toggleDark } = useTheme();
+
 
   // ── Password change mutation (replaces the broken (user as any)?.password check) ─
   const changePasswordMutation = useChangePassword();

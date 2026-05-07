@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Building2, CheckCircle, X, Package, AlertTriangle, Search, Plus } from 'lucide-react';
+import { Building2, CheckCircle, Package, AlertTriangle, Search, Plus } from 'lucide-react';
 import type { BloodBag, BloodType, RequestUrgency } from '../../types';
 import {
   useBloodBags,

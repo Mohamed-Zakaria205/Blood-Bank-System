@@ -252,7 +252,7 @@ export default function DoctorDashboard() {
             {/* Chart with grid */}
             <div className="relative" style={{ height: '176px' }}>
               {/* Horizontal grid lines + y-axis labels */}
-              {[7, 5, 3, 1].map((v, i) => (
+              {[7, 5, 3, 1].map((v, _i) => (
                 <div
                   key={v}
                   className="absolute w-full flex items-center gap-3 pointer-events-none"

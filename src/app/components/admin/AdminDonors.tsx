@@ -22,8 +22,6 @@ const donationTypeLabels: Record<string, string> = {
   plasma: 'بلازما',
   platelets: 'صفائح',
 };
-const genderLabels: Record<string, string> = { male: 'ذكر', female: 'أنثى' };
-
 export default function AdminDonors() {
   const { data: donorsData = [], isLoading, isError, refetch } = useDonors();
   const [donors, setDonors] = useState<Donor[]>([]);

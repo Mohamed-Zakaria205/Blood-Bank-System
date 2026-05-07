@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeftRight, Search, Filter, Download } from 'lucide-react';
+import { Search, Download } from 'lucide-react';
 import { BLOOD_TYPES } from '../../constants';
 import type { BloodType, TransactionType } from '../../types';
 import { useTransactions } from '../../hooks/useInventory';

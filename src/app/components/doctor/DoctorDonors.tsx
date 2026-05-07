@@ -19,7 +19,7 @@ import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkelet
 import { EmptyState } from '../shared/EmptyState';
 
 import type { Donor } from '../../types';
-type BloodType = string;
+
 
 const statusColors: Record<string, string> = {
   eligible: 'bg-green-100 text-green-700',
@@ -175,7 +175,7 @@ export default function DoctorDonors() {
             color: 'text-red-600',
             bg: 'bg-red-50',
           },
-        ].map((s, i) => null)}
+        ].map((_s, _i) => null)}
       </div>
 
       {/* Donors Cards (mobile) + Table (desktop) */}

@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
 import {
   Search,
-  Package,
   Check,
   X,
   AlertTriangle,

@@ -617,7 +617,7 @@ export default function LabDashboard() {
                   </span>
                 </div>
                 <div className="space-y-2">
-                  {screeningTests.map((test, idx) => (
+                  {screeningTests.map((test, _idx) => (
                     <div
                       key={test.key}
                       className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all ${

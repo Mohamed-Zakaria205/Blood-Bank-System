@@ -127,7 +127,7 @@ export default function DoctorEligibility() {
   const [filterBlood, setFilterBlood] = useState<BloodType | 'all'>('all');
   const [notifModal, setNotifModal] = useState<NotifModal | null>(null);
   const [sentNotifs, setSentNotifs] = useState<Set<string>>(new Set());
-  const [notifType, setNotifType] = useState<'emergency' | 'ready'>('ready');
+  const [_notifType, _setNotifType] = useState<'emergency' | 'ready'>('ready');
 
   const enriched = useMemo(
     () => donorsData.map((d: Donor) => ({ ...d, elig: calcEligibility(d) })),
