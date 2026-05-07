@@ -5,7 +5,7 @@ import apiClient from './client';
 import type { Campaign, CreateCampaignRequest } from '../types/campaign';
 import { campaigns as MOCK_CAMPAIGNS } from '../data/mockData';
 
-const USE_MOCK = true;
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 /** In-memory store that mirrors the mock array so mutations persist across refetches */
 let mockStore: Campaign[] = [...MOCK_CAMPAIGNS];

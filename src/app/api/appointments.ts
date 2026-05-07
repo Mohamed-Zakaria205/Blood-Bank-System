@@ -5,7 +5,7 @@ import apiClient from './client';
 import type { AppointmentSlot, Slot15 } from '../types/appointment';
 import { appointmentSlots as MOCK_SLOTS, slot15Data as MOCK_SLOT15 } from '../data/mockData';
 
-const USE_MOCK = true;
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 /** In-memory stores so mutations persist across refetches */
 let mockSlots: AppointmentSlot[] = [...MOCK_SLOTS];

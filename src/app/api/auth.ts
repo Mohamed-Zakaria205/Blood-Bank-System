@@ -14,7 +14,7 @@ import type {
 // When the backend is not yet available, the app falls back to
 // the hardcoded mock users so the UI remains fully usable.
 // Flip this to `false` once your backend's /auth/login is live.
-const USE_MOCK = true;
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 // ── Mock users (kept ONLY in this file, not imported elsewhere) ─
 const MOCK_USERS: (User & { password: string })[] = [

@@ -9,7 +9,7 @@ import {
   testResults as MOCK_TEST_RESULTS,
 } from '../data/mockData';
 
-const USE_MOCK = true;
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 /** In-memory stores so mutations persist across refetches */
 let mockLabTests: LabTest[] = [...MOCK_LAB_TESTS];

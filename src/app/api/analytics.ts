@@ -12,7 +12,7 @@ import type {
 } from '../types/analytics';
 
 // ── Mock mode flag ─────────────────────────────────────────
-const USE_MOCK = true;
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 // ── Mock data ──────────────────────────────────────────────
 

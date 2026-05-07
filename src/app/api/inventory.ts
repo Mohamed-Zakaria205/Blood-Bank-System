@@ -19,7 +19,7 @@ import {
   monthlyStats as MOCK_MONTHLY_STATS,
 } from '../data/mockData';
 
-const USE_MOCK = true;
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 // ── Blood Bags ─────────────────────────────────────────────
 export async function fetchBloodBags(): Promise<BloodBag[]> {

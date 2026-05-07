@@ -5,7 +5,7 @@ import apiClient from './client';
 import type { User } from '../types/auth';
 import { users as MOCK_USERS } from '../data/mockData';
 
-const USE_MOCK = true;
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 export async function fetchStaff(): Promise<User[]> {
   if (USE_MOCK) {
