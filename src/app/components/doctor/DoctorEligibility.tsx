@@ -6,12 +6,9 @@ import {
   Search,
   CheckCircle2,
   Clock,
-  XCircle,
   AlertTriangle,
-  Send,
-  Users,
   Zap,
-  Smartphone,
+  Users,
 } from 'lucide-react';
 import type { Donor } from '../../types/donor';
 import type { BloodType } from '../../types/common';
@@ -19,95 +16,15 @@ import { BLOOD_TYPES } from '../../constants';
 import { useDonors } from '../../hooks/useDonors';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 
-// ──────────────────────────────────────────
-// Eligibility engine
-// ──────────────────────────────────────────
-const TODAY = new Date('2025-04-29');
-const MALE_WAIT = 90; // days
-const FEMALE_WAIT = 120; // days
-
-type EligibilityResult = {
-  status: 'eligible' | 'soon' | 'not_yet' | 'deferred' | 'ineligible';
-  daysLeft: number;
-  daysAgo: number;
-  eligibleDate: string;
-};
-
-function calcEligibility(donor: Donor): EligibilityResult {
-  if (donor.status === 'ineligible')
-    return { status: 'ineligible', daysLeft: 0, daysAgo: 0, eligibleDate: '—' };
-  if (donor.status === 'deferred' && donor.deferredUntil) {
-    const def = new Date(donor.deferredUntil);
-    const daysLeft = Math.ceil((def.getTime() - TODAY.getTime()) / 86400000);
-    if (daysLeft > 0)
-      return {
-        status: 'deferred',
-        daysLeft,
-        daysAgo: 0,
-        eligibleDate: donor.deferredUntil,
-      };
-  }
-  if (!donor.lastDonationDate)
-    return {
-      status: 'eligible',
-      daysLeft: 0,
-      daysAgo: 999,
-      eligibleDate: 'الآن',
-    };
-
-  const last = new Date(donor.lastDonationDate);
-  const daysAgo = Math.floor((TODAY.getTime() - last.getTime()) / 86400000);
-  const wait = donor.gender === 'male' ? MALE_WAIT : FEMALE_WAIT;
-  const daysLeft = wait - daysAgo;
-  const eligibleDate = new Date(last.getTime() + wait * 86400000).toISOString().split('T')[0];
-
-  if (daysLeft <= 0) return { status: 'eligible', daysLeft: 0, daysAgo, eligibleDate };
-  if (daysLeft <= 14) return { status: 'soon', daysLeft, daysAgo, eligibleDate };
-  return { status: 'not_yet', daysLeft, daysAgo, eligibleDate };
-}
-
-const statusCfg = {
-  eligible: {
-    label: 'مؤهل الآن',
-    badge: 'bg-green-100 text-green-700',
-    icon: CheckCircle2,
-    dot: 'bg-green-500',
-    row: 'border-green-100',
-  },
-  soon: {
-    label: 'قريباً',
-    badge: 'bg-yellow-100 text-yellow-700',
-    icon: Clock,
-    dot: 'bg-yellow-400',
-    row: 'border-yellow-100',
-  },
-  not_yet: {
-    label: 'لم يحن وقته',
-    badge: 'bg-gray-100 text-gray-500',
-    icon: XCircle,
-    dot: 'bg-gray-400',
-    row: 'border-gray-100',
-  },
-  deferred: {
-    label: 'موجّل',
-    badge: 'bg-orange-100 text-orange-600',
-    icon: AlertTriangle,
-    dot: 'bg-orange-400',
-    row: 'border-orange-100',
-  },
-  ineligible: {
-    label: 'غير مؤهل',
-    badge: 'bg-red-100 text-red-600',
-    icon: XCircle,
-    dot: 'bg-red-500',
-    row: 'border-red-100',
-  },
-};
-
-interface NotifModal {
-  donor: Donor;
-  type: 'emergency' | 'ready';
-}
+// ── Sub-components & constants ──
+import {
+  calcEligibility,
+  statusCfg,
+  type NotifModal,
+  type EnrichedDonor,
+} from './doctor-eligibility/eligibilityConstants';
+import NotifyDonorModal from './doctor-eligibility/NotifyDonorModal';
+import BloodTypeBar from './doctor-eligibility/BloodTypeBar';
 
 export default function DoctorEligibility() {
   const { data: donorsData = [], isLoading, isError, refetch } = useDonors();
@@ -122,14 +39,14 @@ export default function DoctorEligibility() {
     );
   if (isError)
     return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
+
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'eligible' | 'soon' | 'not_yet'>('all');
   const [filterBlood, setFilterBlood] = useState<BloodType | 'all'>('all');
   const [notifModal, setNotifModal] = useState<NotifModal | null>(null);
   const [sentNotifs, setSentNotifs] = useState<Set<string>>(new Set());
-  const [_notifType, _setNotifType] = useState<'emergency' | 'ready'>('ready');
 
-  const enriched = useMemo(
+  const enriched: EnrichedDonor[] = useMemo(
     () => donorsData.map((d: Donor) => ({ ...d, elig: calcEligibility(d) })),
     [donorsData],
   );
@@ -233,39 +150,7 @@ export default function DoctorEligibility() {
       </div>
 
       {/* Blood type eligibility bar */}
-      <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-        <h3 className="text-gray-700 mb-4" style={{ fontSize: '14px', fontWeight: 700 }}>
-          المؤهلون حسب الفصيلة
-        </h3>
-        <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
-          {BLOOD_TYPES.map((type) => {
-            const typeElig = enriched.filter(
-              (d) => d.bloodType === type && d.elig.status === 'eligible',
-            ).length;
-            const typeTotal = enriched.filter((d) => d.bloodType === type).length;
-            return (
-              <button
-                key={type}
-                onClick={() => setFilterBlood(filterBlood === type ? 'all' : type)}
-                className={`p-3 rounded-xl border-2 text-center transition-all ${filterBlood === type ? 'border-green-400 bg-green-50' : 'border-gray-100 bg-gray-50 hover:border-green-200'}`}
-              >
-                <span
-                  className="block px-1.5 py-0.5 bg-red-50 text-red-600 rounded mb-1 mx-auto w-fit"
-                  style={{ fontSize: '12px', fontWeight: 800 }}
-                >
-                  {type}
-                </span>
-                <span className="text-green-600" style={{ fontSize: '18px', fontWeight: 800 }}>
-                  {typeElig}
-                </span>
-                <span className="block text-gray-400" style={{ fontSize: '10px' }}>
-                  / {typeTotal}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <BloodTypeBar enriched={enriched} filterBlood={filterBlood} onToggle={setFilterBlood} />
 
       {/* Search & filters */}
       <div className="flex flex-col sm:flex-row gap-3">
@@ -427,7 +312,6 @@ export default function DoctorEligibility() {
                 <div className="flex flex-col gap-2 flex-shrink-0">
                   {(elig.status === 'eligible' || elig.status === 'soon') && (
                     <>
-                      {/* Emergency notify */}
                       <button
                         onClick={() =>
                           !hasSentEmergency && setNotifModal({ donor, type: 'emergency' })
@@ -438,7 +322,6 @@ export default function DoctorEligibility() {
                         <Zap className="w-3.5 h-3.5" />
                         {hasSentEmergency ? 'أُرسل' : 'طارئ'}
                       </button>
-                      {/* Ready notify */}
                       <button
                         onClick={() => !hasSentReady && setNotifModal({ donor, type: 'ready' })}
                         className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all ${hasSentReady ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-default' : 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100'}`}
@@ -466,105 +349,11 @@ export default function DoctorEligibility() {
 
       {/* Notification modal */}
       {notifModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-            <div
-              className={`p-5 border-b ${notifModal.type === 'emergency' ? 'bg-red-50 border-red-100' : 'bg-green-50 border-green-100'}`}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${notifModal.type === 'emergency' ? 'bg-red-100' : 'bg-green-100'}`}
-                >
-                  {notifModal.type === 'emergency' ? (
-                    <Zap className="w-6 h-6 text-red-600" />
-                  ) : (
-                    <Bell className="w-6 h-6 text-green-600" />
-                  )}
-                </div>
-                <div>
-                  <h3 className="text-gray-900" style={{ fontSize: '17px', fontWeight: 700 }}>
-                    {notifModal.type === 'emergency' ? 'إشعار طارئ' : 'إشعار جاهزية للتبرع'}
-                  </h3>
-                  <p className="text-gray-500" style={{ fontSize: '12px' }}>
-                    {notifModal.donor.name}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="p-5 space-y-4">
-              {/* Recipient info */}
-              <div className="p-3 bg-gray-50 rounded-xl space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500" style={{ fontSize: '12px' }}>
-                    المتبرع
-                  </span>
-                  <span className="text-gray-800" style={{ fontSize: '13px', fontWeight: 600 }}>
-                    {notifModal.donor.name}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500" style={{ fontSize: '12px' }}>
-                    الفصيلة
-                  </span>
-                  <span
-                    className="px-2 py-0.5 bg-red-50 text-red-600 rounded"
-                    style={{ fontSize: '12px', fontWeight: 800 }}
-                  >
-                    {notifModal.donor.bloodType}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500" style={{ fontSize: '12px' }}>
-                    الهاتف
-                  </span>
-                  <span className="text-gray-800 font-mono" style={{ fontSize: '13px' }}>
-                    {notifModal.donor.phone}
-                  </span>
-                </div>
-              </div>
-
-              {/* Message preview */}
-              <div>
-                <label
-                  className="block text-gray-700 mb-2"
-                  style={{ fontSize: '13px', fontWeight: 600 }}
-                >
-                  محتوى الإشعار
-                </label>
-                <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl">
-                  <p className="text-gray-700" style={{ fontSize: '13px', lineHeight: '1.6' }}>
-                    {notifModal.type === 'emergency'
-                      ? `🚨 طلب دم طارئ — بنك دم بني سويف\nفصيلة الدم: ${notifModal.donor.bloodType}\nيرجى التواصل فوراً على: 082-XXXXXXX`
-                      : `💚 أنت الآن مؤهل للتبرع بالدم مجدداً!\nآخر تبرع: ${notifModal.donor.lastDonationDate ?? 'لم يتبرع'}\nاحجز موعدك عبر التطبيق أو تواصل معنا.`}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-100 rounded-xl">
-                <Smartphone className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                <p className="text-blue-600" style={{ fontSize: '12px' }}>
-                  سيُرسَل الإشعار للتطبيق والرسائل النصية
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-3 px-5 pb-5">
-              <button
-                onClick={sendNotification}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-white rounded-xl transition-all ${notifModal.type === 'emergency' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
-                style={{ fontSize: '14px', fontWeight: 700 }}
-              >
-                <Send className="w-4 h-4" /> إرسال الإشعار
-              </button>
-              <button
-                onClick={() => setNotifModal(null)}
-                className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200"
-                style={{ fontSize: '14px', fontWeight: 600 }}
-              >
-                إلغاء
-              </button>
-            </div>
-          </div>
-        </div>
+        <NotifyDonorModal
+          modal={notifModal}
+          onSend={sendNotification}
+          onCancel={() => setNotifModal(null)}
+        />
       )}
     </div>
   );
