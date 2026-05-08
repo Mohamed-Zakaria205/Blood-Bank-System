@@ -2,14 +2,28 @@
 // React Query hooks — Donors
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchDonors, fetchDonorById, createDonor } from '../api/donors';
+import { fetchDonors, fetchDonorById, createDonor, fetchPaginatedDonors } from '../api/donors';
 import type { CreateDonorRequest } from '../types/donor';
+import type { DonorFilters } from '../types/common';
 
-/** Fetch all donors */
+/** Fetch all donors (unpaginated — for dropdowns and small lists) */
 export function useDonors() {
   return useQuery({
     queryKey: ['donors'],
     queryFn: fetchDonors,
+  });
+}
+
+/**
+ * Fetch donors with server-ready pagination, search and filtering.
+ * Each unique set of filters is cached separately via structured query keys.
+ * `placeholderData: keepPreviousData` prevents flicker between page transitions.
+ */
+export function usePaginatedDonors(filters: DonorFilters = {}) {
+  return useQuery({
+    queryKey: ['donors', 'paginated', filters],
+    queryFn: () => fetchPaginatedDonors(filters),
+    placeholderData: (previousData) => previousData,
   });
 }
 

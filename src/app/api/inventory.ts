@@ -9,6 +9,7 @@ import type {
   OutflowRecord,
   MonthlyStats,
 } from '../types/inventory';
+import type { PaginatedResponse, BagFilters } from '../types/common';
 import {
   bloodBags as MOCK_BAGS,
   bloodInventory as MOCK_INVENTORY,
@@ -20,12 +21,57 @@ import {
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 // ── Blood Bags ─────────────────────────────────────────────
+
+/** Fetch all blood bags (unpaginated — used when the full list is needed) */
 export async function fetchBloodBags(): Promise<BloodBag[]> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
     return MOCK_BAGS;
   }
   const { data } = await apiClient.get<BloodBag[]>('/inventory/bags');
+  return data;
+}
+
+/**
+ * Fetch blood bags with pagination, search and filtering.
+ *
+ * Mock mode: applies client-side slicing to simulate server behavior.
+ * Real API: all params are forwarded as query-string parameters.
+ */
+export async function fetchPaginatedBloodBags(
+  filters: BagFilters = {},
+): Promise<PaginatedResponse<BloodBag>> {
+  const { page = 1, limit = 10, search = '', bloodType = '', status = '' } = filters;
+
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 300));
+
+    // ── Client-side filtering ──────────────────────────────
+    let result = MOCK_BAGS;
+
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (b) =>
+          b.bagCode.toLowerCase().includes(q) ||
+          (b.donorCode?.toLowerCase().includes(q) ?? false),
+      );
+    }
+    if (bloodType) result = result.filter((b) => b.bloodType === bloodType);
+    if (status)    result = result.filter((b) => b.status === status);
+
+    // ── Client-side pagination ─────────────────────────────
+    const total = result.length;
+    const start = (page - 1) * limit;
+    const data  = result.slice(start, start + limit);
+
+    return { data, total, page, limit };
+  }
+
+  // ── Real API: forward all params as query-string ─────────
+  const { data } = await apiClient.get<PaginatedResponse<BloodBag>>('/inventory/bags', {
+    params: { page, limit, search, bloodType, status },
+  });
   return data;
 }
 

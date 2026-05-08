@@ -16,6 +16,27 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
+/** Pagination query params — sent as query-string to the backend */
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+}
+
+/** Donor-specific filter params */
+export interface DonorFilters extends PaginationParams {
+  search?: string;
+  bloodType?: string;
+  status?: string;
+  city?: string;
+}
+
+/** Blood bag filter params */
+export interface BagFilters extends PaginationParams {
+  search?: string;
+  bloodType?: string;
+  status?: string;
+}
+
 /** Standardised API error shape */
 export interface ApiError {
   message: string;

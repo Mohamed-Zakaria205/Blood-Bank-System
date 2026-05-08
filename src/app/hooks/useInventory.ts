@@ -4,6 +4,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchBloodBags,
+  fetchPaginatedBloodBags,
   exportBags,
   disposeBag,
   fetchBloodInventory,
@@ -11,12 +12,28 @@ import {
   fetchOutflowRecords,
   fetchMonthlyStats,
 } from '../api/inventory';
+import type { BagFilters } from '../types/common';
 
 // ── Blood Bags ─────────────────────────────────────────────
+
+/** Fetch all blood bags (unpaginated) */
 export function useBloodBags() {
   return useQuery({
     queryKey: ['bags'],
     queryFn: fetchBloodBags,
+  });
+}
+
+/**
+ * Fetch blood bags with server-ready pagination, search and filtering.
+ * Each unique set of filters is cached separately via structured query keys.
+ * `placeholderData: keepPreviousData` prevents flicker between page transitions.
+ */
+export function usePaginatedBloodBags(filters: BagFilters = {}) {
+  return useQuery({
+    queryKey: ['bags', 'paginated', filters],
+    queryFn: () => fetchPaginatedBloodBags(filters),
+    placeholderData: (previousData) => previousData,
   });
 }
 
