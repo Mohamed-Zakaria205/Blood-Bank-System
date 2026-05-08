@@ -3,7 +3,6 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
-  X,
   Droplets,
   Activity,
   ChevronRight,
@@ -45,8 +44,6 @@ export default function LabDashboard() {
     setForm,
     errors,
     submitting,
-    successMsg,
-    setSuccessMsg,
     openEntry,
     submitResult,
   } = useLabDashboardForm();
@@ -85,19 +82,6 @@ export default function LabDashboard() {
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>
-
-      {/* Success notification */}
-      {successMsg && (
-        <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl">
-          <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-          <p className="text-green-700" style={{ fontSize: '14px', fontWeight: 600 }}>
-            {successMsg}
-          </p>
-          <button onClick={() => setSuccessMsg('')} className="mr-auto text-green-500">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

@@ -179,6 +179,7 @@ export default function DoctorCampaigns() {
                 slotId: cancelTarget.id,
                 reason,
               });
+              toast.success('تم إلغاء الموعد بنجاح');
             } catch (err) {
               console.error(err);
             } finally {

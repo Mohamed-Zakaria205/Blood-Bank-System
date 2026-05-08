@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import type { BloodType, LabTest } from '../../../types';
 import { useSubmitLabResult } from '../../../hooks/useLabTests';
 import type { ScreeningForm } from '../lab-dashboard/labConstants';
@@ -13,7 +14,6 @@ export function useLabDashboardForm() {
   const [form, setForm] = useState<ScreeningForm | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
-  const [successMsg, setSuccessMsg] = useState('');
 
   const openEntry = (test: LabTest) => {
     setEntryModal(test);
@@ -52,10 +52,9 @@ export function useLabDashboardForm() {
         },
       });
       setEntryModal(null);
-      setSuccessMsg(
+      toast.success(
         `تم إدخال نتائج حقيبة ${entryModal.bloodType} — ${entryModal.donorCode} بنجاح (${!isUnsafe ? 'آمنة ✅' : 'غير آمنة ⚠️'})`,
       );
-      setTimeout(() => setSuccessMsg(''), 5000);
     } catch (err) {
       console.error(err);
     } finally {
@@ -74,8 +73,6 @@ export function useLabDashboardForm() {
     setForm,
     errors,
     submitting,
-    successMsg,
-    setSuccessMsg,
     openEntry,
     isUnsafe,
     submitResult,

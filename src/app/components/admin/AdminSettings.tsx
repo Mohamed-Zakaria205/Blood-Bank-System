@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { useAuth } from '../../contexts/AuthContext';
 
 
@@ -27,6 +28,7 @@ export default function AdminSettings() {
   const [notifSettings, setNotifSettings] = useState<NotifSettings>(defaultNotifSettings);
 
   const handleSave = () => {
+    toast.success('تم حفظ الإعدادات بنجاح');
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };

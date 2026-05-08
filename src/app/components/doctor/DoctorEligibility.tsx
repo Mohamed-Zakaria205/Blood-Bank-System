@@ -10,6 +10,7 @@ import {
   Zap,
   Users,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import type { Donor } from '../../types/donor';
 import type { BloodType } from '../../types/common';
 import { BLOOD_TYPES } from '../../constants';
@@ -72,6 +73,11 @@ export default function DoctorEligibility() {
   const sendNotification = () => {
     if (!notifModal) return;
     setSentNotifs((prev) => new Set([...prev, `${notifModal.donor.id}-${notifModal.type}`]));
+    toast.success(
+      notifModal.type === 'emergency'
+        ? `تم إرسال إشعار طارئ إلى ${notifModal.donor.name}`
+        : `تم إرسال إشعار جاهزية إلى ${notifModal.donor.name}`,
+    );
     setNotifModal(null);
   };
 

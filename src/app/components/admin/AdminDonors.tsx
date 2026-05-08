@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Search, Filter, Edit2, ChevronDown, Building2, Smartphone } from 'lucide-react';
+import { toast } from 'sonner';
 import { BLOOD_TYPES, CITIES } from '../../constants';
 import { useDonors } from '../../hooks/useDonors';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
@@ -64,6 +65,7 @@ export default function AdminDonors() {
     setDonors((prev) =>
       prev.map((d) => (d.id === editingDonor.id ? ({ ...d, ...editForm } as Donor) : d)),
     );
+    toast.success('تم تحديث بيانات المتبرع بنجاح');
     setSaved(true);
     setTimeout(() => {
       setEditingDonor(null);

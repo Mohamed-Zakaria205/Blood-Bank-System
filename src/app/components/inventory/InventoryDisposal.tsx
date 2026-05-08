@@ -6,6 +6,7 @@ import {
   XCircle,
   AlertOctagon,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import type { BloodType } from '../../types';
 import { useBloodBags, useOutflowRecords, useDisposeBag } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
@@ -153,6 +154,7 @@ export default function InventoryDisposal() {
       await Promise.all(
         selectedBagIds.map((id) => disposeBagMutation.mutateAsync({ bagId: id, reason: label })),
       );
+      toast.success(`تم إتلاف ${selectedBagIds.length} حقيبة بنجاح`);
       setShowConfirm(false);
       setSelectedBagIds([]);
       setCategory('');

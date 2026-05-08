@@ -7,6 +7,7 @@ import {
   Trash2,
   ShoppingCart,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import type { BloodBag, BloodType } from '../../types';
 import { useBloodBags, useExportBags, useDisposeBag } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
@@ -98,6 +99,7 @@ export default function InventoryBags() {
         bagIds: selectedBagIds,
         recipient: form,
       });
+      toast.success(`تم تصدير ${selectedBagIds.length} حقيبة بنجاح`);
       setExportModalOpen(false);
       setSelectedBagIds([]);
     } catch (err) {
@@ -112,6 +114,7 @@ export default function InventoryBags() {
         bagId: disposeModal.id,
         reason: disposeReason || 'إتلاف وفق البروتوكول',
       });
+      toast.success('تم إتلاف الحقيبة بنجاح');
       setDisposeModal(null);
       setDisposeReason('');
     } catch (err) {
