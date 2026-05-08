@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import { AlertTriangle, Filter, Bell } from 'lucide-react';
 import type { Slot15, CancellationNotification } from '../../types';
 import { useSlot15Data, useCancelAppointment } from '../../hooks/useAppointments';
@@ -86,29 +87,28 @@ export default function DoctorAppointments() {
       hour: '2-digit',
       minute: '2-digit',
     });
-    try {
-      await cancelMutation.mutateAsync({ slotId: cancelTarget.id, reason });
-      // Build in-session notification
-      setNotifications((prev) => [
-        {
-          id: `NOTIF-${Date.now()}`,
-          donorName: cancelTarget.donorName || '—',
-          donorPhone: cancelTarget.donorPhone,
-          date: cancelTarget.date,
-          time: cancelTarget.time,
-          campaignId: cancelTarget.campaignId,
-          cancelledAt: now,
-          cancelledByName: user?.name || 'الطبيب',
-          reason: reason || undefined,
-          read: false,
-        },
-        ...prev,
-      ]);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setCancelTarget(null);
-    }
+
+    await cancelMutation.mutateAsync({ slotId: cancelTarget.id, reason });
+    
+    // Build in-session notification
+    setNotifications((prev) => [
+      {
+        id: `NOTIF-${Date.now()}`,
+        donorName: cancelTarget.donorName || '—',
+        donorPhone: cancelTarget.donorPhone,
+        date: cancelTarget.date,
+        time: cancelTarget.time,
+        campaignId: cancelTarget.campaignId,
+        cancelledAt: now,
+        cancelledByName: user?.name || 'الطبيب',
+        reason: reason || undefined,
+        read: false,
+      },
+      ...prev,
+    ]);
+    
+    toast.success('تم إلغاء الموعد بنجاح');
+    setCancelTarget(null);
   };
 
   // ── TODAY timeline ──
