@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Settings2, Save, Check } from 'lucide-react';
 import { BLOOD_TYPES } from '../../constants';
 import type { BloodType } from '../../types';
-import { bloodInventory, monthlyStats } from '../../data/mockData';
-import { useBloodBags, useTransactions } from '../../hooks/useInventory';
+import { useBloodBags, useBloodInventory, useTransactions, useMonthlyStats } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 
 // ── Sub-components ──
@@ -13,6 +12,7 @@ import ConsumptionByTypePanel from './admin-alerts/ConsumptionByTypePanel';
 import NearExpiryTable from './admin-alerts/NearExpiryTable';
 
 const TODAY = new Date('2025-04-29');
+const DEFAULT_MIN = 10;
 
 function daysUntil(d: string) {
   return Math.ceil((new Date(d).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24));
@@ -20,18 +20,32 @@ function daysUntil(d: string) {
 
 export default function AdminInventoryAlerts() {
   const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
+  const { data: inventoryData = [], isLoading: isLoadingInv, isError: isErrorInv } = useBloodInventory();
   const { data: transactions = [], isLoading: isLoadingTx, isError: isErrorTx } = useTransactions();
+  const { data: monthlyStats = [], isLoading: isLoadingStats, isError: isErrorStats } = useMonthlyStats();
 
-  const [thresholds, setThresholds] = useState<Record<BloodType, number>>(() => {
-    return bloodInventory.reduce(
+  // Initialise thresholds from API data (once)
+  const thresholdsInitialised = useRef(false);
+  const [thresholds, setThresholds] = useState<Record<BloodType, number>>(
+    () => BLOOD_TYPES.reduce((acc, t) => { acc[t] = DEFAULT_MIN; return acc; }, {} as Record<BloodType, number>),
+  );
+
+  if (!thresholdsInitialised.current && inventoryData.length > 0) {
+    thresholdsInitialised.current = true;
+    const fromApi = inventoryData.reduce(
       (acc, b) => { acc[b.type] = b.minRequired; return acc; },
       {} as Record<BloodType, number>,
     );
-  });
+    setThresholds(fromApi);
+  }
+
   const [editThresholds, setEditThresholds] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  if (isLoadingBags || isLoadingTx)
+  const isLoading = isLoadingBags || isLoadingInv || isLoadingTx || isLoadingStats;
+  const isError = isErrorBags || isErrorInv || isErrorTx || isErrorStats;
+
+  if (isLoading)
     return (
       <div className="space-y-6 p-2">
         <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
@@ -39,7 +53,7 @@ export default function AdminInventoryAlerts() {
         <TableSkeleton rows={5} cols={6} />
       </div>
     );
-  if (isErrorBags || isErrorTx)
+  if (isError)
     return (
       <ErrorState
         message="فشل في تحميل التنبيهات، يرجى المحاولة لاحقاً"
@@ -52,7 +66,7 @@ export default function AdminInventoryAlerts() {
     type: t,
     available: bags.filter((b) => b.bloodType === t && b.status === 'available').length,
     issued: bags.filter((b) => b.bloodType === t && b.status === 'issued').length,
-    min: thresholds[t] ?? 10,
+    min: thresholds[t] ?? DEFAULT_MIN,
   }));
 
   const outOfStock = liveInventory.filter((i) => i.available === 0);
