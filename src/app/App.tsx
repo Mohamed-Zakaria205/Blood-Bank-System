@@ -4,7 +4,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'sonner';
 import { router } from './routes';
 import { AuthProvider } from './contexts/AuthContext';
-import { ThemeProvider } from './contexts/ThemeContext';
+
 
 import '../styles/fonts.css';
 
@@ -23,10 +23,8 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ThemeProvider>
-          <RouterProvider router={router} />
-          <Toaster />
-        </ThemeProvider>
+        <RouterProvider router={router} />
+        <Toaster />
       </AuthProvider>
       {/* Dev-only panel — inspect cache, queries, mutations */}
       {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}

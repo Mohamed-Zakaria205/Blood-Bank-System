@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/ThemeContext';
+
 
 // ── Constants & types ──
 import type { FacilityInfo, NotifSettings } from './admin-settings/settingsConstants';
@@ -14,12 +14,12 @@ import {
 import FacilityTab from './admin-settings/FacilityTab';
 import SecurityTab from './admin-settings/SecurityTab';
 import NotificationsTab from './admin-settings/NotificationsTab';
-import AppearanceTab from './admin-settings/AppearanceTab';
+
 import PermissionsTab from './admin-settings/PermissionsTab';
 
 export default function AdminSettings() {
   useAuth();
-  const { isDark, toggleDark } = useTheme();
+
 
   const [activeTab, setActiveTab] = useState('system');
   const [saved, setSaved] = useState(false);
@@ -88,9 +88,7 @@ export default function AdminSettings() {
               onSave={handleSave}
             />
           )}
-          {activeTab === 'appearance' && (
-            <AppearanceTab isDark={isDark} toggleDark={toggleDark} />
-          )}
+
           {activeTab === 'permissions' && <PermissionsTab />}
         </div>
       </div>

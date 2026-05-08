@@ -1,11 +1,10 @@
-import { Building2, Lock, Bell, Palette, Shield } from 'lucide-react';
+import { Building2, Lock, Bell, Shield } from 'lucide-react';
 
 /** Sidebar tab definitions */
 export const settingsTabs = [
   { id: 'system', label: 'بيانات المنشأة', icon: Building2 },
   { id: 'security', label: 'الأمان', icon: Lock },
   { id: 'notifications', label: 'الإشعارات', icon: Bell },
-  { id: 'appearance', label: 'المظهر', icon: Palette },
   { id: 'permissions', label: 'الصلاحيات', icon: Shield },
 ] as const;
 
