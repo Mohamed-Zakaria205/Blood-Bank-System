@@ -126,43 +126,16 @@ export default function DashboardLayout({
         ))}
       </nav>
 
-      {/* User info */}
+      {/* Logout */}
       <div className="p-4 border-t border-gray-100">
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
-          <div
-            className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: `${accentColor}20` }}
-          >
-            <span
-              className="text-green-700"
-              style={{ fontSize: '14px', fontWeight: 700, color: accentColor }}
-            >
-              {user?.name?.charAt(2) || 'م'}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-gray-900 truncate" style={{ fontSize: '13px', fontWeight: 600 }}>
-              {user?.name}
-            </p>
-            <span
-              className="inline-block px-2 py-0.5 rounded-full"
-              style={{
-                fontSize: '10px',
-                fontWeight: 700,
-                backgroundColor: `${accentColor}20`,
-                color: accentColor,
-              }}
-            >
-              {roleLabel}
-            </span>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="text-gray-400 hover:text-red-500 transition-colors p-1"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
-        </div>
+        <button
+          onClick={handleLogout}
+          className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 transition-all"
+          style={{ fontSize: '13px', fontWeight: 700 }}
+        >
+          <LogOut className="w-4 h-4" />
+          تسجيل خروج
+        </button>
       </div>
     </div>
   );
@@ -241,20 +214,9 @@ export default function DashboardLayout({
                 onClose={() => setNotifOpen(false)}
               />
               <div className="flex items-center gap-2 pr-2 border-r border-gray-200">
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: `${accentColor}20` }}
-                >
-                  <span
-                    className="text-green-700"
-                    style={{ fontSize: '12px', fontWeight: 700, color: accentColor }}
-                  >
-                    {user?.name?.charAt(2) || 'م'}
-                  </span>
-                </div>
-                <div className="hidden sm:block">
+                <div>
                   <p className="text-gray-900" style={{ fontSize: '13px', fontWeight: 600 }}>
-                    {user?.name?.split(' ').slice(0, 2).join(' ')}
+                    {user?.name}
                   </p>
                   <span
                     className="inline-block px-1.5 py-0.5 rounded-full"
