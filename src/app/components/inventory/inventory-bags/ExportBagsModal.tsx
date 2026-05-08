@@ -34,9 +34,34 @@ export default function ExportBagsModal({
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!form.recipientName.trim()) e.recipientName = 'مطلوب';
-    if (!form.nationalId.trim()) e.nationalId = 'مطلوب';
+
+    // ── Recipient name ──
+    const name = form.recipientName.trim();
+    if (!name) {
+      e.recipientName = 'مطلوب';
+    } else if (name.length < 6) {
+      e.recipientName = 'يجب أن يكون الاسم 6 أحرف على الأقل';
+    } else if (!/^[\u0600-\u06FFa-zA-Z\s]+$/.test(name)) {
+      e.recipientName = 'يجب أن يحتوي على حروف فقط (عربي أو إنجليزي)';
+    }
+
+    // ── National ID (14 digits) ──
+    const nid = form.nationalId.trim();
+    if (!nid) {
+      e.nationalId = 'مطلوب';
+    } else if (!/^\d{14}$/.test(nid)) {
+      e.nationalId = 'يجب أن يكون 14 رقم بالضبط';
+    }
+
+    // ── Phone (optional but validated if provided) ──
+    const phone = form.phone.trim();
+    if (phone && !/^01[0125]\d{8}$/.test(phone)) {
+      e.phone = 'صيغة غير صحيحة (01xxxxxxxxx)';
+    }
+
+    // ── Reason ──
     if (!form.reason.trim()) e.reason = 'مطلوب';
+
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -177,6 +202,7 @@ export default function ExportBagsModal({
                     }))
                   }
                   placeholder="14 رقم"
+                  maxLength={14}
                   className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400
                     ${errors.nationalId ? 'border-red-300' : 'border-gray-200'}`}
                   style={{ fontSize: '13px' }}
@@ -198,9 +224,16 @@ export default function ExportBagsModal({
                   value={form.phone}
                   onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
                   placeholder="01xxxxxxxxx"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
+                  maxLength={11}
+                  className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400
+                    ${errors.phone ? 'border-red-300' : 'border-gray-200'}`}
                   style={{ fontSize: '13px' }}
                 />
+                {errors.phone && (
+                  <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
+                    {errors.phone}
+                  </p>
+                )}
               </div>
             </div>
 
