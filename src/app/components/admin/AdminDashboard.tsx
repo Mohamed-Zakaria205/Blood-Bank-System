@@ -10,10 +10,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useDonors } from '../../hooks/useDonors';
-import { useCampaigns } from '../../hooks/useCampaigns';
-import { useStaff } from '../../hooks/useStaff';
-import { useBloodInventory, useMonthlyStats } from '../../hooks/useInventory';
+import { useAdminDashboardData } from './hooks/useAdminDashboardData';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 
@@ -28,19 +25,27 @@ export default function AdminDashboard() {
   const { user } = useAuth();
 
   // ── React Query hooks ────────────────────────────────────
+  // ── React Query hook + Derived Data ────────────────────────────────────
   const {
-    data: donors = [],
-    isLoading: loadingDonors,
-    isError: errorDonors,
-    refetch: refetchDonors,
-  } = useDonors();
-  const { data: campaignsData = [], isLoading: loadingCampaigns } = useCampaigns();
-  const { data: staffData = [], isLoading: loadingStaff } = useStaff();
-  const { data: bloodInventory = [], isLoading: loadingInventory } = useBloodInventory();
-  const { data: monthlyStatsData = [], isLoading: loadingStats } = useMonthlyStats();
-
-  const isLoading =
-    loadingDonors || loadingCampaigns || loadingStaff || loadingInventory || loadingStats;
+    donors,
+    bloodInventory,
+    monthlyStatsData,
+    isLoading,
+    errorDonors,
+    refetchDonors,
+    doctors,
+    labDoctors,
+    totalUnits,
+    criticalCount,
+    recentDonors,
+    campaignDonors,
+    walkinDonors,
+    appDonors,
+    totalDonors,
+    eligibleDonors,
+    totalCampaigns,
+    activeCampaigns,
+  } = useAdminDashboardData();
 
   if (isLoading)
     return (
@@ -60,26 +65,13 @@ export default function AdminDashboard() {
   if (errorDonors)
     return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetchDonors()} />;
 
-  // ── Derived data ─────────────────────────────────────────
-  const doctors = staffData.filter((u) => u.role === 'doctor');
-  const labDoctors = staffData.filter((u) => u.role === 'lab');
-  const totalUnits = bloodInventory.reduce((s, b) => s + b.units, 0);
-  const criticalCount = bloodInventory.filter((b) => b.status === 'critical').length;
-  const recentDonors = [...donors]
-    .sort(
-      (a, b) =>
-        new Date(b.registeredAt ?? '').getTime() - new Date(a.registeredAt ?? '').getTime(),
-    )
-    .slice(0, 6);
-  const campaignDonors = donors.filter((d) => d.source === 'campaign');
-  const walkinDonors = donors.filter((d) => d.source === 'walkin');
-  const appDonors = donors.filter((d) => d.source === 'app');
+
 
   const stats = [
     {
       label: 'إجمالي المتبرعين',
-      value: donors.length,
-      sub: `${donors.filter((d) => d.status === 'eligible').length} مؤهل`,
+      value: totalDonors,
+      sub: `${eligibleDonors} مؤهل`,
       icon: Heart,
       color: 'text-green-600',
       bg: 'bg-green-50',
@@ -88,8 +80,8 @@ export default function AdminDashboard() {
     },
     {
       label: 'حملات التبرع',
-      value: campaignsData.length,
-      sub: `${campaignsData.filter((c) => c.status === 'active').length} نشطة`,
+      value: totalCampaigns,
+      sub: `${activeCampaigns} نشطة`,
       icon: Megaphone,
       color: 'text-blue-600',
       bg: 'bg-blue-50',

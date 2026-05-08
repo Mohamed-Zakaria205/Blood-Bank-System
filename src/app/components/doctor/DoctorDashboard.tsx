@@ -6,13 +6,11 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useDonors } from '../../hooks/useDonors';
-import { useCampaigns } from '../../hooks/useCampaigns';
-import { useSlot15Data } from '../../hooks/useAppointments';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
+import { useDoctorDashboardData } from './hooks/useDoctorDashboardData';
 
 // ── Sub-components ──
-import { TODAY, TODAY_DATE_DISPLAY, buildStats, buildQuickActions } from './doctor-dashboard/dashboardConstants';
+import { TODAY_DATE_DISPLAY, buildStats, buildQuickActions } from './doctor-dashboard/dashboardConstants';
 import WeeklyChart from './doctor-dashboard/WeeklyChart';
 import ActiveCampaignsPanel from './doctor-dashboard/ActiveCampaignsPanel';
 import UpcomingAppointments from './doctor-dashboard/UpcomingAppointments';
@@ -21,11 +19,21 @@ import RecentDonors from './doctor-dashboard/RecentDonors';
 export default function DoctorDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { data: donors = [], isLoading: loadingDonors, isError, refetch } = useDonors();
-  const { data: campaigns = [], isLoading: loadingCampaigns } = useCampaigns();
-  const { data: slot15Data = [], isLoading: loadingSlots } = useSlot15Data();
+  const {
+    donors,
+    isLoading,
+    isError,
+    refetch,
+    myDonors,
+    activeCampaigns,
+    myCampaigns,
+    walkinToday,
+    appToday,
+    campaignToday,
+    campaignDonors,
+    upcomingToday,
+  } = useDoctorDashboardData();
 
-  const isLoading = loadingDonors || loadingCampaigns || loadingSlots;
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
@@ -43,16 +51,7 @@ export default function DoctorDashboard() {
     );
   if (isError) return <ErrorState message="تعذر تحميل البيانات" onRetry={() => refetch()} />;
 
-  const myDonors = donors.filter((d) => d.registeredBy === user?.id);
-  const activeCampaigns = campaigns.filter((c) => c.status === 'active');
-  const myCampaigns = campaigns.filter((c) => c.createdBy === user?.id);
 
-  const walkinToday = donors.filter((d) => d.registeredAt === '2025-04-26' && d.source === 'walkin').length;
-  const appToday = donors.filter((d) => d.registeredAt === '2025-04-26' && d.source === 'app').length;
-  const campaignToday = donors.filter((d) => d.registeredAt === '2025-04-26' && d.source === 'campaign').length;
-  const campaignDonors = donors.filter((d) => d.source === 'campaign');
-
-  const upcomingToday = slot15Data.filter((s) => s.date === TODAY && s.status === 'booked');
 
   const stats = buildStats(donors, myCampaigns, myDonors, navigate);
   const quickActions = buildQuickActions(navigate);
