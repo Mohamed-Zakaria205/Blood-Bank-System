@@ -3,10 +3,12 @@
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
 import type { User, UserRole } from '../types/auth';
+import type { PaginatedResponse, StaffFilters } from '../types/common';
 import { users as MOCK_USERS } from '../data/mockData';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
+/** Fetch all staff members (excludes admins) */
 export async function fetchStaff(): Promise<User[]> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
@@ -14,6 +16,45 @@ export async function fetchStaff(): Promise<User[]> {
     return MOCK_USERS.filter((u) => u.role !== 'admin').map(({ password: _, ...u }) => u) as User[];
   }
   const { data } = await apiClient.get<User[]>('/staff');
+  return data;
+}
+
+/**
+ * Fetch staff with filtering and pagination.
+ * Mock: client-side filter + slice. Real API: forwarded as query-string.
+ */
+export async function fetchFilteredStaff(
+  filters: StaffFilters = {},
+): Promise<PaginatedResponse<User>> {
+  const { page = 1, limit = 10, search = '', role = '', status = '' } = filters;
+
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 300));
+
+    let result = MOCK_USERS.filter((u) => u.role !== 'admin').map(
+      ({ password: _, ...u }) => u,
+    ) as User[];
+
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (u) =>
+          u.name.toLowerCase().includes(q) ||
+          u.email.toLowerCase().includes(q) ||
+          (u.phone ?? '').includes(q),
+      );
+    }
+    if (role)   result = result.filter((u) => u.role === role);
+    if (status) result = result.filter((u) => u.status === status);
+
+    const total = result.length;
+    const data  = result.slice((page - 1) * limit, page * limit);
+    return { data, total, page, limit };
+  }
+
+  const { data } = await apiClient.get<PaginatedResponse<User>>('/staff', {
+    params: { page, limit, search, role, status },
+  });
   return data;
 }
 

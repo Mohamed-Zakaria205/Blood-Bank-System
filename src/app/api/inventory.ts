@@ -9,7 +9,7 @@ import type {
   OutflowRecord,
   MonthlyStats,
 } from '../types/inventory';
-import type { PaginatedResponse, BagFilters } from '../types/common';
+import type { PaginatedResponse, BagFilters, TransactionFilters } from '../types/common';
 import {
   bloodBags as MOCK_BAGS,
   bloodInventory as MOCK_INVENTORY,
@@ -110,12 +110,47 @@ export async function fetchBloodInventory(): Promise<BloodInventoryItem[]> {
 }
 
 // ── Transactions ───────────────────────────────────────────
+
+/** Fetch all transactions (unpaginated) */
 export async function fetchTransactions(): Promise<Transaction[]> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
     return MOCK_TRANSACTIONS;
   }
   const { data } = await apiClient.get<Transaction[]>('/inventory/transactions');
+  return data;
+}
+
+/**
+ * Fetch transactions with filtering and pagination.
+ * Mock: client-side filter + slice. Real API: forwarded as query-string.
+ */
+export async function fetchFilteredTransactions(
+  filters: TransactionFilters = {},
+): Promise<PaginatedResponse<Transaction>> {
+  const { page = 1, limit = 10, search = '', type = '', bloodType = '', dateFrom = '', dateTo = '' } = filters;
+
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 300));
+
+    let result = MOCK_TRANSACTIONS;
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter((t) => t.bagCodes.some((c) => c.toLowerCase().includes(q)));
+    }
+    if (type)      result = result.filter((t) => t.type === type);
+    if (bloodType) result = result.filter((t) => t.bloodType === bloodType);
+    if (dateFrom)  result = result.filter((t) => t.timestamp >= dateFrom);
+    if (dateTo)    result = result.filter((t) => t.timestamp <= dateTo);
+
+    const total = result.length;
+    const data  = result.slice((page - 1) * limit, page * limit);
+    return { data, total, page, limit };
+  }
+
+  const { data } = await apiClient.get<PaginatedResponse<Transaction>>('/inventory/transactions', {
+    params: { page, limit, search, type, bloodType, dateFrom, dateTo },
+  });
   return data;
 }
 

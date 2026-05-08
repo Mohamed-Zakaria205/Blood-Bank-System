@@ -9,10 +9,11 @@ import {
   disposeBag,
   fetchBloodInventory,
   fetchTransactions,
+  fetchFilteredTransactions,
   fetchOutflowRecords,
   fetchMonthlyStats,
 } from '../api/inventory';
-import type { BagFilters } from '../types/common';
+import type { BagFilters, TransactionFilters } from '../types/common';
 
 // ── Blood Bags ─────────────────────────────────────────────
 
@@ -82,11 +83,22 @@ export function useBloodInventory() {
   });
 }
 
-// ── Transactions ───────────────────────────────────────────
+// ── Transactions ──────────────────────────────────────────────
 export function useTransactions() {
   return useQuery({
     queryKey: ['transactions'],
     queryFn: fetchTransactions,
+  });
+}
+
+/**
+ * Fetch transactions with server-ready filtering and pagination.
+ */
+export function useFilteredTransactions(filters: TransactionFilters = {}) {
+  return useQuery({
+    queryKey: ['transactions', 'filtered', filters],
+    queryFn: () => fetchFilteredTransactions(filters),
+    placeholderData: (previousData) => previousData,
   });
 }
 

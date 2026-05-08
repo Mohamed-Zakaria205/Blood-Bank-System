@@ -37,6 +37,36 @@ export interface BagFilters extends PaginationParams {
   status?: string;
 }
 
+/** Campaign filter params */
+export interface CampaignFilters extends PaginationParams {
+  search?: string;
+  status?: string;
+  city?: string;
+}
+
+/** Lab test filter params */
+export interface LabTestFilters extends PaginationParams {
+  search?: string;
+  status?: string;
+  bloodType?: string;
+}
+
+/** Staff filter params */
+export interface StaffFilters extends PaginationParams {
+  search?: string;
+  role?: string;
+  status?: string;
+}
+
+/** Transaction filter params */
+export interface TransactionFilters extends PaginationParams {
+  search?: string;
+  type?: string;
+  bloodType?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
 /** Standardised API error shape */
 export interface ApiError {
   message: string;

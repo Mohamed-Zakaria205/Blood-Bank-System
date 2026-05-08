@@ -2,13 +2,25 @@
 // React Query hooks — Staff (users)
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchStaff, createStaff, deleteStaff } from '../api/staff';
+import { fetchStaff, createStaff, deleteStaff, fetchFilteredStaff } from '../api/staff';
+import type { StaffFilters } from '../types/common';
 
 /** Fetch all staff members (excludes admins) */
 export function useStaff() {
   return useQuery({
     queryKey: ['staff'],
     queryFn: fetchStaff,
+  });
+}
+
+/**
+ * Fetch staff with server-ready filtering and pagination.
+ */
+export function useFilteredStaff(filters: StaffFilters = {}) {
+  return useQuery({
+    queryKey: ['staff', 'filtered', filters],
+    queryFn: () => fetchFilteredStaff(filters),
+    placeholderData: (previousData) => previousData,
   });
 }
 
