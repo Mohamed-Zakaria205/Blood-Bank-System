@@ -1,12 +1,11 @@
 // ═══════════════════════════════════════════════════════════
-// Inventory API service — bags, transactions, requests, outflow, stats
+// Inventory API service — bags, transactions, outflow, stats
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
 import type {
   BloodBag,
   BloodInventoryItem,
   Transaction,
-  HospitalRequest,
   OutflowRecord,
   MonthlyStats,
 } from '../types/inventory';
@@ -14,7 +13,6 @@ import {
   bloodBags as MOCK_BAGS,
   bloodInventory as MOCK_INVENTORY,
   initialTransactions as MOCK_TRANSACTIONS,
-  initialHospitalRequests as MOCK_REQUESTS,
   initialOutflowRecords as MOCK_OUTFLOW,
   monthlyStats as MOCK_MONTHLY_STATS,
 } from '../data/mockData';
@@ -73,35 +71,6 @@ export async function fetchTransactions(): Promise<Transaction[]> {
   }
   const { data } = await apiClient.get<Transaction[]>('/inventory/transactions');
   return data;
-}
-
-// ── Hospital Requests ──────────────────────────────────────
-export async function fetchHospitalRequests(): Promise<HospitalRequest[]> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return MOCK_REQUESTS;
-  }
-  const { data } = await apiClient.get<HospitalRequest[]>('/inventory/requests');
-  return data;
-}
-
-export async function addHospitalRequest(
-  payload: Omit<HospitalRequest, 'id'>,
-): Promise<HospitalRequest> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return { ...payload, id: `REQ-${String(Date.now()).slice(-4)}` };
-  }
-  const { data } = await apiClient.post<HospitalRequest>('/inventory/requests', payload);
-  return data;
-}
-
-export async function fulfillRequest(requestId: string, bagIds: string[]): Promise<void> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 400));
-    return;
-  }
-  await apiClient.post(`/inventory/requests/${requestId}/fulfill`, { bagIds });
 }
 
 // ── Outflow Records ────────────────────────────────────────

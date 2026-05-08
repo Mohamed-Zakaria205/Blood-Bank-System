@@ -1,13 +1,11 @@
 // ═══════════════════════════════════════════════════════════
-// Inventory types — blood bags, transactions, requests, outflow
+// Inventory types — blood bags, transactions, outflow
 // ═══════════════════════════════════════════════════════════
 import type {
   BloodType,
   DonationType,
   BloodBagStatus,
   TransactionType,
-  RequestUrgency,
-  RequestStatus,
   InventoryStatus,
   OutflowActionType,
 } from './common';
@@ -47,20 +45,6 @@ export interface Transaction {
   requestId?: string;
 }
 
-export interface HospitalRequest {
-  id: string;
-  hospitalName: string;
-  bloodType: BloodType;
-  quantity: number;
-  urgency: RequestUrgency;
-  requestedAt: string;
-  status: RequestStatus;
-  approvedBy?: string;
-  fulfilledBy?: string;
-  fulfilledAt?: string;
-  notes?: string;
-  bagIds?: string[];
-}
 
 export interface OutflowRecord {
   id: string;

@@ -7,7 +7,6 @@ import type {
   Campaign,
   DonationType,
   Donor,
-  HospitalRequest,
   LabTest,
   MonthlyStats,
   OutflowRecord,
@@ -1008,81 +1007,6 @@ export const initialTransactions: Transaction[] = [
   },
 ];
 
-// ═══════════════════════════════════════════
-// HOSPITAL REQUESTS
-// ═══════════════════════════════════════════
-export const initialHospitalRequests: HospitalRequest[] = [
-  {
-    id: 'REQ-001',
-    hospitalName: 'مستشفى بني سويف العام',
-    bloodType: 'O+',
-    quantity: 2,
-    urgency: 'emergency',
-    requestedAt: '2025-04-26 07:00',
-    status: 'fulfilled',
-    approvedBy: 'USR-001',
-    fulfilledBy: 'USR-008',
-    fulfilledAt: '2025-04-26 08:30',
-    bagIds: ['BAG-029'],
-    notes: 'مريض بحاجة ماسة لدم',
-  },
-  {
-    id: 'REQ-002',
-    hospitalName: 'مس��شفى ناصر المركزي',
-    bloodType: 'B+',
-    quantity: 1,
-    urgency: 'urgent',
-    requestedAt: '2025-04-25 13:00',
-    status: 'fulfilled',
-    approvedBy: 'USR-001',
-    fulfilledBy: 'USR-008',
-    fulfilledAt: '2025-04-25 14:15',
-    bagIds: ['BAG-025'],
-  },
-  {
-    id: 'REQ-003',
-    hospitalName: 'مستشفى ببا المركزي',
-    bloodType: 'B+',
-    quantity: 2,
-    urgency: 'normal',
-    requestedAt: '2025-04-23 10:00',
-    status: 'approved',
-    approvedBy: 'USR-001',
-    bagIds: ['BAG-014', 'BAG-018'],
-    notes: 'احتياطي لعمليات مقررة الأسبوع القادم',
-  },
-  {
-    id: 'REQ-004',
-    hospitalName: 'مستشفى إهناسيا',
-    bloodType: 'O-',
-    quantity: 3,
-    urgency: 'urgent',
-    requestedAt: '2025-04-26 09:30',
-    status: 'approved',
-    approvedBy: 'USR-001',
-    notes: 'حادث سيارة - 3 مرضى',
-  },
-  {
-    id: 'REQ-005',
-    hospitalName: 'مستشفى الفشن',
-    bloodType: 'AB+',
-    quantity: 1,
-    urgency: 'normal',
-    requestedAt: '2025-04-26 10:00',
-    status: 'pending',
-    notes: 'عملية قلب مقررة',
-  },
-  {
-    id: 'REQ-006',
-    hospitalName: 'مركز أورام بني سويف',
-    bloodType: 'A+',
-    quantity: 4,
-    urgency: 'urgent',
-    requestedAt: '2025-04-26 11:00',
-    status: 'pending',
-    notes: 'مرضى جلسات علاج كيميائي',
-  },
-];
 
 // ═══════════════════════════════════════════
 // MONTHLY STATS
@@ -1186,7 +1110,7 @@ export const monthlyStats: MonthlyStats[] = [
   },
 ];
 
-export { BLOOD_TYPES, CITIES, DISEASES, HOSPITALS } from '../constants';
+export { BLOOD_TYPES, CITIES, DISEASES } from '../constants';
 
 export const TIME_SLOTS = [
   '08:00',

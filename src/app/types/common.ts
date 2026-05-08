@@ -37,7 +37,4 @@ export type BloodBagStatus =
   | 'rejected'
   | 'disposed';
 export type TransactionType = 'issue' | 'return' | 'disposal' | 'receive' | 'reserve';
-export type RequestUrgency = 'normal' | 'urgent' | 'emergency';
-export type RequestStatus = 'pending' | 'approved' | 'fulfilled' | 'rejected';
 export type OutflowActionType = 'exported' | 'disposed';
-export type DestinationType = 'hospital' | 'patient';

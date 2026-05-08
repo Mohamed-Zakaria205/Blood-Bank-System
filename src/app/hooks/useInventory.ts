@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// React Query hooks — Inventory (bags, transactions, requests, outflow, stats)
+// React Query hooks — Inventory (bags, transactions, outflow, stats)
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -8,13 +8,9 @@ import {
   disposeBag,
   fetchBloodInventory,
   fetchTransactions,
-  fetchHospitalRequests,
-  addHospitalRequest,
-  fulfillRequest,
   fetchOutflowRecords,
   fetchMonthlyStats,
 } from '../api/inventory';
-import type { HospitalRequest } from '../types/inventory';
 
 // ── Blood Bags ─────────────────────────────────────────────
 export function useBloodBags() {
@@ -74,38 +70,6 @@ export function useTransactions() {
   return useQuery({
     queryKey: ['transactions'],
     queryFn: fetchTransactions,
-  });
-}
-
-// ── Hospital Requests ──────────────────────────────────────
-export function useHospitalRequests() {
-  return useQuery({
-    queryKey: ['requests'],
-    queryFn: fetchHospitalRequests,
-  });
-}
-
-export function useAddHospitalRequest() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (payload: Omit<HospitalRequest, 'id'>) => addHospitalRequest(payload),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['requests'] });
-    },
-  });
-}
-
-export function useFulfillRequest() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ requestId, bagIds }: { requestId: string; bagIds: string[] }) =>
-      fulfillRequest(requestId, bagIds),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['requests'] });
-      qc.invalidateQueries({ queryKey: ['bags'] });
-      qc.invalidateQueries({ queryKey: ['transactions'] });
-      qc.invalidateQueries({ queryKey: ['inventory'] });
-    },
   });
 }
 

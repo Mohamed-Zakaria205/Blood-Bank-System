@@ -15,7 +15,7 @@ import {
 import { BLOOD_TYPES } from '../../constants';
 import type { BloodType } from '../../types';
 import { bloodInventory, monthlyStats } from '../../data/mockData';
-import { useBloodBags, useTransactions, useHospitalRequests } from '../../hooks/useInventory';
+import { useBloodBags, useTransactions } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 
@@ -28,10 +28,6 @@ function daysUntil(d: string) {
 export default function AdminInventoryAlerts() {
   const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
   const { data: transactions = [], isLoading: isLoadingTx, isError: isErrorTx } = useTransactions();
-  const {
-    isLoading: isLoadingReq,
-    isError: isErrorReq,
-  } = useHospitalRequests();
 
   const [thresholds, setThresholds] = useState<Record<BloodType, number>>(() => {
     return bloodInventory.reduce(
@@ -42,7 +38,7 @@ export default function AdminInventoryAlerts() {
   const [editThresholds, setEditThresholds] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  if (isLoadingBags || isLoadingTx || isLoadingReq)
+  if (isLoadingBags || isLoadingTx)
     return (
       <div className="space-y-6 p-2">
         <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
@@ -50,7 +46,7 @@ export default function AdminInventoryAlerts() {
         <TableSkeleton rows={5} cols={6} />
       </div>
     );
-  if (isErrorBags || isErrorTx || isErrorReq)
+  if (isErrorBags || isErrorTx)
     return (
       <ErrorState
         message="فشل في تحميل التنبيهات، يرجى المحاولة لاحقاً"
