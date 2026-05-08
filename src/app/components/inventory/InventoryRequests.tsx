@@ -8,30 +8,16 @@ import {
   useFulfillRequest,
 } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
-import { BLOOD_TYPES, HOSPITALS } from '../../constants';
 
-const urgencyColors: Record<string, string> = {
-  normal: 'bg-blue-100 text-blue-700',
-  urgent: 'bg-orange-100 text-orange-700',
-  emergency: 'bg-red-100 text-red-700',
-};
-const urgencyLabels: Record<string, string> = {
-  normal: 'عادي',
-  urgent: 'عاجل',
-  emergency: 'طارئ',
-};
-const statusColors: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-700',
-  approved: 'bg-blue-100 text-blue-700',
-  fulfilled: 'bg-green-100 text-green-700',
-  rejected: 'bg-red-100 text-red-600',
-};
-const statusLabels: Record<string, string> = {
-  pending: 'قيد المراجعة',
-  approved: 'معتمد',
-  fulfilled: 'تم الصرف',
-  rejected: 'مرفوض',
-};
+// ── Sub-components & constants ──
+import {
+  urgencyColors,
+  urgencyLabels,
+  statusColors,
+  statusLabels,
+} from './inventory-requests/requestsConstants';
+import FulfillRequestModal from './inventory-requests/FulfillRequestModal';
+import AddRequestModal from './inventory-requests/AddRequestModal';
 
 export default function InventoryRequests() {
   const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
@@ -118,6 +104,12 @@ export default function InventoryRequests() {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const toggleBag = (bagId: string) => {
+    setSelectedBags((prev) =>
+      prev.includes(bagId) ? prev.filter((x) => x !== bagId) : [...prev, bagId],
+    );
   };
 
   const pending = requests.filter((r) => r.status === 'pending').length;
@@ -323,227 +315,28 @@ export default function InventoryRequests() {
 
       {/* Fulfill modal */}
       {fulfillModal && currentReq && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
-            <h3 className="text-gray-900 mb-1" style={{ fontSize: '18px', fontWeight: 700 }}>
-              صرف طلب {currentReq.hospitalName}
-            </h3>
-            <p className="text-gray-500 mb-4" style={{ fontSize: '13px' }}>
-              مطلوب: {currentReq.quantity} وحدة {currentReq.bloodType} — حدد الحقائب المناسبة
-            </p>
-            {selectedBags.length > 0 && (
-              <div className="mb-3 p-2 bg-green-50 border border-green-100 rounded-xl">
-                <p className="text-green-700" style={{ fontSize: '12px', fontWeight: 600 }}>
-                  محدد: {selectedBags.length} / {currentReq.quantity} وحدة
-                  {selectedBags.length >= currentReq.quantity && ' ✓ جاهز للصرف'}
-                </p>
-              </div>
-            )}
-            <div className="space-y-2 max-h-72 overflow-y-auto mb-5">
-              {compatibleBags.length === 0 ? (
-                <p className="text-gray-400 text-center py-4" style={{ fontSize: '13px' }}>
-                  لا توجد حقائب متاحة من هذه الفصيلة
-                </p>
-              ) : (
-                compatibleBags.map((bag) => {
-                  const days = Math.ceil(
-                    (new Date(bag.expiryDate).getTime() - new Date('2025-04-29').getTime()) /
-                      (1000 * 60 * 60 * 24),
-                  );
-                  return (
-                    <label
-                      key={bag.id}
-                      className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${selectedBags.includes(bag.id) ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-200 hover:border-green-200'}`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedBags.includes(bag.id)}
-                        onChange={() =>
-                          setSelectedBags((prev) =>
-                            prev.includes(bag.id)
-                              ? prev.filter((x) => x !== bag.id)
-                              : [...prev, bag.id],
-                          )
-                        }
-                        className="w-4 h-4 rounded accent-green-600"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded"
-                            style={{ fontSize: '11px', fontWeight: 700 }}
-                          >
-                            {bag.bagCode}
-                          </span>
-                        </div>
-                        <p className="text-gray-500" style={{ fontSize: '11px' }}>
-                          ينتهي: {bag.expiryDate}{' '}
-                          {days <= 5 && <span className="text-orange-500">(⚠ {days} أيام)</span>}
-                        </p>
-                      </div>
-                    </label>
-                  );
-                })
-              )}
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={handleFulfill}
-                disabled={selectedBags.length === 0 || fulfillRequestMutation.isPending}
-                className={`flex-1 py-2.5 text-white rounded-xl transition-all ${selectedBags.length === 0 || fulfillRequestMutation.isPending ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
-                style={{ fontSize: '14px', fontWeight: 600 }}
-              >
-                {fulfillRequestMutation.isPending
-                  ? 'جارٍ الصرف...'
-                  : `تأكيد الصرف (${selectedBags.length} حقيبة)`}
-              </button>
-              <button
-                onClick={() => {
-                  setFulfillModal(null);
-                  setSelectedBags([]);
-                }}
-                className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all"
-                style={{ fontSize: '14px', fontWeight: 600 }}
-              >
-                إلغاء
-              </button>
-            </div>
-          </div>
-        </div>
+        <FulfillRequestModal
+          request={currentReq}
+          compatibleBags={compatibleBags}
+          selectedBags={selectedBags}
+          onToggleBag={toggleBag}
+          onFulfill={handleFulfill}
+          onCancel={() => {
+            setFulfillModal(null);
+            setSelectedBags([]);
+          }}
+          isPending={fulfillRequestMutation.isPending}
+        />
       )}
 
       {/* Add request modal */}
       {addModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-            <h3 className="text-gray-900 mb-5" style={{ fontSize: '18px', fontWeight: 700 }}>
-              طلب دم جديد
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <label
-                  className="block text-gray-700 mb-1.5"
-                  style={{ fontSize: '13px', fontWeight: 600 }}
-                >
-                  المستشفى
-                </label>
-                <select
-                  value={newReq.hospitalName}
-                  onChange={(e) => setNewReq((p) => ({ ...p, hospitalName: e.target.value }))}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
-                  style={{ fontSize: '13px' }}
-                >
-                  <option value="">اختر المستشفى</option>
-                  {HOSPITALS.map((h) => (
-                    <option key={h} value={h}>
-                      {h}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label
-                    className="block text-gray-700 mb-1.5"
-                    style={{ fontSize: '13px', fontWeight: 600 }}
-                  >
-                    الفصيلة
-                  </label>
-                  <select
-                    value={newReq.bloodType}
-                    onChange={(e) =>
-                      setNewReq((p) => ({
-                        ...p,
-                        bloodType: e.target.value as BloodType,
-                      }))
-                    }
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
-                    style={{ fontSize: '13px' }}
-                  >
-                    {BLOOD_TYPES.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label
-                    className="block text-gray-700 mb-1.5"
-                    style={{ fontSize: '13px', fontWeight: 600 }}
-                  >
-                    الكمية
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={newReq.quantity}
-                    onChange={(e) =>
-                      setNewReq((p) => ({
-                        ...p,
-                        quantity: parseInt(e.target.value) || 1,
-                      }))
-                    }
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
-                    style={{ fontSize: '13px' }}
-                  />
-                </div>
-              </div>
-              <div>
-                <label
-                  className="block text-gray-700 mb-1.5"
-                  style={{ fontSize: '13px', fontWeight: 600 }}
-                >
-                  الأولوية
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {(['normal', 'urgent', 'emergency'] as const).map((u) => (
-                    <button
-                      key={u}
-                      onClick={() => setNewReq((p) => ({ ...p, urgency: u }))}
-                      className={`py-2 rounded-xl border-2 transition-all ${newReq.urgency === u ? urgencyColors[u] + ' border-current' : 'border-gray-200 text-gray-500'}`}
-                      style={{ fontSize: '12px', fontWeight: 600 }}
-                    >
-                      {urgencyLabels[u]}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label
-                  className="block text-gray-700 mb-1.5"
-                  style={{ fontSize: '13px', fontWeight: 600 }}
-                >
-                  ملاحظات
-                </label>
-                <input
-                  value={newReq.notes}
-                  onChange={(e) => setNewReq((p) => ({ ...p, notes: e.target.value }))}
-                  placeholder="اختياري"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
-                  style={{ fontSize: '13px' }}
-                />
-              </div>
-            </div>
-            <div className="flex gap-3 mt-5">
-              <button
-                onClick={handleAddRequest}
-                disabled={!newReq.hospitalName}
-                className={`flex-1 py-2.5 text-white rounded-xl transition-all ${!newReq.hospitalName ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
-                style={{ fontSize: '14px', fontWeight: 600 }}
-              >
-                إضافة الطلب
-              </button>
-              <button
-                onClick={() => setAddModal(false)}
-                className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all"
-                style={{ fontSize: '14px', fontWeight: 600 }}
-              >
-                إلغاء
-              </button>
-            </div>
-          </div>
-        </div>
+        <AddRequestModal
+          form={newReq}
+          onChange={setNewReq}
+          onSubmit={handleAddRequest}
+          onCancel={() => setAddModal(false)}
+        />
       )}
     </div>
   );
