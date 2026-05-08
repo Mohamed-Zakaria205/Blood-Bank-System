@@ -1,23 +1,16 @@
 import { useState } from 'react';
-import { AlertTriangle, TrendingUp, Clock, Settings2, Save, Check } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  Legend,
-} from 'recharts';
+import { Settings2, Save, Check } from 'lucide-react';
 import { BLOOD_TYPES } from '../../constants';
 import type { BloodType } from '../../types';
 import { bloodInventory, monthlyStats } from '../../data/mockData';
 import { useBloodBags, useTransactions } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
-import { EmptyState } from '../shared/EmptyState';
+
+// ── Sub-components ──
+import InventoryBarChart from './admin-alerts/InventoryBarChart';
+import IssuanceTrendChart from './admin-alerts/IssuanceTrendChart';
+import ConsumptionByTypePanel from './admin-alerts/ConsumptionByTypePanel';
+import NearExpiryTable from './admin-alerts/NearExpiryTable';
 
 const TODAY = new Date('2025-04-29');
 
@@ -71,7 +64,6 @@ export default function AdminInventoryAlerts() {
     return d >= 0 && d <= 5;
   });
   const wasted = bags.filter((b) => b.status === 'disposed' || b.status === 'expired');
-
 
   // Consumption trend: issues per blood type
   const issuedByType = BLOOD_TYPES.map((t) => ({
@@ -260,219 +252,17 @@ export default function AdminInventoryAlerts() {
         ))}
       </div>
 
+      {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Inventory by type bar chart — متاح وصادر فقط */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-          <h2 className="text-gray-900 mb-5" style={{ fontSize: '16px', fontWeight: 700 }}>
-            المخزون حسب الفصيلة
-          </h2>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={liveInventory} barSize={28}>
-              <CartesianGrid key="grid" strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis
-                key="x-axis"
-                dataKey="type"
-                tick={{ fontSize: 11, fill: '#6b7280', fontFamily: 'Tajawal' }}
-              />
-              <YAxis key="y-axis" tick={{ fontSize: 11, fill: '#9ca3af' }} />
-              <Tooltip
-                key="tooltip"
-                contentStyle={{
-                  fontFamily: 'Tajawal',
-                  borderRadius: '12px',
-                  border: 'none',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                  fontSize: '13px',
-                }}
-              />
-              <Bar
-                key="bar-available"
-                dataKey="available"
-                name="متاح"
-                fill="#22c55e"
-                radius={[4, 4, 0, 0]}
-              />
-              <Bar
-                key="bar-issued"
-                dataKey="issued"
-                name="صادر"
-                fill="#a78bfa"
-                radius={[4, 4, 0, 0]}
-              />
-              <Legend key="legend" wrapperStyle={{ fontFamily: 'Tajawal', fontSize: '12px' }} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Monthly issuance trend */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-          <h2 className="text-gray-900 mb-5" style={{ fontSize: '16px', fontWeight: 700 }}>
-            اتجاهات الصرف والهدر
-          </h2>
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={monthlyStats}>
-              <CartesianGrid key="grid" strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis
-                key="x-axis"
-                dataKey="month"
-                tick={{ fontSize: 10, fill: '#9CA3AF', fontFamily: 'Tajawal' }}
-              />
-              <YAxis key="y-axis" tick={{ fontSize: 11, fill: '#9ca3af' }} />
-              <Tooltip
-                key="tooltip"
-                contentStyle={{
-                  fontFamily: 'Tajawal',
-                  borderRadius: '12px',
-                  border: 'none',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                  fontSize: '13px',
-                }}
-              />
-              <Line
-                key="line-issued"
-                type="monotone"
-                dataKey="issued"
-                stroke="#22c55e"
-                strokeWidth={2.5}
-                dot={false}
-                name="مُصرف"
-              />
-              <Line
-                key="line-wasted"
-                type="monotone"
-                dataKey="wasted"
-                stroke="#ef4444"
-                strokeWidth={2}
-                dot={false}
-                name="هدر"
-                strokeDasharray="5 5"
-              />
-              <Legend key="legend" wrapperStyle={{ fontFamily: 'Tajawal', fontSize: '12px' }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        <InventoryBarChart data={liveInventory} />
+        <IssuanceTrendChart data={monthlyStats} />
       </div>
 
       {/* Near-expiry table */}
-      <div className="bg-white rounded-2xl border border-orange-200 shadow-sm overflow-hidden">
-        <div className="p-5 border-b border-orange-100 flex items-center gap-2">
-          <Clock className="w-5 h-5 text-orange-500" />
-          <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
-            حقائب قريبة الانتهاء (خلال 5 أيام)
-          </h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-orange-50">
-                {['كود الحقيبة', 'الفصيلة', 'تاريخ الانتهاء', 'الأيام المتبقية'].map((h) => (
-                  <th
-                    key={h}
-                    className="px-4 py-3 text-right text-orange-700"
-                    style={{ fontSize: '12px', fontWeight: 600 }}
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-orange-50">
-              {nearExpiry
-                .sort((a, b) => daysUntil(a.expiryDate) - daysUntil(b.expiryDate))
-                .map((bag) => {
-                  const d = daysUntil(bag.expiryDate);
-                  return (
-                    <tr key={bag.id} className="hover:bg-orange-50">
-                      <td className="px-4 py-3">
-                        <span
-                          className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded"
-                          style={{ fontSize: '11px', fontWeight: 700 }}
-                        >
-                          {bag.bagCode}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className="px-2 py-0.5 bg-red-50 text-red-600 rounded"
-                          style={{ fontSize: '12px', fontWeight: 800 }}
-                        >
-                          {bag.bloodType}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-gray-600" style={{ fontSize: '12px' }}>
-                        {bag.expiryDate}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`px-2.5 py-1 rounded-full ${d <= 1 ? 'bg-red-100 text-red-700' : d <= 3 ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'}`}
-                          style={{ fontSize: '12px', fontWeight: 700 }}
-                        >
-                          {d} يوم
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              {nearExpiry.length === 0 && (
-                <EmptyState colSpan={4} message="لا توجد حقائب قريبة الانتهاء" />
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <NearExpiryTable bags={bags} />
 
       {/* Consumption by blood type */}
-      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-        <div className="flex items-center gap-2 mb-5">
-          <TrendingUp className="w-5 h-5 text-green-600" />
-          <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
-            الاستهلاك حسب الفصيلة
-          </h2>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {issuedByType.map(({ type, issued }) => {
-            const inv = liveInventory.find((i) => i.type === type)!;
-            const ratio = inv.available > 0 ? issued / (issued + inv.available) : 1;
-            const isHigh = ratio > 0.7;
-            return (
-              <div
-                key={type}
-                className={`p-4 rounded-xl border ${isHigh ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-100'}`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span
-                    className="px-2 py-0.5 bg-red-50 text-red-600 rounded"
-                    style={{ fontSize: '12px', fontWeight: 800 }}
-                  >
-                    {type}
-                  </span>
-                  {isHigh && <AlertTriangle className="w-4 h-4 text-red-500" />}
-                </div>
-                <div className="text-gray-900" style={{ fontSize: '20px', fontWeight: 800 }}>
-                  {issued}
-                </div>
-                <div className="text-gray-500" style={{ fontSize: '11px' }}>
-                  وحدة مُصرفة
-                </div>
-                <div className="mt-2 w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full ${isHigh ? 'bg-red-500' : 'bg-green-500'}`}
-                    style={{ width: `${Math.min(ratio * 100, 100)}%` }}
-                  />
-                </div>
-                <div
-                  className={`mt-1 ${isHigh ? 'text-red-500' : 'text-gray-400'}`}
-                  style={{ fontSize: '10px' }}
-                >
-                  {isHigh ? 'استهلاك مرتفع' : 'طبيعي'}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Requests overview */}
+      <ConsumptionByTypePanel issuedByType={issuedByType} liveInventory={liveInventory} />
     </div>
   );
 }
