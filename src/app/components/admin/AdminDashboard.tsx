@@ -24,7 +24,6 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // ── React Query hooks ────────────────────────────────────
   // ── React Query hook + Derived Data ────────────────────────────────────
   const {
     donors,

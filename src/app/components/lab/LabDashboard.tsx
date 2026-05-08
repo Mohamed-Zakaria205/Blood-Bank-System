@@ -1,4 +1,3 @@
-
 import {
   FlaskConical,
   CheckCircle2,
@@ -32,6 +31,7 @@ export default function LabDashboard() {
     notSuitableCount,
     isLoading,
     isError,
+    refetch,
   } = useLabDashboardData();
 
   const {
@@ -61,7 +61,7 @@ export default function LabDashboard() {
     );
   if (isError)
     return (
-      <ErrorState message="فشل تحميل بيانات المختبر" onRetry={() => window.location.reload()} />
+      <ErrorState message="فشل تحميل بيانات المختبر" onRetry={() => refetch()} />
     );
 
   return (
