@@ -10,6 +10,7 @@ export function useStaff() {
   return useQuery({
     queryKey: ['staff'],
     queryFn: fetchStaff,
+    select: (res) => res.data,
   });
 }
 

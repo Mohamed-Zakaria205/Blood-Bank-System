@@ -3,19 +3,20 @@
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
 import type { User, UserRole } from '../types/auth';
-import type { PaginatedResponse, StaffFilters } from '../types/common';
+import type { PaginatedResponse, ApiResponse, StaffFilters } from '../types/common';
 import { users as MOCK_USERS } from '../data/mockData';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 /** Fetch all staff members (excludes admins) */
-export async function fetchStaff(): Promise<User[]> {
+export async function fetchStaff(): Promise<PaginatedResponse<User>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
     // Strip passwords before returning, and filter out admins (staff view only)
-    return MOCK_USERS.filter((u) => u.role !== 'admin').map(({ password: _, ...u }) => u) as User[];
+    const filtered = MOCK_USERS.filter((u) => u.role !== 'admin').map(({ password: _, ...u }) => u) as User[];
+    return { data: filtered, total: filtered.length, page: 1, limit: filtered.length };
   }
-  const { data } = await apiClient.get<User[]>('/staff');
+  const { data } = await apiClient.get<PaginatedResponse<User>>('/staff');
   return data;
 }
 
@@ -67,7 +68,7 @@ export async function createStaff(payload: {
   phone: string;
   address: string;
   city: string;
-}): Promise<User> {
+}): Promise<ApiResponse<User>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 400));
     const newUser: User = {
@@ -83,9 +84,9 @@ export async function createStaff(payload: {
       status: 'active',
       createdAt: new Date().toISOString().split('T')[0],
     };
-    return newUser;
+    return { data: newUser, message: 'تم إضافة الموظف بنجاح' };
   }
-  const { data } = await apiClient.post<User>('/staff', payload);
+  const { data } = await apiClient.post<ApiResponse<User>>('/staff', payload);
   return data;
 }
 

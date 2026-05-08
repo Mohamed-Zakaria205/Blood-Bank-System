@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
 import type { LabResultData, LabTest, Sample, TestResult } from '../types/lab';
-import type { PaginatedResponse, LabTestFilters } from '../types/common';
+import type { PaginatedResponse, ApiResponse, LabTestFilters } from '../types/common';
 import {
   labTests as MOCK_LAB_TESTS,
   samples as MOCK_SAMPLES,
@@ -18,12 +18,12 @@ let mockSamples: Sample[] = [...MOCK_SAMPLES];
 let mockTestResults: TestResult[] = [...MOCK_TEST_RESULTS];
 
 // ── Lab Tests (blood bag screening) ────────────────────────
-export async function fetchLabTests(): Promise<LabTest[]> {
+export async function fetchLabTests(): Promise<PaginatedResponse<LabTest>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return mockLabTests;
+    return { data: mockLabTests, total: mockLabTests.length, page: 1, limit: mockLabTests.length };
   }
-  const { data } = await apiClient.get<LabTest[]>('/lab/tests');
+  const { data } = await apiClient.get<PaginatedResponse<LabTest>>('/lab/tests');
   return data;
 }
 
@@ -66,7 +66,7 @@ export async function submitLabTestResult(
     notes: string;
     suitable: boolean;
   },
-): Promise<LabTest> {
+): Promise<ApiResponse<LabTest>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 600));
     const idx = mockLabTests.findIndex((t) => t.id === testId);
@@ -82,28 +82,28 @@ export async function submitLabTestResult(
     };
     // ✅ Mutate the in-memory array so refetch returns the updated test
     mockLabTests = mockLabTests.map((t) => (t.id === testId ? updated : t));
-    return updated;
+    return { data: updated, message: 'تم حفظ نتيجة الفحص بنجاح' };
   }
-  const { data } = await apiClient.post<LabTest>(`/lab/tests/${testId}/result`, result);
+  const { data } = await apiClient.post<ApiResponse<LabTest>>(`/lab/tests/${testId}/result`, result);
   return data;
 }
 
 // ── Samples ────────────────────────────────────────────────
-export async function fetchSamples(): Promise<Sample[]> {
+export async function fetchSamples(): Promise<PaginatedResponse<Sample>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return mockSamples;
+    return { data: mockSamples, total: mockSamples.length, page: 1, limit: mockSamples.length };
   }
-  const { data } = await apiClient.get<Sample[]>('/lab/samples');
+  const { data } = await apiClient.get<PaginatedResponse<Sample>>('/lab/samples');
   return data;
 }
 
 // ── Test Results ───────────────────────────────────────────
-export async function fetchTestResults(): Promise<TestResult[]> {
+export async function fetchTestResults(): Promise<PaginatedResponse<TestResult>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return mockTestResults;
+    return { data: mockTestResults, total: mockTestResults.length, page: 1, limit: mockTestResults.length };
   }
-  const { data } = await apiClient.get<TestResult[]>('/lab/results');
+  const { data } = await apiClient.get<PaginatedResponse<TestResult>>('/lab/results');
   return data;
 }

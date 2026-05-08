@@ -9,6 +9,7 @@ export function useAppointmentSlots() {
   return useQuery({
     queryKey: ['appointment-slots'],
     queryFn: fetchAppointmentSlots,
+    select: (res) => res.data,
   });
 }
 
@@ -17,6 +18,7 @@ export function useSlot15Data() {
   return useQuery({
     queryKey: ['slot15'],
     queryFn: fetchSlot15Data,
+    select: (res) => res.data,
   });
 }
 

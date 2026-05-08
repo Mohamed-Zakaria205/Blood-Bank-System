@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
 import type { Donor, CreateDonorRequest } from '../types/donor';
-import type { PaginatedResponse, DonorFilters } from '../types/common';
+import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/common';
 import { donors as MOCK_DONORS } from '../data/mockData';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
@@ -12,12 +12,12 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 let mockStore: Donor[] = [...MOCK_DONORS];
 
 /** Fetch all donors (unpaginated — used by components that need the full list) */
-export async function fetchDonors(): Promise<Donor[]> {
+export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return mockStore;
+    return { data: mockStore, total: mockStore.length, page: 1, limit: mockStore.length };
   }
-  const { data } = await apiClient.get<Donor[]>('/donors');
+  const { data } = await apiClient.get<PaginatedResponse<Donor>>('/donors');
   return data;
 }
 
@@ -69,18 +69,18 @@ export async function fetchPaginatedDonors(
   return data;
 }
 
-export async function fetchDonorById(id: string): Promise<Donor> {
+export async function fetchDonorById(id: string): Promise<ApiResponse<Donor>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
     const donor = mockStore.find((d) => d.id === id);
     if (!donor) throw { response: { status: 404, data: { message: 'المتبرع غير موجود' } } };
-    return donor;
+    return { data: donor };
   }
-  const { data } = await apiClient.get<Donor>(`/donors/${id}`);
+  const { data } = await apiClient.get<ApiResponse<Donor>>(`/donors/${id}`);
   return data;
 }
 
-export async function createDonor(payload: CreateDonorRequest): Promise<Donor> {
+export async function createDonor(payload: CreateDonorRequest): Promise<ApiResponse<Donor>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 400));
     const newDonor: Donor = {
@@ -90,9 +90,9 @@ export async function createDonor(payload: CreateDonorRequest): Promise<Donor> {
     };
     // ✅ Push into the in-memory array so refetch returns the new donor
     mockStore = [newDonor, ...mockStore];
-    return newDonor;
+    return { data: newDonor, message: 'تم تسجيل المتبرع بنجاح' };
   }
-  const { data } = await apiClient.post<Donor>('/donors', payload);
+  const { data } = await apiClient.post<ApiResponse<Donor>>('/donors', payload);
   return data;
 }
 

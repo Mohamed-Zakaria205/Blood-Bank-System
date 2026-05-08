@@ -11,6 +11,7 @@ export function useLabTests() {
   return useQuery({
     queryKey: ['lab-tests'],
     queryFn: fetchLabTests,
+    select: (res) => res.data,
   });
 }
 
@@ -53,6 +54,7 @@ export function useSamples() {
   return useQuery({
     queryKey: ['samples'],
     queryFn: fetchSamples,
+    select: (res) => res.data,
   });
 }
 
@@ -61,5 +63,6 @@ export function useTestResults() {
   return useQuery({
     queryKey: ['test-results'],
     queryFn: fetchTestResults,
+    select: (res) => res.data,
   });
 }

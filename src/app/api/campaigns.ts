@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
 import type { Campaign, CreateCampaignRequest } from '../types/campaign';
-import type { PaginatedResponse, CampaignFilters } from '../types/common';
+import type { PaginatedResponse, ApiResponse, CampaignFilters } from '../types/common';
 import { campaigns as MOCK_CAMPAIGNS } from '../data/mockData';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
@@ -12,12 +12,12 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 let mockStore: Campaign[] = [...MOCK_CAMPAIGNS];
 
 /** Fetch all campaigns (unpaginated — for dropdowns and small lists) */
-export async function fetchCampaigns(): Promise<Campaign[]> {
+export async function fetchCampaigns(): Promise<PaginatedResponse<Campaign>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return mockStore;
+    return { data: mockStore, total: mockStore.length, page: 1, limit: mockStore.length };
   }
-  const { data } = await apiClient.get<Campaign[]>('/campaigns');
+  const { data } = await apiClient.get<PaginatedResponse<Campaign>>('/campaigns');
   return data;
 }
 
@@ -54,14 +54,14 @@ export async function fetchFilteredCampaigns(
   return data;
 }
 
-export async function createCampaign(payload: CreateCampaignRequest): Promise<Campaign> {
+export async function createCampaign(payload: CreateCampaignRequest): Promise<ApiResponse<Campaign>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 400));
     const newCampaign: Campaign = { ...payload, id: `CAM-${Date.now()}` };
     // ✅ Push into the in-memory array so refetch returns the new campaign
     mockStore = [newCampaign, ...mockStore];
-    return newCampaign;
+    return { data: newCampaign, message: 'تم إنشاء الحملة بنجاح' };
   }
-  const { data } = await apiClient.post<Campaign>('/campaigns', payload);
+  const { data } = await apiClient.post<ApiResponse<Campaign>>('/campaigns', payload);
   return data;
 }

@@ -23,12 +23,12 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 // ── Blood Bags ─────────────────────────────────────────────
 
 /** Fetch all blood bags (unpaginated — used when the full list is needed) */
-export async function fetchBloodBags(): Promise<BloodBag[]> {
+export async function fetchBloodBags(): Promise<PaginatedResponse<BloodBag>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return MOCK_BAGS;
+    return { data: MOCK_BAGS, total: MOCK_BAGS.length, page: 1, limit: MOCK_BAGS.length };
   }
-  const { data } = await apiClient.get<BloodBag[]>('/inventory/bags');
+  const { data } = await apiClient.get<PaginatedResponse<BloodBag>>('/inventory/bags');
   return data;
 }
 
@@ -100,24 +100,24 @@ export async function disposeBag(bagId: string, reason: string): Promise<void> {
 }
 
 // ── Blood Inventory Summary ────────────────────────────────
-export async function fetchBloodInventory(): Promise<BloodInventoryItem[]> {
+export async function fetchBloodInventory(): Promise<PaginatedResponse<BloodInventoryItem>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
-    return MOCK_INVENTORY;
+    return { data: MOCK_INVENTORY, total: MOCK_INVENTORY.length, page: 1, limit: MOCK_INVENTORY.length };
   }
-  const { data } = await apiClient.get<BloodInventoryItem[]>('/inventory/summary');
+  const { data } = await apiClient.get<PaginatedResponse<BloodInventoryItem>>('/inventory/summary');
   return data;
 }
 
 // ── Transactions ───────────────────────────────────────────
 
 /** Fetch all transactions (unpaginated) */
-export async function fetchTransactions(): Promise<Transaction[]> {
+export async function fetchTransactions(): Promise<PaginatedResponse<Transaction>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return MOCK_TRANSACTIONS;
+    return { data: MOCK_TRANSACTIONS, total: MOCK_TRANSACTIONS.length, page: 1, limit: MOCK_TRANSACTIONS.length };
   }
-  const { data } = await apiClient.get<Transaction[]>('/inventory/transactions');
+  const { data } = await apiClient.get<PaginatedResponse<Transaction>>('/inventory/transactions');
   return data;
 }
 
@@ -155,21 +155,21 @@ export async function fetchFilteredTransactions(
 }
 
 // ── Outflow Records ────────────────────────────────────────
-export async function fetchOutflowRecords(): Promise<OutflowRecord[]> {
+export async function fetchOutflowRecords(): Promise<PaginatedResponse<OutflowRecord>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return MOCK_OUTFLOW;
+    return { data: MOCK_OUTFLOW, total: MOCK_OUTFLOW.length, page: 1, limit: MOCK_OUTFLOW.length };
   }
-  const { data } = await apiClient.get<OutflowRecord[]>('/inventory/outflow');
+  const { data } = await apiClient.get<PaginatedResponse<OutflowRecord>>('/inventory/outflow');
   return data;
 }
 
 // ── Monthly Stats ──────────────────────────────────────────
-export async function fetchMonthlyStats(): Promise<MonthlyStats[]> {
+export async function fetchMonthlyStats(): Promise<PaginatedResponse<MonthlyStats>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
-    return MOCK_MONTHLY_STATS;
+    return { data: MOCK_MONTHLY_STATS, total: MOCK_MONTHLY_STATS.length, page: 1, limit: MOCK_MONTHLY_STATS.length };
   }
-  const { data } = await apiClient.get<MonthlyStats[]>('/stats/monthly');
+  const { data } = await apiClient.get<PaginatedResponse<MonthlyStats>>('/stats/monthly');
   return data;
 }

@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
 import type { AppointmentSlot, Slot15 } from '../types/appointment';
+import type { PaginatedResponse } from '../types/common';
 import { appointmentSlots as MOCK_SLOTS, slot15Data as MOCK_SLOT15 } from '../data/mockData';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
@@ -11,21 +12,21 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 let mockSlots: AppointmentSlot[] = [...MOCK_SLOTS];
 let mockSlot15: Slot15[] = [...MOCK_SLOT15];
 
-export async function fetchAppointmentSlots(): Promise<AppointmentSlot[]> {
+export async function fetchAppointmentSlots(): Promise<PaginatedResponse<AppointmentSlot>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return mockSlots;
+    return { data: mockSlots, total: mockSlots.length, page: 1, limit: mockSlots.length };
   }
-  const { data } = await apiClient.get<AppointmentSlot[]>('/appointments/slots');
+  const { data } = await apiClient.get<PaginatedResponse<AppointmentSlot>>('/appointments/slots');
   return data;
 }
 
-export async function fetchSlot15Data(): Promise<Slot15[]> {
+export async function fetchSlot15Data(): Promise<PaginatedResponse<Slot15>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return mockSlot15;
+    return { data: mockSlot15, total: mockSlot15.length, page: 1, limit: mockSlot15.length };
   }
-  const { data } = await apiClient.get<Slot15[]>('/appointments/slot15');
+  const { data } = await apiClient.get<PaginatedResponse<Slot15>>('/appointments/slot15');
   return data;
 }
 

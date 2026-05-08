@@ -22,6 +22,7 @@ export function useBloodBags() {
   return useQuery({
     queryKey: ['bags'],
     queryFn: fetchBloodBags,
+    select: (res) => res.data,
   });
 }
 
@@ -80,6 +81,7 @@ export function useBloodInventory() {
   return useQuery({
     queryKey: ['inventory'],
     queryFn: fetchBloodInventory,
+    select: (res) => res.data,
   });
 }
 
@@ -88,6 +90,7 @@ export function useTransactions() {
   return useQuery({
     queryKey: ['transactions'],
     queryFn: fetchTransactions,
+    select: (res) => res.data,
   });
 }
 
@@ -107,6 +110,7 @@ export function useOutflowRecords() {
   return useQuery({
     queryKey: ['outflow'],
     queryFn: fetchOutflowRecords,
+    select: (res) => res.data,
   });
 }
 
@@ -115,5 +119,6 @@ export function useMonthlyStats() {
   return useQuery({
     queryKey: ['monthly-stats'],
     queryFn: fetchMonthlyStats,
+    select: (res) => res.data,
   });
 }

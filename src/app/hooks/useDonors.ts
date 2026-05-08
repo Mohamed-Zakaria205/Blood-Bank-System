@@ -11,6 +11,7 @@ export function useDonors() {
   return useQuery({
     queryKey: ['donors'],
     queryFn: fetchDonors,
+    select: (res) => res.data,
   });
 }
 
@@ -32,6 +33,7 @@ export function useDonor(id: string) {
   return useQuery({
     queryKey: ['donors', id],
     queryFn: () => fetchDonorById(id),
+    select: (res) => res.data,
     enabled: !!id,
   });
 }

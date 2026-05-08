@@ -11,6 +11,7 @@ export function useCampaigns() {
   return useQuery({
     queryKey: ['campaigns'],
     queryFn: fetchCampaigns,
+    select: (res) => res.data,
   });
 }
 
