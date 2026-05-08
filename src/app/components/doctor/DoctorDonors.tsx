@@ -5,7 +5,6 @@ import {
   Search,
   Eye,
   ChevronDown,
-  X,
   Building2,
   Smartphone,
   Megaphone,
@@ -17,26 +16,17 @@ import { BLOOD_TYPES, CITIES } from '../../constants';
 import { useDonors } from '../../hooks/useDonors';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
-
 import type { Donor } from '../../types';
 
-
-const statusColors: Record<string, string> = {
-  eligible: 'bg-green-100 text-green-700',
-  ineligible: 'bg-red-100 text-red-700',
-  deferred: 'bg-orange-100 text-orange-700',
-};
-const statusLabels: Record<string, string> = {
-  eligible: 'مؤهل',
-  ineligible: 'غير مؤهل',
-  deferred: 'موجل',
-};
-const donationTypeLabels: Record<string, string> = {
-  whole: 'دم كامل',
-  plasma: 'بلازما',
-  platelets: 'صفائح',
-};
-const genderLabels: Record<string, string> = { male: 'ذكر', female: 'أنثى' };
+// ── Sub-components ──
+import {
+  statusColors,
+  statusLabels,
+  donationTypeLabels,
+  genderLabels,
+  tableHeaders,
+} from './doctor-donors/donorsConstants';
+import DonorDetailModal from './doctor-donors/DonorDetailModal';
 
 export default function DoctorDonors() {
   const navigate = useNavigate();
@@ -178,7 +168,7 @@ export default function DoctorDonors() {
         ].map((_s, _i) => null)}
       </div>
 
-      {/* Donors Cards (mobile) + Table (desktop) */}
+      {/* Donors Table */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-4 border-b border-gray-100">
           <span className="text-gray-500" style={{ fontSize: '13px' }}>
@@ -189,18 +179,7 @@ export default function DoctorDonors() {
           <table className="w-full min-w-[750px]">
             <thead>
               <tr className="bg-gray-50">
-                {[
-                  'رمز المتبرع',
-                  'الاسم',
-                  'الجنس',
-                  'الهاتف',
-                  'المدينة',
-                  'الفصيلة',
-                  'نوع التبرع',
-                  'المصدر',
-                  'الحالة',
-                  'عرض',
-                ].map((h) => (
+                {tableHeaders.map((h) => (
                   <th
                     key={h}
                     className="px-4 py-3 text-right text-gray-500 whitespace-nowrap"
@@ -329,243 +308,8 @@ export default function DoctorDonors() {
         </div>
       </div>
 
-      {/* View Modal */}
-      {viewing && (
-        <div
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setViewing(null);
-          }}
-        >
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white">
-              <div>
-                <h3 className="text-gray-900" style={{ fontSize: '18px', fontWeight: 700 }}>
-                  تفاصيل المتبرع
-                </h3>
-                <p className="text-green-600 font-mono" style={{ fontSize: '12px' }}>
-                  {viewing.donorCode}
-                </p>
-              </div>
-              <button
-                onClick={() => setViewing(null)}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-6 space-y-5">
-              {/* Personal Info */}
-              <div>
-                <h4 className="text-gray-700 mb-3" style={{ fontSize: '14px', fontWeight: 700 }}>
-                  البيانات الشخصية
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    ['الاسم الكامل', viewing.name],
-                    ['الجنس', genderLabels[viewing.gender]],
-                    ['العمر', `${viewing.age} سنة`],
-                    ['الرقم القومي', viewing.nationalId],
-                    ['الهاتف', viewing.phone],
-                    ['المدينة', viewing.city],
-                    ['العنوان', viewing.address],
-                    ['فصيلة الدم', viewing.bloodType],
-                  ].map(([label, val]) => (
-                    <div key={label} className="p-3 bg-gray-50 rounded-xl">
-                      <p className="text-gray-400" style={{ fontSize: '11px' }}>
-                        {label}
-                      </p>
-                      <p
-                        className="text-gray-900 mt-0.5"
-                        style={{ fontSize: '13px', fontWeight: 600 }}
-                      >
-                        {val}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              {/* Sample code — only for eligible donors */}
-              {viewing.status === 'eligible' && (
-                <div className="flex items-center justify-between p-3 bg-green-50 border border-green-100 rounded-xl">
-                  <span className="text-gray-500" style={{ fontSize: '12px' }}>
-                    رمز العينة
-                  </span>
-                  <span
-                    className="font-mono text-green-700 bg-green-100 px-3 py-1 rounded-lg"
-                    style={{ fontSize: '13px', fontWeight: 700 }}
-                  >
-                    {viewing.donorCode}
-                  </span>
-                </div>
-              )}
-              {viewing.status !== 'eligible' && (
-                <div className="flex items-center justify-between p-3 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
-                  <span className="text-gray-500" style={{ fontSize: '12px' }}>
-                    رمز العينة
-                  </span>
-                  <span
-                    className="text-gray-400 flex items-center gap-1.5"
-                    style={{ fontSize: '12px' }}
-                  >
-                    <svg
-                      className="w-3.5 h-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
-                      />
-                    </svg>
-                    غير مفعّل ({viewing.status === 'deferred' ? 'موجل' : 'غير مؤهل'})
-                  </span>
-                </div>
-              )}
-              {/* Donation Details */}
-              <div>
-                <h4 className="text-gray-700 mb-3" style={{ fontSize: '14px', fontWeight: 700 }}>
-                  بيانات التبرع
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-gray-50 rounded-xl">
-                    <p className="text-gray-400" style={{ fontSize: '11px' }}>
-                      نوع التبرع
-                    </p>
-                    <p
-                      className="text-gray-900 mt-0.5"
-                      style={{ fontSize: '13px', fontWeight: 600 }}
-                    >
-                      {donationTypeLabels[viewing.donationType]}
-                    </p>
-                  </div>
-                  <div className="p-3 bg-gray-50 rounded-xl">
-                    <p className="text-gray-400" style={{ fontSize: '11px' }}>
-                      آخر تبرع
-                    </p>
-                    <p
-                      className="text-gray-900 mt-0.5"
-                      style={{ fontSize: '13px', fontWeight: 600 }}
-                    >
-                      {viewing.lastDonationDate || '—'}
-                    </p>
-                  </div>
-                  {/* Source */}
-                  <div
-                    className={`p-3 rounded-xl ${viewing.source === 'campaign' ? 'bg-purple-50' : viewing.source === 'app' ? 'bg-blue-50' : 'bg-green-50'}`}
-                  >
-                    <p className="text-gray-400" style={{ fontSize: '11px' }}>
-                      مصدر التبرع
-                    </p>
-                    <p
-                      className={`mt-0.5 flex items-center gap-1 ${viewing.source === 'campaign' ? 'text-purple-700' : viewing.source === 'app' ? 'text-blue-700' : 'text-green-700'}`}
-                      style={{ fontSize: '13px', fontWeight: 600 }}
-                    >
-                      {viewing.source === 'app' ? (
-                        <>
-                          <Smartphone className="w-3.5 h-3.5" /> من التطبيق
-                        </>
-                      ) : viewing.source === 'campaign' ? (
-                        <>
-                          <Megaphone className="w-3.5 h-3.5" /> من حملة
-                        </>
-                      ) : (
-                        <>
-                          <Building2 className="w-3.5 h-3.5" /> داخل البنك
-                        </>
-                      )}
-                    </p>
-                  </div>
-                  {/* Campaign name if applicable */}
-                  {viewing.source === 'campaign' && viewing.campaignName && (
-                    <div className="p-3 bg-purple-50 rounded-xl">
-                      <p className="text-gray-400" style={{ fontSize: '11px' }}>
-                        اسم الحملة
-                      </p>
-                      <p
-                        className="text-purple-700 mt-0.5"
-                        style={{ fontSize: '12px', fontWeight: 600 }}
-                      >
-                        {viewing.campaignName}
-                      </p>
-                    </div>
-                  )}
-                  {/* Deferred until */}
-                  {viewing.status === 'deferred' && viewing.deferredUntil && (
-                    <div className="p-3 bg-orange-50 rounded-xl col-span-2">
-                      <p className="text-gray-400" style={{ fontSize: '11px' }}>
-                        موجل حتى
-                      </p>
-                      <p
-                        className="text-orange-700 mt-0.5 flex items-center gap-1"
-                        style={{ fontSize: '13px', fontWeight: 600 }}
-                      >
-                        <Clock className="w-3.5 h-3.5" /> {viewing.deferredUntil}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-              {/* Additional Data */}
-              {viewing.additionalData && (
-                <div>
-                  <h4 className="text-gray-700 mb-3" style={{ fontSize: '14px', fontWeight: 700 }}>
-                    البيانات الطبية التكميلية
-                  </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {[
-                      [
-                        'الوزن',
-                        viewing.additionalData.weight
-                          ? `${viewing.additionalData.weight} كجم`
-                          : '—',
-                      ],
-                      [
-                        'الطول',
-                        viewing.additionalData.height ? `${viewing.additionalData.height} سم` : '—',
-                      ],
-                      [
-                        'الهيموجلوبين',
-                        viewing.additionalData.hemoglobin
-                          ? `${viewing.additionalData.hemoglobin} g/dL`
-                          : '—',
-                      ],
-                      ['ضغط الدم', viewing.additionalData.bloodPressure || '—'],
-                    ].map(([label, val]) => (
-                      <div key={label} className="p-3 bg-blue-50 rounded-xl text-center">
-                        <p className="text-blue-400" style={{ fontSize: '11px' }}>
-                          {label}
-                        </p>
-                        <p
-                          className="text-blue-900 mt-0.5"
-                          style={{ fontSize: '14px', fontWeight: 700 }}
-                        >
-                          {val}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {/* Status */}
-              <div className="flex items-center justify-between p-4 rounded-xl border-2 border-dashed border-gray-200">
-                <span className="text-gray-600" style={{ fontSize: '14px', fontWeight: 600 }}>
-                  حالة التأهل
-                </span>
-                <span
-                  className={`px-3 py-1.5 rounded-full ${statusColors[viewing.status]}`}
-                  style={{ fontSize: '14px', fontWeight: 700 }}
-                >
-                  {statusLabels[viewing.status]}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Detail Modal */}
+      {viewing && <DonorDetailModal donor={viewing} onClose={() => setViewing(null)} />}
     </div>
   );
 }
