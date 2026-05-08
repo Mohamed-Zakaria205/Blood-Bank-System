@@ -6,10 +6,10 @@ import { useBloodBags, useBloodInventory, useTransactions, useMonthlyStats } fro
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 
 // ── Sub-components ──
-import InventoryBarChart from './admin-alerts/InventoryBarChart';
-import IssuanceTrendChart from './admin-alerts/IssuanceTrendChart';
-import ConsumptionByTypePanel from './admin-alerts/ConsumptionByTypePanel';
-import NearExpiryTable from './admin-alerts/NearExpiryTable';
+import InventoryBarChart from './inventory-alerts/InventoryBarChart';
+import IssuanceTrendChart from './inventory-alerts/IssuanceTrendChart';
+import ConsumptionByTypePanel from './inventory-alerts/ConsumptionByTypePanel';
+import NearExpiryTable from './inventory-alerts/NearExpiryTable';
 
 const TODAY = new Date('2025-04-29');
 const DEFAULT_MIN = 10;
@@ -18,7 +18,7 @@ function daysUntil(d: string) {
   return Math.ceil((new Date(d).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-export default function AdminInventoryAlerts() {
+export default function InventoryAlerts() {
   const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
   const { data: inventoryData = [], isLoading: isLoadingInv, isError: isErrorInv } = useBloodInventory();
   const { data: transactions = [], isLoading: isLoadingTx, isError: isErrorTx } = useTransactions();

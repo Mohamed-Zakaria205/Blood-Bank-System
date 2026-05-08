@@ -24,7 +24,7 @@ const AdminCampaigns = lazy(() => import('./components/admin/AdminCampaigns'));
 const AdminInventory = lazy(() => import('./components/admin/AdminInventory'));
 const AdminReports = lazy(() => import('./components/admin/AdminReports'));
 const AdminSettings = lazy(() => import('./components/admin/AdminSettings'));
-const AdminInventoryAlerts = lazy(() => import('./components/admin/AdminInventoryAlerts'));
+
 
 // ── Doctor Pages (lazy loaded) ──
 const DoctorDashboard = lazy(() => import('./components/doctor/DoctorDashboard'));
@@ -42,6 +42,7 @@ const LabResults = lazy(() => import('./components/lab/LabResults'));
 const InventoryDashboard = lazy(() => import('./components/inventory/InventoryDashboard'));
 const InventoryBags = lazy(() => import('./components/inventory/InventoryBags'));
 const InventoryHistory = lazy(() => import('./components/inventory/InventoryHistory'));
+const InventoryAlerts = lazy(() => import('./components/inventory/InventoryAlerts'));
 const InventoryDisposal = lazy(() => import('./components/inventory/InventoryDisposal'));
 
 // ── Suspense wrapper — shows PageLoader while a lazy chunk is loading ──
@@ -162,7 +163,7 @@ export const router = createBrowserRouter([
                 { path: 'bags', Component: InventoryBags },
                 { path: 'history', Component: InventoryHistory },
                 { path: 'disposal', Component: InventoryDisposal },
-                { path: 'inventory-alerts', Component: AdminInventoryAlerts },
+                { path: 'inventory-alerts', Component: InventoryAlerts },
               ]},
             ],
           },
