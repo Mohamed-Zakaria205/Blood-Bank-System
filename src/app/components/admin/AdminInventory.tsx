@@ -184,8 +184,8 @@ export default function AdminInventory() {
                 key="bar-units"
                 dataKey="units"
                 radius={[6, 6, 0, 0]}
-                shape={(props: any) => {
-                  const { x, y, width, height, index } = props;
+                shape={(props: unknown) => {
+                  const { x, y, width, height, index } = props as { x: number; y: number; width: number; height: number; index: number };
                   const item = inventory[index];
                   return (
                     <rect
