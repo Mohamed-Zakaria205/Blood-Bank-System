@@ -6,7 +6,7 @@ import { useCampaigns } from '../../hooks/useCampaigns';
 interface CancelModalProps {
   slot: Slot15;
   doctorName: string;
-  onConfirm: (reason: string) => void;
+  onConfirm: (reason: string) => Promise<void> | void;
   onClose: () => void;
 }
 
@@ -18,12 +18,15 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
   const { data: campaignsData = [] } = useCampaigns();
   const campaign = slot.campaignId ? campaignsData.find((c) => c.id === slot.campaignId) : null;
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setConfirming(true);
-    setTimeout(() => {
-      onConfirm(reason);
+    try {
+      await onConfirm(reason);
       onClose();
-    }, 400);
+    } catch (err) {
+      console.error(err);
+      setConfirming(false);
+    }
   };
 
   return (
