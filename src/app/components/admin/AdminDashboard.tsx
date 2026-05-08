@@ -1,25 +1,14 @@
 import { useNavigate } from 'react-router';
 import {
-  Users,
+  Heart,
   Megaphone,
   UserCog,
   Droplets,
-  TrendingUp,
   AlertTriangle,
   ArrowUpRight,
-  Heart,
   Building2,
   Smartphone,
 } from 'lucide-react';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDonors } from '../../hooks/useDonors';
 import { useCampaigns } from '../../hooks/useCampaigns';
@@ -28,17 +17,11 @@ import { useBloodInventory, useMonthlyStats } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 
-const donationTypeLabels: Record<string, string> = {
-  whole: 'دم كامل',
-  plasma: 'بلازما',
-  platelets: 'صفائح',
-};
-
-const bloodStatusColor: Record<string, string> = {
-  normal: 'bg-green-500',
-  low: 'bg-yellow-500',
-  critical: 'bg-red-500',
-};
+// ── Sub-components & constants ──
+import { donationTypeLabels, recentDonorsHeaders } from './admin-dashboard/dashboardConstants';
+import DonationTrendsChart from './admin-dashboard/DonationTrendsChart';
+import BloodInventoryPanel from './admin-dashboard/BloodInventoryPanel';
+import SystemAlertsPanel from './admin-dashboard/SystemAlertsPanel';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -240,118 +223,11 @@ export default function AdminDashboard() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Donation Trends */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
-                اتجاهات التبرع
-              </h2>
-              <p className="text-gray-400" style={{ fontSize: '12px' }}>
-                عدد التبرعات والمتبرعين الجدد شهرياً
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-green-600" />
-                <span className="text-gray-500" style={{ fontSize: '12px' }}>
-                  تبرعات
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-blue-400" />
-                <span className="text-gray-500" style={{ fontSize: '12px' }}>
-                  متبرعون جدد
-                </span>
-              </div>
-            </div>
-          </div>
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={monthlyStatsData}>
-              <CartesianGrid key="grid" strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis
-                key="x-axis"
-                dataKey="month"
-                tick={{ fontSize: 11, fill: '#9CA3AF', fontFamily: 'Tajawal' }}
-              />
-              <YAxis key="y-axis" tick={{ fontSize: 11, fill: '#9CA3AF' }} />
-              <Tooltip
-                key="tooltip"
-                contentStyle={{
-                  fontFamily: 'Tajawal',
-                  borderRadius: '12px',
-                  border: 'none',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                  fontSize: '13px',
-                }}
-              />
-              <Line
-                key="line-donations"
-                type="monotone"
-                dataKey="donations"
-                stroke="#16a34a"
-                strokeWidth={2.5}
-                dot={false}
-                name="التبرعات"
-              />
-              <Line
-                key="line-newDonors"
-                type="monotone"
-                dataKey="newDonors"
-                stroke="#60a5fa"
-                strokeWidth={2.5}
-                dot={false}
-                name="متبرعون جدد"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Blood Inventory */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
-              مخزون الدم
-            </h2>
-            <button
-              onClick={() => navigate('/admin/inventory')}
-              className="text-green-600 hover:underline"
-              style={{ fontSize: '12px' }}
-            >
-              عرض الكل
-            </button>
-          </div>
-          <div className="space-y-3">
-            {bloodInventory.map((b) => (
-              <div key={`inv-${b.type}`} className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <span className="text-red-600" style={{ fontSize: '12px', fontWeight: 800 }}>
-                    {b.type}
-                  </span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex justify-between mb-1">
-                    <span className="text-gray-700" style={{ fontSize: '12px', fontWeight: 600 }}>
-                      {b.units} وحدة
-                    </span>
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-white ${bloodStatusColor[b.status]}`}
-                      style={{ fontSize: '10px', fontWeight: 700 }}
-                    >
-                      {b.status === 'normal' ? 'طبيعي' : b.status === 'low' ? 'منخفض' : 'حرج'}
-                    </span>
-                  </div>
-                  <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${bloodStatusColor[b.status]}`}
-                      style={{ width: `${Math.min((b.units / 50) * 100, 100)}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <DonationTrendsChart data={monthlyStatsData} />
+        <BloodInventoryPanel
+          inventory={bloodInventory}
+          onViewAll={() => navigate('/admin/inventory')}
+        />
       </div>
 
       {/* Recent Donors + Alerts */}
@@ -374,15 +250,7 @@ export default function AdminDashboard() {
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50">
-                  {[
-                    'رمز المتبرع',
-                    'الاسم',
-                    'المدينة',
-                    'الفصيلة',
-                    'نوع التبرع',
-                    'الحالة',
-                    'إجراء',
-                  ].map((h) => (
+                  {recentDonorsHeaders.map((h) => (
                     <th
                       key={h}
                       className="px-4 py-3 text-right text-gray-500"
@@ -454,62 +322,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* System Alerts */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-          <h2 className="text-gray-900 mb-5" style={{ fontSize: '16px', fontWeight: 700 }}>
-            تنبيهات النظام
-          </h2>
-          <div className="space-y-3">
-            {bloodInventory
-              .filter((b) => b.status !== 'normal')
-              .map((b) => (
-                <div
-                  key={`alert-${b.type}`}
-                  className={`flex items-start gap-3 p-3 rounded-xl ${b.status === 'critical' ? 'bg-red-50 border border-red-100' : 'bg-yellow-50 border border-yellow-100'}`}
-                >
-                  <AlertTriangle
-                    className={`w-4 h-4 flex-shrink-0 mt-0.5 ${b.status === 'critical' ? 'text-red-500' : 'text-yellow-500'}`}
-                  />
-                  <div>
-                    <p
-                      className={`${b.status === 'critical' ? 'text-red-700' : 'text-yellow-700'}`}
-                      style={{ fontSize: '13px', fontWeight: 600 }}
-                    >
-                      مخزون {b.type} {b.status === 'critical' ? 'حرج' : 'منخفض'}
-                    </p>
-                    <p
-                      className={`${b.status === 'critical' ? 'text-red-500' : 'text-yellow-600'}`}
-                      style={{ fontSize: '12px' }}
-                    >
-                      متبقي {b.units} وحدات (الحد الأدنى: {b.minRequired})
-                    </p>
-                  </div>
-                </div>
-              ))}
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-green-50 border border-green-100">
-              <TrendingUp className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-green-700" style={{ fontSize: '13px', fontWeight: 600 }}>
-                  ارتفاع التبرعات
-                </p>
-                <p className="text-green-600" style={{ fontSize: '12px' }}>
-                  زيادة 15% مقارنة بالشهر السابق
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-blue-50 border border-blue-100">
-              <Users className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-blue-700" style={{ fontSize: '13px', fontWeight: 600 }}>
-                  حملة جديدة قيد التنفيذ
-                </p>
-                <p className="text-blue-600" style={{ fontSize: '12px' }}>
-                  حملة مستشفى ناصر - 42 متبرع
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SystemAlertsPanel bloodInventory={bloodInventory} />
       </div>
     </div>
   );
