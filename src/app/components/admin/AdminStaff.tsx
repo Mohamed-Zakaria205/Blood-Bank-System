@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import {
   UserPlus,
   Search,
@@ -18,7 +19,7 @@ import AddStaffModal from './admin-staff/AddStaffModal';
 import DeleteConfirmModal from './admin-staff/DeleteConfirmModal';
 
 export default function AdminStaff() {
-  const { data: staffData = [], isLoading, isError } = useStaff();
+  const { data: staffData = [], isLoading, isError, refetch } = useStaff();
   const createStaff = useCreateStaff();
   const deleteStaff = useDeleteStaff();
 
@@ -40,30 +41,24 @@ export default function AdminStaff() {
   });
 
   const handleAddStaff = async (values: StaffForm) => {
-    try {
-      await createStaff.mutateAsync({
-        name: values.fullName.trim(),
-        email: values.email,
-        password: values.password,
-        role: values.role as StaffRole,
-        nationalId: values.nationalId,
-        phone: values.phone,
-        address: values.address,
-        city: values.city,
-      });
-      setShowModal(false);
-    } catch (err) {
-      console.error(err);
-    }
+    await createStaff.mutateAsync({
+      name: values.fullName.trim(),
+      email: values.email,
+      password: values.password,
+      role: values.role as StaffRole,
+      nationalId: values.nationalId,
+      phone: values.phone,
+      address: values.address,
+      city: values.city,
+    });
+    setShowModal(false);
+    toast.success('تم إضافة الكادر الطبي بنجاح');
   };
 
   const handleDelete = async (id: string) => {
-    try {
-      await deleteStaff.mutateAsync(id);
-      setDeleteId(null);
-    } catch (err) {
-      console.error(err);
-    }
+    await deleteStaff.mutateAsync(id);
+    setDeleteId(null);
+    toast.success('تم حذف الحساب بنجاح');
   };
 
   const copyEmail = (email: string) => {
@@ -82,7 +77,7 @@ export default function AdminStaff() {
     );
   if (isError)
     return (
-      <ErrorState message="فشل تحميل الكوادر الطبية" onRetry={() => window.location.reload()} />
+      <ErrorState message="فشل تحميل الكوادر الطبية" onRetry={refetch} />
     );
 
   return (
