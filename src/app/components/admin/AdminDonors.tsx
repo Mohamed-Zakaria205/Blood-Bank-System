@@ -2,9 +2,17 @@ import { useState } from 'react';
 import { Search, Filter, Edit2, ChevronDown, Building2, Smartphone } from 'lucide-react';
 import { toast } from 'sonner';
 import { BLOOD_TYPES, CITIES } from '../../constants';
-import { useDonors } from '../../hooks/useDonors';
+import { usePaginatedDonors } from '../../hooks/useDonors';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '../ui/pagination';
 import type { Donor } from '../../types';
 
 // ── Sub-components & constants ──
@@ -17,22 +25,33 @@ import {
 import EditDonorModal from './admin-donors/EditDonorModal';
 
 export default function AdminDonors() {
-  const { data: donorsData = [], isLoading, isError, refetch } = useDonors();
-  const [donors, setDonors] = useState<Donor[]>([]);
-  const [initialized, setInitialized] = useState(false);
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [filterBlood, setFilterBlood] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterCity, setFilterCity] = useState('');
+
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = usePaginatedDonors({
+    page,
+    limit: 5,
+    search,
+    bloodType: filterBlood,
+    status: filterStatus,
+    city: filterCity,
+  });
+
+  const donors = response?.data || [];
+  const total = response?.total || 0;
+  const totalPages = Math.ceil(total / 5) || 1;
+
   const [editingDonor, setEditingDonor] = useState<Donor | null>(null);
   const [editForm, setEditForm] = useState<Partial<Donor>>({});
   const [saved, setSaved] = useState(false);
-
-  // Sync local state with hook data on first load
-  if (!initialized && donorsData.length > 0) {
-    setDonors(donorsData);
-    setInitialized(true);
-  }
 
   if (isLoading)
     return (
@@ -45,15 +64,11 @@ export default function AdminDonors() {
   if (isError)
     return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
 
-  const filtered = donors.filter((d) => {
-    const matchSearch =
-      d.name.includes(search) || d.donorCode.includes(search) || d.phone.includes(search);
-    const matchBlood = !filterBlood || d.bloodType === filterBlood;
-    const matchStatus = !filterStatus || d.status === filterStatus;
-    const matchCity = !filterCity || d.city === filterCity;
-    return matchSearch && matchBlood && matchStatus && matchCity;
-  });
-
+  // When filters change, reset to page 1
+  const handleFilterChange = (setter: any, value: any) => {
+    setter(value);
+    setPage(1);
+  };
   const openEdit = (d: Donor) => {
     setEditingDonor(d);
     setEditForm({ ...d });
@@ -62,10 +77,10 @@ export default function AdminDonors() {
 
   const saveEdit = () => {
     if (!editingDonor) return;
-    setDonors((prev) =>
-      prev.map((d) => (d.id === editingDonor.id ? ({ ...d, ...editForm } as Donor) : d)),
-    );
+    // In a real app we would call a mutate function here.
+    // For now, we simulate success and refetch.
     toast.success('تم تحديث بيانات المتبرع بنجاح');
+    refetch();
     setSaved(true);
     setTimeout(() => {
       setEditingDonor(null);
@@ -82,7 +97,7 @@ export default function AdminDonors() {
             المتبرعون
           </h1>
           <p className="text-gray-500" style={{ fontSize: '14px' }}>
-            {donors.length} متبرع مسجل في النظام
+            {total} متبرع مسجل في النظام
           </p>
         </div>
         <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl">
@@ -99,7 +114,7 @@ export default function AdminDonors() {
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleFilterChange(setSearch, e.target.value)}
               placeholder="ابحث بالاسم أو الرمز أو الهاتف..."
               className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 bg-gray-50 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all"
               style={{ fontSize: '13px' }}
@@ -108,7 +123,7 @@ export default function AdminDonors() {
           <div className="relative">
             <select
               value={filterBlood}
-              onChange={(e) => setFilterBlood(e.target.value)}
+              onChange={(e) => handleFilterChange(setFilterBlood, e.target.value)}
               className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
               style={{ fontSize: '13px' }}
             >
@@ -124,7 +139,7 @@ export default function AdminDonors() {
           <div className="relative">
             <select
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
+              onChange={(e) => handleFilterChange(setFilterStatus, e.target.value)}
               className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
               style={{ fontSize: '13px' }}
             >
@@ -138,7 +153,7 @@ export default function AdminDonors() {
           <div className="relative">
             <select
               value={filterCity}
-              onChange={(e) => setFilterCity(e.target.value)}
+              onChange={(e) => handleFilterChange(setFilterCity, e.target.value)}
               className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
               style={{ fontSize: '13px' }}
             >
@@ -154,38 +169,7 @@ export default function AdminDonors() {
         </div>
       </div>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-4">
-        {[
-          {
-            label: 'مؤهلون',
-            count: donors.filter((d) => d.status === 'eligible').length,
-            color: 'text-green-600',
-            bg: 'bg-green-50',
-          },
-          {
-            label: 'موجلون',
-            count: donors.filter((d) => d.status === 'deferred').length,
-            color: 'text-orange-600',
-            bg: 'bg-orange-50',
-          },
-          {
-            label: 'غير مؤهلين',
-            count: donors.filter((d) => d.status === 'ineligible').length,
-            color: 'text-red-600',
-            bg: 'bg-red-50',
-          },
-        ].map((s, i) => (
-          <div key={i} className={`${s.bg} rounded-xl p-4 text-center`}>
-            <div className={s.color} style={{ fontSize: '24px', fontWeight: 800 }}>
-              {s.count}
-            </div>
-            <div className="text-gray-600" style={{ fontSize: '12px' }}>
-              {s.label}
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* Stats row can be hidden or removed since we have server pagination and these numbers would be inaccurate if only derived from the current page. Leaving them out or just displaying the total count is better. */}
 
       {/* Table */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -193,7 +177,7 @@ export default function AdminDonors() {
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-gray-400" />
             <span className="text-gray-600" style={{ fontSize: '13px' }}>
-              {filtered.length} نتيجة
+              {total} نتيجة
             </span>
           </div>
         </div>
@@ -213,7 +197,7 @@ export default function AdminDonors() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {filtered.map((d) => (
+              {donors.map((d) => (
                 <tr key={d.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3 whitespace-nowrap">
                     {d.status === 'eligible' ? (
@@ -291,10 +275,53 @@ export default function AdminDonors() {
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && <EmptyState colSpan={8} message="لا توجد نتائج مطابقة" />}
+              {donors.length === 0 && <EmptyState colSpan={8} message="لا توجد نتائج مطابقة" />}
             </tbody>
           </table>
         </div>
+        {/* Pagination UI */}
+        {totalPages > 1 && (
+          <div className="p-4 border-t border-gray-100 flex items-center justify-center bg-gray-50">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page > 1) setPage(page - 1);
+                    }}
+                    className={page <= 1 ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+                {[...Array(totalPages)].map((_, i) => (
+                  <PaginationItem key={i + 1}>
+                    <PaginationLink
+                      href="#"
+                      isActive={page === i + 1}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(i + 1);
+                      }}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page < totalPages) setPage(page + 1);
+                    }}
+                    className={page >= totalPages ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
 
       {/* Edit Modal */}

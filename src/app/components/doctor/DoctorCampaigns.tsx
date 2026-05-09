@@ -1,8 +1,16 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { useCampaigns, useCreateCampaign } from '../../hooks/useCampaigns';
+import { useFilteredCampaigns, useCreateCampaign } from '../../hooks/useCampaigns';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'sonner';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '../ui/pagination';
 import { useSlot15Data, useCancelAppointment } from '../../hooks/useAppointments';
 import { CancelModal } from '../shared/CancelModal';
 import type { Campaign } from '../../types/campaign';
@@ -18,21 +26,38 @@ import CreateCampaignModal from './doctor-campaigns/CreateCampaignModal';
 export default function DoctorCampaigns() {
   const { user } = useAuth();
   const { data: slots = [] } = useSlot15Data();
-  const { data: campaignsData = [], isLoading, isError, refetch } = useCampaigns();
+  const [page, setPage] = useState(1);
+  const [filterStatus, setFilterStatus] = useState('');
+  
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = useFilteredCampaigns({
+    page,
+    limit: 6,
+    status: filterStatus,
+  });
+  
+  const campaigns = response?.data || [];
+  const total = response?.total || 0;
+  const totalPages = Math.ceil(total / 6) || 1;
+
   const createCampaignMutation = useCreateCampaign();
   const cancelMutation = useCancelAppointment();
-  const [filterStatus, setFilterStatus] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [expandedCampaign, setExpandedCampaign] = useState<string | null>(null);
   const [cancelTarget, setCancelTarget] = useState<Slot15 | null>(null);
-
-  const campaigns = campaignsData;
 
   // ── Form state ──
   const [form, setForm] = useState<CampaignFormState>(FORM_DEFAULTS);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const filtered = campaigns.filter((c) => !filterStatus || c.status === filterStatus);
+  const handleFilterStatus = (status: string) => {
+    setFilterStatus(filterStatus === status ? '' : status);
+    setPage(1);
+  };
 
   if (isLoading)
     return (
@@ -92,7 +117,7 @@ export default function DoctorCampaigns() {
             حملات التبرع
           </h1>
           <p className="text-gray-500" style={{ fontSize: '14px' }}>
-            {campaigns.length} حملة مسجلة
+            {total} حملة مسجلة
           </p>
         </div>
         <button
@@ -104,19 +129,17 @@ export default function DoctorCampaigns() {
         </button>
       </div>
 
-      {/* Stats */}
+      {/* Stats/Filters */}
       <div className="grid grid-cols-2 gap-4">
         {[
           {
             label: 'حملات نشطة',
-            count: campaigns.filter((c) => c.status === 'active').length,
             color: 'text-emerald-700',
             bg: 'bg-emerald-50',
             val: 'active',
           },
           {
             label: 'حملات منتهية',
-            count: campaigns.filter((c) => c.status === 'completed').length,
             color: 'text-gray-600',
             bg: 'bg-gray-100',
             val: 'completed',
@@ -124,13 +147,10 @@ export default function DoctorCampaigns() {
         ].map((s, i) => (
           <button
             key={i}
-            onClick={() => setFilterStatus(filterStatus === s.val ? '' : s.val)}
+            onClick={() => handleFilterStatus(s.val)}
             className={`${s.bg} rounded-xl p-4 text-center transition-all hover:opacity-80 ${filterStatus === s.val ? 'ring-2 ring-offset-1 ring-green-400' : ''}`}
           >
-            <div className={s.color} style={{ fontSize: '24px', fontWeight: 800 }}>
-              {s.count}
-            </div>
-            <div className="text-gray-600" style={{ fontSize: '12px' }}>
+            <div className={`text-gray-900 ${s.color}`} style={{ fontSize: '18px', fontWeight: 800 }}>
               {s.label}
             </div>
           </button>
@@ -139,7 +159,7 @@ export default function DoctorCampaigns() {
 
       {/* Campaigns Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {filtered.map((c) => (
+        {campaigns.map((c) => (
           <CampaignCard
             key={c.id}
             campaign={c}
@@ -150,12 +170,56 @@ export default function DoctorCampaigns() {
             onCancelSlot={(apt) => setCancelTarget(apt)}
           />
         ))}
-        {filtered.length === 0 && (
+        {campaigns.length === 0 && (
           <div className="col-span-2 py-16 text-center text-gray-400 bg-white rounded-2xl border border-gray-100">
             <p style={{ fontSize: '14px' }}>لا توجد حملات</p>
           </div>
         )}
       </div>
+
+      {/* Pagination UI */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center pt-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (page > 1) setPage(page - 1);
+                  }}
+                  className={page <= 1 ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+              {[...Array(totalPages)].map((_, i) => (
+                <PaginationItem key={i + 1}>
+                  <PaginationLink
+                    href="#"
+                    isActive={page === i + 1}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPage(i + 1);
+                    }}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (page < totalPages) setPage(page + 1);
+                  }}
+                  className={page >= totalPages ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
 
       {/* Create Campaign Modal */}
       {showModal && (

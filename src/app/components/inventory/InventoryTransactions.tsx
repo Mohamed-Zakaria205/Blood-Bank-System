@@ -2,9 +2,17 @@ import { useState } from 'react';
 import { Search, Download } from 'lucide-react';
 import { BLOOD_TYPES } from '../../constants';
 import type { BloodType, TransactionType } from '../../types';
-import { useTransactions } from '../../hooks/useInventory';
+import { useFilteredTransactions } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '../ui/pagination';
 
 const typeColors: Record<TransactionType, string> = {
   issue: 'bg-blue-100 text-blue-700',
@@ -29,10 +37,31 @@ const typeIcons: Record<TransactionType, string> = {
 };
 
 export default function InventoryTransactions() {
-  const { data: transactions = [], isLoading, isError } = useTransactions();
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [filterType, setFilterType] = useState<TransactionType | 'all'>('all');
-  const [filterBlood, setFilterBlood] = useState<BloodType | 'all'>('all');
+  const [filterType, setFilterType] = useState<TransactionType | ''>('');
+  const [filterBlood, setFilterBlood] = useState<BloodType | ''>('');
+
+  const {
+    data: response,
+    isLoading,
+    isError,
+  } = useFilteredTransactions({
+    page,
+    limit: 10,
+    search,
+    type: filterType,
+    bloodType: filterBlood,
+  });
+
+  const transactions = response?.data || [];
+  const total = response?.total || 0;
+  const totalPages = Math.ceil(total / 10) || 1;
+
+  const handleFilterChange = (setter: any, value: any) => {
+    setter(value);
+    setPage(1);
+  };
 
   if (isLoading)
     return (
@@ -50,21 +79,7 @@ export default function InventoryTransactions() {
       />
     );
 
-  const filtered = transactions.filter((t) => {
-    const matchSearch =
-      t.id.includes(search) ||
-      t.bagCodes.some((c) => c.includes(search)) ||
-      (t.destination ?? '').includes(search) ||
-      t.performedByName.includes(search);
-    const matchType = filterType === 'all' || t.type === filterType;
-    const matchBlood = filterBlood === 'all' || t.bloodType === filterBlood;
-    return matchSearch && matchType && matchBlood;
-  });
-
-  const counts = (['issue', 'return', 'disposal', 'receive', 'reserve'] as const).reduce(
-    (acc, t) => { acc[t] = transactions.filter((x) => x.type === t).length; return acc; },
-    {} as Record<TransactionType, number>,
-  );
+    );
 
   return (
     <div className="space-y-6">
@@ -75,7 +90,7 @@ export default function InventoryTransactions() {
             سجل العمليات
           </h1>
           <p className="text-gray-500" style={{ fontSize: '14px' }}>
-            {transactions.length} عملية مسجلة
+            {total} عملية مسجلة
           </p>
         </div>
         <button
@@ -87,15 +102,26 @@ export default function InventoryTransactions() {
       </div>
 
       {/* Type stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
+        <button
+          onClick={() => handleFilterChange(setFilterType, '')}
+          className={`p-3 rounded-xl border-2 text-right transition-all ${filterType === '' ? 'bg-gray-100 text-gray-900 border-gray-300 ring-2 ring-offset-1 ring-gray-400' : 'bg-white border-gray-100 hover:border-gray-200'}`}
+        >
+          <div className="text-gray-900" style={{ fontSize: '20px', fontWeight: 800 }}>
+            الكل
+          </div>
+          <div className="text-gray-600" style={{ fontSize: '11px', fontWeight: 600 }}>
+            جميع العمليات
+          </div>
+        </button>
         {(['issue', 'return', 'disposal', 'receive', 'reserve'] as TransactionType[]).map((t) => (
           <button
             key={t}
-            onClick={() => setFilterType(filterType === t ? 'all' : t)}
+            onClick={() => handleFilterChange(setFilterType, t)}
             className={`p-3 rounded-xl border-2 text-right transition-all ${filterType === t ? typeColors[t] + ' border-current ring-2 ring-offset-1' : 'bg-white border-gray-100 hover:border-gray-200'}`}
           >
             <div className="text-gray-900" style={{ fontSize: '20px', fontWeight: 800 }}>
-              {counts[t]}
+              {typeIcons[t]}
             </div>
             <div className="text-gray-600" style={{ fontSize: '11px', fontWeight: 600 }}>
               {typeLabels[t]}
@@ -110,7 +136,7 @@ export default function InventoryTransactions() {
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleFilterChange(setSearch, e.target.value)}
             placeholder="بحث برقم العملية أو كود الحقيبة..."
             className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
             style={{ fontSize: '13px' }}
@@ -118,11 +144,11 @@ export default function InventoryTransactions() {
         </div>
         <select
           value={filterBlood}
-          onChange={(e) => setFilterBlood(e.target.value as BloodType | 'all')}
+          onChange={(e) => handleFilterChange(setFilterBlood, e.target.value as BloodType | '')}
           className="px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
           style={{ fontSize: '13px' }}
         >
-          <option value="all">كل الفصائل</option>
+          <option value="">كل الفصائل</option>
           {BLOOD_TYPES.map((t) => (
             <option key={t} value={t}>
               {t}
@@ -159,7 +185,7 @@ export default function InventoryTransactions() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {filtered.map((t) => (
+              {transactions.map((t) => (
                 <tr key={t.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3">
                     <span
@@ -229,10 +255,54 @@ export default function InventoryTransactions() {
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && <EmptyState colSpan={9} message="لا توجد عمليات مسجلة" />}
+              {transactions.length === 0 && <EmptyState colSpan={9} message="لا توجد عمليات مسجلة" />}
             </tbody>
           </table>
         </div>
+        
+        {/* Pagination UI */}
+        {totalPages > 1 && (
+          <div className="p-4 border-t border-gray-100 flex items-center justify-center bg-gray-50">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page > 1) setPage(page - 1);
+                    }}
+                    className={page <= 1 ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+                {[...Array(totalPages)].map((_, i) => (
+                  <PaginationItem key={i + 1}>
+                    <PaginationLink
+                      href="#"
+                      isActive={page === i + 1}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(i + 1);
+                      }}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page < totalPages) setPage(page + 1);
+                    }}
+                    className={page >= totalPages ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
     </div>
   );

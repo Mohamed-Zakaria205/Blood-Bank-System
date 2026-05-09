@@ -8,9 +8,17 @@ import {
   Check,
   ChevronDown,
 } from 'lucide-react';
-import { useStaff, useCreateStaff, useDeleteStaff } from '../../hooks/useStaff';
+import { useFilteredStaff, useCreateStaff, useDeleteStaff } from '../../hooks/useStaff';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '../ui/pagination';
 
 // ── Sub-components ──
 import type { StaffRole, StaffForm } from './admin-staff/staffConstants';
@@ -19,10 +27,7 @@ import AddStaffModal from './admin-staff/AddStaffModal';
 import DeleteConfirmModal from './admin-staff/DeleteConfirmModal';
 
 export default function AdminStaff() {
-  const { data: staffData = [], isLoading, isError, refetch } = useStaff();
-  const createStaff = useCreateStaff();
-  const deleteStaff = useDeleteStaff();
-
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [filterRole, setFilterRole] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -30,15 +35,30 @@ export default function AdminStaff() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
-  const staff = staffData.filter((u) => u.role !== 'admin');
-
-  const filtered = staff.filter((u) => {
-    const matchSearch =
-      u.name.includes(search) || u.email.includes(search) || (u.phone || '').includes(search);
-    const matchRole = !filterRole || u.role === filterRole;
-    const matchStatus = !filterStatus || u.status === filterStatus;
-    return matchSearch && matchRole && matchStatus;
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = useFilteredStaff({
+    page,
+    limit: 10,
+    search,
+    role: filterRole,
+    status: filterStatus,
   });
+
+  const staff = response?.data || [];
+  const total = response?.total || 0;
+  const totalPages = Math.ceil(total / 10) || 1;
+
+  const createStaff = useCreateStaff();
+  const deleteStaff = useDeleteStaff();
+
+  const handleFilterChange = (setter: any, value: any) => {
+    setter(value);
+    setPage(1);
+  };
 
   const handleAddStaff = async (values: StaffForm) => {
     await createStaff.mutateAsync({
@@ -89,7 +109,7 @@ export default function AdminStaff() {
             إدارة الكوادر الطبية
           </h1>
           <p className="text-gray-500" style={{ fontSize: '14px' }}>
-            {staff.length} حساب مسجل في النظام
+            {total} حساب مسجل في النظام
           </p>
         </div>
         <button
@@ -101,23 +121,20 @@ export default function AdminStaff() {
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      {/* Stats/Filters */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'إجمالي الكوادر', count: staff.length, color: 'text-gray-900', bg: 'bg-gray-50', onClick: () => setFilterRole('') },
-          { label: 'أطباء', count: staff.filter((u) => u.role === 'doctor').length, color: 'text-teal-700', bg: 'bg-teal-50', onClick: () => setFilterRole('doctor') },
-          { label: 'دكاترة تحاليل', count: staff.filter((u) => u.role === 'lab').length, color: 'text-green-700', bg: 'bg-green-50', onClick: () => setFilterRole('lab') },
-          { label: 'أميناء المخازن', count: staff.filter((u) => u.role === 'inventory').length, color: 'text-blue-700', bg: 'bg-blue-50', onClick: () => setFilterRole('inventory') },
+          { label: 'الكل', val: '', color: 'text-gray-900', bg: 'bg-gray-50' },
+          { label: 'أطباء', val: 'doctor', color: 'text-teal-700', bg: 'bg-teal-50' },
+          { label: 'دكاترة تحاليل', val: 'lab', color: 'text-green-700', bg: 'bg-green-50' },
+          { label: 'أميناء المخازن', val: 'inventory', color: 'text-blue-700', bg: 'bg-blue-50' },
         ].map((s, i) => (
           <button
             key={i}
-            onClick={s.onClick}
-            className={`${s.bg} rounded-xl p-4 text-center hover:opacity-80 transition-opacity`}
+            onClick={() => handleFilterChange(setFilterRole, s.val)}
+            className={`${s.bg} rounded-xl p-4 text-center hover:opacity-80 transition-all ${filterRole === s.val ? 'ring-2 ring-offset-1 ring-green-400' : ''}`}
           >
-            <div className={s.color} style={{ fontSize: '24px', fontWeight: 800 }}>
-              {s.count}
-            </div>
-            <div className="text-gray-600" style={{ fontSize: '12px' }}>
+            <div className={`text-gray-900 ${s.color}`} style={{ fontSize: '18px', fontWeight: 800 }}>
               {s.label}
             </div>
           </button>
@@ -131,7 +148,7 @@ export default function AdminStaff() {
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleFilterChange(setSearch, e.target.value)}
               placeholder="ابحث بالاسم أو البريد أو الهاتف..."
               className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
               style={{ fontSize: '13px' }}
@@ -140,7 +157,7 @@ export default function AdminStaff() {
           <div className="relative">
             <select
               value={filterRole}
-              onChange={(e) => setFilterRole(e.target.value)}
+              onChange={(e) => handleFilterChange(setFilterRole, e.target.value)}
               className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
               style={{ fontSize: '13px' }}
             >
@@ -154,7 +171,7 @@ export default function AdminStaff() {
           <div className="relative">
             <select
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
+              onChange={(e) => handleFilterChange(setFilterStatus, e.target.value)}
               className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
               style={{ fontSize: '13px' }}
             >
@@ -171,7 +188,7 @@ export default function AdminStaff() {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-4 border-b border-gray-100">
           <span className="text-gray-500" style={{ fontSize: '13px' }}>
-            {filtered.length} نتيجة
+            {total} نتيجة
           </span>
         </div>
         <div className="overflow-x-auto">
@@ -199,7 +216,7 @@ export default function AdminStaff() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {filtered.map((u) => {
+              {staff.map((u) => {
                 const cfg = roleConfig[u.role as StaffRole] || roleConfig.doctor;
                 return (
                   <tr key={u.id} className="hover:bg-gray-50 transition-colors">
@@ -279,10 +296,54 @@ export default function AdminStaff() {
                   </tr>
                 );
               })}
-              {filtered.length === 0 && <EmptyState colSpan={8} message="لا توجد نتائج" />}
+              {staff.length === 0 && <EmptyState colSpan={8} message="لا توجد نتائج" />}
             </tbody>
           </table>
         </div>
+        
+        {/* Pagination UI */}
+        {totalPages > 1 && (
+          <div className="p-4 border-t border-gray-100 flex items-center justify-center bg-gray-50">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page > 1) setPage(page - 1);
+                    }}
+                    className={page <= 1 ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+                {[...Array(totalPages)].map((_, i) => (
+                  <PaginationItem key={i + 1}>
+                    <PaginationLink
+                      href="#"
+                      isActive={page === i + 1}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(i + 1);
+                      }}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page < totalPages) setPage(page + 1);
+                    }}
+                    className={page >= totalPages ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
 
       {/* Add Staff Modal */}

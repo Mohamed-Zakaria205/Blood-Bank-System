@@ -8,30 +8,29 @@ import {
   ChevronRight,
 } from 'lucide-react';
 
-import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
+import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router';
-import { useLabDashboardData } from './hooks/useLabDashboardData';
+import { useFilteredLabTests } from '../../hooks/useLabTests';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '../ui/pagination';
 import { useLabDashboardForm } from './hooks/useLabDashboardForm';
 
 // ── Sub-components ──
 import { screeningTests, donationTypeLabels } from './lab-dashboard/labConstants';
 import ScreeningEntryModal from './lab-dashboard/ScreeningEntryModal';
 import ViewResultModal from './lab-dashboard/ViewResultModal';
+import { CardSkeleton, ErrorState, TableSkeleton } from '../shared/LoadingSkeleton';
 
 export default function LabDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-
-  const {
-    pending,
-    completed,
-    suitableCount,
-    notSuitableCount,
-    isLoading,
-    isError,
-    refetch,
-  } = useLabDashboardData();
 
   const {
     activeTab,
@@ -47,6 +46,30 @@ export default function LabDashboard() {
     openEntry,
     submitResult,
   } = useLabDashboardForm();
+
+  const [page, setPage] = useState(1);
+
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = useFilteredLabTests({
+    page,
+    limit: 10,
+    status: activeTab,
+  });
+
+  const labTests = response?.data || [];
+  const total = response?.total || 0;
+  const totalPages = Math.ceil(total / 10) || 1;
+
+  const handleTabChange = (tab: 'pending' | 'completed') => {
+    setActiveTab(tab);
+    setPage(1);
+  };
+
+
 
   if (isLoading)
     return (
@@ -83,55 +106,7 @@ export default function LabDashboard() {
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          {
-            label: 'حقائب معلقة',
-            value: pending.length,
-            icon: Clock,
-            color: 'text-yellow-600',
-            bg: 'bg-yellow-50',
-            border: 'border-yellow-100',
-          },
-          {
-            label: 'مكتملة',
-            value: completed.length,
-            icon: CheckCircle2,
-            color: 'text-green-600',
-            bg: 'bg-green-50',
-            border: 'border-green-100',
-          },
-          {
-            label: 'آمنة ✅',
-            value: suitableCount,
-            icon: CheckCircle2,
-            color: 'text-green-600',
-            bg: 'bg-green-50',
-            border: 'border-green-100',
-          },
-          {
-            label: 'مرفوضة ❌',
-            value: notSuitableCount,
-            icon: XCircle,
-            color: 'text-red-600',
-            bg: 'bg-red-50',
-            border: 'border-red-100',
-          },
-        ].map((s, i) => (
-          <div key={i} className={`bg-white rounded-2xl p-5 border ${s.border} shadow-sm`}>
-            <div className={`w-11 h-11 ${s.bg} rounded-xl flex items-center justify-center mb-4`}>
-              <s.icon className={`w-5 h-5 ${s.color}`} />
-            </div>
-            <div className="text-gray-900" style={{ fontSize: '30px', fontWeight: 800 }}>
-              {s.value}
-            </div>
-            <div className="text-gray-600" style={{ fontSize: '13px', fontWeight: 500 }}>
-              {s.label}
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* Stats row removed as server pagination is active */}
 
       {/* Blood Screening Tests Info */}
       <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 rounded-2xl p-5">
@@ -179,7 +154,7 @@ export default function LabDashboard() {
         <div className="flex items-center justify-between p-4 border-b border-gray-100 flex-wrap gap-3">
           <div className="flex rounded-xl bg-gray-100 p-1">
             <button
-              onClick={() => setActiveTab('pending')}
+              onClick={() => handleTabChange('pending')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${activeTab === 'pending' ? 'bg-white shadow-sm text-green-700' : 'text-gray-500 hover:text-gray-700'}`}
               style={{
                 fontSize: '13px',
@@ -188,17 +163,17 @@ export default function LabDashboard() {
             >
               <Clock className="w-4 h-4" />
               معلقة
-              {pending.length > 0 && (
+              {activeTab === 'pending' && total > 0 && (
                 <span
                   className="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded-full"
                   style={{ fontSize: '11px', fontWeight: 700 }}
                 >
-                  {pending.length}
+                  {total}
                 </span>
               )}
             </button>
             <button
-              onClick={() => setActiveTab('completed')}
+              onClick={() => handleTabChange('completed')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${activeTab === 'completed' ? 'bg-white shadow-sm text-green-700' : 'text-gray-500 hover:text-gray-700'}`}
               style={{
                 fontSize: '13px',
@@ -207,12 +182,14 @@ export default function LabDashboard() {
             >
               <CheckCircle2 className="w-4 h-4" />
               مكتملة
-              <span
-                className="px-1.5 py-0.5 bg-green-100 text-green-700 rounded-full"
-                style={{ fontSize: '11px', fontWeight: 700 }}
-              >
-                {completed.length}
-              </span>
+              {activeTab === 'completed' && (
+                <span
+                  className="px-1.5 py-0.5 bg-green-100 text-green-700 rounded-full"
+                  style={{ fontSize: '11px', fontWeight: 700 }}
+                >
+                  {total}
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -220,7 +197,7 @@ export default function LabDashboard() {
         {/* PENDING TESTS */}
         {activeTab === 'pending' && (
           <div>
-            {pending.length === 0 ? (
+            {labTests.length === 0 ? (
               <div className="py-16 text-center">
                 <Droplets className="w-12 h-12 text-gray-200 mx-auto mb-3" />
                 <p className="text-gray-400" style={{ fontSize: '15px' }}>
@@ -229,7 +206,7 @@ export default function LabDashboard() {
               </div>
             ) : (
               <div className="divide-y divide-gray-50">
-                {pending.map((t) => (
+                {labTests.map((t) => (
                   <div
                     key={t.id}
                     className="flex items-center justify-between px-5 py-4 hover:bg-yellow-50/40 transition-colors border-b border-gray-50 last:border-0"
@@ -300,7 +277,7 @@ export default function LabDashboard() {
         {/* COMPLETED TESTS */}
         {activeTab === 'completed' && (
           <div>
-            {completed.length === 0 ? (
+            {labTests.length === 0 ? (
               <div className="py-16 text-center">
                 <p className="text-gray-400" style={{ fontSize: '15px' }}>
                   لا توجد حقائب مكتملة
@@ -308,7 +285,7 @@ export default function LabDashboard() {
               </div>
             ) : (
               <div className="divide-y divide-gray-50">
-                {completed.map((t) => (
+                {labTests.map((t) => (
                   <div
                     key={t.id}
                     className={`flex items-center justify-between px-5 py-4 transition-colors border-b border-gray-50 last:border-0 ${t.result?.suitable ? 'hover:bg-green-50/20' : 'hover:bg-red-50/20'}`}
@@ -371,6 +348,50 @@ export default function LabDashboard() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+        
+        {/* Pagination UI */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center p-4 border-t border-gray-100 bg-gray-50">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page > 1) setPage(page - 1);
+                    }}
+                    className={page <= 1 ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+                {[...Array(totalPages)].map((_, i) => (
+                  <PaginationItem key={i + 1}>
+                    <PaginationLink
+                      href="#"
+                      isActive={page === i + 1}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(i + 1);
+                      }}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page < totalPages) setPage(page + 1);
+                    }}
+                    className={page >= totalPages ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
         )}
       </div>

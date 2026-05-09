@@ -1,7 +1,15 @@
 import { MapPin, Calendar, Users, TrendingUp, Eye } from 'lucide-react';
 import { useState } from 'react';
-import { useCampaigns } from '../../hooks/useCampaigns';
+import { useFilteredCampaigns } from '../../hooks/useCampaigns';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '../ui/pagination';
 
 const statusColors: Record<string, string> = {
   active: 'bg-emerald-100 text-emerald-700',
@@ -10,9 +18,24 @@ const statusColors: Record<string, string> = {
 const statusLabels: Record<string, string> = { active: 'نشطة', completed: 'منتهية' };
 
 export default function AdminCampaigns() {
-  const { data: campaigns = [], isLoading, isError, refetch } = useCampaigns();
+  const [page, setPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState('');
   const [selected, setSelected] = useState<any | null>(null);
+
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = useFilteredCampaigns({
+    page,
+    limit: 6,
+    status: filterStatus,
+  });
+
+  const campaigns = response?.data || [];
+  const total = response?.total || 0;
+  const totalPages = Math.ceil(total / 6) || 1;
 
   if (isLoading)
     return (
@@ -24,7 +47,10 @@ export default function AdminCampaigns() {
     );
   if (isError) return <ErrorState message="تعذر تحميل الحملات" onRetry={() => refetch()} />;
 
-  const filtered = campaigns.filter((c) => !filterStatus || c.status === filterStatus);
+  const handleFilterStatus = (status: string) => {
+    setFilterStatus(filterStatus === status ? '' : status);
+    setPage(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -35,7 +61,7 @@ export default function AdminCampaigns() {
             حملات التبرع
           </h1>
           <p className="text-gray-500" style={{ fontSize: '14px' }}>
-            {campaigns.length} حملة مسجلة (عرض فقط)
+            {total} حملة مسجلة (عرض فقط)
           </p>
         </div>
         <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl">
@@ -45,19 +71,17 @@ export default function AdminCampaigns() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats/Filters */}
       <div className="grid grid-cols-2 gap-4">
         {[
           {
             label: 'حملات نشطة',
-            count: campaigns.filter((c) => c.status === 'active').length,
             color: 'text-emerald-700',
             bg: 'bg-emerald-50',
             val: 'active',
           },
           {
             label: 'حملات منتهية',
-            count: campaigns.filter((c) => c.status === 'completed').length,
             color: 'text-gray-600',
             bg: 'bg-gray-100',
             val: 'completed',
@@ -65,13 +89,10 @@ export default function AdminCampaigns() {
         ].map((s, i) => (
           <div
             key={i}
-            className={`${s.bg} rounded-xl p-4 text-center cursor-pointer hover:opacity-80 transition-opacity`}
-            onClick={() => setFilterStatus(filterStatus === s.val ? '' : s.val)}
+            className={`${s.bg} rounded-xl p-4 text-center cursor-pointer hover:opacity-80 transition-all ${filterStatus === s.val ? 'ring-2 ring-emerald-500' : ''}`}
+            onClick={() => handleFilterStatus(s.val)}
           >
-            <div className={s.color} style={{ fontSize: '28px', fontWeight: 800 }}>
-              {s.count}
-            </div>
-            <div className="text-gray-600" style={{ fontSize: '12px' }}>
+            <div className={`text-gray-900 ${s.color}`} style={{ fontSize: '18px', fontWeight: 800 }}>
               {s.label}
             </div>
           </div>
@@ -81,7 +102,7 @@ export default function AdminCampaigns() {
       {/* Filter */}
       {filterStatus && (
         <button
-          onClick={() => setFilterStatus('')}
+          onClick={() => handleFilterStatus(filterStatus)}
           className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-all"
           style={{ fontSize: '12px', fontWeight: 600 }}
         >
@@ -91,7 +112,7 @@ export default function AdminCampaigns() {
 
       {/* Campaigns Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {filtered.map((c) => {
+        {campaigns.map((c) => {
           const pct = Math.round((c.registeredDonors / c.targetDonors) * 100);
           return (
             <div
@@ -169,6 +190,50 @@ export default function AdminCampaigns() {
           );
         })}
       </div>
+
+      {/* Pagination UI */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center pt-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (page > 1) setPage(page - 1);
+                  }}
+                  className={page <= 1 ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+              {[...Array(totalPages)].map((_, i) => (
+                <PaginationItem key={i + 1}>
+                  <PaginationLink
+                    href="#"
+                    isActive={page === i + 1}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPage(i + 1);
+                    }}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (page < totalPages) setPage(page + 1);
+                  }}
+                  className={page >= totalPages ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
 
       {/* Detail Modal */}
       {selected && (

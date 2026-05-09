@@ -13,9 +13,17 @@ import {
   XCircle,
 } from 'lucide-react';
 import { BLOOD_TYPES, CITIES } from '../../constants';
-import { useDonors } from '../../hooks/useDonors';
+import { usePaginatedDonors } from '../../hooks/useDonors';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '../ui/pagination';
 import type { Donor } from '../../types';
 
 // ── Sub-components ──
@@ -30,12 +38,30 @@ import DonorDetailModal from './doctor-donors/DonorDetailModal';
 
 export default function DoctorDonors() {
   const navigate = useNavigate();
-  const { data: donors = [], isLoading, isError, refetch } = useDonors();
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [filterBlood, setFilterBlood] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterCity, setFilterCity] = useState('');
   const [viewing, setViewing] = useState<Donor | null>(null);
+
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = usePaginatedDonors({
+    page,
+    limit: 5,
+    search,
+    bloodType: filterBlood,
+    status: filterStatus,
+    city: filterCity,
+  });
+
+  const donors = response?.data || [];
+  const total = response?.total || 0;
+  const totalPages = Math.ceil(total / 5) || 1;
 
   if (isLoading)
     return (
@@ -48,14 +74,11 @@ export default function DoctorDonors() {
   if (isError)
     return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
 
-  const filtered = donors.filter((d) => {
-    const matchSearch =
-      d.name.includes(search) || d.donorCode.includes(search) || d.phone.includes(search);
-    const matchBlood = !filterBlood || d.bloodType === filterBlood;
-    const matchStatus = !filterStatus || d.status === filterStatus;
-    const matchCity = !filterCity || d.city === filterCity;
-    return matchSearch && matchBlood && matchStatus && matchCity;
-  });
+  // When filters change, reset to page 1
+  const handleFilterChange = (setter: any, value: any) => {
+    setter(value);
+    setPage(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -66,7 +89,7 @@ export default function DoctorDonors() {
             المتبرعون
           </h1>
           <p className="text-gray-500" style={{ fontSize: '14px' }}>
-            {donors.length} متبرع مسجل
+            {total} متبرع مسجل
           </p>
         </div>
         <button
@@ -89,7 +112,7 @@ export default function DoctorDonors() {
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleFilterChange(setSearch, e.target.value)}
               placeholder="ابحث بلاسم أو الرمز..."
               className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
               style={{ fontSize: '13px' }}
@@ -98,7 +121,7 @@ export default function DoctorDonors() {
           <div className="relative">
             <select
               value={filterBlood}
-              onChange={(e) => setFilterBlood(e.target.value)}
+              onChange={(e) => handleFilterChange(setFilterBlood, e.target.value)}
               className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
               style={{ fontSize: '13px' }}
             >
@@ -114,7 +137,7 @@ export default function DoctorDonors() {
           <div className="relative">
             <select
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
+              onChange={(e) => handleFilterChange(setFilterStatus, e.target.value)}
               className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
               style={{ fontSize: '13px' }}
             >
@@ -128,7 +151,7 @@ export default function DoctorDonors() {
           <div className="relative">
             <select
               value={filterCity}
-              onChange={(e) => setFilterCity(e.target.value)}
+              onChange={(e) => handleFilterChange(setFilterCity, e.target.value)}
               className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
               style={{ fontSize: '13px' }}
             >
@@ -144,35 +167,13 @@ export default function DoctorDonors() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        {[
-          {
-            label: 'مؤهلون',
-            count: donors.filter((d) => d.status === 'eligible').length,
-            color: 'text-green-600',
-            bg: 'bg-green-50',
-          },
-          {
-            label: 'موجلون',
-            count: donors.filter((d) => d.status === 'deferred').length,
-            color: 'text-orange-600',
-            bg: 'bg-orange-50',
-          },
-          {
-            label: 'غير مؤهلين',
-            count: donors.filter((d) => d.status === 'ineligible').length,
-            color: 'text-red-600',
-            bg: 'bg-red-50',
-          },
-        ].map((_s, _i) => null)}
-      </div>
+      {/* Stats row removed as server pagination is active */}
 
       {/* Donors Table */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-4 border-b border-gray-100">
           <span className="text-gray-500" style={{ fontSize: '13px' }}>
-            {filtered.length} نتيجة
+            {total} نتيجة
           </span>
         </div>
         <div className="overflow-x-auto">
@@ -191,7 +192,7 @@ export default function DoctorDonors() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {filtered.map((d) => (
+              {donors.map((d) => (
                 <tr key={d.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3 whitespace-nowrap">
                     {d.status === 'eligible' ? (
@@ -302,10 +303,53 @@ export default function DoctorDonors() {
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && <EmptyState colSpan={10} message="لا توجد نتائج" />}
+              {donors.length === 0 && <EmptyState colSpan={10} message="لا توجد نتائج" />}
             </tbody>
           </table>
         </div>
+        {/* Pagination UI */}
+        {totalPages > 1 && (
+          <div className="p-4 border-t border-gray-100 flex items-center justify-center bg-gray-50">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page > 1) setPage(page - 1);
+                    }}
+                    className={page <= 1 ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+                {[...Array(totalPages)].map((_, i) => (
+                  <PaginationItem key={i + 1}>
+                    <PaginationLink
+                      href="#"
+                      isActive={page === i + 1}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(i + 1);
+                      }}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page < totalPages) setPage(page + 1);
+                    }}
+                    className={page >= totalPages ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
 
       {/* Detail Modal */}
