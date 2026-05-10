@@ -14,11 +14,26 @@ import {
   bloodBags as MOCK_BAGS,
   bloodInventory as MOCK_INVENTORY,
   initialTransactions as MOCK_TRANSACTIONS,
-  initialOutflowRecords as MOCK_OUTFLOW,
   monthlyStats as MOCK_MONTHLY_STATS,
-} from '../data/mockData';
+} from '../data/inventory.mock';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
+
+function deriveOutflowRecordsFromTransactions(): OutflowRecord[] {
+  return MOCK_TRANSACTIONS.filter((t) => t.type === 'issue' || t.type === 'disposal').map((t, index) => ({
+    id: `OUT-MOCK-${String(index + 1).padStart(3, '0')}`,
+    bagId: t.bagIds[0] ?? '',
+    bagCode: t.bagCodes[0] ?? '',
+    bloodType: t.bloodType,
+    donationType: 'whole',
+    actionType: t.type === 'issue' ? 'exported' : 'disposed',
+    recipientName: t.type === 'issue' ? t.destination : undefined,
+    reason: t.notes ?? (t.type === 'issue' ? 'صرف من المخزون' : 'إتلاف من المخزون'),
+    performedBy: t.performedBy,
+    performedByName: t.performedByName,
+    timestamp: t.timestamp,
+  }));
+}
 
 // ── Blood Bags ─────────────────────────────────────────────
 
@@ -158,7 +173,8 @@ export async function fetchFilteredTransactions(
 export async function fetchOutflowRecords(): Promise<PaginatedResponse<OutflowRecord>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return { data: MOCK_OUTFLOW, total: MOCK_OUTFLOW.length, page: 1, limit: MOCK_OUTFLOW.length };
+    const mockOutflow = deriveOutflowRecordsFromTransactions();
+    return { data: mockOutflow, total: mockOutflow.length, page: 1, limit: mockOutflow.length };
   }
   const { data } = await apiClient.get<PaginatedResponse<OutflowRecord>>('/inventory/outflow');
   return data;

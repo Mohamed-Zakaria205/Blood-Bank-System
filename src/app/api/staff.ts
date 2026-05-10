@@ -4,7 +4,7 @@
 import apiClient from './client';
 import type { User, UserRole } from '../types/auth';
 import type { PaginatedResponse, ApiResponse, StaffFilters } from '../types/common';
-import { users as MOCK_USERS } from '../data/mockData';
+import { users as MOCK_USERS } from '../data/auth.mock';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 

@@ -4,7 +4,7 @@
 import apiClient from './client';
 import type { AppointmentSlot, Slot15 } from '../types/appointment';
 import type { PaginatedResponse } from '../types/common';
-import { appointmentSlots as MOCK_SLOTS, slot15Data as MOCK_SLOT15 } from '../data/mockData';
+import { appointmentSlots as MOCK_SLOTS, slot15Data as MOCK_SLOT15 } from '../data/appointments.mock';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 

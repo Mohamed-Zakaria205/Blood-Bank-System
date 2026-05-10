@@ -8,7 +8,7 @@ import {
   labTests as MOCK_LAB_TESTS,
   samples as MOCK_SAMPLES,
   testResults as MOCK_TEST_RESULTS,
-} from '../data/mockData';
+} from '../data/lab.mock';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 

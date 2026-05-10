@@ -4,7 +4,7 @@
 import apiClient from './client';
 import type { Campaign, CreateCampaignRequest } from '../types/campaign';
 import type { PaginatedResponse, ApiResponse, CampaignFilters } from '../types/common';
-import { campaigns as MOCK_CAMPAIGNS } from '../data/mockData';
+import { campaigns as MOCK_CAMPAIGNS } from '../data/campaigns.mock';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 

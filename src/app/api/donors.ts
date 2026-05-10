@@ -4,7 +4,7 @@
 import apiClient from './client';
 import type { Donor, CreateDonorRequest } from '../types/donor';
 import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/common';
-import { donors as MOCK_DONORS } from '../data/mockData';
+import { donors as MOCK_DONORS } from '../data/donors.mock';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
