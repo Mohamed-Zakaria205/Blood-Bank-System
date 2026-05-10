@@ -7,6 +7,8 @@ import {
   Activity,
   ChevronRight,
 } from 'lucide-react';
+import { format } from 'date-fns';
+import { ar } from 'date-fns/locale';
 
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -93,7 +95,7 @@ export default function LabDashboard() {
             فحص حقائب الدم
           </h1>
           <p className="text-gray-500" style={{ fontSize: '14px' }}>
-            مرحباً {user?.name} — الاثنين، 27 أبريل 2025
+            مرحباً {user?.name} — {format(new Date(), 'EEEE، d MMMM yyyy', { locale: ar })}
           </p>
         </div>
         <button

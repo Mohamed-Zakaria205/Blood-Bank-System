@@ -8,6 +8,8 @@ import {
   ArrowUpRight,
   Droplets,
 } from 'lucide-react';
+import { format } from 'date-fns';
+import { ar } from 'date-fns/locale';
 import { useAuth } from '../../contexts/AuthContext';
 import { BLOOD_TYPES } from '../../constants';
 import type { BloodType } from '../../types';
@@ -15,7 +17,7 @@ import { useBloodBags, useOutflowRecords } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 
-const TODAY = new Date('2025-04-29');
+const TODAY = new Date();
 function daysUntil(d: string) {
   return Math.ceil((new Date(d).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24));
 }
@@ -76,7 +78,7 @@ export default function InventoryDashboard() {
           لوحة مخزون الدم
         </h1>
         <p className="text-gray-500 mt-0.5" style={{ fontSize: '14px' }}>
-          مرحباً {user?.name?.split(' ').slice(1, 3).join(' ')} — الثلاثاء، 29 أبريل 2025
+          مرحباً {user?.name?.split(' ').slice(1, 3).join(' ')} — {format(new Date(), 'EEEE، d MMMM yyyy', { locale: ar })}
         </p>
       </div>
 

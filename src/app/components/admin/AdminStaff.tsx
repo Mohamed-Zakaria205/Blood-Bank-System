@@ -42,7 +42,7 @@ export default function AdminStaff() {
     refetch,
   } = useFilteredStaff({
     page,
-    limit: 10,
+    limit: 5,
     search,
     role: filterRole,
     status: filterStatus,
@@ -50,7 +50,7 @@ export default function AdminStaff() {
 
   const staff = response?.data || [];
   const total = response?.total || 0;
-  const totalPages = Math.ceil(total / 10) || 1;
+  const totalPages = Math.ceil(total / 5) || 1;
 
   const createStaff = useCreateStaff();
   const deleteStaff = useDeleteStaff();
@@ -127,7 +127,7 @@ export default function AdminStaff() {
           { label: 'الكل', val: '', color: 'text-gray-900', bg: 'bg-gray-50' },
           { label: 'أطباء', val: 'doctor', color: 'text-teal-700', bg: 'bg-teal-50' },
           { label: 'دكاترة تحاليل', val: 'lab', color: 'text-green-700', bg: 'bg-green-50' },
-          { label: 'أميناء المخازن', val: 'inventory', color: 'text-blue-700', bg: 'bg-blue-50' },
+          { label: 'أمناء المخازن', val: 'inventory', color: 'text-blue-700', bg: 'bg-blue-50' },
         ].map((s, i) => (
           <button
             key={i}

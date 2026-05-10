@@ -11,7 +11,7 @@ import IssuanceTrendChart from './inventory-alerts/IssuanceTrendChart';
 import ConsumptionByTypePanel from './inventory-alerts/ConsumptionByTypePanel';
 import NearExpiryTable from './inventory-alerts/NearExpiryTable';
 
-const TODAY = new Date('2025-04-29');
+const TODAY = new Date();
 const DEFAULT_MIN = 10;
 
 function daysUntil(d: string) {

@@ -1,7 +1,7 @@
 // ── Shared types and constants for InventoryDisposal module ──
 import type { BloodBag } from '../../../types';
 
-export const TODAY = new Date('2025-04-29');
+export const TODAY = new Date();
 
 export function daysUntil(d: string) {
   return Math.ceil((new Date(d).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24));

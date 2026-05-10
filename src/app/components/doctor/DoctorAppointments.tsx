@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { format } from 'date-fns';
+import { ar } from 'date-fns/locale';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { AlertTriangle, Filter, Bell } from 'lucide-react';
@@ -222,7 +224,10 @@ export default function DoctorAppointments() {
 
   // ── MONTH view ──
   const renderMonth = () => {
-    const allMonthSlots = slots.filter((s) => s.date >= '2025-04-01' && s.date <= '2025-05-31');
+    const _d = new Date();
+    const monthStart = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}-01`;
+    const monthEnd = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}-31`;
+    const allMonthSlots = slots.filter((s) => s.date >= monthStart && s.date <= monthEnd);
     const grouped: Record<string, Slot15[]> = {};
     allMonthSlots.forEach((s) => {
       if (!grouped[s.date]) grouped[s.date] = [];
@@ -284,7 +289,7 @@ export default function DoctorAppointments() {
             جدول المواعيد
           </h1>
           <p className="text-gray-500" style={{ fontSize: '14px' }}>
-            السبت، 2 مايو 2025 — الوقت الحالي: 10:30 ص
+            {format(new Date(), 'EEEE، d MMMM yyyy — HH:mm', { locale: ar })}
           </p>
         </div>
         <div className="flex items-center gap-2">

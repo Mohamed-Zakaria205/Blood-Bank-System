@@ -10,6 +10,8 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { format } from 'date-fns';
+import { ar } from 'date-fns/locale';
 import { useAdminDashboardData } from './hooks/useAdminDashboardData';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
@@ -118,7 +120,7 @@ export default function AdminDashboard() {
             لوحة التحكم
           </h1>
           <p className="text-gray-500 mt-0.5" style={{ fontSize: '14px' }}>
-            مرحباً {user?.name} — الأحد، 26 أبريل 2025
+            مرحباً {user?.name} — {format(new Date(), 'EEEE، d MMMM yyyy', { locale: ar })}
           </p>
         </div>
         {criticalCount > 0 && (

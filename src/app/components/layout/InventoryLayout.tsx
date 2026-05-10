@@ -12,7 +12,7 @@ import { useBloodBags } from '../../hooks/useInventory';
 
 export default function InventoryLayout() {
   const { data: bags = [] } = useBloodBags();
-  const TODAY = new Date('2025-04-29');
+  const TODAY = new Date();
   const nearExpiry = bags.filter((b) => {
     if (b.status !== 'available') return false;
     const diff = (new Date(b.expiryDate).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24);

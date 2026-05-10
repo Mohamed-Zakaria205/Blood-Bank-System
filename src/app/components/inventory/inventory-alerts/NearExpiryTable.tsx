@@ -2,7 +2,7 @@ import { Clock } from 'lucide-react';
 import { EmptyState } from '../../shared/EmptyState';
 import type { BloodBag } from '../../../types';
 
-const TODAY = new Date('2025-04-29');
+const TODAY = new Date();
 
 function daysUntil(d: string) {
   return Math.ceil((new Date(d).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24));

@@ -82,7 +82,7 @@ export default function AdminInventory() {
             مخزون الدم
           </h1>
           <p className="text-gray-500" style={{ fontSize: '14px' }}>
-            آخر تحديث: اليوم، 26 أبريل 2025
+            آخر تحديث: اليوم، {new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}
           </p>
         </div>
         <div className="flex items-center gap-2">

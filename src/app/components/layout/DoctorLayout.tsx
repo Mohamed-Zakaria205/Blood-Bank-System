@@ -16,7 +16,8 @@ export default function DoctorLayout() {
   const { data: campaigns = [] } = useCampaigns();
   const navigate = useNavigate();
   const activeCampaigns = campaigns.filter((c) => c.status === 'active');
-  const todayDonors = donors.filter((d) => d.registeredAt === '2025-04-26');
+  const todayStr = new Date().toISOString().split('T')[0];
+  const todayDonors = donors.filter((d) => d.registeredAt === todayStr);
 
   const notifications = [
     ...activeCampaigns.map((c) => ({

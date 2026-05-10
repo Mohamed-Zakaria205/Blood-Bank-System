@@ -4,9 +4,10 @@ import { Clock, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 import type { Slot15 } from '../../../types';
 
 // ── Constants ──
-export const TODAY = '2025-05-02';
-export const MOCK_CURRENT_HOUR = 10;
-export const MOCK_CURRENT_MIN = 30;
+const _now = new Date();
+export const TODAY = _now.toISOString().split('T')[0];
+export const MOCK_CURRENT_HOUR = _now.getHours();
+export const MOCK_CURRENT_MIN = _now.getMinutes();
 
 export const DONATION_LABELS: Record<string, string> = {
   whole: 'دم كامل',
@@ -19,15 +20,14 @@ export const DONATION_COLORS: Record<string, string> = {
   platelets: 'bg-purple-50 text-purple-600 border-purple-100',
 };
 
-export const WEEK_DATES = [
-  '2025-04-27',
-  '2025-04-28',
-  '2025-04-29',
-  '2025-04-30',
-  '2025-05-01',
-  '2025-05-02',
-  '2025-05-03',
-];
+// Compute Sun–Sat of the current week dynamically
+const _startOfWeek = new Date(_now);
+_startOfWeek.setDate(_now.getDate() - _now.getDay()); // rewind to Sunday
+export const WEEK_DATES = Array.from({ length: 7 }, (_, i) => {
+  const d = new Date(_startOfWeek);
+  d.setDate(_startOfWeek.getDate() + i);
+  return d.toISOString().split('T')[0];
+});
 export const WEEK_DAY_NAMES = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 
 export const ALL_SLOTS: string[] = [];

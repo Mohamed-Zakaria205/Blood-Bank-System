@@ -29,13 +29,13 @@ export default function AdminCampaigns() {
     refetch,
   } = useFilteredCampaigns({
     page,
-    limit: 6,
+    limit: 4,
     status: filterStatus,
   });
 
   const campaigns = response?.data || [];
   const total = response?.total || 0;
-  const totalPages = Math.ceil(total / 6) || 1;
+  const totalPages = Math.ceil(total / 4) || 1;
 
   if (isLoading)
     return (
