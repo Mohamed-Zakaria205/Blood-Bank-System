@@ -7,11 +7,13 @@ import {
   HeartPulse,
   Megaphone,
 } from 'lucide-react';
+import { useState } from 'react';
 import DashboardLayout, { type NavItem } from './DashboardLayout';
 import { useDonors } from '../../hooks/useDonors';
 import { useCampaigns } from '../../hooks/useCampaigns';
 
 export default function DoctorLayout() {
+  const [dismissedNotifs, setDismissedNotifs] = useState<Set<string>>(new Set());
   const { data: donors = [] } = useDonors();
   const { data: campaigns = [] } = useCampaigns();
   const navigate = useNavigate();
@@ -38,7 +40,7 @@ export default function DoctorLayout() {
           },
         ]
       : []),
-  ];
+  ].filter((n) => !dismissedNotifs.has(n.id));
 
   const navItems: NavItem[] = [
     { path: '/doctor', label: 'لوحة التحكم', icon: LayoutDashboard, end: true },
@@ -71,6 +73,11 @@ export default function DoctorLayout() {
       accentGradient="linear-gradient(135deg, #15803d, #22c55e)"
       notifications={notifications}
       sidebarExtra={sidebarExtra}
+      onMarkAllRead={() => {
+        const newSet = new Set(dismissedNotifs);
+        notifications.forEach((n) => newSet.add(n.id));
+        setDismissedNotifs(newSet);
+      }}
     />
   );
 }

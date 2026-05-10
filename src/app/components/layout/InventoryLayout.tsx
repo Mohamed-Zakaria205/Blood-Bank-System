@@ -7,10 +7,12 @@ import {
   AlertTriangle,
   Clock,
 } from 'lucide-react';
+import { useState } from 'react';
 import DashboardLayout, { type NavItem } from './DashboardLayout';
 import { useBloodBags } from '../../hooks/useInventory';
 
 export default function InventoryLayout() {
+  const [dismissedNotifs, setDismissedNotifs] = useState<Set<string>>(new Set());
   const { data: bags = [] } = useBloodBags();
   const TODAY = new Date();
   const nearExpiry = bags.filter((b) => {
@@ -47,7 +49,7 @@ export default function InventoryLayout() {
       icon: <Trash2 className="w-4 h-4" />,
       color: 'red' as const,
     })),
-  ];
+  ].filter((n) => !dismissedNotifs.has(n.id));
 
   const navItems: NavItem[] = [
     { path: '/inventory', label: 'لوحة المخزون', icon: LayoutDashboard, end: true },
@@ -74,6 +76,11 @@ export default function InventoryLayout() {
       accentGradient="linear-gradient(135deg, #2563eb, #60a5fa)"
       notifications={notifications}
       headerAlert={headerAlert}
+      onMarkAllRead={() => {
+        const newSet = new Set(dismissedNotifs);
+        notifications.forEach((n) => newSet.add(n.id));
+        setDismissedNotifs(newSet);
+      }}
     />
   );
 }

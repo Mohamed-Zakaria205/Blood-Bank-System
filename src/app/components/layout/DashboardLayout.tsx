@@ -27,6 +27,7 @@ export interface DashboardLayoutProps {
   headerAlert?: ReactNode;
   sidebarExtra?: ReactNode;
   showDateInHeader?: boolean;
+  onMarkAllRead?: () => void;
 }
 
 export default function DashboardLayout({
@@ -38,6 +39,7 @@ export default function DashboardLayout({
   headerAlert,
   sidebarExtra,
   showDateInHeader = true,
+  onMarkAllRead,
 }: DashboardLayoutProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -212,6 +214,7 @@ export default function DashboardLayout({
                 open={notifOpen}
                 onToggle={() => setNotifOpen((p) => !p)}
                 onClose={() => setNotifOpen(false)}
+                onMarkAllRead={onMarkAllRead}
               />
               <div className="flex items-center gap-2 pr-2 border-r border-gray-200">
                 <div>

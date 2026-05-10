@@ -14,6 +14,7 @@ interface Props {
   open: boolean;
   onToggle: () => void;
   onClose: () => void;
+  onMarkAllRead?: () => void;
 }
 
 const colorMap = {
@@ -23,7 +24,7 @@ const colorMap = {
   blue: { bg: 'rgba(96,165,250,0.12)', icon: '#2563eb', text: '#1d4ed8', sub: '#60a5fa' },
 };
 
-export default function NotificationDropdown({ notifications, open, onToggle, onClose }: Props) {
+export default function NotificationDropdown({ notifications, open, onToggle, onClose, onMarkAllRead }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -145,11 +146,15 @@ export default function NotificationDropdown({ notifications, open, onToggle, on
           {/* Footer */}
           {notifications.length > 0 && (
             <div
-              className="px-4 py-2 border-t text-center"
+              className="px-4 py-2 border-t text-center hover:bg-gray-50 transition-colors cursor-pointer"
               style={{ borderColor: 'var(--border, #e5e7eb)' }}
+              onClick={() => {
+                if (onMarkAllRead) onMarkAllRead();
+                onClose();
+              }}
             >
               <span
-                style={{ fontSize: '12px', color: '#16a34a', fontWeight: 600, cursor: 'pointer' }}
+                style={{ fontSize: '12px', color: '#16a34a', fontWeight: 600 }}
               >
                 تمت المراجعة
               </span>
