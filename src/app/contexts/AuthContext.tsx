@@ -28,13 +28,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      const { token, refreshToken, user: loggedInUser } = await loginApi({ email, password });
+      const { user: loggedInUser } = await loginApi({ email, password });
 
-      // Persist tokens + user
-      localStorage.setItem('bloodlink_token', token);
-      if (refreshToken) {
-        localStorage.setItem('bloodlink_refresh_token', refreshToken);
-      }
+      // Persist user UI state
       localStorage.setItem('bloodlink_user', JSON.stringify(loggedInUser));
       setUser(loggedInUser);
 

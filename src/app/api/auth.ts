@@ -6,7 +6,6 @@ import { ApiError } from './errors';
 import type {
   LoginRequest,
   LoginResponse,
-  RefreshTokenResponse,
   ChangePasswordRequest,
 
 } from '../types/auth';
