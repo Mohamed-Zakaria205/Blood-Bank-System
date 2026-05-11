@@ -16,6 +16,7 @@ import {
 import type { SimpleForm } from './donorFormSchema';
 import { DONATION_TYPE_LABELS } from './donorFormSchema';
 import type { Campaign } from '../../../types';
+import { formatLocalizedDate } from '../../../utils/date';
 
 interface SuccessScreenProps {
   form: SimpleForm;
@@ -34,11 +35,8 @@ export default function SuccessScreen({
 }: SuccessScreenProps) {
   const navigate = useNavigate();
 
-  const today = new Date().toLocaleDateString('ar-EG', {
+  const today = formatLocalizedDate(new Date(), {
     weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
   });
 
   const isEligible = form.status === 'eligible';

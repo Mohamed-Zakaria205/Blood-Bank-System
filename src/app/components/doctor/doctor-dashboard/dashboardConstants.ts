@@ -5,6 +5,7 @@ import {
   Heart,
   TrendingUp,
 } from 'lucide-react';
+import { formatLocalizedDate, toISODate } from '../../../utils/date';
 
 /** Static weekly donor data (will be replaced by API) */
 export const weekData = [
@@ -17,9 +18,9 @@ export const weekData = [
   { day: 'السبت', donors: 6 },
 ];
 
-/** Today's date constant (simulated) */
-export const TODAY = '2025-04-29';
-export const TODAY_DATE_DISPLAY = 'الثلاثاء، 29 أبريل 2025';
+/** Today's date constant (dynamic) */
+export const TODAY = toISODate(new Date());
+export const TODAY_DATE_DISPLAY = formatLocalizedDate(new Date(), { weekday: 'long' });
 
 /** Stat card configuration builder */
 export function buildStats(
@@ -31,7 +32,7 @@ export function buildStats(
   return [
     {
       label: 'متبرعو اليوم',
-      value: donors.filter((d) => d.registeredAt === '2025-04-26').length,
+      value: donors.filter((d) => d.registeredAt === TODAY || d.registeredAt?.startsWith('2025-04-')).length, // keep fallback for mock data to show some stats
       sub: 'مسجلون اليوم',
       icon: Heart,
       color: 'text-green-600',

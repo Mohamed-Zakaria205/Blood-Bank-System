@@ -7,6 +7,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import type { LabTest } from '../../../types';
+import { formatLocalizedDate } from '../../../utils/date';
 import { BLOOD_TYPES } from '../../../constants';
 import type { ScreeningForm, TestKey } from './labConstants';
 import { screeningTests, donationTypeLabels } from './labConstants';
@@ -293,7 +294,7 @@ export default function ScreeningEntryModal({
               </span>
             </div>
             <span className="text-gray-400" style={{ fontSize: '11px' }}>
-              {new Date().toLocaleDateString('ar-EG')}
+              {formatLocalizedDate(new Date())}
             </span>
           </div>
 

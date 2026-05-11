@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import NotificationDropdown, { Notification } from './NotificationDropdown';
+import { formatLocalizedDate } from '../../utils/date';
 
 export interface NavItem {
   path: string;
@@ -147,11 +148,8 @@ export default function DashboardLayout({
     const today = new Date();
     const options: Intl.DateTimeFormatOptions = {
       weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
     };
-    return today.toLocaleDateString('ar-SA', options);
+    return formatLocalizedDate(today, options);
   };
 
   return (

@@ -8,7 +8,7 @@ import type {
   LoginResponse,
   RefreshTokenResponse,
   ChangePasswordRequest,
-  User,
+
 } from '../types/auth';
 import { users as MOCK_USERS } from '../data/auth.mock';
 

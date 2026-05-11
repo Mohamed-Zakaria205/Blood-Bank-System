@@ -13,7 +13,7 @@ export const labTests: LabTest[] = [
     bloodType: 'O+',
     donationType: 'whole',
     city: 'بني سويف',
-    requestedAt: '2025-04-26 09:00',
+    requestedAt: '2025-04-26T09:00:00.000Z',
     status: 'pending',
   },
   {
@@ -24,7 +24,7 @@ export const labTests: LabTest[] = [
     bloodType: 'A+',
     donationType: 'plasma',
     city: 'الواسطى',
-    requestedAt: '2025-04-26 09:30',
+    requestedAt: '2025-04-26T09:30:00.000Z',
     status: 'pending',
   },
   {
@@ -35,7 +35,7 @@ export const labTests: LabTest[] = [
     bloodType: 'B-',
     donationType: 'whole',
     city: 'ناصر',
-    requestedAt: '2025-04-26 10:00',
+    requestedAt: '2025-04-26T10:00:00.000Z',
     status: 'pending',
   },
   {
@@ -46,7 +46,7 @@ export const labTests: LabTest[] = [
     bloodType: 'A-',
     donationType: 'plasma',
     city: 'سمسطا',
-    requestedAt: '2025-04-26 10:30',
+    requestedAt: '2025-04-26T10:30:00.000Z',
     status: 'pending',
   },
   {
@@ -57,7 +57,7 @@ export const labTests: LabTest[] = [
     bloodType: 'B+',
     donationType: 'whole',
     city: 'إهناسيا',
-    requestedAt: '2025-04-25 11:00',
+    requestedAt: '2025-04-25T11:00:00.000Z',
     status: 'completed',
     result: {
       confirmedBloodType: 'B+',
@@ -67,7 +67,7 @@ export const labTests: LabTest[] = [
       hiv: 'negative',
       notes: 'نتائج التحاليل ضمن المعدل الطبيعي',
       suitable: true,
-      completedAt: '2025-04-25 12:30',
+      completedAt: '2025-04-25T12:30:00.000Z',
       completedBy: 'USR-006',
     },
   },
@@ -79,7 +79,7 @@ export const labTests: LabTest[] = [
     bloodType: 'O+',
     donationType: 'whole',
     city: 'الواسطى',
-    requestedAt: '2025-04-25 08:00',
+    requestedAt: '2025-04-25T08:00:00.000Z',
     status: 'completed',
     result: {
       confirmedBloodType: 'O+',
@@ -89,7 +89,7 @@ export const labTests: LabTest[] = [
       hiv: 'negative',
       notes: '',
       suitable: true,
-      completedAt: '2025-04-25 09:15',
+      completedAt: '2025-04-25T09:15:00.000Z',
       completedBy: 'USR-007',
     },
   },
