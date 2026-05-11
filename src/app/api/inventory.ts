@@ -20,19 +20,22 @@ import {
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 function deriveOutflowRecordsFromTransactions(): OutflowRecord[] {
-  return MOCK_TRANSACTIONS.filter((t) => t.type === 'issue' || t.type === 'disposal').map((t, index) => ({
-    id: `OUT-MOCK-${String(index + 1).padStart(3, '0')}`,
-    bagId: t.bagIds[0] ?? '',
-    bagCode: t.bagCodes[0] ?? '',
-    bloodType: t.bloodType,
-    donationType: 'whole',
-    actionType: t.type === 'issue' ? 'exported' : 'disposed',
-    recipientName: t.type === 'issue' ? t.destination : undefined,
-    reason: t.notes ?? (t.type === 'issue' ? 'صرف من المخزون' : 'إتلاف من المخزون'),
-    performedBy: t.performedBy,
-    performedByName: t.performedByName,
-    timestamp: t.timestamp,
-  }));
+  return MOCK_TRANSACTIONS.filter((t) => t.type === 'issue' || t.type === 'disposal').map((t, index) => {
+    const bag = MOCK_BAGS.find(b => b.id === t.bagIds[0]);
+    return {
+      id: `OUT-MOCK-${String(index + 1).padStart(3, '0')}`,
+      bagId: t.bagIds[0] ?? '',
+      bagCode: t.bagCodes[0] ?? '',
+      bloodType: t.bloodType,
+      donationType: bag?.donationType || 'whole',
+      actionType: t.type === 'issue' ? 'exported' : 'disposed',
+      recipientName: t.type === 'issue' ? t.destination : undefined,
+      reason: t.notes ?? (t.type === 'issue' ? 'صرف من المخزون' : 'إتلاف من المخزون'),
+      performedBy: t.performedBy,
+      performedByName: t.performedByName,
+      timestamp: t.timestamp,
+    };
+  });
 }
 
 // ── Blood Bags ─────────────────────────────────────────────
