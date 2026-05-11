@@ -5,6 +5,7 @@ import apiClient from './client';
 import { ApiError } from './errors';
 import type { Donor, CreateDonorRequest } from '../types/donor';
 import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/common';
+import { validateContract, createPaginatedSchema, DonorContractSchema } from './contract';
 import { donors as MOCK_DONORS } from '../data/donors.mock';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
@@ -19,6 +20,7 @@ export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
     return { data: mockStore, total: mockStore.length, page: 1, limit: mockStore.length };
   }
   const { data } = await apiClient.get<PaginatedResponse<Donor>>('/donors');
+  validateContract('Donors List', createPaginatedSchema(DonorContractSchema), data);
   return data;
 }
 
@@ -67,6 +69,7 @@ export async function fetchPaginatedDonors(
   const { data } = await apiClient.get<PaginatedResponse<Donor>>('/donors', {
     params: { page, limit, search, bloodType, status, city },
   });
+  validateContract('Paginated Donors', createPaginatedSchema(DonorContractSchema), data);
   return data;
 }
 

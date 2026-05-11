@@ -10,6 +10,7 @@ import {
   samples as MOCK_SAMPLES,
   testResults as MOCK_TEST_RESULTS,
 } from '../data/lab.mock';
+import { validateContract, createPaginatedSchema, LabTestContractSchema } from './contract';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
@@ -25,6 +26,7 @@ export async function fetchLabTests(): Promise<PaginatedResponse<LabTest>> {
     return { data: mockLabTests, total: mockLabTests.length, page: 1, limit: mockLabTests.length };
   }
   const { data } = await apiClient.get<PaginatedResponse<LabTest>>('/lab/tests');
+  validateContract('Lab Tests', createPaginatedSchema(LabTestContractSchema), data);
   return data;
 }
 
@@ -58,6 +60,7 @@ export async function fetchFilteredLabTests(
   const { data } = await apiClient.get<PaginatedResponse<LabTest>>('/lab/tests', {
     params: { page, limit, search, status, bloodType },
   });
+  validateContract('Paginated Lab Tests', createPaginatedSchema(LabTestContractSchema), data);
   return data;
 }
 

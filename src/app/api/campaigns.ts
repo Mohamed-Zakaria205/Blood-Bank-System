@@ -5,6 +5,7 @@ import apiClient from './client';
 import type { Campaign, CreateCampaignRequest } from '../types/campaign';
 import type { PaginatedResponse, ApiResponse, CampaignFilters } from '../types/common';
 import { campaigns as MOCK_CAMPAIGNS } from '../data/campaigns.mock';
+import { validateContract, createPaginatedSchema, CampaignContractSchema } from './contract';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
@@ -18,6 +19,7 @@ export async function fetchCampaigns(): Promise<PaginatedResponse<Campaign>> {
     return { data: mockStore, total: mockStore.length, page: 1, limit: mockStore.length };
   }
   const { data } = await apiClient.get<PaginatedResponse<Campaign>>('/campaigns');
+  validateContract('Campaigns List', createPaginatedSchema(CampaignContractSchema), data);
   return data;
 }
 
@@ -51,6 +53,7 @@ export async function fetchFilteredCampaigns(
   const { data } = await apiClient.get<PaginatedResponse<Campaign>>('/campaigns', {
     params: { page, limit, search, status, city },
   });
+  validateContract('Paginated Campaigns', createPaginatedSchema(CampaignContractSchema), data);
   return data;
 }
 
