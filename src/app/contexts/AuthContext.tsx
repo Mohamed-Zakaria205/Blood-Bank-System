@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { loginApi } from '../api/auth';
+import { loginApi, logoutApi } from '../api/auth';
 import type { User, UserRole } from '../types/auth';
 
 // ── Context shape ──────────────────────────────────────────
@@ -49,9 +49,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
+    // 1. Call backend to clear HttpOnly cookies (fire-and-forget)
+    logoutApi().catch(console.error);
+
+    // 2. Clear UI state
     setUser(null);
-    localStorage.removeItem('bloodlink_token');
-    localStorage.removeItem('bloodlink_refresh_token');
     localStorage.removeItem('bloodlink_user');
   }, []);
 

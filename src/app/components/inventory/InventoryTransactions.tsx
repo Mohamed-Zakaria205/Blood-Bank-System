@@ -79,7 +79,6 @@ export default function InventoryTransactions() {
       />
     );
 
-    );
 
   return (
     <div className="space-y-6">

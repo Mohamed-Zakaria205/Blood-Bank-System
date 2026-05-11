@@ -106,39 +106,34 @@ export async function changePasswordApi(
  * recursively (the refresh endpoint itself may return a 401 if the
  * refresh token is invalid/expired).
  */
-export async function refreshTokenApi(): Promise<RefreshTokenResponse> {
-  const storedRefresh = localStorage.getItem('bloodlink_refresh_token');
-
-  if (!storedRefresh) {
-    throw new ApiError('No refresh token available', 401);
-  }
-
+export async function refreshTokenApi(): Promise<{ token: string; refreshToken?: string }> {
+  const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
+  
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-
-    // In mock mode the refresh token is always valid as long as it
-    // matches the mock-refresh-USR-xxx pattern.
-    if (!storedRefresh.startsWith('mock-refresh-')) {
-      throw new ApiError('Invalid refresh token', 401);
-    }
-
-    const userNum = storedRefresh.split('-')[3]; // "001"
-    const newToken = `mock-jwt-USR-${userNum}-${Date.now()}`;
-    const newRefresh = `mock-refresh-USR-${userNum}-${Date.now()}`;
-
-    return { token: newToken, refreshToken: newRefresh };
+    return { token: `mock-jwt-USR-001-${Date.now()}` };
   }
 
-  // ── Real API call ──
-  // Use a bare axios import to avoid the apiClient interceptor loop.
+  // Real mode relies on HttpOnly cookies to refresh automatically
   const { default: axios } = await import('axios');
   const baseURL = import.meta.env.VITE_API_URL ?? '/api';
+  await axios.post(`${baseURL}/auth/refresh`, {}, { withCredentials: true });
+  return { token: '' }; // Token doesn't matter, it's in the cookie
+}
 
-  const { data } = await axios.post<RefreshTokenResponse>(
-    `${baseURL}/auth/refresh`,
-    { refreshToken: storedRefresh },
-    { headers: { 'Content-Type': 'application/json' }, timeout: 10_000 },
-  );
+/**
+ * Logout
+ * Sends a request to the backend to clear the HttpOnly cookies.
+ */
+export async function logoutApi(): Promise<void> {
+  const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
+  if (USE_MOCK) return; // In mock mode, we just clear local state
 
-  return data;
+  try {
+    const { default: axios } = await import('axios');
+    const baseURL = import.meta.env.VITE_API_URL ?? '/api';
+    await axios.post(`${baseURL}/auth/logout`, {}, { withCredentials: true });
+  } catch (err) {
+    console.error('Logout API failed', err);
+  }
 }

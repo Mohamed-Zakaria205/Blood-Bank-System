@@ -25,17 +25,15 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
   timeout: 15_000, // 15 s
+  withCredentials: true, // 🍪 Required for HttpOnly cookies to be sent with requests
 });
 
-// ── Request interceptor: attach JWT token ──────────────────
+// ── Request interceptor ──────────────────────────────────────
+// No need to attach Authorization header manually since the backend 
+// uses HttpOnly cookies. The browser attaches them automatically
+// thanks to `withCredentials: true`.
 apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('bloodlink_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
+  (config) => config,
   (error) => Promise.reject(error),
 );
 
@@ -72,7 +70,7 @@ let isRefreshing = false;
  * once the new token is available (or if refresh fails).
  */
 let failedQueue: {
-  resolve: (token: string) => void;
+  resolve: () => void;
   reject: (error: unknown) => void;
 }[] = [];
 
@@ -80,10 +78,10 @@ let failedQueue: {
  * Flush the queue — either retry all with the new token
  * or reject all with the refresh error.
  */
-function processQueue(error: unknown, token: string | null = null) {
+function processQueue(error: unknown) {
   failedQueue.forEach((prom) => {
-    if (token) {
-      prom.resolve(token);
+    if (!error) {
+      prom.resolve();
     } else {
       prom.reject(error);
     }
@@ -117,20 +115,20 @@ apiClient.interceptors.response.use(
       return Promise.reject(handleApiError(error));
     }
 
-    // Don't try to refresh if there's no refresh token stored
-    const storedRefresh = localStorage.getItem('bloodlink_refresh_token');
-    if (!storedRefresh) {
+    // ── Check if user is actually logged in (UI state) ──
+    // If not logged in at all, don't try to refresh
+    const storedUser = localStorage.getItem('bloodlink_user');
+    if (!storedUser) {
       forceLogout();
       return Promise.reject(handleApiError(error));
     }
 
     // ── If a refresh is already in progress, queue this request ──
     if (isRefreshing) {
-      return new Promise<string>((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
         failedQueue.push({ resolve, reject });
       })
-        .then((newToken) => {
-          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        .then(() => {
           return apiClient(originalRequest);
         })
         .catch((err) => Promise.reject(handleApiError(err)));
@@ -141,28 +139,19 @@ apiClient.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      // Lazy import to break the circular dependency chain
+      // The API call to /auth/refresh automatically sets the new HttpOnly cookie
+      // so we don't need to manually extract or set any tokens here.
       const { refreshTokenApi } = await import('./auth');
-      const { token: newToken, refreshToken: newRefresh } = await refreshTokenApi();
+      await refreshTokenApi();
 
-      // Persist the fresh tokens
-      localStorage.setItem('bloodlink_token', newToken);
-      if (newRefresh) {
-        localStorage.setItem('bloodlink_refresh_token', newRefresh);
-      }
-
-      // Update the default header for future requests
-      apiClient.defaults.headers.common.Authorization = `Bearer ${newToken}`;
-
-      // Retry all queued requests with the new token
-      processQueue(null, newToken);
+      // Retry all queued requests (they will automatically include the new cookie)
+      processQueue(null);
 
       // Retry the original request
-      originalRequest.headers.Authorization = `Bearer ${newToken}`;
       return apiClient(originalRequest);
     } catch (refreshError) {
       // Refresh failed — reject all queued requests and force logout
-      processQueue(refreshError, null);
+      processQueue(refreshError);
       forceLogout();
       return Promise.reject(handleApiError(refreshError));
     } finally {
