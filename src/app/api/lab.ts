@@ -2,6 +2,7 @@
 // Lab API service — tests, samples, results
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
+import { ApiError } from './errors';
 import type { LabResultData, LabTest, Sample, TestResult } from '../types/lab';
 import type { PaginatedResponse, ApiResponse, LabTestFilters } from '../types/common';
 import {
@@ -70,7 +71,7 @@ export async function submitLabTestResult(
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 600));
     const idx = mockLabTests.findIndex((t) => t.id === testId);
-    if (idx === -1) throw { response: { status: 404, data: { message: 'الفحص غير موجود' } } };
+    if (idx === -1) throw new ApiError('الفحص غير موجود', 404);
     const updated: LabTest = {
       ...mockLabTests[idx],
       status: 'completed' as const,

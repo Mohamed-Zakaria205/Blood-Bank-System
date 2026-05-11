@@ -2,6 +2,7 @@
 // Auth API service — login / logout / token helpers
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
+import { ApiError } from './errors';
 import type {
   LoginRequest,
   LoginResponse,
@@ -34,20 +35,10 @@ export async function loginApi(credentials: LoginRequest): Promise<LoginResponse
     );
 
     if (!found) {
-      throw {
-        response: {
-          status: 422,
-          data: { message: 'البريد الإلكتروني أو كلمة المرور غير صحيحة' },
-        },
-      };
+      throw new ApiError('البريد الإلكتروني أو كلمة المرور غير صحيحة', 422);
     }
     if (found.status === 'inactive') {
-      throw {
-        response: {
-          status: 403,
-          data: { message: 'هذا الحساب معطل. يرجى التواصل مع المدير' },
-        },
-      };
+      throw new ApiError('هذا الحساب معطل. يرجى التواصل مع المدير', 403);
     }
 
     // Strip password before returning
@@ -83,25 +74,13 @@ export async function changePasswordApi(
 
     const found = MOCK_USERS.find((u) => u.id === userId);
     if (!found) {
-      throw {
-        response: { status: 404, data: { message: 'المستخدم غير موجود' } },
-      };
+      throw new ApiError('المستخدم غير موجود', 404);
     }
     if (found.password !== payload.currentPassword) {
-      throw {
-        response: {
-          status: 422,
-          data: { message: 'كلمة المرور الحالية غير صحيحة' },
-        },
-      };
+      throw new ApiError('كلمة المرور الحالية غير صحيحة', 422);
     }
     if (payload.newPassword.length < 6) {
-      throw {
-        response: {
-          status: 422,
-          data: { message: 'كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل' },
-        },
-      };
+      throw new ApiError('كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل', 422);
     }
     // Update in-memory mock so the change persists within the dev session
     found.password = payload.newPassword;
@@ -131,7 +110,7 @@ export async function refreshTokenApi(): Promise<RefreshTokenResponse> {
   const storedRefresh = localStorage.getItem('bloodlink_refresh_token');
 
   if (!storedRefresh) {
-    throw { response: { status: 401, data: { message: 'No refresh token available' } } };
+    throw new ApiError('No refresh token available', 401);
   }
 
   if (USE_MOCK) {
@@ -140,7 +119,7 @@ export async function refreshTokenApi(): Promise<RefreshTokenResponse> {
     // In mock mode the refresh token is always valid as long as it
     // matches the mock-refresh-USR-xxx pattern.
     if (!storedRefresh.startsWith('mock-refresh-')) {
-      throw { response: { status: 401, data: { message: 'Invalid refresh token' } } };
+      throw new ApiError('Invalid refresh token', 401);
     }
 
     const userNum = storedRefresh.split('-')[3]; // "001"

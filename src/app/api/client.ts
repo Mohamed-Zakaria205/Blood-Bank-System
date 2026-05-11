@@ -2,6 +2,7 @@
 // Axios client — single instance used by all API calls
 // ═══════════════════════════════════════════════════════════
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { handleApiError } from './errors';
 
 // ── Base URL resolution ──────────────────────────────────────
 //
@@ -113,14 +114,14 @@ apiClient.interceptors.response.use(
 
     // Only intercept 401s, and only once per request
     if (error.response?.status !== 401 || originalRequest._retry) {
-      return Promise.reject(error);
+      return Promise.reject(handleApiError(error));
     }
 
     // Don't try to refresh if there's no refresh token stored
     const storedRefresh = localStorage.getItem('bloodlink_refresh_token');
     if (!storedRefresh) {
       forceLogout();
-      return Promise.reject(error);
+      return Promise.reject(handleApiError(error));
     }
 
     // ── If a refresh is already in progress, queue this request ──
@@ -132,7 +133,7 @@ apiClient.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return apiClient(originalRequest);
         })
-        .catch((err) => Promise.reject(err));
+        .catch((err) => Promise.reject(handleApiError(err)));
     }
 
     // ── Start the refresh ──
@@ -163,7 +164,7 @@ apiClient.interceptors.response.use(
       // Refresh failed — reject all queued requests and force logout
       processQueue(refreshError, null);
       forceLogout();
-      return Promise.reject(refreshError);
+      return Promise.reject(handleApiError(refreshError));
     } finally {
       isRefreshing = false;
     }

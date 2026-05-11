@@ -2,6 +2,7 @@
 // Donors API service
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
+import { ApiError } from './errors';
 import type { Donor, CreateDonorRequest } from '../types/donor';
 import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/common';
 import { donors as MOCK_DONORS } from '../data/donors.mock';
@@ -73,7 +74,7 @@ export async function fetchDonorById(id: string): Promise<ApiResponse<Donor>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
     const donor = mockStore.find((d) => d.id === id);
-    if (!donor) throw { response: { status: 404, data: { message: 'المتبرع غير موجود' } } };
+    if (!donor) throw new ApiError('المتبرع غير موجود', 404);
     return { data: donor };
   }
   const { data } = await apiClient.get<ApiResponse<Donor>>(`/donors/${id}`);

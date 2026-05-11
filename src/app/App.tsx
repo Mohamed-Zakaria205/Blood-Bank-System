@@ -5,27 +5,14 @@ import { toast } from 'sonner';
 import { Toaster } from './components/ui/sonner';
 import { router } from './routes';
 import { AuthProvider } from './contexts/AuthContext';
+import { handleApiError } from './api/errors';
 
 import '../styles/fonts.css';
 
 // ── Extract a human-readable message from any thrown value ──
 function getErrorMessage(error: unknown): string {
-  if (
-    error !== null &&
-    typeof error === 'object' &&
-    'response' in error &&
-    error.response !== null &&
-    typeof error.response === 'object' &&
-    'data' in error.response &&
-    error.response.data !== null &&
-    typeof error.response.data === 'object' &&
-    'message' in error.response.data &&
-    typeof error.response.data.message === 'string'
-  ) {
-    return error.response.data.message;
-  }
-  if (error instanceof Error) return error.message;
-  return 'حدث خطأ غير متوقع، يرجى المحاولة مجدداً';
+  const normalized = handleApiError(error);
+  return normalized.message || 'حدث خطأ غير متوقع، يرجى المحاولة مجدداً';
 }
 
 // ── React Query client ─────────────────────────────────────
