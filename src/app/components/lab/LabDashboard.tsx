@@ -54,6 +54,8 @@ export default function LabDashboard() {
   const {
     data: response,
     isLoading,
+    isFetching,
+    isPlaceholderData,
     isError,
     refetch,
   } = useFilteredLabTests({
@@ -199,7 +201,9 @@ export default function LabDashboard() {
         {/* PENDING TESTS */}
         {activeTab === 'pending' && (
           <div>
-            {labTests.length === 0 ? (
+            {(isFetching || isPlaceholderData) ? (
+              <div className="p-4"><TableSkeleton rows={5} cols={6} /></div>
+            ) : labTests.length === 0 ? (
               <div className="py-16 text-center">
                 <Droplets className="w-12 h-12 text-gray-200 mx-auto mb-3" />
                 <p className="text-gray-400" style={{ fontSize: '15px' }}>
@@ -279,7 +283,9 @@ export default function LabDashboard() {
         {/* COMPLETED TESTS */}
         {activeTab === 'completed' && (
           <div>
-            {labTests.length === 0 ? (
+            {(isFetching || isPlaceholderData) ? (
+              <div className="p-4"><TableSkeleton rows={5} cols={6} /></div>
+            ) : labTests.length === 0 ? (
               <div className="py-16 text-center">
                 <p className="text-gray-400" style={{ fontSize: '15px' }}>
                   لا توجد حقائب مكتملة
@@ -290,13 +296,15 @@ export default function LabDashboard() {
                 {labTests.map((t) => (
                   <div
                     key={t.id}
-                    className={`flex items-center justify-between px-5 py-4 transition-colors border-b border-gray-50 last:border-0 ${t.result?.suitable ? 'hover:bg-green-50/20' : 'hover:bg-red-50/20'}`}
+                    className={`flex items-center justify-between px-5 py-4 transition-colors border-b border-gray-50 last:border-0 ${t.result === undefined ? 'hover:bg-gray-50' : t.result?.suitable ? 'hover:bg-green-50/20' : 'hover:bg-red-50/20'}`}
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${t.result?.suitable ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}`}
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${t.result === undefined ? 'bg-gray-50 border border-gray-100' : t.result?.suitable ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}`}
                       >
-                        {t.result?.suitable ? (
+                        {t.result === undefined ? (
+                          <Clock className="w-5 h-5 text-gray-400" />
+                        ) : t.result?.suitable ? (
                           <CheckCircle2 className="w-5 h-5 text-green-600" />
                         ) : (
                           <XCircle className="w-5 h-5 text-red-500" />
@@ -317,10 +325,10 @@ export default function LabDashboard() {
                             {t.result?.confirmedBloodType || t.bloodType}
                           </span>
                           <span
-                            className={`px-2 py-0.5 rounded-full ${t.result?.suitable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
+                            className={`px-2 py-0.5 rounded-full ${t.result === undefined ? 'bg-gray-100 text-gray-500' : t.result?.suitable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
                             style={{ fontSize: '11px', fontWeight: 700 }}
                           >
-                            {t.result?.suitable ? '✅ آمنة' : '❌ مرفوضة'}
+                            {t.result === undefined ? '⏳ جاري الفحص' : t.result?.suitable ? '✅ آمنة' : '❌ مرفوضة'}
                           </span>
                         </div>
                         <div className="flex items-center gap-3 flex-wrap">
