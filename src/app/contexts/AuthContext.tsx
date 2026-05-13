@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { loginApi, logoutApi } from '../api/auth';
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
+import { loginApi, logoutApi, getMeApi } from '../api/auth';
 import type { User, UserRole } from '../types/auth';
 
 // ── Context shape ──────────────────────────────────────────
@@ -22,6 +22,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return null;
     }
   });
+
+  useEffect(() => {
+    // Verify session with the backend on mount
+    getMeApi()
+      .then((currentUser) => {
+        setUser(currentUser);
+        localStorage.setItem('bloodlink_user', JSON.stringify(currentUser));
+      })
+      .catch(() => {
+        // Session invalid or expired
+        setUser(null);
+        localStorage.removeItem('bloodlink_user');
+      });
+  }, []);
 
   const [isLoading, setIsLoading] = useState(false);
 

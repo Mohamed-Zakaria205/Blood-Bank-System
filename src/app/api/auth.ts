@@ -7,7 +7,7 @@ import type {
   LoginRequest,
   LoginResponse,
   ChangePasswordRequest,
-
+  User,
 } from '../types/auth';
 import { users as MOCK_USERS } from '../data/auth.mock';
 
@@ -134,4 +134,23 @@ export async function logoutApi(): Promise<void> {
   } catch (err) {
     console.error('Logout API failed', err);
   }
+}
+
+/**
+ * Fetch the currently authenticated user's profile.
+ * Uses HttpOnly cookies automatically attached by the browser.
+ */
+export async function getMeApi(): Promise<User> {
+  const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
+  if (USE_MOCK) {
+    // In mock mode, we simulate fetching by reading localStorage,
+    // which mock login still populates. Real mode relies purely on cookies.
+    await new Promise((r) => setTimeout(r, 200));
+    const stored = localStorage.getItem('bloodlink_user');
+    if (!stored) throw new ApiError('Not authenticated', 401);
+    return JSON.parse(stored);
+  }
+
+  const { data } = await apiClient.get<User>('/auth/me');
+  return data;
 }
