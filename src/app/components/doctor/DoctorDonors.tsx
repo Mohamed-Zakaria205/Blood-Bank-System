@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { BLOOD_TYPES, CITIES } from '../../constants';
 import { usePaginatedDonors } from '../../hooks/useDonors';
+import { useFilterChange } from '../../hooks/useFilterChange';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 import {
@@ -63,6 +64,9 @@ export default function DoctorDonors() {
   const total = response?.total || 0;
   const totalPages = Math.ceil(total / 5) || 1;
 
+  // When filters change, reset to page 1
+  const { handleFilterChange } = useFilterChange(setPage);
+
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
@@ -74,11 +78,6 @@ export default function DoctorDonors() {
   if (isError)
     return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
 
-  // When filters change, reset to page 1
-  const handleFilterChange = (setter: any, value: any) => {
-    setter(value);
-    setPage(1);
-  };
 
   return (
     <div className="space-y-6">

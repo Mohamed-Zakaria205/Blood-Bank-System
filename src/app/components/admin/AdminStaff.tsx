@@ -9,6 +9,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { useFilteredStaff, useCreateStaff, useDeleteStaff } from '../../hooks/useStaff';
+import { useFilterChange } from '../../hooks/useFilterChange';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 import {
@@ -55,10 +56,7 @@ export default function AdminStaff() {
   const createStaff = useCreateStaff();
   const deleteStaff = useDeleteStaff();
 
-  const handleFilterChange = (setter: any, value: any) => {
-    setter(value);
-    setPage(1);
-  };
+  const { handleFilterChange } = useFilterChange(setPage);
 
   const handleAddStaff = async (values: StaffForm) => {
     await createStaff.mutateAsync({

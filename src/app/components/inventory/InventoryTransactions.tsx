@@ -3,6 +3,7 @@ import { Search, Download } from 'lucide-react';
 import { BLOOD_TYPES } from '../../constants';
 import type { BloodType, TransactionType } from '../../types';
 import { useFilteredTransactions } from '../../hooks/useInventory';
+import { useFilterChange } from '../../hooks/useFilterChange';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 import {
@@ -58,10 +59,7 @@ export default function InventoryTransactions() {
   const total = response?.total || 0;
   const totalPages = Math.ceil(total / 10) || 1;
 
-  const handleFilterChange = (setter: any, value: any) => {
-    setter(value);
-    setPage(1);
-  };
+  const { handleFilterChange } = useFilterChange(setPage);
 
   if (isLoading)
     return (
@@ -103,7 +101,7 @@ export default function InventoryTransactions() {
       {/* Type stats */}
       <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
         <button
-          onClick={() => handleFilterChange(setFilterType, '')}
+          onClick={() => handleFilterChange<TransactionType | ''>(setFilterType, '')}
           className={`p-3 rounded-xl border-2 text-right transition-all ${filterType === '' ? 'bg-gray-100 text-gray-900 border-gray-300 ring-2 ring-offset-1 ring-gray-400' : 'bg-white border-gray-100 hover:border-gray-200'}`}
         >
           <div className="text-gray-900" style={{ fontSize: '20px', fontWeight: 800 }}>
@@ -116,7 +114,7 @@ export default function InventoryTransactions() {
         {(['issue', 'return', 'disposal', 'receive', 'reserve'] as TransactionType[]).map((t) => (
           <button
             key={t}
-            onClick={() => handleFilterChange(setFilterType, t)}
+            onClick={() => handleFilterChange<TransactionType | ''>(setFilterType, t)}
             className={`p-3 rounded-xl border-2 text-right transition-all ${filterType === t ? typeColors[t] + ' border-current ring-2 ring-offset-1' : 'bg-white border-gray-100 hover:border-gray-200'}`}
           >
             <div className="text-gray-900" style={{ fontSize: '20px', fontWeight: 800 }}>

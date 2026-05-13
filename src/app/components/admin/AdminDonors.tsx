@@ -3,6 +3,7 @@ import { Search, Filter, Edit2, ChevronDown, Building2, Smartphone } from 'lucid
 import { toast } from 'sonner';
 import { BLOOD_TYPES, CITIES } from '../../constants';
 import { usePaginatedDonors, useUpdateDonor } from '../../hooks/useDonors';
+import { useFilterChange } from '../../hooks/useFilterChange';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 import {
@@ -66,10 +67,7 @@ export default function AdminDonors() {
     return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
 
   // When filters change, reset to page 1
-  const handleFilterChange = (setter: any, value: any) => {
-    setter(value);
-    setPage(1);
-  };
+  const { handleFilterChange } = useFilterChange(setPage);
   const openEdit = (d: Donor) => {
     setEditingDonor(d);
     setEditForm({ ...d });
