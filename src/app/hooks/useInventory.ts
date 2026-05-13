@@ -34,7 +34,7 @@ export function useBloodBags() {
 export function usePaginatedBloodBags(filters: BagFilters = {}) {
   return useQuery({
     queryKey: ['bags', 'paginated', filters],
-    queryFn: () => fetchPaginatedBloodBags(filters),
+    queryFn: ({ signal }) => fetchPaginatedBloodBags(filters, { signal }),
     placeholderData: (previousData) => previousData,
   });
 }
@@ -100,7 +100,7 @@ export function useTransactions() {
 export function useFilteredTransactions(filters: TransactionFilters = {}) {
   return useQuery({
     queryKey: ['transactions', 'filtered', filters],
-    queryFn: () => fetchFilteredTransactions(filters),
+    queryFn: ({ signal }) => fetchFilteredTransactions(filters, { signal }),
     placeholderData: (previousData) => previousData,
   });
 }

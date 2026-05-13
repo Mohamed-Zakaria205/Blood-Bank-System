@@ -26,7 +26,7 @@ export async function fetchStaff(): Promise<PaginatedResponse<User>> {
  * Mock: client-side filter + slice. Real API: forwarded as query-string.
  */
 export async function fetchFilteredStaff(
-  filters: StaffFilters = {},
+  filters: StaffFilters = {}, options?: { signal?: AbortSignal }
 ): Promise<PaginatedResponse<User>> {
   const { page = 1, limit = 10, search = '', role = '', status = '' } = filters;
 
@@ -55,7 +55,7 @@ export async function fetchFilteredStaff(
   }
 
   const { data } = await apiClient.get<PaginatedResponse<User>>('/staff', {
-    params: { page, limit, search, role, status },
+    params: { page, limit, search, role, status }, signal: options?.signal,
   });
   return data;
 }

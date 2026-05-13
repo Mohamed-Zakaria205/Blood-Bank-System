@@ -33,7 +33,7 @@ export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
  * Real API: all params are forwarded as query-string parameters.
  */
 export async function fetchPaginatedDonors(
-  filters: DonorFilters = {},
+  filters: DonorFilters = {}, options?: { signal?: AbortSignal }
 ): Promise<PaginatedResponse<Donor>> {
   const { page = 1, limit = 10, search = '', bloodType = '', status = '', city = '' } = filters;
 
@@ -67,7 +67,7 @@ export async function fetchPaginatedDonors(
 
   // ── Real API: forward all params as query-string ─────────
   const { data } = await apiClient.get<PaginatedResponse<Donor>>('/donors', {
-    params: { page, limit, search, bloodType, status, city },
+    params: { page, limit, search, bloodType, status, city }, signal: options?.signal,
   });
   validateContract('Paginated Donors', createPaginatedSchema(DonorContractSchema), data);
   return data;

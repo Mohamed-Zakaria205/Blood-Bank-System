@@ -22,7 +22,7 @@ export function useCampaigns() {
 export function useFilteredCampaigns(filters: CampaignFilters = {}) {
   return useQuery({
     queryKey: ['campaigns', 'filtered', filters],
-    queryFn: () => fetchFilteredCampaigns(filters),
+    queryFn: ({ signal }) => fetchFilteredCampaigns(filters, { signal }),
     placeholderData: (previousData) => previousData,
   });
 }

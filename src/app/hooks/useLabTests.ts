@@ -21,7 +21,7 @@ export function useLabTests() {
 export function useFilteredLabTests(filters: LabTestFilters = {}) {
   return useQuery({
     queryKey: ['lab-tests', 'filtered', filters],
-    queryFn: () => fetchFilteredLabTests(filters),
+    queryFn: ({ signal }) => fetchFilteredLabTests(filters, { signal }),
     placeholderData: (previousData) => previousData,
   });
 }

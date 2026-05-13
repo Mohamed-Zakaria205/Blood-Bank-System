@@ -30,6 +30,7 @@ export async function fetchCampaigns(): Promise<PaginatedResponse<Campaign>> {
  */
 export async function fetchFilteredCampaigns(
   filters: CampaignFilters = {},
+  options?: { signal?: AbortSignal }
 ): Promise<PaginatedResponse<Campaign>> {
   const { page = 1, limit = 10, search = '', status = '', city = '' } = filters;
 
@@ -53,6 +54,7 @@ export async function fetchFilteredCampaigns(
 
   const { data } = await apiClient.get<PaginatedResponse<Campaign>>('/campaigns', {
     params: { page, limit, search, status, city },
+    signal: options?.signal,
   });
   validateContract('Paginated Campaigns', createPaginatedSchema(CampaignContractSchema), data);
   return data;

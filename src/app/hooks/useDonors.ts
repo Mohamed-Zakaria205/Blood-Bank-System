@@ -23,7 +23,7 @@ export function useDonors() {
 export function usePaginatedDonors(filters: DonorFilters = {}) {
   return useQuery({
     queryKey: ['donors', 'paginated', filters],
-    queryFn: () => fetchPaginatedDonors(filters),
+    queryFn: ({ signal }) => fetchPaginatedDonors(filters, { signal }),
     placeholderData: (previousData) => previousData,
   });
 }

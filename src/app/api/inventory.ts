@@ -57,7 +57,7 @@ export async function fetchBloodBags(): Promise<PaginatedResponse<BloodBag>> {
  * Real API: all params are forwarded as query-string parameters.
  */
 export async function fetchPaginatedBloodBags(
-  filters: BagFilters = {},
+  filters: BagFilters = {}, options?: { signal?: AbortSignal }
 ): Promise<PaginatedResponse<BloodBag>> {
   const { page = 1, limit = 10, search = '', bloodType = '', status = '' } = filters;
 
@@ -88,7 +88,7 @@ export async function fetchPaginatedBloodBags(
 
   // ── Real API: forward all params as query-string ─────────
   const { data } = await apiClient.get<PaginatedResponse<BloodBag>>('/inventory/bags', {
-    params: { page, limit, search, bloodType, status },
+    params: { page, limit, search, bloodType, status }, signal: options?.signal,
   });
   return data;
 }
@@ -145,6 +145,7 @@ export async function fetchTransactions(): Promise<PaginatedResponse<Transaction
  */
 export async function fetchFilteredTransactions(
   filters: TransactionFilters = {},
+  options?: { signal?: AbortSignal }
 ): Promise<PaginatedResponse<Transaction>> {
   const { page = 1, limit = 10, search = '', type = '', bloodType = '', dateFrom = '', dateTo = '' } = filters;
 
@@ -167,7 +168,7 @@ export async function fetchFilteredTransactions(
   }
 
   const { data } = await apiClient.get<PaginatedResponse<Transaction>>('/inventory/transactions', {
-    params: { page, limit, search, type, bloodType, dateFrom, dateTo },
+    params: { page, limit, search, type, bloodType, dateFrom, dateTo }, signal: options?.signal,
   });
   return data;
 }

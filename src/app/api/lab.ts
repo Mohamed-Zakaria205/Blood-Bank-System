@@ -36,6 +36,7 @@ export async function fetchLabTests(): Promise<PaginatedResponse<LabTest>> {
  */
 export async function fetchFilteredLabTests(
   filters: LabTestFilters = {},
+  options?: { signal?: AbortSignal }
 ): Promise<PaginatedResponse<LabTest>> {
   const { page = 1, limit = 10, search = '', status = '', bloodType = '' } = filters;
 
@@ -59,6 +60,7 @@ export async function fetchFilteredLabTests(
 
   const { data } = await apiClient.get<PaginatedResponse<LabTest>>('/lab/tests', {
     params: { page, limit, search, status, bloodType },
+    signal: options?.signal,
   });
   validateContract('Paginated Lab Tests', createPaginatedSchema(LabTestContractSchema), data);
   return data;

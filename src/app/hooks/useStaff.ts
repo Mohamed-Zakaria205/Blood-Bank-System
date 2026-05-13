@@ -21,7 +21,7 @@ export function useStaff() {
 export function useFilteredStaff(filters: StaffFilters = {}) {
   return useQuery({
     queryKey: ['staff', 'filtered', filters],
-    queryFn: () => fetchFilteredStaff(filters),
+    queryFn: ({ signal }) => fetchFilteredStaff(filters, { signal }),
     placeholderData: (previousData) => previousData,
   });
 }
