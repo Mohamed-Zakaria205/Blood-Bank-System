@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Search, Filter, Edit2, ChevronDown, Building2, Smartphone } from 'lucide-react';
 import { toast } from 'sonner';
 import { BLOOD_TYPES, CITIES } from '../../constants';
-import { usePaginatedDonors } from '../../hooks/useDonors';
+import { usePaginatedDonors, useUpdateDonor } from '../../hooks/useDonors';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 import {
@@ -51,7 +51,8 @@ export default function AdminDonors() {
 
   const [editingDonor, setEditingDonor] = useState<Donor | null>(null);
   const [editForm, setEditForm] = useState<Partial<Donor>>({});
-  const [saved, setSaved] = useState(false);
+
+  const updateMutation = useUpdateDonor();
 
   if (isLoading)
     return (
@@ -72,20 +73,22 @@ export default function AdminDonors() {
   const openEdit = (d: Donor) => {
     setEditingDonor(d);
     setEditForm({ ...d });
-    setSaved(false);
   };
 
   const saveEdit = () => {
     if (!editingDonor) return;
-    // In a real app we would call a mutate function here.
-    // For now, we simulate success and refetch.
-    toast.success('تم تحديث بيانات المتبرع بنجاح');
-    refetch();
-    setSaved(true);
-    setTimeout(() => {
-      setEditingDonor(null);
-      setSaved(false);
-    }, 1000);
+    updateMutation.mutate(
+      { id: editingDonor.id, payload: editForm },
+      {
+        onSuccess: (res) => {
+          toast.success(res.message || 'تم تحديث بيانات المتبرع بنجاح');
+          setTimeout(() => setEditingDonor(null), 800);
+        },
+        onError: (err) => {
+          toast.error(err instanceof Error ? err.message : 'حدث خطأ أثناء التحديث');
+        },
+      },
+    );
   };
 
   return (
@@ -331,8 +334,9 @@ export default function AdminDonors() {
           form={editForm}
           onFormChange={setEditForm}
           onSave={saveEdit}
-          onCancel={() => setEditingDonor(null)}
-          saved={saved}
+          onCancel={() => { setEditingDonor(null); updateMutation.reset(); }}
+          loading={updateMutation.isPending}
+          saved={updateMutation.isSuccess}
         />
       )}
     </div>

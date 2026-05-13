@@ -2,7 +2,8 @@
 // React Query hooks — Staff (users)
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchStaff, createStaff, deleteStaff, fetchFilteredStaff } from '../api/staff';
+import { fetchStaff, createStaff, updateStaff, deleteStaff, fetchFilteredStaff } from '../api/staff';
+import type { UpdateStaffRequest } from '../types/auth';
 import type { StaffFilters } from '../types/common';
 
 /** Fetch all staff members (excludes admins) */
@@ -30,6 +31,18 @@ export function useCreateStaff() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: createStaff,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['staff'] });
+    },
+  });
+}
+
+/** Update an existing staff member — auto-invalidates staff list */
+export function useUpdateStaff() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateStaffRequest }) =>
+      updateStaff(id, payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['staff'] });
     },

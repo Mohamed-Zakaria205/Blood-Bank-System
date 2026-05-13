@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
 import { ApiError } from './errors';
-import type { Donor, CreateDonorRequest } from '../types/donor';
+import type { Donor, CreateDonorRequest, UpdateDonorRequest } from '../types/donor';
 import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/common';
 import { validateContract, createPaginatedSchema, DonorContractSchema } from './contract';
 import { donors as MOCK_DONORS } from '../data/donors.mock';
@@ -100,3 +100,19 @@ export async function createDonor(payload: CreateDonorRequest): Promise<ApiRespo
   return data;
 }
 
+/** PATCH /donors/:id — partial update */
+export async function updateDonor(
+  id: string,
+  payload: UpdateDonorRequest,
+): Promise<ApiResponse<Donor>> {
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 400));
+    const idx = mockStore.findIndex((d) => d.id === id);
+    if (idx === -1) throw new ApiError('المتبرع غير موجود', 404);
+    const updated = { ...mockStore[idx], ...payload };
+    mockStore = mockStore.map((d) => (d.id === id ? updated : d));
+    return { data: updated, message: 'تم تحديث بيانات المتبرع بنجاح' };
+  }
+  const { data } = await apiClient.patch<ApiResponse<Donor>>(`/donors/${id}`, payload);
+  return data;
+}

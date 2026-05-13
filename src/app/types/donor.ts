@@ -64,3 +64,9 @@ export type CreateDonorRequest = Omit<
   Donor,
   'id' | 'donorCode' | 'registeredAt' | 'donations' | 'points'
 >;
+
+/**
+ * PATCH /donors/:id — request body.
+ * Partial update: only the fields that changed need to be sent.
+ */
+export type UpdateDonorRequest = Partial<CreateDonorRequest>;

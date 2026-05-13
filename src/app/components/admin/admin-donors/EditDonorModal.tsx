@@ -8,6 +8,7 @@ interface EditDonorModalProps {
   onFormChange: (updated: Partial<Donor>) => void;
   onSave: () => void;
   onCancel: () => void;
+  loading: boolean;
   saved: boolean;
 }
 
@@ -17,6 +18,7 @@ export default function EditDonorModal({
   onFormChange,
   onSave,
   onCancel,
+  loading,
   saved,
 }: EditDonorModalProps) {
   return (
@@ -162,11 +164,12 @@ export default function EditDonorModal({
           </button>
           <button
             onClick={onSave}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-white transition-all ${saved ? 'bg-green-500' : 'bg-green-600 hover:bg-green-700'}`}
+            disabled={loading || saved}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-white transition-all ${saved ? 'bg-green-500' : loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
             <Save className="w-4 h-4" />
-            {saved ? 'تم الحفظ ✓' : 'حفظ التعديلات'}
+            {saved ? 'تم الحفظ ✓' : loading ? 'جارٍ الحفظ...' : 'حفظ التعديلات'}
           </button>
         </div>
       </div>

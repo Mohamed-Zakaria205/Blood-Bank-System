@@ -51,3 +51,25 @@ export interface ChangePasswordRequest {
   currentPassword: string;
   newPassword: string;
 }
+
+/**
+ * POST /staff — request body.
+ * Password is required on creation; the backend hashes it.
+ */
+export interface CreateStaffRequest {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  nationalId: string;
+  phone: string;
+  address: string;
+  city: string;
+}
+
+/**
+ * PATCH /staff/:id — request body.
+ * Partial update: only the fields that changed need to be sent.
+ * Password is excluded — use change-password flow instead.
+ */
+export type UpdateStaffRequest = Partial<Omit<CreateStaffRequest, 'password'>>;

@@ -2,7 +2,8 @@
 // Staff (users) API service
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
-import type { User, UserRole } from '../types/auth';
+import { ApiError } from './errors';
+import type { User, CreateStaffRequest, UpdateStaffRequest } from '../types/auth';
 import type { PaginatedResponse, ApiResponse, StaffFilters } from '../types/common';
 import { users as MOCK_USERS } from '../data/auth.mock';
 
@@ -59,23 +60,14 @@ export async function fetchFilteredStaff(
   return data;
 }
 
-export async function createStaff(payload: {
-  name: string;
-  email: string;
-  password: string;
-  role: string;
-  nationalId: string;
-  phone: string;
-  address: string;
-  city: string;
-}): Promise<ApiResponse<User>> {
+export async function createStaff(payload: CreateStaffRequest): Promise<ApiResponse<User>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 400));
     const newUser: User = {
       id: `USR-${Date.now()}`,
       name: payload.name,
       email: payload.email,
-      role: payload.role as UserRole,
+      role: payload.role,
       age: 0,
       nationalId: payload.nationalId,
       phone: payload.phone,
@@ -87,6 +79,24 @@ export async function createStaff(payload: {
     return { data: newUser, message: 'تم إضافة الموظف بنجاح' };
   }
   const { data } = await apiClient.post<ApiResponse<User>>('/staff', payload);
+  return data;
+}
+
+/** PATCH /staff/:id — partial update (no password change via this endpoint) */
+export async function updateStaff(
+  id: string,
+  payload: UpdateStaffRequest,
+): Promise<ApiResponse<User>> {
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 400));
+    // Staff mock reads from MOCK_USERS directly (no mutable store yet)
+    const user = MOCK_USERS.find((u) => u.id === id);
+    if (!user) throw new ApiError('الموظف غير موجود', 404);
+    const { password: _, ...safeUser } = user;
+    const updated: User = { ...safeUser, ...payload } as User;
+    return { data: updated, message: 'تم تحديث بيانات الموظف بنجاح' };
+  }
+  const { data } = await apiClient.patch<ApiResponse<User>>(`/staff/${id}`, payload);
   return data;
 }
 

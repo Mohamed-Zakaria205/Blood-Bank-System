@@ -2,8 +2,8 @@
 // React Query hooks — Donors
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchDonors, fetchDonorById, createDonor, fetchPaginatedDonors } from '../api/donors';
-import type { CreateDonorRequest } from '../types/donor';
+import { fetchDonors, fetchDonorById, createDonor, updateDonor, fetchPaginatedDonors } from '../api/donors';
+import type { CreateDonorRequest, UpdateDonorRequest } from '../types/donor';
 import type { DonorFilters } from '../types/common';
 
 /** Fetch all donors (unpaginated — for dropdowns and small lists) */
@@ -45,6 +45,19 @@ export function useCreateDonor() {
     mutationFn: (payload: CreateDonorRequest) => createDonor(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['donors'] });
+    },
+  });
+}
+
+/** Update an existing donor — auto-invalidates donors list + detail cache */
+export function useUpdateDonor() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateDonorRequest }) =>
+      updateDonor(id, payload),
+    onSuccess: (_data, variables) => {
+      qc.invalidateQueries({ queryKey: ['donors'] });
+      qc.invalidateQueries({ queryKey: ['donors', variables.id] });
     },
   });
 }

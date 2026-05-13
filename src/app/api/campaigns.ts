@@ -2,7 +2,8 @@
 // Campaigns API service
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
-import type { Campaign, CreateCampaignRequest } from '../types/campaign';
+import { ApiError } from './errors';
+import type { Campaign, CreateCampaignRequest, UpdateCampaignRequest } from '../types/campaign';
 import type { PaginatedResponse, ApiResponse, CampaignFilters } from '../types/common';
 import { campaigns as MOCK_CAMPAIGNS } from '../data/campaigns.mock';
 import { validateContract, createPaginatedSchema, CampaignContractSchema } from './contract';
@@ -66,5 +67,22 @@ export async function createCampaign(payload: CreateCampaignRequest): Promise<Ap
     return { data: newCampaign, message: 'تم إنشاء الحملة بنجاح' };
   }
   const { data } = await apiClient.post<ApiResponse<Campaign>>('/campaigns', payload);
+  return data;
+}
+
+/** PATCH /campaigns/:id — partial update */
+export async function updateCampaign(
+  id: string,
+  payload: UpdateCampaignRequest,
+): Promise<ApiResponse<Campaign>> {
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 400));
+    const idx = mockStore.findIndex((c) => c.id === id);
+    if (idx === -1) throw new ApiError('الحملة غير موجودة', 404);
+    const updated = { ...mockStore[idx], ...payload };
+    mockStore = mockStore.map((c) => (c.id === id ? updated : c));
+    return { data: updated, message: 'تم تحديث بيانات الحملة بنجاح' };
+  }
+  const { data } = await apiClient.patch<ApiResponse<Campaign>>(`/campaigns/${id}`, payload);
   return data;
 }
