@@ -67,12 +67,7 @@ export interface TransactionFilters extends PaginationParams {
   dateTo?: string;
 }
 
-/** Standardised API error shape */
-export interface ApiError {
-  message: string;
-  statusCode: number;
-  errors?: Record<string, string[]>;
-}
+
 
 /** Re-usable literal unions */
 export type BloodType = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';

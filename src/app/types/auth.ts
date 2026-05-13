@@ -40,10 +40,7 @@ export interface LoginResponse {
  * The backend returns a fresh access token (and optionally rotates
  * the refresh token itself for added security).
  */
-export interface RefreshTokenResponse {
-  token: string;
-  refreshToken?: string;
-}
+
 
 /**
  * POST /auth/change-password — request body.
