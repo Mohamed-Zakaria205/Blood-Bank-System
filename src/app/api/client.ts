@@ -94,8 +94,6 @@ function processQueue(error: unknown) {
  * Called when the refresh token itself is invalid/expired.
  */
 function forceLogout() {
-  localStorage.removeItem('bloodlink_token');
-  localStorage.removeItem('bloodlink_refresh_token');
   localStorage.removeItem('bloodlink_user');
   window.location.href = '/login';
 }
