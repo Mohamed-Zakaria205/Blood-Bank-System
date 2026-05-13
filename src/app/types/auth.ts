@@ -30,7 +30,7 @@ export interface LoginRequest {
 
 /** POST /auth/login — response body */
 export interface LoginResponse {
-  token: string;
+  token?: string;
   refreshToken?: string;
   user: User;
 }

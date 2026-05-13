@@ -105,19 +105,18 @@ export async function changePasswordApi(
  * recursively (the refresh endpoint itself may return a 401 if the
  * refresh token is invalid/expired).
  */
-export async function refreshTokenApi(): Promise<{ token: string; refreshToken?: string }> {
+export async function refreshTokenApi(): Promise<void> {
   const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
   
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return { token: `mock-jwt-USR-001-${Date.now()}` };
+    return;
   }
 
   // Real mode relies on HttpOnly cookies to refresh automatically
   const { default: axios } = await import('axios');
   const baseURL = import.meta.env.VITE_API_URL ?? '/api';
   await axios.post(`${baseURL}/auth/refresh`, {}, { withCredentials: true });
-  return { token: '' }; // Token doesn't matter, it's in the cookie
 }
 
 /**
