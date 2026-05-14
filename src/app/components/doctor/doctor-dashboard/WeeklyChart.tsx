@@ -51,7 +51,8 @@ export default function WeeklyChart() {
             {weekData.map((d) => {
               const max = Math.max(...weekData.map((w) => w.donors));
               const barHeightPx = Math.max((d.donors / max) * 140, 10);
-              const isToday = d.day === 'الثلاثاء';
+              const arabicDays = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+              const isToday = d.day === arabicDays[new Date().getDay()];
               return (
                 <div key={d.day} className="flex flex-col items-center gap-1.5 flex-1 group">
                   {/* Value label */}
