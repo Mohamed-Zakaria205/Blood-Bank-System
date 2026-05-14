@@ -68,7 +68,6 @@ export async function createStaff(payload: CreateStaffRequest): Promise<ApiRespo
       name: payload.name,
       email: payload.email,
       role: payload.role,
-      age: 0,
       nationalId: payload.nationalId,
       phone: payload.phone,
       address: payload.address,

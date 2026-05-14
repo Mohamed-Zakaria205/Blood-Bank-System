@@ -1,18 +1,12 @@
 // ═══════════════════════════════════════════════════════════
 // LoginPage — orchestrator for the full login screen
-//
-// Delegates rendering to:
-//   • LoginBrandPanel   — left green branding panel (desktop)
-//   • DemoAccountPicker — 2×2 quick-login role grid (dev)
-//   • LoginForm         — email / password / submit
 // ═══════════════════════════════════════════════════════════
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Droplet } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { demoAccounts, getRoleDashboardPath, type DemoAccount, type LoginFormValues } from './loginConstants';
+import { getRoleDashboardPath, type LoginFormValues } from './loginConstants';
 import LoginBrandPanel from './LoginBrandPanel';
-import DemoAccountPicker from './DemoAccountPicker';
 import LoginForm from './LoginForm';
 
 export default function LoginPage() {
@@ -21,19 +15,12 @@ export default function LoginPage() {
 
   const [authError, setAuthError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [activeRole, setActiveRole] = useState<DemoAccount | null>(null);
 
   /* Redirect if already logged in */
   useEffect(() => {
     if (!user) return;
     navigate(getRoleDashboardPath(user.role), { replace: true });
   }, [user, navigate]);
-
-  /* Handle demo account selection */
-  const handleDemoSelect = (acc: DemoAccount) => {
-    setActiveRole(acc);
-    setAuthError('');
-  };
 
   /* Handle login form submission */
   const handleSubmit = async (values: LoginFormValues) => {
@@ -42,17 +29,13 @@ export default function LoginPage() {
     const result = await login(values.email.trim(), values.password);
     setLoading(false);
 
-    if (result.success) {
-      // Use the user object already set in AuthContext by login()
-      // (the useEffect above will handle the redirect)
-    } else {
+    if (!result.success) {
       setAuthError(result.error || 'بيانات الدخول غير صحيحة، يرجى المحاولة مجدداً');
     }
   };
 
-  /* Reset parent-level state when user types */
+  /* Reset error when user types */
   const handleInputChange = () => {
-    setActiveRole(null);
     setAuthError('');
   };
 
@@ -121,39 +104,13 @@ export default function LoginPage() {
             <p style={{ fontSize: '14px', color: '#6b7280' }}>سجّل دخولك للوصول إلى لوحة التحكم</p>
           </div>
 
-          {/* Demo account picker (dev convenience) */}
-          {import.meta.env.DEV && (
-            <DemoAccountPicker
-              accounts={demoAccounts}
-              activeRole={activeRole}
-              onSelect={handleDemoSelect}
-            />
-          )}
-
-          {/* Divider */}
-          {import.meta.env.DEV && (
-            <div className="relative flex items-center gap-3 mb-5">
-              <div className="flex-1 h-px bg-gray-200" />
-              <span
-                style={{
-                  fontSize: '12px',
-                  color: '#9ca3af',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                أو أدخل بياناتك يدوياً
-              </span>
-              <div className="flex-1 h-px bg-gray-200" />
-            </div>
-          )}
-
           {/* Login form */}
           <LoginForm
             authError={authError}
             loading={loading}
             onSubmit={handleSubmit}
             onInputChange={handleInputChange}
-            demoAccount={activeRole}
+            demoAccount={null}
           />
 
           {/* Footer note */}

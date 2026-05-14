@@ -55,6 +55,10 @@ export default function AdminDonors() {
 
   const updateMutation = useUpdateDonor();
 
+  // When filters change, reset to page 1
+  // ⚠ Must be before any early return to maintain hooks call order
+  const { handleFilterChange } = useFilterChange(setPage);
+
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
@@ -65,9 +69,6 @@ export default function AdminDonors() {
     );
   if (isError)
     return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
-
-  // When filters change, reset to page 1
-  const { handleFilterChange } = useFilterChange(setPage);
   const openEdit = (d: Donor) => {
     setEditingDonor(d);
     setEditForm({ ...d });

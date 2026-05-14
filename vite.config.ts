@@ -53,9 +53,9 @@ export default defineConfig({
       // ⚠ Change the target below if your backend runs on a different
       //   port or host (e.g. Spring Boot → 8080, Django → 8000).
       "/api": {
-        target: "http://localhost:3000",
-        changeOrigin: true, // rewrites the Host header to match the target
-        secure: false, // allow self-signed certs in local dev
+        target: "https://bloodlink.runasp.net",
+        changeOrigin: true,
+        secure: true,
       },
     },
   },

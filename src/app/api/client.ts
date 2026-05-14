@@ -20,12 +20,13 @@ import { handleApiError } from './errors';
 // it also routes through Vite proxy when running `vite dev`.
 // ──────────────────────────────────────────────────────
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? '/api',
+  baseURL: import.meta.env.VITE_API_URL ?? '/api/v1/system',
   headers: {
     'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest', // Required for CSRF protection
   },
-  timeout: 15_000, // 15 s
-  withCredentials: true, // 🍪 Required for HttpOnly cookies to be sent with requests
+  timeout: 15_000,
+  withCredentials: true,
 });
 
 // ── Request interceptor ──────────────────────────────────────
@@ -113,11 +114,16 @@ apiClient.interceptors.response.use(
       return Promise.reject(handleApiError(error));
     }
 
+    // ── Skip refresh for auth endpoints (login returns 401 for bad creds) ──
+    const url = originalRequest.url || '';
+    if (url.includes('/Auth/login') || url.includes('/Auth/refresh') || url.includes('/Auth/me')) {
+      return Promise.reject(error);
+    }
+
     // ── Check if user is actually logged in (UI state) ──
-    // If not logged in at all, don't try to refresh
+    // If not logged in at all, don't try to refresh — just reject
     const storedUser = localStorage.getItem('bloodlink_user');
     if (!storedUser) {
-      forceLogout();
       return Promise.reject(handleApiError(error));
     }
 

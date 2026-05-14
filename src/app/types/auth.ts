@@ -13,7 +13,6 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
-  age: number;
   nationalId: string;
   phone: string;
   address: string;
@@ -22,30 +21,34 @@ export interface User {
   createdAt: string;
 }
 
-/** POST /auth/login — request body */
+/**
+ * Generic API response wrapper — every endpoint returns this shape.
+ *   { success, message, data, errors }
+ */
+export interface ApiResponseWrapper<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  errors: Record<string, string[]> | null;
+}
+
+/** POST /Auth/login — request body */
 export interface LoginRequest {
   email: string;
   password: string;
 }
 
-/** POST /auth/login — response body */
-export interface LoginResponse {
-  token?: string;
-  refreshToken?: string;
-  user: User;
-}
+/** POST /Auth/login — response: data field contains User */
+export type LoginResponse = ApiResponseWrapper<User>;
+
+/** GET /Auth/me — response: data field contains User */
+export type GetMeResponse = ApiResponseWrapper<User>;
+
+/** POST /Auth/refresh — response: data field contains User */
+export type RefreshResponse = ApiResponseWrapper<User>;
 
 /**
- * POST /auth/refresh — response body.
- * The backend returns a fresh access token (and optionally rotates
- * the refresh token itself for added security).
- */
-
-
-/**
- * POST /auth/change-password — request body.
- * The backend validates currentPassword server-side against the stored
- * hash. The frontend never holds the plaintext password on the User object.
+ * POST /Auth/change-password — request body.
  */
 export interface ChangePasswordRequest {
   currentPassword: string;

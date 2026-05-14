@@ -1,32 +1,32 @@
 // ═══════════════════════════════════════════════════════════
 // Auth API service — login / logout / token helpers
+// All endpoints: /Auth/... (relative to VITE_API_URL base)
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
 import { ApiError } from './errors';
 import type {
   LoginRequest,
   LoginResponse,
+  GetMeResponse,
+  RefreshResponse,
   ChangePasswordRequest,
   User,
 } from '../types/auth';
-import { users as MOCK_USERS } from '../data/auth.mock';
 
-// ── Mock mode flag ─────────────────────────────────────────
-// When the backend is not yet available, the app falls back to
-// the hardcoded mock users so the UI remains fully usable.
-// Flip this to `false` once your backend's /auth/login is live.
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
-
-// Mock users are centralized in src/app/data/auth.mock.ts
+// ── Auth mock mode flag ────────────────────────────────────
+// Auth can be switched to real backend independently of the global mock flag.
+// Set VITE_USE_REAL_AUTH=true in .env to use the live backend for auth.
+const USE_MOCK = import.meta.env.VITE_USE_REAL_AUTH === 'true'
+  ? false
+  : import.meta.env.VITE_USE_MOCK === 'true';
 
 /**
  * Authenticate a user.
- * In mock mode: checks against MOCK_USERS above.
- * In real mode: POSTs to /auth/login.
+ * Real mode: POST /Auth/login → { success, message, data: User }
  */
-export async function loginApi(credentials: LoginRequest): Promise<LoginResponse> {
+export async function loginApi(credentials: LoginRequest): Promise<User> {
   if (USE_MOCK) {
-    // Simulate network latency
+    const { users: MOCK_USERS } = await import('../data/auth.mock');
     await new Promise((r) => setTimeout(r, 500));
 
     const found = MOCK_USERS.find(
@@ -39,118 +39,151 @@ export async function loginApi(credentials: LoginRequest): Promise<LoginResponse
     if (found.status === 'inactive') {
       throw new ApiError('هذا الحساب معطل. يرجى التواصل مع المدير', 403);
     }
-
-    // Strip password before returning
     const { password: _, ...user } = found;
-    return {
-      token: `mock-jwt-${user.id}`,
-      refreshToken: `mock-refresh-${user.id}-${Date.now()}`,
-      user,
-    };
+    return user;
   }
 
   // ── Real API call ──
-  const { data } = await apiClient.post<LoginResponse>('/auth/login', credentials);
-  return data;
-}
-
-/**
- * Change the authenticated user's password.
- *
- * Mock mode: looks up the user in MOCK_USERS by ID and compares the
- * currentPassword against the stored plaintext (dev-only shortcut).
- * The User object returned by the API never carries a password field.
- *
- * Real mode: delegates validation entirely to the backend — the
- * frontend never sees or stores the password hash.
- */
-export async function changePasswordApi(
-  userId: string,
-  payload: ChangePasswordRequest,
-): Promise<void> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 500));
-
-    const found = MOCK_USERS.find((u) => u.id === userId);
-    if (!found) {
-      throw new ApiError('المستخدم غير موجود', 404);
-    }
-    if (found.password !== payload.currentPassword) {
-      throw new ApiError('كلمة المرور الحالية غير صحيحة', 422);
-    }
-    if (payload.newPassword.length < 6) {
-      throw new ApiError('كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل', 422);
-    }
-    // Update in-memory mock so the change persists within the dev session
-    found.password = payload.newPassword;
-    return;
-  }
-
-  // ── Real API call — backend validates against stored hash ──
-  await apiClient.post('/auth/change-password', payload);
-}
-
-/**
- * Silently refresh the access token using the stored refresh token.
- *
- * Mock mode: returns a fresh mock JWT after a short delay (simulates
- * network latency). The mock refresh token never actually expires.
- *
- * Real mode: POSTs the refresh token to /auth/refresh. The backend
- * validates the refresh token, returns a new access token (and
- * optionally rotates the refresh token for added security).
- *
- * IMPORTANT: This function uses a raw axios.post() call — NOT the
- * apiClient instance — to avoid triggering the 401 interceptor
- * recursively (the refresh endpoint itself may return a 401 if the
- * refresh token is invalid/expired).
- */
-export async function refreshTokenApi(): Promise<void> {
-  const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
-  
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return;
-  }
-
-  // Real mode relies on HttpOnly cookies to refresh automatically
+  // Uses raw axios (NOT apiClient) to bypass the 401 interceptor.
+  // A 401 here means "wrong credentials", not "expired token".
   const { default: axios } = await import('axios');
-  const baseURL = import.meta.env.VITE_API_URL ?? '/api';
-  await axios.post(`${baseURL}/auth/refresh`, {}, { withCredentials: true });
-}
+  const baseURL = import.meta.env.VITE_API_URL ?? '/api/v1/system';
 
-/**
- * Logout
- * Sends a request to the backend to clear the HttpOnly cookies.
- */
-export async function logoutApi(): Promise<void> {
-  const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
-  if (USE_MOCK) return; // In mock mode, we just clear local state
+  // Map common English backend messages → Arabic for the UI
+  const ERROR_MAP: Record<string, string> = {
+    'Invalid credentials.': 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+    'Invalid credentials': 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+    'Account is disabled.': 'هذا الحساب معطل. يرجى التواصل مع المدير',
+    'Account is locked.': 'الحساب مقفل مؤقتاً. حاول مرة أخرى لاحقاً',
+    'User not found.': 'المستخدم غير موجود',
+  };
 
   try {
-    const { default: axios } = await import('axios');
-    const baseURL = import.meta.env.VITE_API_URL ?? '/api';
-    await axios.post(`${baseURL}/auth/logout`, {}, { withCredentials: true });
+    const { data: wrapper } = await axios.post<LoginResponse>(
+      `${baseURL}/Auth/login`,
+      credentials,
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      },
+    );
+
+    if (!wrapper.success) {
+      const msg = ERROR_MAP[wrapper.message] || wrapper.message || 'فشل تسجيل الدخول';
+      throw new ApiError(msg, 401);
+    }
+
+    return wrapper.data;
   } catch (err) {
-    console.error('Logout API failed', err);
+    // If it's already our ApiError (from the block above), rethrow
+    if (err instanceof ApiError) throw err;
+
+    // Extract message from AxiosError response body
+    const responseData = (err as any)?.response?.data;
+    const backendMsg =
+      typeof responseData === 'string'
+        ? responseData
+        : responseData?.message || responseData?.Message || '';
+    const arabicMsg = ERROR_MAP[backendMsg] || 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+    const status = (err as any)?.response?.status || 401;
+    throw new ApiError(arabicMsg, status);
   }
 }
 
 /**
  * Fetch the currently authenticated user's profile.
- * Uses HttpOnly cookies automatically attached by the browser.
+ * Uses a RAW axios instance (not apiClient) intentionally — a 401 here
+ * means "no session", not "token expired". We must NOT trigger the
+ * refresh interceptor or it causes an infinite redirect loop on app load.
  */
 export async function getMeApi(): Promise<User> {
-  const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
   if (USE_MOCK) {
-    // In mock mode, we simulate fetching by reading localStorage,
-    // which mock login still populates. Real mode relies purely on cookies.
     await new Promise((r) => setTimeout(r, 200));
     const stored = localStorage.getItem('bloodlink_user');
     if (!stored) throw new ApiError('Not authenticated', 401);
     return JSON.parse(stored);
   }
 
-  const { data } = await apiClient.get<User>('/auth/me');
-  return data;
+  const { default: axios } = await import('axios');
+  const baseURL = import.meta.env.VITE_API_URL ?? '/api/v1/system';
+  const { data: wrapper } = await axios.get<GetMeResponse>(
+    `${baseURL}/Auth/me`,
+    { withCredentials: true, headers: { 'X-Requested-With': 'XMLHttpRequest' } },
+  );
+
+  if (!wrapper.success) {
+    throw new ApiError(wrapper.message || 'الجلسة غير صالحة', 401);
+  }
+
+  return wrapper.data;
+}
+
+/**
+ * Silently refresh the access token using the stored refresh token cookie.
+ * Real mode: POST /Auth/refresh — browser sends cookie automatically.
+ *
+ * IMPORTANT: Uses a raw axios call (not apiClient) to avoid triggering
+ * the 401 interceptor recursively.
+ */
+export async function refreshTokenApi(): Promise<void> {
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 300));
+    return;
+  }
+
+  const { default: axios } = await import('axios');
+  const baseURL = import.meta.env.VITE_API_URL ?? '/api/v1/system';
+  const { data: wrapper } = await axios.post<RefreshResponse>(
+    `${baseURL}/Auth/refresh`,
+    {},
+    { withCredentials: true, headers: { 'X-Requested-With': 'XMLHttpRequest' } },
+  );
+
+  if (!wrapper.success) {
+    throw new ApiError(wrapper.message || 'انتهت الجلسة، يرجى تسجيل الدخول مجدداً', 401);
+  }
+}
+
+/**
+ * Logout — clears the HttpOnly cookie on the backend.
+ * Real mode: POST /Auth/logout
+ */
+export async function logoutApi(): Promise<void> {
+  if (USE_MOCK) return;
+
+  try {
+    await apiClient.post('/Auth/logout');
+  } catch (err) {
+    // Swallow errors — we clear local state regardless
+    console.error('Logout API failed', err);
+  }
+}
+
+/**
+ * Change the authenticated user's password.
+ * Real mode: POST /Auth/change-password
+ */
+export async function changePasswordApi(
+  _userId: string,
+  payload: ChangePasswordRequest,
+): Promise<void> {
+  if (USE_MOCK) {
+    const { users: MOCK_USERS } = await import('../data/auth.mock');
+    await new Promise((r) => setTimeout(r, 500));
+
+    const found = MOCK_USERS.find((u) => u.email);
+    if (!found || found.password !== payload.currentPassword) {
+      throw new ApiError('كلمة المرور الحالية غير صحيحة', 422);
+    }
+    if (payload.newPassword.length < 6) {
+      throw new ApiError('كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل', 422);
+    }
+    found.password = payload.newPassword;
+    return;
+  }
+
+  await apiClient.post('/Auth/change-password', payload);
 }
