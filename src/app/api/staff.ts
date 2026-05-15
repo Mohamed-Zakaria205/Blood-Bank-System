@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
 import { ApiError } from './errors';
-import type { User, CreateStaffRequest, UpdateStaffRequest } from '../types/auth';
+import type { User, CreateStaffRequest, UpdateStaffRequest, ApiResponseWrapper } from '../types/auth';
 import type { PaginatedResponse, ApiResponse, StaffFilters } from '../types/common';
 import { users as MOCK_USERS } from '../data/auth.mock';
 
@@ -60,7 +60,7 @@ export async function fetchFilteredStaff(
   return data;
 }
 
-export async function createStaff(payload: CreateStaffRequest): Promise<ApiResponse<User>> {
+export async function createStaff(payload: CreateStaffRequest): Promise<string> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 400));
     const newUser: User = {
@@ -75,10 +75,13 @@ export async function createStaff(payload: CreateStaffRequest): Promise<ApiRespo
       status: 'active',
       createdAt: new Date().toISOString().split('T')[0],
     };
-    return { data: newUser, message: 'تم إضافة الموظف بنجاح' };
+    return newUser.id;
   }
-  const { data } = await apiClient.post<ApiResponse<User>>('/staff', payload);
-  return data;
+  const { data: wrapper } = await apiClient.post<ApiResponseWrapper<string>>('/Staff', payload);
+  if (!wrapper.success) {
+    throw new ApiError(wrapper.message || 'حدث خطأ أثناء إضافة الكادر الطبي');
+  }
+  return wrapper.data;
 }
 
 /** PATCH /staff/:id — partial update (no password change via this endpoint) */
