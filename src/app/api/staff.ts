@@ -61,22 +61,6 @@ export async function fetchFilteredStaff(
 }
 
 export async function createStaff(payload: CreateStaffRequest): Promise<string> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 400));
-    const newUser: User = {
-      id: `USR-${Date.now()}`,
-      name: payload.name,
-      email: payload.email,
-      role: payload.role,
-      nationalId: payload.nationalId,
-      phone: payload.phone,
-      address: payload.address,
-      city: payload.city,
-      status: 'active',
-      createdAt: new Date().toISOString().split('T')[0],
-    };
-    return newUser.id;
-  }
   const { data: wrapper } = await apiClient.post<ApiResponseWrapper<string>>('/Staff', payload);
   if (!wrapper.success) {
     throw new ApiError(wrapper.message || 'حدث خطأ أثناء إضافة الكادر الطبي');

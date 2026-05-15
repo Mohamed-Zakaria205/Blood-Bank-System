@@ -22,8 +22,22 @@ export function handleApiError(error: unknown): ApiError {
   if (error instanceof AxiosError) {
     const status = error.response?.status;
     const data = error.response?.data;
-    // Assuming backend returns { message: '...' } in data
-    const message = data?.message || error.message || 'حدث خطأ في الاتصال بالخادم';
+    
+    // Extract message
+    let message = data?.message || data?.title || error.message || 'حدث خطأ في الاتصال بالخادم';
+    
+    // Extract validation errors if they exist (ASP.NET Core format or custom wrapper)
+    const validationErrors = data?.errors;
+    if (validationErrors && typeof validationErrors === 'object' && Object.keys(validationErrors).length > 0) {
+      const errorDetails = Object.entries(validationErrors)
+        .map(([field, errs]) => {
+          const errList = Array.isArray(errs) ? errs.join(', ') : errs;
+          return `${field}: ${errList}`;
+        })
+        .join(' | ');
+      message = `${message} - ${errorDetails}`;
+    }
+
     return new ApiError(message, status, data);
   }
 
