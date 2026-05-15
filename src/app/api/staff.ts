@@ -61,7 +61,19 @@ export async function fetchFilteredStaff(
 }
 
 export async function createStaff(payload: CreateStaffRequest): Promise<string> {
-  const { data: wrapper } = await apiClient.post<ApiResponseWrapper<string>>('/Staff', payload);
+  const roleMap: Record<string, string> = {
+    admin: 'Admin',
+    doctor: 'Doctor',
+    lab: 'LabDoctor',
+    inventory: 'InventoryManager',
+  };
+
+  const backendPayload = {
+    ...payload,
+    role: roleMap[payload.role] || payload.role,
+  };
+
+  const { data: wrapper } = await apiClient.post<ApiResponseWrapper<string>>('/Staff', backendPayload);
   if (!wrapper.success) {
     throw new ApiError(wrapper.message || 'حدث خطأ أثناء إضافة الكادر الطبي');
   }
