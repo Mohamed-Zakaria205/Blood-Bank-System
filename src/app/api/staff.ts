@@ -30,34 +30,45 @@ export async function fetchFilteredStaff(
 ): Promise<PaginatedResponse<User>> {
   const { page = 1, limit = 10, search = '', role = '', status = '' } = filters;
 
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
+  const roleMap: Record<string, string> = {
+    admin: 'Admin',
+    doctor: 'Doctor',
+    lab: 'LabDoctor',
+    inventory: 'InventoryManager',
+  };
 
-    let result = MOCK_USERS.filter((u) => u.role !== 'admin').map(
-      ({ password: _, ...u }) => u,
-    ) as User[];
+  const mappedRole = role ? roleMap[role] || role : '';
 
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        (u) =>
-          u.name.toLowerCase().includes(q) ||
-          u.email.toLowerCase().includes(q) ||
-          (u.phone ?? '').includes(q),
-      );
-    }
-    if (role)   result = result.filter((u) => u.role === role);
-    if (status) result = result.filter((u) => u.status === status);
+  // Use 'any' for the generic to bypass strict typing because the backend sends 'items' instead of 'data'
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/Staff', {
+    params: { page, limit, search, role: mappedRole, status }, signal: options?.signal,
+  });
 
-    const total = result.length;
-    const data  = result.slice((page - 1) * limit, page * limit);
-    return { data, total, page, limit };
+  if (!wrapper.success) {
+    throw new ApiError(wrapper.message || 'حدث خطأ أثناء جلب بيانات فريق العمل');
   }
 
-  const { data } = await apiClient.get<PaginatedResponse<User>>('/staff', {
-    params: { page, limit, search, role, status }, signal: options?.signal,
-  });
-  return data;
+  const reverseRoleMap: Record<string, string> = {
+    Admin: 'admin',
+    Doctor: 'doctor',
+    LabDoctor: 'lab',
+    InventoryManager: 'inventory',
+  };
+
+  // The backend returns an array in `items`, but our frontend `PaginatedResponse` expects it in `data`
+  const rawItems = wrapper.data.items || [];
+  
+  const mappedData = rawItems.map((u: any) => ({
+    ...u,
+    role: (reverseRoleMap[u.role] || u.role) as User['role'],
+  }));
+
+  return {
+    data: mappedData,
+    total: wrapper.data.total || 0,
+    page: wrapper.data.page || 1,
+    limit: wrapper.data.limit || 10,
+  };
 }
 
 export async function createStaff(payload: CreateStaffRequest): Promise<string> {
@@ -99,9 +110,8 @@ export async function updateStaff(
 }
 
 export async function deleteStaff(id: string): Promise<void> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return;
+  const { data: wrapper } = await apiClient.delete<ApiResponseWrapper<any>>(`/Staff/${id}`);
+  if (!wrapper.success) {
+    throw new ApiError(wrapper.message || 'حدث خطأ أثناء الحذف');
   }
-  await apiClient.delete(`/staff/${id}`);
 }
