@@ -13,35 +13,11 @@ import type {
   User,
 } from '../types/auth';
 
-// ── Auth mock mode flag ────────────────────────────────────
-// Auth can be switched to real backend independently of the global mock flag.
-// Set VITE_USE_REAL_AUTH=true in .env to use the live backend for auth.
-const USE_MOCK = import.meta.env.VITE_USE_REAL_AUTH === 'true'
-  ? false
-  : import.meta.env.VITE_USE_MOCK === 'true';
-
 /**
  * Authenticate a user.
  * Real mode: POST /Auth/login → { success, message, data: User }
  */
 export async function loginApi(credentials: LoginRequest): Promise<User> {
-  if (USE_MOCK) {
-    const { users: MOCK_USERS } = await import('../data/auth.mock');
-    await new Promise((r) => setTimeout(r, 500));
-
-    const found = MOCK_USERS.find(
-      (u) => u.email === credentials.email && u.password === credentials.password,
-    );
-
-    if (!found) {
-      throw new ApiError('البريد الإلكتروني أو كلمة المرور غير صحيحة', 422);
-    }
-    if (found.status === 'inactive') {
-      throw new ApiError('هذا الحساب معطل. يرجى التواصل مع المدير', 403);
-    }
-    const { password: _, ...user } = found;
-    return user;
-  }
 
   // ── Real API call ──
   // Uses raw axios (NOT apiClient) to bypass the 401 interceptor.
@@ -100,12 +76,6 @@ export async function loginApi(credentials: LoginRequest): Promise<User> {
  * refresh interceptor or it causes an infinite redirect loop on app load.
  */
 export async function getMeApi(): Promise<User> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 200));
-    const stored = localStorage.getItem('bloodlink_user');
-    if (!stored) throw new ApiError('Not authenticated', 401);
-    return JSON.parse(stored);
-  }
 
   const { default: axios } = await import('axios');
   const baseURL = import.meta.env.VITE_API_URL ?? '/api/v1/system';
@@ -129,10 +99,6 @@ export async function getMeApi(): Promise<User> {
  * the 401 interceptor recursively.
  */
 export async function refreshTokenApi(): Promise<void> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return;
-  }
 
   const { default: axios } = await import('axios');
   const baseURL = import.meta.env.VITE_API_URL ?? '/api/v1/system';
@@ -152,8 +118,6 @@ export async function refreshTokenApi(): Promise<void> {
  * Real mode: POST /Auth/logout
  */
 export async function logoutApi(): Promise<void> {
-  if (USE_MOCK) return;
-
   try {
     await apiClient.post('/Auth/logout');
   } catch (err) {
@@ -170,20 +134,5 @@ export async function changePasswordApi(
   _userId: string,
   payload: ChangePasswordRequest,
 ): Promise<void> {
-  if (USE_MOCK) {
-    const { users: MOCK_USERS } = await import('../data/auth.mock');
-    await new Promise((r) => setTimeout(r, 500));
-
-    const found = MOCK_USERS.find((u) => u.email);
-    if (!found || found.password !== payload.currentPassword) {
-      throw new ApiError('كلمة المرور الحالية غير صحيحة', 422);
-    }
-    if (payload.newPassword.length < 6) {
-      throw new ApiError('كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل', 422);
-    }
-    found.password = payload.newPassword;
-    return;
-  }
-
   await apiClient.post('/Auth/change-password', payload);
 }
