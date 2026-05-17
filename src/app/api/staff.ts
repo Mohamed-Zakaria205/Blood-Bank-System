@@ -8,8 +8,8 @@ import type { PaginatedResponse, ApiResponse, StaffFilters } from '../types/comm
 
 /** Fetch all staff members (excludes admins) */
 export async function fetchStaff(): Promise<PaginatedResponse<User>> {
-  const { data } = await apiClient.get<PaginatedResponse<User>>('/staff');
-  return data;
+  // Delegate to fetchFilteredStaff to ensure the wrapper and role mappings are applied correctly
+  return fetchFilteredStaff({ limit: 1000 });
 }
 
 /**
