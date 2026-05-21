@@ -37,7 +37,7 @@ export default function AdminLayout() {
 
   const navItems: NavItem[] = [
     { path: '/admin', label: 'لوحة التحكم', icon: LayoutDashboard, end: true },
-    { path: '/admin/donors', label: 'المتبرعون', icon: Users },
+    { path: '/admin/donors', label: 'المتبرعين', icon: Users },
     { path: '/admin/staff', label: 'إدارة الأطباء', icon: UserCog },
     { path: '/admin/campaigns', label: 'حملات التبرع', icon: Megaphone },
     { path: '/admin/inventory', label: 'مخزون الدم', icon: Droplets, badgeCount: criticalItems.length, badgeColor: 'bg-red-100 text-red-600' },

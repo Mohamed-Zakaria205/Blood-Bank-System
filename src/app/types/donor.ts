@@ -1,28 +1,20 @@
 // ═══════════════════════════════════════════════════════════
-// Donor types
+// Donor & Donation types
 // ═══════════════════════════════════════════════════════════
 import type { BloodType, DonationType, DonorStatus } from './common';
 
-export interface MedicalQuestions {
-  feelingWell: boolean;
-  recentMedications: boolean;
-  chronicDiseases: boolean;
-  hadSurgery: boolean;
-  anemia: boolean;
-  infectiousDiseases: boolean;
-  receivedBlood: boolean;
-  pregnant: boolean;
-}
-
 /** Physical / lab measurements collected during registration */
 export interface AdditionalData {
-  weight?: number;
+  weight: number;
   height?: number;
-  hemoglobin?: number;
-  bloodPressure?: string;
+  hemoglobin: number;
+  bloodPressure: string;
 }
 
-/** Full donor entity (returned by the backend) */
+/**
+ * Persistent donor profile (returned by GET /donors).
+ * Contains only basic identity and long-term eligibility status.
+ */
 export interface Donor {
   id: string;
   donorCode: string;
@@ -31,42 +23,85 @@ export interface Donor {
   age: number;
   nationalId: string;
   phone: string;
-  secondaryPhone?: string;
-  email?: string;
   address: string;
   city: string;
   bloodType: BloodType;
-  lastDonationDate?: string;
-  donationType: DonationType;
-  medicalQuestions?: MedicalQuestions;
-  diseases: string[];
-  additionalData?: AdditionalData;
   status: DonorStatus;
-  isAllergic?: boolean;
   rejectionReason?: string;
   deferredUntil?: string;
-  lockoutUntil?: string;
+
   // ── Backend-generated / meta fields ─────────────────────
-  registeredBy?: string;
   registeredAt?: string;
-  source: 'walkin' | 'app' | 'campaign';
-  campaignId?: string;
-  campaignName?: string;
+  lastDonationDate?: string;
   donations?: number;
   points?: number;
+  source?: 'walkin' | 'app' | 'campaign';
+  campaignId?: string;
+  campaignName?: string;
 }
 
 /**
- * POST /donors — request body.
- * Backend auto-generates: id, donorCode, registeredAt, donations, points.
+ * Single donation event (returned by GET /donations).
+ * Represents one donation occurrence linked to a donor.
  */
-export type CreateDonorRequest = Omit<
-  Donor,
-  'id' | 'donorCode' | 'registeredAt' | 'donations' | 'points'
->;
+export interface Donation {
+  id: string;
+  donationCode: string;
+  donorId: string;
+  name: string;
+  gender: 'male' | 'female';
+  age: number;
+  nationalId: string;
+  phone: string;
+  address: string;
+  city: string;
+  bloodType: BloodType;
+  donationType: DonationType;
+  source: 'walkin' | 'app' | 'campaign';
+  campaignId?: string;
+  campaignName?: string;
+  donationDate: string;
+  // ── Medical screening data ──────────────────────────────
+  diseases: string[];
+  additionalData?: AdditionalData;
+  isAllergic?: boolean;
+  donorCode?: string;
+  sentToLab: boolean;
+  status: string;
+}
+
+/**
+ * POST /donations — Step 1: Basic Information
+ */
+export interface BasicDonationRequest {
+  nationalId: string;
+  name: string;
+  gender: 'male' | 'female';
+  age: number;
+  phone: string;
+  address: string;
+  city: string;
+  bloodType: BloodType;
+  source: 'walkin' | 'app' | 'campaign';
+  campaignId?: string;
+  donationType: DonationType;
+}
+
+/**
+ * POST /donations/:id/medical-record — Step 2: Medical Information
+ */
+export interface MedicalRecordRequest {
+  status: DonorStatus;
+  diseases: string[];
+  additionalData: AdditionalData;
+  isAllergic?: boolean;
+  rejectionReason?: string;
+  deferredUntil?: string;
+
+}
 
 /**
  * PATCH /donors/:id — request body.
  * Partial update: only the fields that changed need to be sent.
  */
-export type UpdateDonorRequest = Partial<CreateDonorRequest>;
+export type UpdateDonorRequest = Partial<BasicDonationRequest & MedicalRecordRequest>;

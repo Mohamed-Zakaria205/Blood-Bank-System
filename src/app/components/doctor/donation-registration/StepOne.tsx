@@ -9,8 +9,8 @@ import {
   ChevronLeft,
 } from 'lucide-react';
 import type { UseFormRegister, FieldErrors } from 'react-hook-form';
-import type { SimpleForm } from './donorFormSchema';
-import { DISTRICTS } from './donorFormSchema';
+import type { SimpleForm } from './donationFormSchema';
+import { EGYPT_DATA } from '../../../data/egypt';
 import type { Campaign } from '../../../types';
 
 interface StepOneProps {
@@ -32,6 +32,11 @@ export default function StepOne({
   updateField,
   onNext,
 }: StepOneProps) {
+  const currentGovernorateObj = EGYPT_DATA.find((g) => g.name_ar === form.governorate);
+  const currentCities = currentGovernorateObj?.cities || [];
+  const currentDistrictObj = currentCities.find((c) => c.city_name_ar === form.district);
+  const currentAreas = currentDistrictObj?.areas || [];
+
   return (
     <>
       {/* Source Selection */}
@@ -287,21 +292,31 @@ export default function StepOne({
           العنوان التفصيلي
         </label>
         <div className="grid grid-cols-3 gap-3">
-          {/* Governorate — fixed */}
+          {/* Governorate */}
           <div>
             <label
               className="block text-gray-500 mb-1.5"
               style={{ fontSize: '11px', fontWeight: 600 }}
             >
-              المحافظة
+              المحافظة *
             </label>
-            <div
-              className="w-full px-3 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-500 flex items-center gap-1.5"
+            <select
+              {...register('governorate', {
+                onChange: () => {
+                  updateField('district', '');
+                  updateField('area', '');
+                },
+              })}
+              className="w-full px-3 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
               style={{ fontSize: '13px' }}
             >
-              <MapPin className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
-              بني سويف
-            </div>
+              <option value="">— اختر المحافظة —</option>
+              {EGYPT_DATA.map((g) => (
+                <option key={g.id} value={g.name_ar}>
+                  {g.name_ar}
+                </option>
+              ))}
+            </select>
           </div>
           {/* District */}
           <div>
@@ -312,13 +327,18 @@ export default function StepOne({
               المركز *
             </label>
             <select
-              {...register('district')}
+              {...register('district', {
+                onChange: () => {
+                  updateField('area', '');
+                },
+              })}
               className="w-full px-3 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
               style={{ fontSize: '13px' }}
             >
-              {DISTRICTS.map((d) => (
-                <option key={d} value={d}>
-                  {d}
+              <option value="">— اختر المركز —</option>
+              {currentCities.map((d) => (
+                <option key={d.id} value={d.city_name_ar}>
+                  {d.city_name_ar}
                 </option>
               ))}
             </select>
@@ -331,12 +351,27 @@ export default function StepOne({
             >
               المنطقة / الشارع *
             </label>
-            <input
-              {...register('area')}
-              placeholder="مثال: شارع النيل"
-              className={`w-full px-3 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${errors.area ? 'border-red-300' : 'border-gray-200'}`}
-              style={{ fontSize: '13px' }}
-            />
+            {currentAreas.length > 0 ? (
+              <select
+                {...register('area')}
+                className={`w-full px-3 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${errors.area ? 'border-red-300' : 'border-gray-200'}`}
+                style={{ fontSize: '13px' }}
+              >
+                <option value="">— اختر المنطقة —</option>
+                {currentAreas.map((a) => (
+                  <option key={a.id} value={a.name_ar}>
+                    {a.name_ar}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                {...register('area')}
+                placeholder="أدخل المنطقة / الشارع"
+                className={`w-full px-3 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${errors.area ? 'border-red-300' : 'border-gray-200'}`}
+                style={{ fontSize: '13px' }}
+              />
+            )}
             {errors.area?.message && (
               <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
                 {errors.area.message}
@@ -361,3 +396,4 @@ export default function StepOne({
     </>
   );
 }
+

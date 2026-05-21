@@ -1,10 +1,3 @@
-/** Donation type Arabic labels */
-export const donationTypeLabels: Record<string, string> = {
-  whole: 'دم كامل',
-  plasma: 'بلازما',
-  platelets: 'صفائح',
-};
-
 /** Blood inventory status colors */
 export const bloodStatusColor: Record<string, string> = {
   normal: 'bg-green-500',
@@ -12,13 +5,12 @@ export const bloodStatusColor: Record<string, string> = {
   critical: 'bg-red-500',
 };
 
-/** Recent donors table headers */
+/** Recent donations table headers */
 export const recentDonorsHeaders = [
-  'رمز المتبرع',
+  'رمز التبرع',
   'الاسم',
   'المدينة',
   'الفصيلة',
-  'نوع التبرع',
-  'الحالة',
+  'تاريخ التبرع',
   'إجراء',
 ] as const;

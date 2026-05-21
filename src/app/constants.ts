@@ -1,6 +1,7 @@
+import { BENI_SUEF_CITIES } from './data/cities';
 import type { BloodType } from './types';
 
-export const CITIES = ['بني سويف', 'الواسطى', 'ناصر', 'ببا', 'الفشن', 'سمسطا', 'إهناسيا'];
+export const CITIES = BENI_SUEF_CITIES.map((city) => city.city_name_ar);
 
 
 export const DISEASES = [

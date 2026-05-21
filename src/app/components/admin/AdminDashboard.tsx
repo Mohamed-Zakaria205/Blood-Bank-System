@@ -17,7 +17,7 @@ import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkelet
 import { EmptyState } from '../shared/EmptyState';
 
 // ── Sub-components & constants ──
-import { donationTypeLabels, recentDonorsHeaders } from './admin-dashboard/dashboardConstants';
+import { recentDonorsHeaders } from './admin-dashboard/dashboardConstants';
 import DonationTrendsChart from './admin-dashboard/DonationTrendsChart';
 import BloodInventoryPanel from './admin-dashboard/BloodInventoryPanel';
 import SystemAlertsPanel from './admin-dashboard/SystemAlertsPanel';
@@ -283,17 +283,13 @@ export default function AdminDashboard() {
                         {d.bloodType}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="text-gray-500" style={{ fontSize: '12px' }}>
-                        {donationTypeLabels[d.donationType]}
-                      </span>
-                    </td>
+
                     <td className="px-4 py-3">
                       <span
-                        className={`px-2 py-0.5 rounded-full ${d.status === 'eligible' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
+                        className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700"
                         style={{ fontSize: '11px', fontWeight: 600 }}
                       >
-                        {d.status === 'eligible' ? 'مؤهل' : 'غير مؤهل'}
+                        {d.registeredAt}
                       </span>
                     </td>
                     <td className="px-4 py-3">

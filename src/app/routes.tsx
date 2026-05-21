@@ -28,8 +28,8 @@ const AdminSettings = lazy(() => import('./components/admin/AdminSettings'));
 
 // ── Doctor Pages (lazy loaded) ──
 const DoctorDashboard = lazy(() => import('./components/doctor/DoctorDashboard'));
-const DoctorDonors = lazy(() => import('./components/doctor/DoctorDonors'));
-const DonorRegistrationForm = lazy(() => import('./components/doctor/DonorRegistrationForm'));
+const DoctorDonations = lazy(() => import('./components/doctor/DoctorDonations'));
+const DonationRegistrationForm = lazy(() => import('./components/doctor/DonationRegistrationForm'));
 const DoctorCampaigns = lazy(() => import('./components/doctor/DoctorCampaigns'));
 const DoctorAppointments = lazy(() => import('./components/doctor/DoctorAppointments'));
 const DoctorEligibility = lazy(() => import('./components/doctor/DoctorEligibility'));
@@ -122,8 +122,8 @@ export const router = createBrowserRouter([
             children: [
               { Component: SuspenseOutlet, children: [
                 { index: true, Component: DoctorDashboard },
-                { path: 'donors', Component: DoctorDonors },
-                { path: 'register', Component: DonorRegistrationForm },
+                { path: 'donations', Component: DoctorDonations },
+                { path: 'register', Component: DonationRegistrationForm },
                 { path: 'campaigns', Component: DoctorCampaigns },
                 { path: 'appointments', Component: DoctorAppointments },
                 { path: 'eligibility', Component: DoctorEligibility },

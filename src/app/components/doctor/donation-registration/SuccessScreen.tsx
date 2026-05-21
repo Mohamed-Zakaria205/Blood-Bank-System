@@ -13,8 +13,8 @@ import {
   Smartphone,
   UserX,
 } from 'lucide-react';
-import type { SimpleForm } from './donorFormSchema';
-import { DONATION_TYPE_LABELS } from './donorFormSchema';
+import type { SimpleForm } from './donationFormSchema';
+import { DONATION_TYPE_LABELS } from './donationFormSchema';
 import type { Campaign } from '../../../types';
 import { formatLocalizedDate } from '../../../utils/date';
 
@@ -354,3 +354,4 @@ export default function SuccessScreen({
     </div>
   );
 }
+

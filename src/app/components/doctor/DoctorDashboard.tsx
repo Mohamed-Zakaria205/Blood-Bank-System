@@ -14,13 +14,14 @@ import { TODAY_DATE_DISPLAY, buildStats, buildQuickActions } from './doctor-dash
 import WeeklyChart from './doctor-dashboard/WeeklyChart';
 import ActiveCampaignsPanel from './doctor-dashboard/ActiveCampaignsPanel';
 import UpcomingAppointments from './doctor-dashboard/UpcomingAppointments';
-import RecentDonors from './doctor-dashboard/RecentDonors';
+import RecentDonations from './doctor-dashboard/RecentDonations';
 
 export default function DoctorDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const {
     donors,
+    donations,
     isLoading,
     isError,
     refetch,
@@ -53,7 +54,7 @@ export default function DoctorDashboard() {
 
 
 
-  const stats = buildStats(donors, myCampaigns, myDonors, navigate);
+  const stats = buildStats(donors, donations, myCampaigns, myDonors, navigate);
   const quickActions = buildQuickActions(navigate);
 
   return (
@@ -122,7 +123,7 @@ export default function DoctorDashboard() {
           </div>
           <div>
             <div className="text-gray-900" style={{ fontSize: '26px', fontWeight: 800 }}>
-              {donors.filter((d) => d.source === 'walkin').length}
+              {donations.filter((d) => d.source === 'walkin').length}
             </div>
             <div className="text-gray-600" style={{ fontSize: '13px', fontWeight: 600 }}>تبرع داخل البنك</div>
             <div className="text-gray-400" style={{ fontSize: '11px' }}>{walkinToday} اليوم</div>
@@ -146,7 +147,7 @@ export default function DoctorDashboard() {
           </div>
           <div>
             <div className="text-gray-900" style={{ fontSize: '26px', fontWeight: 800 }}>
-              {donors.filter((d) => d.source === 'app').length}
+              {donations.filter((d) => d.source === 'app').length}
             </div>
             <div className="text-gray-600" style={{ fontSize: '13px', fontWeight: 600 }}>حجز من التطبيق</div>
             <div className="text-gray-400" style={{ fontSize: '11px' }}>{appToday} اليوم</div>
@@ -170,9 +171,9 @@ export default function DoctorDashboard() {
         onRegister={(aptId) => navigate(`/doctor/register?apt=${aptId}`)}
       />
 
-      {/* Recent Donors */}
-      <RecentDonors
-        donors={donors}
+      {/* Recent Donations */}
+      <RecentDonations
+        donors={donations}
         onViewAll={() => navigate('/doctor/donors')}
       />
 

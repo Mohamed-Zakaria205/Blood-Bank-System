@@ -4,7 +4,7 @@ import { Check, Smartphone } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCampaigns } from '../../hooks/useCampaigns';
 import { useSlot15Data } from '../../hooks/useAppointments';
-import { useCreateDonor } from '../../hooks/useDonors';
+import { useAddDonation, useAddMedicalRecord, useSearchDonor } from '../../hooks/useDonors';
 import { toast } from 'sonner';
 import { useForm, Path, PathValue } from 'react-hook-form';
 import { Form } from '../ui/form';
@@ -13,18 +13,21 @@ import type { BloodType, DonationType, DonorStatus } from '../../types/common';
 import type { Donor } from '../../types/donor';
 
 // ── Sub-components ──
-import { donorSchema, initialForm, type SimpleForm } from './donor-registration/donorFormSchema';
-import SuccessScreen from './donor-registration/SuccessScreen';
-import StepOne from './donor-registration/StepOne';
-import StepTwo from './donor-registration/StepTwo';
+import { donorSchema, initialForm, type SimpleForm } from './donation-registration/donationFormSchema';
+import StepOne from './donation-registration/StepOne';
+import StepTwo from './donation-registration/StepTwo';
 
-export default function DonorRegistrationForm() {
+export default function DonationRegistrationForm() {
   const navigate = useNavigate();
   useAuth();
   const [searchParams] = useSearchParams();
   const { data: campaignsData = [] } = useCampaigns();
   const { data: slot15DataFromHook = [] } = useSlot15Data();
-  const createDonor = useCreateDonor();
+  const addDonation = useAddDonation();
+  const addMedicalRecord = useAddMedicalRecord();
+  const searchDonor = useSearchDonor();
+  const [donationId, setDonationId] = useState<string | null>(null);
+  const [searchId, setSearchId] = useState('');
 
   // Pre-fill from appointment if ?apt=S15-xxx
   const aptId = searchParams.get('apt');
@@ -51,9 +54,7 @@ export default function DonorRegistrationForm() {
   };
 
   const [submitting, setSubmitting] = useState(false);
-  const [donorCode] = useState(`DNR-2025-${String(Math.floor(Math.random() * 9000) + 1000)}`);
   const [step, setStep] = useState<1 | 2>(1);
-  const [bagVolume, setBagVolume] = useState('400');
 
   const formMethods = useForm<SimpleForm>({
     defaultValues: getInitialForm(),
@@ -89,7 +90,6 @@ export default function DonorRegistrationForm() {
     register('donationTime');
   }, [register]);
 
-  const success = createDonor.isSuccess;
   const activeCampaigns = campaignsData.filter((c) => c.status === 'active');
 
   const updateField = <K extends keyof SimpleForm>(key: K, value: SimpleForm[K]) => {
@@ -108,46 +108,38 @@ export default function DonorRegistrationForm() {
     setValue('diseases', next, { shouldDirty: true, shouldValidate: true });
   };
 
-  const submitForm = handleSubmit((values) => {
-    setSubmitting(true);
-    createDonor.mutate(
-      {
-        name: values.name,
-        gender: values.gender as Donor['gender'],
-        age: Number(values.age),
-        phone: values.phone,
-        nationalId: values.nationalId,
-        city: values.governorate,
-        address: [values.area, values.district].filter(Boolean).join(' - '),
-        bloodType: values.bloodType as BloodType,
-        donationType: values.donationType as DonationType,
-        diseases: values.diseases,
-        source: values.source,
-        campaignId: values.campaignId || undefined,
-        status: values.status as DonorStatus,
-        additionalData: {
-          weight: Number(values.weight) || undefined,
-          bloodPressure: values.bloodPressure || undefined,
-          hemoglobin: Number(values.hemoglobin) || undefined,
-        },
-        isAllergic: values.isAllergic,
-        rejectionReason: values.rejectionReason || undefined,
-        lockoutUntil: values.lockoutUntil || undefined,
-        deferredUntil: values.deferredUntil || undefined,
+  const handleSearch = () => {
+    if (!searchId || searchId.length !== 14) {
+      toast.error('يرجى إدخال رقم قومي صحيح (14 رقم)');
+      return;
+    }
+    searchDonor.mutate(searchId, {
+      onSuccess: (res) => {
+        if (res.data) {
+          toast.success('تم العثور على المتبرع، تم ملء البيانات تلقائياً');
+          const d = res.data;
+          updateField('name', d.name);
+          updateField('gender', d.gender);
+          updateField('age', String(d.age));
+          updateField('phone', d.phone);
+          updateField('nationalId', d.nationalId);
+          updateField('bloodType', d.bloodType);
+          updateField('governorate', d.city);
+          if (d.address) {
+            const parts = d.address.split(' - ');
+            updateField('area', parts[0] || '');
+            if (parts[1]) updateField('district', parts[1]);
+          }
+        } else {
+          toast.info('متبرع جديد، يرجى إدخال البيانات');
+          updateField('nationalId', searchId);
+        }
       },
-      {
-        onSuccess: () => {
-          toast.success('تم تسجيل المتبرع بنجاح');
-        },
-        onError: () => {
-          toast.error('تعذر تسجيل المتبرع، حاول مرة أخرى');
-        },
-        onSettled: () => {
-          setSubmitting(false);
-        },
-      },
-    );
-  });
+      onError: () => {
+        toast.error('حدث خطأ أثناء البحث');
+      }
+    });
+  };
 
   const handleNextStep = async () => {
     const step1Fields: (keyof SimpleForm)[] = [
@@ -163,9 +155,72 @@ export default function DonorRegistrationForm() {
     }
     const isValid = await trigger(step1Fields);
     if (isValid) {
-      setStep(2);
+      setSubmitting(true);
+      const values = getValues();
+      addDonation.mutate(
+        {
+          name: values.name,
+          gender: values.gender as Donor['gender'],
+          age: Number(values.age),
+          phone: values.phone,
+          nationalId: values.nationalId,
+          city: values.governorate,
+          address: [values.area, values.district].filter(Boolean).join(' - '),
+          bloodType: values.bloodType as BloodType,
+          donationType: values.donationType as DonationType,
+          source: values.source,
+          campaignId: values.campaignId || undefined,
+        },
+        {
+          onSuccess: (res) => {
+            setDonationId(res.data.donationId);
+            toast.success('تم تسجيل التبرع המبدئي بنجاح');
+            setStep(2);
+          },
+          onError: () => {
+            toast.error('تعذر تسجيل التبرع المبدئي، حاول مرة أخرى');
+          },
+          onSettled: () => {
+            setSubmitting(false);
+          },
+        }
+      );
     }
   };
+
+  const submitForm = handleSubmit((values) => {
+    if (!donationId) return;
+    setSubmitting(true);
+    addMedicalRecord.mutate(
+      {
+        donationId,
+        payload: {
+          status: values.status as DonorStatus,
+          diseases: values.diseases,
+          additionalData: {
+            weight: Number(values.weight),
+            bloodPressure: values.bloodPressure,
+            hemoglobin: Number(values.hemoglobin),
+          },
+          isAllergic: values.isAllergic,
+          rejectionReason: values.rejectionReason || undefined,
+          deferredUntil: values.deferredUntil || undefined,
+        }
+      },
+      {
+        onSuccess: () => {
+          toast.success('تم تسجيل البيانات الطبية بنجاح');
+          navigate('/doctor/donations');
+        },
+        onError: () => {
+          toast.error('تعذر تسجيل التبرع، حاول مرة أخرى');
+        },
+        onSettled: () => {
+          setSubmitting(false);
+        },
+      },
+    );
+  });
 
   const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -176,27 +231,11 @@ export default function DonorRegistrationForm() {
     submitForm();
   };
 
-  const handleReset = () => {
-    createDonor.reset();
-    reset(initialForm);
-    setStep(1);
-    setBagVolume('400');
-  };
 
   const selectedCampaign = activeCampaigns.find((c) => c.id === form.campaignId);
 
-  // ── Success Screen ──
-  if (success) {
-    return (
-      <SuccessScreen
-        form={form}
-        donorCode={donorCode}
-        bagVolume={bagVolume}
-        activeCampaigns={activeCampaigns}
-        onReset={handleReset}
-      />
-    );
-  }
+
+
 
   // ── Registration Form ──
   return (
@@ -205,7 +244,7 @@ export default function DonorRegistrationForm() {
         {/* Header */}
         <div>
           <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
-            تسجيل متبرع جديد
+            تسجيل تبرع جديد
           </h1>
           <p className="text-gray-500" style={{ fontSize: '14px' }}>
             أدخل البيانات الأساسية للمتبرع
@@ -283,15 +322,40 @@ export default function DonorRegistrationForm() {
 
           {/* ── Step Content ── */}
           {step === 1 && (
-            <StepOne
-              form={form}
-              register={register}
-              errors={errors}
-              activeCampaigns={activeCampaigns}
-              selectedCampaign={selectedCampaign}
-              updateField={updateField}
-              onNext={handleNextStep}
-            />
+            <>
+              {/* Search Bar */}
+              <div className="flex gap-2 mb-4">
+                <input
+                  type="text"
+                  value={searchId}
+                  onChange={(e) => setSearchId(e.target.value.replace(/\D/g, '').slice(0, 14))}
+                  placeholder="ابحث بالرقم القومي (14 رقم)"
+                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                  dir="ltr"
+                />
+                <button
+                  type="button"
+                  onClick={handleSearch}
+                  disabled={searchDonor.isPending}
+                  className="px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 disabled:opacity-50"
+                  style={{ fontSize: '14px', fontWeight: 600 }}
+                >
+                  {searchDonor.isPending ? 'جاري البحث...' : 'بحث'}
+                </button>
+              </div>
+
+              <div className="border-t border-gray-100 mb-4" />
+
+              <StepOne
+                form={form}
+                register={register}
+                errors={errors}
+                activeCampaigns={activeCampaigns}
+                selectedCampaign={selectedCampaign}
+                updateField={updateField}
+                onNext={handleNextStep}
+              />
+            </>
           )}
 
           {step === 2 && (
@@ -310,7 +374,7 @@ export default function DonorRegistrationForm() {
         <div className="flex gap-3">
           <button
             type="button"
-            onClick={() => navigate('/doctor/donors')}
+            onClick={() => navigate('/doctor/donations')}
             className="flex-1 py-3.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >

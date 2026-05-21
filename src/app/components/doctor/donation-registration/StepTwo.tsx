@@ -5,7 +5,6 @@ import {
   Scale,
   Heart,
   AlertTriangle,
-  CalendarDays,
   Clock,
   UserCheck,
   UserX,
@@ -13,7 +12,7 @@ import {
   Check,
 } from 'lucide-react';
 import type { UseFormRegister, FieldErrors } from 'react-hook-form';
-import type { SimpleForm } from './donorFormSchema';
+import type { SimpleForm } from './donationFormSchema';
 import { BLOOD_TYPES, DISEASES } from '../../../constants';
 
 interface StepTwoProps {
@@ -130,10 +129,13 @@ export default function StepTwo({
               type="number"
               {...register('weight')}
               placeholder="مثال: 75"
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className={`w-full px-3 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:ring-2 ${
+                errors.weight ? 'border-red-400 focus:ring-red-100' : 'border-gray-200 focus:border-blue-400 focus:ring-blue-100'
+              }`}
               style={{ fontSize: '13px' }}
               dir="ltr"
             />
+            {errors.weight && <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>{errors.weight.message}</p>}
           </div>
           <div>
             <label
@@ -145,10 +147,13 @@ export default function StepTwo({
             <input
               {...register('bloodPressure')}
               placeholder="120/80"
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100"
+              className={`w-full px-3 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:ring-2 ${
+                errors.bloodPressure ? 'border-red-400 focus:ring-red-100' : 'border-gray-200 focus:border-red-400 focus:ring-red-100'
+              }`}
               style={{ fontSize: '13px' }}
               dir="ltr"
             />
+            {errors.bloodPressure && <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>{errors.bloodPressure.message}</p>}
           </div>
           <div>
             <label
@@ -162,10 +167,13 @@ export default function StepTwo({
               {...register('hemoglobin')}
               placeholder="مثال: 13.5"
               step="0.1"
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
+              className={`w-full px-3 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:ring-2 ${
+                errors.hemoglobin ? 'border-red-400 focus:ring-red-100' : 'border-gray-200 focus:border-purple-400 focus:ring-purple-100'
+              }`}
               style={{ fontSize: '13px' }}
               dir="ltr"
             />
+            {errors.hemoglobin && <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>{errors.hemoglobin.message}</p>}
           </div>
         </div>
 
@@ -390,22 +398,7 @@ export default function StepTwo({
                 </p>
               )}
             </div>
-            <div>
-              <label
-                className="text-red-700 mb-1.5 flex items-center gap-1"
-                style={{ fontSize: '12px', fontWeight: 600 }}
-              >
-                <CalendarDays className="w-3.5 h-3.5" /> محظور حتى (LockoutUntil){' '}
-                <span style={{ fontWeight: 400 }}>اختياري</span>
-              </label>
-              <input
-                type="date"
-                {...register('lockoutUntil')}
-                className="w-full px-3 py-2.5 border border-red-200 rounded-xl bg-white text-gray-900 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100"
-                style={{ fontSize: '13px' }}
-                dir="ltr"
-              />
-            </div>
+
           </div>
         )}
       </div>
@@ -449,7 +442,7 @@ export default function StepTwo({
             </>
           ) : (
             <>
-              <Check className="w-5 h-5" /> تسجيل المتبرع
+              <Check className="w-5 h-5" /> تسجيل التبرع
             </>
           )}
         </button>
@@ -457,3 +450,4 @@ export default function StepTwo({
     </>
   );
 }
+

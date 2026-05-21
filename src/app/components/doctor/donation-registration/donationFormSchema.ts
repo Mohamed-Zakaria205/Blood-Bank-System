@@ -27,12 +27,11 @@ export const donorSchema = z
     source: z.enum(['walkin', 'campaign', 'app']),
     campaignId: z.string(),
     status: z.enum(['eligible', 'ineligible', 'deferred']),
-    weight: z.string(),
-    bloodPressure: z.string(),
-    hemoglobin: z.string(),
+    weight: z.string().min(1, 'أدخل الوزن').refine((v) => !isNaN(Number(v)) && Number(v) > 0, 'أدخل وزناً صحيحاً'),
+    bloodPressure: z.string().min(1, 'أدخل ضغط الدم'),
+    hemoglobin: z.string().min(1, 'أدخل الهيموجلوبين').refine((v) => !isNaN(Number(v)) && Number(v) > 0, 'أدخل قيمة صحيحة'),
     isAllergic: z.boolean(),
     rejectionReason: z.string(),
-    lockoutUntil: z.string(),
     deferredUntil: z.string(),
     donationTime: z.string(),
   })
@@ -48,8 +47,6 @@ export const donorSchema = z
 
 export type SimpleForm = z.infer<typeof donorSchema>;
 
-// ── Constants ──
-export const DISTRICTS = ['بني سويف', 'ناصر', 'الواسطى', 'ببا', 'الفشن', 'إهناسيا', 'سمسطا', 'نزلة'];
 
 export const initialForm: SimpleForm = {
   name: '',
@@ -58,7 +55,7 @@ export const initialForm: SimpleForm = {
   phone: '',
   nationalId: '',
   governorate: 'بني سويف',
-  district: 'بني سويف',
+  district: 'مركز وبندر بني سويف',
   area: '',
   bloodType: '',
   donationType: 'whole',
@@ -71,7 +68,6 @@ export const initialForm: SimpleForm = {
   hemoglobin: '',
   isAllergic: false,
   rejectionReason: '',
-  lockoutUntil: '',
   deferredUntil: '',
   donationTime: new Date().toTimeString().slice(0, 5),
 };

@@ -8,13 +8,13 @@ import {
   Building2,
   Smartphone,
   Megaphone,
-  Clock,
   CheckCircle2,
-  XCircle,
+  ClipboardList,
 } from 'lucide-react';
 import { BLOOD_TYPES, CITIES } from '../../constants';
-import { usePaginatedDonors } from '../../hooks/useDonors';
+import { usePaginatedDonations, useDeleteDonation, useConfirmDonation } from '../../hooks/useDonors';
 import { useFilterChange } from '../../hooks/useFilterChange';
+import { toast } from 'sonner';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 import {
@@ -25,47 +25,72 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '../ui/pagination';
-import type { Donor } from '../../types';
+import type { Donation } from '../../types';
 
 // ── Sub-components ──
 import {
-  statusColors,
-  statusLabels,
   donationTypeLabels,
   genderLabels,
   tableHeaders,
-} from './doctor-donors/donorsConstants';
-import DonorDetailModal from './doctor-donors/DonorDetailModal';
+} from './doctor-donations/donorsConstants';
+import DonorDetailModal from './doctor-donations/DonorDetailModal';
+import DonationActionModal from './doctor-donations/DonationActionModal';
 
-export default function DoctorDonors() {
+export default function DoctorDonations() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [filterBlood, setFilterBlood] = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
   const [filterCity, setFilterCity] = useState('');
-  const [viewing, setViewing] = useState<Donor | null>(null);
+  const [viewing, setViewing] = useState<Donation | null>(null);
+  const [actionDonation, setActionDonation] = useState<Donation | null>(null);
 
   const {
     data: response,
     isLoading,
     isError,
     refetch,
-  } = usePaginatedDonors({
+  } = usePaginatedDonations({
     page,
     limit: 5,
     search,
     bloodType: filterBlood,
-    status: filterStatus,
     city: filterCity,
   });
 
-  const donors = response?.data || [];
+  const donations = response?.data || [];
   const total = response?.total || 0;
   const totalPages = Math.ceil(total / 5) || 1;
 
   // When filters change, reset to page 1
   const { handleFilterChange } = useFilterChange(setPage);
+
+  const deleteMutation = useDeleteDonation();
+  const confirmMutation = useConfirmDonation();
+
+  const handleDelete = (donationId: string) => {
+    deleteMutation.mutate(donationId, {
+      onSuccess: () => {
+        toast.success('تم حذف التبرع بنجاح');
+        setActionDonation(null);
+      },
+      onError: () => {
+        toast.error('تعذر حذف التبرع');
+      },
+    });
+  };
+
+  const handleConfirm = (donationId: string) => {
+    confirmMutation.mutate(donationId, {
+      onSuccess: () => {
+        toast.success('تم إرسال التبرع للمختبر بنجاح');
+        setActionDonation(null);
+      },
+      onError: () => {
+        toast.error('تعذر إرسال التبرع للمختبر');
+      },
+    });
+  };
 
   if (isLoading)
     return (
@@ -76,7 +101,7 @@ export default function DoctorDonors() {
       </div>
     );
   if (isError)
-    return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
+    return <ErrorState message="تعذر تحميل بيانات التبرعات" onRetry={() => refetch()} />;
 
 
   return (
@@ -85,10 +110,10 @@ export default function DoctorDonors() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
-            المتبرعون
+            التبرعات
           </h1>
           <p className="text-gray-500" style={{ fontSize: '14px' }}>
-            {total} متبرع مسجل
+            {total} تبرع مسجل
           </p>
         </div>
         <button
@@ -100,89 +125,67 @@ export default function DoctorDonors() {
             fontWeight: 700,
           }}
         >
-          <UserPlus className="w-5 h-5" /> تسجيل متبرع جديد
+          <UserPlus className="w-5 h-5" /> تسجيل تبرع جديد
         </button>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="relative lg:col-span-1">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              value={search}
-              onChange={(e) => handleFilterChange(setSearch, e.target.value)}
-              placeholder="ابحث بلاسم أو الرمز..."
-              className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
-              style={{ fontSize: '13px' }}
-            />
-          </div>
-          <div className="relative">
-            <select
-              value={filterBlood}
-              onChange={(e) => handleFilterChange(setFilterBlood, e.target.value)}
-              className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
-              style={{ fontSize: '13px' }}
-            >
-              <option value="">كل الفصائل</option>
-              {BLOOD_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-          </div>
-          <div className="relative">
-            <select
-              value={filterStatus}
-              onChange={(e) => handleFilterChange(setFilterStatus, e.target.value)}
-              className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
-              style={{ fontSize: '13px' }}
-            >
-              <option value="">كل الحالات</option>
-              <option value="eligible">مؤهل</option>
-              <option value="ineligible">غير مؤهل</option>
-              <option value="deferred">موجل لفترة</option>
-            </select>
-            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-          </div>
-          <div className="relative">
-            <select
-              value={filterCity}
-              onChange={(e) => handleFilterChange(setFilterCity, e.target.value)}
-              className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
-              style={{ fontSize: '13px' }}
-            >
-              <option value="">كل المدن</option>
-              {CITIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-          </div>
+      <div className="flex flex-wrap gap-3">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="بحث بالاسم أو الرقم القومي أو رمز التبرع..."
+            value={search}
+            onChange={(e) => handleFilterChange(setSearch, e.target.value)}
+            className="w-full pr-9 pl-3 py-2.5 border border-gray-200 rounded-xl bg-white outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+            style={{ fontSize: '13px' }}
+          />
+        </div>
+        <div className="relative">
+          <select
+            value={filterBlood}
+            onChange={(e) => handleFilterChange(setFilterBlood, e.target.value)}
+            className="appearance-none px-4 py-2.5 pr-3 pl-8 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none focus:border-green-400"
+            style={{ fontSize: '13px' }}
+          >
+            <option value="">كل الفصائل</option>
+            {BLOOD_TYPES.map((bt) => (
+              <option key={bt} value={bt}>
+                {bt}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+        </div>
+        <div className="relative">
+          <select
+            value={filterCity}
+            onChange={(e) => handleFilterChange(setFilterCity, e.target.value)}
+            className="appearance-none px-4 py-2.5 pr-3 pl-8 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none focus:border-green-400"
+            style={{ fontSize: '13px' }}
+          >
+            <option value="">كل المدن</option>
+            {CITIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
         </div>
       </div>
 
-      {/* Stats row removed as server pagination is active */}
-
-      {/* Donors Table */}
+      {/* Table */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-gray-100">
-          <span className="text-gray-500" style={{ fontSize: '13px' }}>
-            {total} نتيجة
-          </span>
-        </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[750px]">
+          <table className="w-full text-right" style={{ fontSize: '13px' }}>
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-gray-50 border-b border-gray-100">
                 {tableHeaders.map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-right text-gray-500 whitespace-nowrap"
+                    className="px-4 py-3 text-gray-500 whitespace-nowrap"
                     style={{ fontSize: '12px', fontWeight: 600 }}
                   >
                     {h}
@@ -191,34 +194,23 @@ export default function DoctorDonors() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {donors.map((d) => (
+              {donations.map((d) => (
                 <tr key={d.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3 whitespace-nowrap">
-                    {d.status === 'eligible' ? (
-                      <span
-                        className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded"
-                        style={{ fontSize: '11px', fontWeight: 700 }}
-                      >
-                        {d.donorCode}
-                      </span>
-                    ) : (
-                      <span
-                        className="text-gray-300 bg-gray-50 px-2 py-0.5 rounded border border-dashed border-gray-200"
-                        style={{ fontSize: '11px' }}
-                      >
-                        —
-                      </span>
-                    )}
+                    <span
+                      className="text-green-600 font-mono"
+                      style={{ fontSize: '12px', fontWeight: 700 }}
+                    >
+                      {d.donationCode}
+                    </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="text-gray-900" style={{ fontSize: '13px', fontWeight: 600 }}>
+                    <span className="text-gray-900" style={{ fontWeight: 600 }}>
                       {d.name}
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="text-gray-500" style={{ fontSize: '13px' }}>
-                      {genderLabels[d.gender]}
-                    </span>
+                    <span className="text-gray-500">{genderLabels[d.gender]}</span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
@@ -271,26 +263,25 @@ export default function DoctorDonors() {
                       </span>
                     )}
                   </td>
+                  {/* ── Action Column ── */}
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="flex flex-col gap-0.5">
+                    {d.sentToLab ? (
                       <span
-                        className={`flex items-center gap-1 px-2 py-0.5 rounded-full w-fit ${statusColors[d.status]}`}
-                        style={{ fontSize: '11px', fontWeight: 600 }}
+                        className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full w-fit"
+                        style={{ fontSize: '11px', fontWeight: 700 }}
                       >
-                        {d.status === 'eligible' && <CheckCircle2 className="w-3 h-3" />}
-                        {d.status === 'ineligible' && <XCircle className="w-3 h-3" />}
-                        {d.status === 'deferred' && <Clock className="w-3 h-3" />}
-                        {statusLabels[d.status]}
+                        <CheckCircle2 className="w-3.5 h-3.5" /> تم الإرسال
                       </span>
-                      {d.status === 'deferred' && d.deferredUntil && (
-                        <span
-                          className="text-orange-500 flex items-center gap-0.5"
-                          style={{ fontSize: '10px' }}
-                        >
-                          <Clock className="w-3 h-3" /> حتى {d.deferredUntil}
-                        </span>
-                      )}
-                    </div>
+                    ) : (
+                      <button
+                        onClick={() => setActionDonation(d)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg hover:bg-amber-100 transition-all"
+                        style={{ fontSize: '11px', fontWeight: 700 }}
+                      >
+                        <ClipboardList className="w-3.5 h-3.5" />
+                        مراجعة
+                      </button>
+                    )}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <button
@@ -302,7 +293,7 @@ export default function DoctorDonors() {
                   </td>
                 </tr>
               ))}
-              {donors.length === 0 && <EmptyState colSpan={10} message="لا توجد نتائج" />}
+              {donations.length === 0 && <EmptyState colSpan={10} message="لا توجد نتائج" />}
             </tbody>
           </table>
         </div>
@@ -352,7 +343,20 @@ export default function DoctorDonors() {
       </div>
 
       {/* Detail Modal */}
-      {viewing && <DonorDetailModal donor={viewing} onClose={() => setViewing(null)} />}
+      {viewing && <DonorDetailModal donation={viewing} onClose={() => setViewing(null)} />}
+
+      {/* Action Modal (SuccessScreen-style) */}
+      {actionDonation && (
+        <DonationActionModal
+          donation={actionDonation}
+          onClose={() => setActionDonation(null)}
+          onConfirm={handleConfirm}
+          onDelete={handleDelete}
+          isConfirming={confirmMutation.isPending}
+          isDeleting={deleteMutation.isPending}
+        />
+      )}
     </div>
   );
 }
+

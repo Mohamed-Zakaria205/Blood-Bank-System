@@ -25,15 +25,16 @@ export const TODAY_DATE_DISPLAY = formatLocalizedDate(new Date(), { weekday: 'lo
 /** Stat card configuration builder */
 export function buildStats(
   donors: { registeredAt?: string; status?: string }[],
+  donations: { donationDate?: string }[],
   myCampaigns: { status?: string }[],
   myDonors: { status?: string }[],
   navigate: (path: string) => void,
 ) {
   return [
     {
-      label: 'متبرعو اليوم',
-      value: donors.filter((d) => d.registeredAt === TODAY || d.registeredAt?.startsWith('2025-04-')).length, // keep fallback for mock data to show some stats
-      sub: 'مسجلون اليوم',
+      label: 'تبرعات اليوم',
+      value: donations.filter((d) => d.donationDate === TODAY || d.donationDate?.startsWith('2025-04-')).length,
+      sub: `${donations.length} إجمالي التبرعات`,
       icon: Heart,
       color: 'text-green-600',
       bg: 'bg-green-50',

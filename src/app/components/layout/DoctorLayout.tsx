@@ -9,17 +9,17 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import DashboardLayout, { type NavItem } from './DashboardLayout';
-import { useDonors } from '../../hooks/useDonors';
+import { useDonations } from '../../hooks/useDonors';
 import { useCampaigns } from '../../hooks/useCampaigns';
 
 export default function DoctorLayout() {
   const [dismissedNotifs, setDismissedNotifs] = useState<Set<string>>(new Set());
-  const { data: donors = [] } = useDonors();
+  const { data: donations = [] } = useDonations();
   const { data: campaigns = [] } = useCampaigns();
   const navigate = useNavigate();
   const activeCampaigns = campaigns.filter((c) => c.status === 'active');
   const todayStr = new Date().toISOString().split('T')[0];
-  const todayDonors = donors.filter((d) => d.registeredAt === todayStr);
+  const todayDonations = donations.filter((d) => d.donationDate === todayStr);
 
   const notifications = [
     ...activeCampaigns.map((c) => ({
@@ -29,11 +29,11 @@ export default function DoctorLayout() {
       icon: <Megaphone className="w-4 h-4" />,
       color: 'green' as const,
     })),
-    ...(todayDonors.length > 0
+    ...(todayDonations.length > 0
       ? [
           {
-            id: 'today-donors',
-            title: `${todayDonors.length} متبرع مسجّل اليوم`,
+            id: 'today-donations',
+            title: `${todayDonations.length} تبرع مسجّل اليوم`,
             subtitle: 'تم تسجيلهم بنجاح في السجل الطبي',
             icon: <UserPlus className="w-4 h-4" />,
             color: 'blue' as const,
@@ -44,8 +44,8 @@ export default function DoctorLayout() {
 
   const navItems: NavItem[] = [
     { path: '/doctor', label: 'لوحة التحكم', icon: LayoutDashboard, end: true },
-    { path: '/doctor/register', label: 'تسجيل متبرع', icon: UserPlus },
-    { path: '/doctor/donors', label: 'المتبرعون', icon: Users },
+    { path: '/doctor/register', label: 'تسجيل تبرع', icon: UserPlus },
+    { path: '/doctor/donations', label: 'التبرعات', icon: Users },
     { path: '/doctor/appointments', label: 'المواعيد', icon: CalendarDays },
     { path: '/doctor/eligibility', label: 'مؤهلية المتبرعين', icon: HeartPulse },
     { path: '/doctor/campaigns', label: 'حملات التبرع', icon: Megaphone, badgeCount: activeCampaigns.length, badgeColor: 'bg-green-100 text-green-700' },
@@ -61,7 +61,7 @@ export default function DoctorLayout() {
         fontWeight: 700,
       }}
     >
-      <UserPlus className="w-5 h-5" /> تسجيل متبرع جديد
+      <UserPlus className="w-5 h-5" /> تسجيل تبرع جديد
     </button>
   );
 

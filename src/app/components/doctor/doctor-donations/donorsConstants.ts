@@ -25,9 +25,9 @@ export const genderLabels: Record<string, string> = {
   female: 'أنثى',
 };
 
-/** Table column headers */
+/** Table column headers for Donations page */
 export const tableHeaders = [
-  'رمز المتبرع',
+  'رمز التبرع',
   'الاسم',
   'الجنس',
   'الهاتف',
@@ -35,6 +35,6 @@ export const tableHeaders = [
   'الفصيلة',
   'نوع التبرع',
   'المصدر',
-  'الحالة',
+  'إجراء',
   'عرض',
 ] as const;

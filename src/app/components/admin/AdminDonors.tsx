@@ -20,7 +20,6 @@ import type { Donor } from '../../types';
 import {
   statusColors,
   statusLabels,
-  donationTypeLabels,
   adminDonorsHeaders,
 } from './admin-donors/donorsConstants';
 import EditDonorModal from './admin-donors/EditDonorModal';
@@ -236,11 +235,7 @@ export default function AdminDonors() {
                       {d.bloodType}
                     </span>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="text-gray-500" style={{ fontSize: '12px' }}>
-                      {donationTypeLabels[d.donationType]}
-                    </span>
-                  </td>
+
                   <td className="px-4 py-3 whitespace-nowrap">
                     {d.source === 'app' ? (
                       <span
@@ -277,7 +272,7 @@ export default function AdminDonors() {
                   </td>
                 </tr>
               ))}
-              {donors.length === 0 && <EmptyState colSpan={8} message="لا توجد نتائج مطابقة" />}
+              {donors.length === 0 && <EmptyState colSpan={7} message="لا توجد نتائج مطابقة" />}
             </tbody>
           </table>
         </div>
@@ -341,3 +336,5 @@ export default function AdminDonors() {
     </div>
   );
 }
+
+
