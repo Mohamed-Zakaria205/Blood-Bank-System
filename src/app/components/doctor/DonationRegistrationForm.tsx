@@ -190,8 +190,6 @@ export default function DonationRegistrationForm() {
           governorate: values.governorate,
           district: values.district,
           area: values.area,
-          bloodType: values.bloodType as BloodType,
-          donationType: values.donationType as DonationType,
           source: values.source,
           // Backend uses a single `donationCenterId` field for both campaign and walkin center IDs
           donationCenterId:
@@ -201,7 +199,7 @@ export default function DonationRegistrationForm() {
         },
         {
           onSuccess: (res) => {
-            setDonationId(res.data.donationId);
+            setDonationId(res.data);
             toast.success('تم تسجيل التبرع المبدئي بنجاح');
             setStep(2);
           },
@@ -233,6 +231,8 @@ export default function DonationRegistrationForm() {
           isAllergic: values.isAllergic,
           rejectionReason: values.rejectionReason || undefined,
           deferredUntil: values.deferredUntil || undefined,
+          bloodType: values.bloodType ? (values.bloodType as BloodType) : undefined,
+          donationType: values.donationType as DonationType,
         }
       },
       {

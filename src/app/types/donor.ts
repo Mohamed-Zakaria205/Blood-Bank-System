@@ -83,10 +83,8 @@ export interface BasicDonationRequest {
   governorate: string;
   district: string;
   area: string;
-  bloodType: BloodType;
   source: 'walkin' | 'app' | 'campaign';
   donationCenterId?: string;
-  donationType: DonationType;
 }
 
 /**
@@ -99,7 +97,8 @@ export interface MedicalRecordRequest {
   isAllergic?: boolean;
   rejectionReason?: string;
   deferredUntil?: string;
-
+  bloodType?: BloodType;
+  donationType?: DonationType;
 }
 
 /**
