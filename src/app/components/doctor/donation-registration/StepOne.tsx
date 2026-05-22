@@ -12,6 +12,7 @@ import type { UseFormRegister, FieldErrors } from 'react-hook-form';
 import type { SimpleForm } from './donationFormSchema';
 import { EGYPT_DATA } from '../../../data/egypt';
 import type { Campaign } from '../../../types';
+import type { DonationCenter } from '../../../types/donationCenter';
 
 interface StepOneProps {
   form: SimpleForm;
@@ -19,6 +20,8 @@ interface StepOneProps {
   errors: FieldErrors<SimpleForm>;
   activeCampaigns: Campaign[];
   selectedCampaign: Campaign | undefined;
+  donationCenters: DonationCenter[];
+  selectedCenter: DonationCenter | undefined;
   updateField: <K extends keyof SimpleForm>(key: K, value: SimpleForm[K]) => void;
   onNext: () => void;
 }
@@ -29,6 +32,8 @@ export default function StepOne({
   errors,
   activeCampaigns,
   selectedCampaign,
+  donationCenters,
+  selectedCenter,
   updateField,
   onNext,
 }: StepOneProps) {
@@ -135,6 +140,39 @@ export default function StepOne({
                 <span className="text-purple-500" style={{ fontSize: '11px' }}>
                   {selectedCampaign.registeredDonors} / {selectedCampaign.targetDonors}{' '}
                   متبرع
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Donation Center Selector — shown when source is walkin */}
+        {form.source === 'walkin' && (
+          <div className="mt-3">
+            <select
+              {...register('donationCenterId')}
+              className={`w-full px-4 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${errors.donationCenterId ? 'border-red-300' : 'border-gray-200'}`}
+              style={{ fontSize: '13px' }}
+            >
+              <option value="">— اختر مركز التبرع —</option>
+              {donationCenters.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            {errors.donationCenterId?.message && (
+              <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
+                {errors.donationCenterId.message}
+              </p>
+            )}
+            {selectedCenter && (
+              <div className="mt-2 p-2.5 bg-green-50 border border-green-100 rounded-xl flex items-center justify-between">
+                <span className="text-green-700" style={{ fontSize: '12px', fontWeight: 600 }}>
+                  {selectedCenter.name}
+                </span>
+                <span className="text-green-500" style={{ fontSize: '11px' }}>
+                  {selectedCenter.location}
                 </span>
               </div>
             )}

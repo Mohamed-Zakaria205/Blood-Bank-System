@@ -2,7 +2,7 @@
 // React Query hooks — Donors & Donations
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchDonors, fetchDonorById, updateDonor, fetchPaginatedDonors, fetchPaginatedDonations, fetchAllDonations, searchDonorByNationalId, addDonation, addMedicalRecord, deleteDonation, confirmDonation } from '../api/donors';
+import { fetchDonors, fetchDonorById, updateDonor, fetchPaginatedDonors, fetchPaginatedDonations, fetchAllDonations, searchDonorByNationalId, addDonation, addMedicalRecord, deleteDonation, confirmDonation, fetchDonationCenters } from '../api/donors';
 import type { BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest } from '../types/donor';
 import type { DonorFilters } from '../types/common';
 
@@ -122,5 +122,14 @@ export function useConfirmDonation() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['donations'] });
     },
+  });
+}
+
+/** Fetch donation centers (for walkin source dropdown) */
+export function useDonationCenters() {
+  return useQuery({
+    queryKey: ['donation-centers'],
+    queryFn: fetchDonationCenters,
+    staleTime: 1000 * 60 * 10, // cache for 10 minutes — centers rarely change
   });
 }

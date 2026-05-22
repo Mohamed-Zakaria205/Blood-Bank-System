@@ -4,7 +4,7 @@ import { Check, Smartphone } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCampaigns } from '../../hooks/useCampaigns';
 import { useSlot15Data } from '../../hooks/useAppointments';
-import { useAddDonation, useAddMedicalRecord, useSearchDonor } from '../../hooks/useDonors';
+import { useAddDonation, useAddMedicalRecord, useSearchDonor, useDonationCenters } from '../../hooks/useDonors';
 import { toast } from 'sonner';
 import { useForm, Path, PathValue } from 'react-hook-form';
 import { Form } from '../ui/form';
@@ -23,6 +23,7 @@ export default function DonationRegistrationForm() {
   const [searchParams] = useSearchParams();
   const { data: campaignsData = [] } = useCampaigns();
   const { data: slot15DataFromHook = [] } = useSlot15Data();
+  const { data: donationCenters = [] } = useDonationCenters();
   const addDonation = useAddDonation();
   const addMedicalRecord = useAddMedicalRecord();
   const searchDonor = useSearchDonor();
@@ -88,7 +89,15 @@ export default function DonationRegistrationForm() {
     register('isAllergic');
     register('governorate');
     register('donationTime');
+    register('donationCenterId');
   }, [register]);
+
+  // Auto-select the donation center when there's only one option and source is walkin
+  useEffect(() => {
+    if (donationCenters.length === 1 && form.source === 'walkin' && !form.donationCenterId) {
+      setValue('donationCenterId', donationCenters[0].id, { shouldDirty: true, shouldValidate: true });
+    }
+  }, [donationCenters, form.source, form.donationCenterId, setValue]);
 
   const activeCampaigns = campaignsData.filter((c) => c.status === 'active');
 
@@ -97,8 +106,13 @@ export default function DonationRegistrationForm() {
       shouldDirty: true,
       shouldValidate: true,
     });
-    if (key === 'source' && value !== 'campaign') {
-      setValue('campaignId', '', { shouldDirty: true, shouldValidate: true });
+    if (key === 'source') {
+      if (value !== 'campaign') {
+        setValue('campaignId', '', { shouldDirty: true, shouldValidate: true });
+      }
+      if (value !== 'walkin') {
+        setValue('donationCenterId', '', { shouldDirty: true, shouldValidate: true });
+      }
     }
   };
 
@@ -153,6 +167,9 @@ export default function DonationRegistrationForm() {
     if (getValues('source') === 'campaign') {
       step1Fields.push('campaignId');
     }
+    if (getValues('source') === 'walkin') {
+      step1Fields.push('donationCenterId');
+    }
     const isValid = await trigger(step1Fields);
     if (isValid) {
       setSubmitting(true);
@@ -170,7 +187,11 @@ export default function DonationRegistrationForm() {
           bloodType: values.bloodType as BloodType,
           donationType: values.donationType as DonationType,
           source: values.source,
-          campaignId: values.campaignId || undefined,
+          // Backend uses a single `donationCenterId` field for both campaign and walkin center IDs
+          donationCenterId:
+            values.source === 'campaign'
+              ? values.campaignId || undefined
+              : values.donationCenterId || undefined,
         },
         {
           onSuccess: (res) => {
@@ -234,6 +255,7 @@ export default function DonationRegistrationForm() {
 
 
   const selectedCampaign = activeCampaigns.find((c) => c.id === form.campaignId);
+  const selectedCenter = donationCenters.find((c) => c.id === form.donationCenterId);
 
 
 
@@ -353,6 +375,8 @@ export default function DonationRegistrationForm() {
                 errors={errors}
                 activeCampaigns={activeCampaigns}
                 selectedCampaign={selectedCampaign}
+                donationCenters={donationCenters}
+                selectedCenter={selectedCenter}
                 updateField={updateField}
                 onNext={handleNextStep}
               />

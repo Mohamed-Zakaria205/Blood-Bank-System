@@ -5,6 +5,7 @@ import apiClient from './client';
 import { ApiError } from './errors';
 import type { Donor, Donation, BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest } from '../types/donor';
 import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/common';
+import type { DonationCenter } from '../types/donationCenter';
 import type { ApiResponseWrapper } from '../types/auth';
 import { validateContract, createPaginatedSchema, DonorContractSchema } from './contract';
 import { donors as MOCK_DONORS } from '../data/donors.mock';
@@ -323,4 +324,25 @@ export async function confirmDonation(donationId: string): Promise<ApiResponse<v
   }
   const { data } = await apiClient.post<ApiResponse<void>>(`/Donations/${donationId}/confirm`);
   return data;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DONATION CENTERS  — fetch centers for walkin dropdown
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * Fetch donation centers list.
+ * The backend currently returns a single main-branch center.
+ * We wrap it in an array so the UI can treat it as a list.
+ */
+export async function fetchDonationCenters(): Promise<DonationCenter[]> {
+  try {
+    const { data: wrapper } = await apiClient.get<ApiResponseWrapper<DonationCenter>>(
+      '/donation-centers/main-branch',
+    );
+    return wrapper.data ? [wrapper.data] : [];
+  } catch (error) {
+    console.error('Error in fetchDonationCenters:', error);
+    return [];
+  }
 }

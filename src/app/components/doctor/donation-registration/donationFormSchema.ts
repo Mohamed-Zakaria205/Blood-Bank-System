@@ -26,6 +26,7 @@ export const donorSchema = z
     diseases: z.array(z.string()),
     source: z.enum(['walkin', 'campaign', 'app']),
     campaignId: z.string(),
+    donationCenterId: z.string(),
     status: z.enum(['eligible', 'ineligible', 'deferred']),
     weight: z.string().min(1, 'أدخل الوزن').refine((v) => !isNaN(Number(v)) && Number(v) > 0, 'أدخل وزناً صحيحاً'),
     bloodPressure: z.string().min(1, 'أدخل ضغط الدم'),
@@ -41,6 +42,13 @@ export const donorSchema = z
         code: z.ZodIssueCode.custom,
         message: 'اختر الحملة',
         path: ['campaignId'],
+      });
+    }
+    if (data.source === 'walkin' && !data.donationCenterId.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'اختر مركز التبرع',
+        path: ['donationCenterId'],
       });
     }
   });
@@ -62,6 +70,7 @@ export const initialForm: SimpleForm = {
   diseases: [],
   source: 'walkin',
   campaignId: '',
+  donationCenterId: '',
   status: 'eligible',
   weight: '',
   bloodPressure: '',

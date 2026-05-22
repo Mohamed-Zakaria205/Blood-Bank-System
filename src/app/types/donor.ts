@@ -85,7 +85,7 @@ export interface BasicDonationRequest {
   area: string;
   bloodType: BloodType;
   source: 'walkin' | 'app' | 'campaign';
-  campaignId?: string;
+  donationCenterId?: string;
   donationType: DonationType;
 }
 
