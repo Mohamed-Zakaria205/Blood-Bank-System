@@ -42,7 +42,7 @@ export default function AdminDonors() {
     search,
     bloodType: filterBlood,
     status: filterStatus,
-    city: filterCity,
+    district: filterCity,
   });
 
   const donors = response?.data || [];
@@ -224,7 +224,7 @@ export default function AdminDonors() {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span className="text-gray-500" style={{ fontSize: '13px' }}>
-                      {d.city}
+                      {d.district}
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">

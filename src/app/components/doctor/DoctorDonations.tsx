@@ -52,15 +52,15 @@ export default function DoctorDonations() {
     refetch,
   } = usePaginatedDonations({
     page,
-    limit: 5,
+    limit: 10,
     search,
     bloodType: filterBlood,
-    city: filterCity,
+    district: filterCity,
   });
 
   const donations = response?.data || [];
   const total = response?.total || 0;
-  const totalPages = Math.ceil(total / 5) || 1;
+  const totalPages = Math.ceil(total / 10) || 1;
 
   // When filters change, reset to page 1
   const { handleFilterChange } = useFilterChange(setPage);
@@ -223,7 +223,7 @@ export default function DoctorDonations() {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span className="text-gray-500" style={{ fontSize: '13px' }}>
-                      {d.city}
+                      {d.district}
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">

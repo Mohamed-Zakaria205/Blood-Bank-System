@@ -109,6 +109,11 @@ apiClient.interceptors.response.use(
       _retry?: boolean;
     };
 
+    // If the request was cancelled, pass the original error so React Query handles it properly
+    if (axios.isCancel(error)) {
+      return Promise.reject(error);
+    }
+
     // Only intercept 401s, and only once per request
     if (error.response?.status !== 401 || originalRequest._retry) {
       return Promise.reject(handleApiError(error));

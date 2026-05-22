@@ -106,8 +106,8 @@ export default function EditDonorModal({
                 المدينة
               </label>
               <select
-                value={form.city || ''}
-                onChange={(e) => onFormChange({ ...form, city: e.target.value })}
+                value={form.district || ''}
+                onChange={(e) => onFormChange({ ...form, district: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
                 style={{ fontSize: '13px' }}
               >

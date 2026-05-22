@@ -27,7 +27,7 @@ export interface DonorFilters extends PaginationParams {
   search?: string;
   bloodType?: string;
   status?: string;
-  city?: string;
+  district?: string;
 }
 
 /** Blood bag filter params */

@@ -52,7 +52,7 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
                 ['العمر', `${donation.age} سنة`],
                 ['الرقم القومي', donation.nationalId],
                 ['الهاتف', donation.phone],
-                ['المدينة', donation.city],
+                ['المدينة', donation.district],
                 ['العنوان', donation.address],
                 ['فصيلة الدم', donation.bloodType],
               ].map(([label, val]) => (

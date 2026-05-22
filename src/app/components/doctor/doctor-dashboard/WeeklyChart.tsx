@@ -1,7 +1,35 @@
 import { TrendingUp, Users } from 'lucide-react';
-import { weekData } from './dashboardConstants';
+import type { Donation } from '../../../types/donor';
 
-export default function WeeklyChart() {
+interface WeeklyChartProps {
+  donations: Donation[];
+}
+
+/** Build current-week donation counts (Sun → Sat) from real API data */
+function buildWeekData(donations: Donation[]) {
+  const dayNames = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
+  // Get the start of the current week (Sunday)
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay());
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  return dayNames.map((day, i) => {
+    const dayDate = new Date(startOfWeek);
+    dayDate.setDate(startOfWeek.getDate() + i);
+    const dateStr = dayDate.toISOString().split('T')[0];
+    const count = donations.filter((d) => d.donationDate === dateStr).length;
+    return { day, donors: count };
+  });
+}
+
+export default function WeeklyChart({ donations }: WeeklyChartProps) {
+  const weekData = buildWeekData(donations);
+  const total = weekData.reduce((a, b) => a + b.donors, 0);
+  const maxVal = Math.max(...weekData.map((w) => w.donors), 1); // avoid division by zero
+  const avgPerDay = Math.round(total / weekData.length);
+
   return (
     <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
       {/* Card header */}
@@ -11,8 +39,7 @@ export default function WeeklyChart() {
             المتبرعون هذا الأسبوع
           </h2>
           <p className="text-gray-400 mt-0.5" style={{ fontSize: '11px' }}>
-            إجمالي {weekData.reduce((a, b) => a + b.donors, 0)} متبرع — المعدل اليومي{' '}
-            {Math.round(weekData.reduce((a, b) => a + b.donors, 0) / weekData.length)}
+            إجمالي {total} متبرع — المعدل اليومي {avgPerDay}
           </p>
         </div>
         <div
@@ -21,7 +48,7 @@ export default function WeeklyChart() {
         >
           <TrendingUp className="w-3.5 h-3.5" style={{ color: '#16a34a' }} />
           <span style={{ fontSize: '12px', fontWeight: 700, color: '#15803d' }}>
-            ↑ 12% عن الأسبوع الماضي
+            هذا الأسبوع
           </span>
         </div>
       </div>
@@ -30,11 +57,11 @@ export default function WeeklyChart() {
       <div className="px-6 pt-5 pb-4">
         <div className="relative" style={{ height: '176px' }}>
           {/* Horizontal grid lines + y-axis labels */}
-          {[7, 5, 3, 1].map((v) => (
+          {[maxVal, Math.round(maxVal * 0.66), Math.round(maxVal * 0.33), 0].filter((v, i, arr) => arr.indexOf(v) === i && v > 0).map((v) => (
             <div
               key={v}
               className="absolute w-full flex items-center gap-3 pointer-events-none"
-              style={{ bottom: `${(v / 7) * 140 + 24}px` }}
+              style={{ bottom: `${(v / maxVal) * 140 + 24}px` }}
             >
               <span
                 className="text-gray-300 flex-shrink-0 text-right"
@@ -49,8 +76,7 @@ export default function WeeklyChart() {
           {/* Bars */}
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 pl-5">
             {weekData.map((d) => {
-              const max = Math.max(...weekData.map((w) => w.donors));
-              const barHeightPx = Math.max((d.donors / max) * 140, 10);
+              const barHeightPx = Math.max((d.donors / maxVal) * 140, d.donors > 0 ? 10 : 4);
               const arabicDays = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
               const isToday = d.day === arabicDays[new Date().getDay()];
               return (
@@ -73,7 +99,9 @@ export default function WeeklyChart() {
                       height: `${barHeightPx}px`,
                       background: isToday
                         ? 'linear-gradient(180deg, #15803d 0%, #22c55e 100%)'
-                        : 'linear-gradient(180deg, #86efac 0%, #bbf7d0 100%)',
+                        : d.donors > 0
+                        ? 'linear-gradient(180deg, #86efac 0%, #bbf7d0 100%)'
+                        : '#f3f4f6',
                       boxShadow: isToday ? '0 4px 12px rgba(34,197,94,0.30)' : undefined,
                     }}
                   />
@@ -117,7 +145,7 @@ export default function WeeklyChart() {
             <span className="text-gray-500" style={{ fontSize: '11px' }}>
               الأعلى:{' '}
               <span style={{ fontWeight: 700, color: '#374151' }}>
-                {Math.max(...weekData.map((w) => w.donors))} متبرع
+                {maxVal} متبرع
               </span>
             </span>
           </div>

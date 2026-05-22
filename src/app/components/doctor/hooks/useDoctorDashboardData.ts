@@ -3,12 +3,11 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useDonors, useDonations } from '../../../hooks/useDonors';
 import { useCampaigns } from '../../../hooks/useCampaigns';
 import { useSlot15Data } from '../../../hooks/useAppointments';
-
-const TODAY = '2025-04-26'; // Match the hardcoded value in the original file
+import { toISODate } from '../../../utils/date';
 
 export function useDoctorDashboardData() {
   const { user } = useAuth();
-  
+
   const { data: donors = [], isLoading: isLoadingDonors, isError: isErrorDonors, refetch } = useDonors();
   const { data: donations = [], isLoading: isLoadingDonations } = useDonations();
   const { data: campaigns = [], isLoading: isLoadingCampaigns } = useCampaigns();
@@ -18,16 +17,30 @@ export function useDoctorDashboardData() {
   const isError = isErrorDonors;
 
   const derivedData = useMemo(() => {
+    // Bug 1 & 4 fix: compute TODAY dynamically, not hardcoded
+    const today = toISODate(new Date());
+
     const myDonors = donors.filter((d) => d.registeredBy === user?.id);
     const activeCampaigns = campaigns.filter((c) => c.status === 'active');
-    const myCampaigns = campaigns.filter((c) => c.createdBy === user?.id);
+    // Bug 6 fix: also check createdById as a fallback for backend field name variations
+    const myCampaigns = campaigns.filter(
+      (c) => c.createdBy === user?.id || (c as any).createdById === user?.id,
+    );
 
-    const walkinToday = donors.filter((d) => d.registeredAt === TODAY && d.source === 'walkin').length;
-    const appToday = donors.filter((d) => d.registeredAt === TODAY && d.source === 'app').length;
-    const campaignToday = donors.filter((d) => d.registeredAt === TODAY && d.source === 'campaign').length;
-    const campaignDonors = donors.filter((d) => d.source === 'campaign');
+    // Bug 3 fix: count "today" badges using donations + donationDate, not donors + registeredAt
+    const walkinToday = donations.filter(
+      (d) => d.donationDate === today && d.source === 'walkin',
+    ).length;
+    const appToday = donations.filter(
+      (d) => d.donationDate === today && d.source === 'app',
+    ).length;
+    const campaignToday = donations.filter(
+      (d) => d.donationDate === today && d.source === 'campaign',
+    ).length;
+    const campaignDonors = donations.filter((d) => d.source === 'campaign');
 
-    const upcomingToday = slot15Data.filter((s) => s.date === TODAY && s.status === 'booked');
+    // Bug 4 fix: use dynamic today for appointment filtering
+    const upcomingToday = slot15Data.filter((s) => s.date === today && s.status === 'booked');
 
     return {
       myDonors,
@@ -39,7 +52,7 @@ export function useDoctorDashboardData() {
       campaignDonors,
       upcomingToday,
     };
-  }, [donors, campaigns, slot15Data, user?.id]);
+  }, [donors, donations, campaigns, slot15Data, user?.id]);
 
   return {
     donors,

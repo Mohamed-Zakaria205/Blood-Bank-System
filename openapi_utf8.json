@@ -1,0 +1,1121 @@
+﻿{
+    "/api/v1/system/Auth/login":  {
+                                      "post":  {
+                                                   "tags":  [
+                                                                "System - Auth"
+                                                            ],
+                                                   "summary":  "Login with email and password. Tokens are set as HttpOnly cookies.",
+                                                   "requestBody":  {
+                                                                       "content":  {
+                                                                                       "application/json":  "@{schema=}",
+                                                                                       "text/json":  "@{schema=}",
+                                                                                       "application/*+json":  "@{schema=}"
+                                                                                   },
+                                                                       "required":  true
+                                                                   },
+                                                   "responses":  {
+                                                                     "200":  {
+                                                                                 "description":  "OK",
+                                                                                 "content":  "@{application/json=}"
+                                                                             },
+                                                                     "400":  {
+                                                                                 "description":  "Bad Request",
+                                                                                 "content":  "@{application/json=}"
+                                                                             }
+                                                                 },
+                                                   "security":  [
+
+                                                                ]
+                                               }
+                                  },
+    "/api/v1/system/Auth/me":  {
+                                   "get":  {
+                                               "tags":  [
+                                                            "System - Auth"
+                                                        ],
+                                               "summary":  "Get the currently authenticated staff user\u0027s info from session cookie.",
+                                               "responses":  {
+                                                                 "200":  {
+                                                                             "description":  "OK",
+                                                                             "content":  "@{application/json=}"
+                                                                         },
+                                                                 "401":  {
+                                                                             "description":  "Unauthorized",
+                                                                             "content":  "@{application/json=}"
+                                                                         }
+                                                             }
+                                           }
+                               },
+    "/api/v1/system/Auth/refresh":  {
+                                        "post":  {
+                                                     "tags":  [
+                                                                  "System - Auth"
+                                                              ],
+                                                     "summary":  "Rotate tokens via HttpOnly cookies. No request body needed.",
+                                                     "responses":  {
+                                                                       "200":  {
+                                                                                   "description":  "OK",
+                                                                                   "content":  "@{application/json=}"
+                                                                               },
+                                                                       "401":  {
+                                                                                   "description":  "Unauthorized",
+                                                                                   "content":  "@{application/json=}"
+                                                                               }
+                                                                   },
+                                                     "security":  [
+
+                                                                  ]
+                                                 }
+                                    },
+    "/api/v1/system/Auth/change-password":  {
+                                                "post":  {
+                                                             "tags":  [
+                                                                          "System - Auth"
+                                                                      ],
+                                                             "summary":  "Change the authenticated user\u0027s password.",
+                                                             "requestBody":  {
+                                                                                 "content":  {
+                                                                                                 "application/json":  "@{schema=}",
+                                                                                                 "text/json":  "@{schema=}",
+                                                                                                 "application/*+json":  "@{schema=}"
+                                                                                             },
+                                                                                 "required":  true
+                                                                             },
+                                                             "responses":  {
+                                                                               "200":  {
+                                                                                           "description":  "OK",
+                                                                                           "content":  "@{application/json=}"
+                                                                                       },
+                                                                               "400":  {
+                                                                                           "description":  "Bad Request",
+                                                                                           "content":  "@{application/json=}"
+                                                                                       },
+                                                                               "401":  {
+                                                                                           "description":  "Unauthorized",
+                                                                                           "content":  "@{application/json=}"
+                                                                                       }
+                                                                           }
+                                                         }
+                                            },
+    "/api/v1/system/Auth/logout":  {
+                                       "post":  {
+                                                    "tags":  [
+                                                                 "System - Auth"
+                                                             ],
+                                                    "summary":  "Logout by clearing authentication cookies.",
+                                                    "responses":  {
+                                                                      "200":  {
+                                                                                  "description":  "OK",
+                                                                                  "content":  "@{application/json=}"
+                                                                              }
+                                                                  },
+                                                    "security":  [
+
+                                                                 ]
+                                                }
+                                   },
+    "/api/v1/system/Staff":  {
+                                 "post":  {
+                                              "tags":  [
+                                                           "System - Staff"
+                                                       ],
+                                              "summary":  "Create a new staff account (Admin only).",
+                                              "requestBody":  {
+                                                                  "content":  {
+                                                                                  "application/json":  "@{schema=}",
+                                                                                  "text/json":  "@{schema=}",
+                                                                                  "application/*+json":  "@{schema=}"
+                                                                              },
+                                                                  "required":  true
+                                                              },
+                                              "responses":  {
+                                                                "200":  {
+                                                                            "description":  "OK",
+                                                                            "content":  "@{application/json=}"
+                                                                        },
+                                                                "400":  {
+                                                                            "description":  "Bad Request",
+                                                                            "content":  "@{application/json=}"
+                                                                        },
+                                                                "500":  {
+                                                                            "description":  "Internal Server Error",
+                                                                            "content":  "@{application/json=}"
+                                                                        }
+                                                            }
+                                          }
+                             },
+    "/api/v1/system/Staff/{id}":  {
+                                      "patch":  {
+                                                    "tags":  [
+                                                                 "System - Staff"
+                                                             ],
+                                                    "summary":  "Update an existing staff account (Admin only).",
+                                                    "parameters":  [
+                                                                       {
+                                                                           "name":  "id",
+                                                                           "in":  "path",
+                                                                           "required":  true,
+                                                                           "schema":  "@{type=string; format=uuid}"
+                                                                       }
+                                                                   ],
+                                                    "requestBody":  {
+                                                                        "content":  {
+                                                                                        "application/json":  "@{schema=}",
+                                                                                        "text/json":  "@{schema=}",
+                                                                                        "application/*+json":  "@{schema=}"
+                                                                                    },
+                                                                        "required":  true
+                                                                    },
+                                                    "responses":  {
+                                                                      "200":  {
+                                                                                  "description":  "OK",
+                                                                                  "content":  "@{application/json=}"
+                                                                              },
+                                                                      "400":  {
+                                                                                  "description":  "Bad Request",
+                                                                                  "content":  "@{application/json=}"
+                                                                              },
+                                                                      "404":  {
+                                                                                  "description":  "Not Found",
+                                                                                  "content":  "@{application/json=}"
+                                                                              },
+                                                                      "500":  {
+                                                                                  "description":  "Internal Server Error",
+                                                                                  "content":  "@{application/json=}"
+                                                                              }
+                                                                  }
+                                                }
+                                  },
+    "/api/v1/mobile/Achievements/profile":  {
+                                                "get":  {
+                                                            "tags":  [
+                                                                         "Mobile - Achievements"
+                                                                     ],
+                                                            "responses":  {
+                                                                              "200":  {
+                                                                                          "description":  "OK",
+                                                                                          "content":  "@{application/json=}"
+                                                                                      },
+                                                                              "401":  {
+                                                                                          "description":  "Unauthorized",
+                                                                                          "content":  "@{application/json=}"
+                                                                                      }
+                                                                          }
+                                                        }
+                                            },
+    "/api/v1/mobile/Achievements/leaderboard/monthly":  {
+                                                            "get":  {
+                                                                        "tags":  [
+                                                                                     "Mobile - Achievements"
+                                                                                 ],
+                                                                        "parameters":  [
+                                                                                           {
+                                                                                               "name":  "top",
+                                                                                               "in":  "query",
+                                                                                               "schema":  "@{pattern=^-?(?:0|[1-9]\\d*)$; type=System.Object[]; format=int32; default=10}"
+                                                                                           },
+                                                                                           {
+                                                                                               "name":  "onlyMyDistrict",
+                                                                                               "in":  "query",
+                                                                                               "schema":  "@{type=boolean; default=False}"
+                                                                                           },
+                                                                                           {
+                                                                                               "name":  "onlyMyArea",
+                                                                                               "in":  "query",
+                                                                                               "schema":  "@{type=boolean; default=False}"
+                                                                                           }
+                                                                                       ],
+                                                                        "responses":  {
+                                                                                          "200":  {
+                                                                                                      "description":  "OK",
+                                                                                                      "content":  "@{application/json=}"
+                                                                                                  },
+                                                                                          "401":  {
+                                                                                                      "description":  "Unauthorized",
+                                                                                                      "content":  "@{application/json=}"
+                                                                                                  }
+                                                                                      }
+                                                                    }
+                                                        },
+    "/api/v1/mobile/Achievements/leaderboard/all-time":  {
+                                                             "get":  {
+                                                                         "tags":  [
+                                                                                      "Mobile - Achievements"
+                                                                                  ],
+                                                                         "parameters":  [
+                                                                                            {
+                                                                                                "name":  "top",
+                                                                                                "in":  "query",
+                                                                                                "schema":  "@{pattern=^-?(?:0|[1-9]\\d*)$; type=System.Object[]; format=int32; default=10}"
+                                                                                            },
+                                                                                            {
+                                                                                                "name":  "onlyMyDistrict",
+                                                                                                "in":  "query",
+                                                                                                "schema":  "@{type=boolean; default=False}"
+                                                                                            },
+                                                                                            {
+                                                                                                "name":  "onlyMyArea",
+                                                                                                "in":  "query",
+                                                                                                "schema":  "@{type=boolean; default=False}"
+                                                                                            }
+                                                                                        ],
+                                                                         "responses":  {
+                                                                                           "200":  {
+                                                                                                       "description":  "OK",
+                                                                                                       "content":  "@{application/json=}"
+                                                                                                   },
+                                                                                           "401":  {
+                                                                                                       "description":  "Unauthorized",
+                                                                                                       "content":  "@{application/json=}"
+                                                                                                   }
+                                                                                       }
+                                                                     }
+                                                         },
+    "/api/v1/mobile/Achievements/badges":  {
+                                               "get":  {
+                                                           "tags":  [
+                                                                        "Mobile - Achievements"
+                                                                    ],
+                                                           "responses":  {
+                                                                             "200":  {
+                                                                                         "description":  "OK",
+                                                                                         "content":  "@{application/json=}"
+                                                                                     }
+                                                                         }
+                                                       }
+                                           },
+    "/api/v1/mobile/Appointments/centers":  {
+                                                "get":  {
+                                                            "tags":  [
+                                                                         "Mobile - Appointments"
+                                                                     ],
+                                                            "parameters":  [
+                                                                               {
+                                                                                   "name":  "search",
+                                                                                   "in":  "query",
+                                                                                   "schema":  "@{type=string}"
+                                                                               }
+                                                                           ],
+                                                            "responses":  {
+                                                                              "200":  {
+                                                                                          "description":  "OK",
+                                                                                          "content":  "@{application/json=}"
+                                                                                      }
+                                                                          }
+                                                        }
+                                            },
+    "/api/v1/mobile/Appointments/centers/main-branch":  {
+                                                            "get":  {
+                                                                        "tags":  [
+                                                                                     "Mobile - Appointments"
+                                                                                 ],
+                                                                        "responses":  {
+                                                                                          "200":  {
+                                                                                                      "description":  "OK",
+                                                                                                      "content":  "@{application/json=}"
+                                                                                                  },
+                                                                                          "404":  {
+                                                                                                      "description":  "Not Found",
+                                                                                                      "content":  "@{application/json=}"
+                                                                                                  }
+                                                                                      }
+                                                                    }
+                                                        },
+    "/api/v1/mobile/Appointments/time-slots":  {
+                                                   "get":  {
+                                                               "tags":  [
+                                                                            "Mobile - Appointments"
+                                                                        ],
+                                                               "parameters":  [
+                                                                                  {
+                                                                                      "name":  "centerId",
+                                                                                      "in":  "query",
+                                                                                      "schema":  "@{type=string; format=uuid}"
+                                                                                  },
+                                                                                  {
+                                                                                      "name":  "date",
+                                                                                      "in":  "query",
+                                                                                      "schema":  "@{type=string; format=date-time}"
+                                                                                  }
+                                                                              ],
+                                                               "responses":  {
+                                                                                 "200":  {
+                                                                                             "description":  "OK",
+                                                                                             "content":  "@{application/json=}"
+                                                                                         }
+                                                                             }
+                                                           }
+                                               },
+    "/api/v1/mobile/Appointments/Create-appointement":  {
+                                                            "post":  {
+                                                                         "tags":  [
+                                                                                      "Mobile - Appointments"
+                                                                                  ],
+                                                                         "requestBody":  {
+                                                                                             "content":  {
+                                                                                                             "application/json":  "@{schema=}",
+                                                                                                             "text/json":  "@{schema=}",
+                                                                                                             "application/*+json":  "@{schema=}"
+                                                                                                         },
+                                                                                             "required":  true
+                                                                                         },
+                                                                         "responses":  {
+                                                                                           "200":  {
+                                                                                                       "description":  "OK",
+                                                                                                       "content":  "@{application/json=}"
+                                                                                                   },
+                                                                                           "400":  {
+                                                                                                       "description":  "Bad Request",
+                                                                                                       "content":  "@{application/json=}"
+                                                                                                   },
+                                                                                           "401":  {
+                                                                                                       "description":  "Unauthorized",
+                                                                                                       "content":  "@{application/json=}"
+                                                                                                   }
+                                                                                       }
+                                                                     }
+                                                        },
+    "/api/v1/mobile/Appointments/{id}/confirmation":  {
+                                                          "put":  {
+                                                                      "tags":  [
+                                                                                   "Mobile - Appointments"
+                                                                               ],
+                                                                      "parameters":  [
+                                                                                         {
+                                                                                             "name":  "id",
+                                                                                             "in":  "path",
+                                                                                             "required":  true,
+                                                                                             "schema":  "@{type=string; format=uuid}"
+                                                                                         }
+                                                                                     ],
+                                                                      "requestBody":  {
+                                                                                          "content":  {
+                                                                                                          "application/json":  "@{schema=}",
+                                                                                                          "text/json":  "@{schema=}",
+                                                                                                          "application/*+json":  "@{schema=}"
+                                                                                                      },
+                                                                                          "required":  true
+                                                                                      },
+                                                                      "responses":  {
+                                                                                        "200":  {
+                                                                                                    "description":  "OK",
+                                                                                                    "content":  "@{application/json=}"
+                                                                                                },
+                                                                                        "400":  {
+                                                                                                    "description":  "Bad Request",
+                                                                                                    "content":  "@{application/json=}"
+                                                                                                },
+                                                                                        "401":  {
+                                                                                                    "description":  "Unauthorized",
+                                                                                                    "content":  "@{application/json=}"
+                                                                                                }
+                                                                                    }
+                                                                  }
+                                                      },
+    "/api/v1/mobile/Appointments/health-screening":  {
+                                                         "post":  {
+                                                                      "tags":  [
+                                                                                   "Mobile - Appointments"
+                                                                               ],
+                                                                      "requestBody":  {
+                                                                                          "content":  {
+                                                                                                          "application/json":  "@{schema=}",
+                                                                                                          "text/json":  "@{schema=}",
+                                                                                                          "application/*+json":  "@{schema=}"
+                                                                                                      },
+                                                                                          "required":  true
+                                                                                      },
+                                                                      "responses":  {
+                                                                                        "200":  {
+                                                                                                    "description":  "OK",
+                                                                                                    "content":  "@{application/json=}"
+                                                                                                },
+                                                                                        "400":  {
+                                                                                                    "description":  "Bad Request",
+                                                                                                    "content":  "@{application/json=}"
+                                                                                                },
+                                                                                        "401":  {
+                                                                                                    "description":  "Unauthorized",
+                                                                                                    "content":  "@{application/json=}"
+                                                                                                }
+                                                                                    }
+                                                                  }
+                                                     },
+    "/api/v1/mobile/Appointments/{id}/cancel":  {
+                                                    "put":  {
+                                                                "tags":  [
+                                                                             "Mobile - Appointments"
+                                                                         ],
+                                                                "parameters":  [
+                                                                                   {
+                                                                                       "name":  "id",
+                                                                                       "in":  "path",
+                                                                                       "required":  true,
+                                                                                       "schema":  "@{type=string; format=uuid}"
+                                                                                   }
+                                                                               ],
+                                                                "requestBody":  {
+                                                                                    "content":  {
+                                                                                                    "application/json":  "@{schema=}",
+                                                                                                    "text/json":  "@{schema=}",
+                                                                                                    "application/*+json":  "@{schema=}"
+                                                                                                },
+                                                                                    "required":  true
+                                                                                },
+                                                                "responses":  {
+                                                                                  "200":  {
+                                                                                              "description":  "OK",
+                                                                                              "content":  "@{application/json=}"
+                                                                                          },
+                                                                                  "400":  {
+                                                                                              "description":  "Bad Request",
+                                                                                              "content":  "@{application/json=}"
+                                                                                          },
+                                                                                  "401":  {
+                                                                                              "description":  "Unauthorized",
+                                                                                              "content":  "@{application/json=}"
+                                                                                          }
+                                                                              }
+                                                            }
+                                                },
+    "/api/v1/mobile/Appointments/{id}/reschedule":  {
+                                                        "put":  {
+                                                                    "tags":  [
+                                                                                 "Mobile - Appointments"
+                                                                             ],
+                                                                    "parameters":  [
+                                                                                       {
+                                                                                           "name":  "id",
+                                                                                           "in":  "path",
+                                                                                           "required":  true,
+                                                                                           "schema":  "@{type=string; format=uuid}"
+                                                                                       }
+                                                                                   ],
+                                                                    "requestBody":  {
+                                                                                        "content":  {
+                                                                                                        "application/json":  "@{schema=}",
+                                                                                                        "text/json":  "@{schema=}",
+                                                                                                        "application/*+json":  "@{schema=}"
+                                                                                                    },
+                                                                                        "required":  true
+                                                                                    },
+                                                                    "responses":  {
+                                                                                      "200":  {
+                                                                                                  "description":  "OK",
+                                                                                                  "content":  "@{application/json=}"
+                                                                                              },
+                                                                                      "400":  {
+                                                                                                  "description":  "Bad Request",
+                                                                                                  "content":  "@{application/json=}"
+                                                                                              },
+                                                                                      "401":  {
+                                                                                                  "description":  "Unauthorized",
+                                                                                                  "content":  "@{application/json=}"
+                                                                                              }
+                                                                                  }
+                                                                }
+                                                    },
+    "/api/v1/mobile/Appointments/my":  {
+                                           "get":  {
+                                                       "tags":  [
+                                                                    "Mobile - Appointments"
+                                                                ],
+                                                       "parameters":  [
+                                                                          {
+                                                                              "name":  "upcomingOnly",
+                                                                              "in":  "query",
+                                                                              "schema":  "@{type=boolean; default=True}"
+                                                                          }
+                                                                      ],
+                                                       "responses":  {
+                                                                         "200":  {
+                                                                                     "description":  "OK",
+                                                                                     "content":  "@{application/json=}"
+                                                                                 },
+                                                                         "401":  {
+                                                                                     "description":  "Unauthorized",
+                                                                                     "content":  "@{application/json=}"
+                                                                                 }
+                                                                     }
+                                                   }
+                                       },
+    "/api/v1/mobile/Appointments/{id}":  {
+                                             "get":  {
+                                                         "tags":  [
+                                                                      "Mobile - Appointments"
+                                                                  ],
+                                                         "parameters":  [
+                                                                            {
+                                                                                "name":  "id",
+                                                                                "in":  "path",
+                                                                                "required":  true,
+                                                                                "schema":  "@{type=string; format=uuid}"
+                                                                            }
+                                                                        ],
+                                                         "responses":  {
+                                                                           "200":  {
+                                                                                       "description":  "OK",
+                                                                                       "content":  "@{application/json=}"
+                                                                                   },
+                                                                           "401":  {
+                                                                                       "description":  "Unauthorized",
+                                                                                       "content":  "@{application/json=}"
+                                                                                   }
+                                                                       }
+                                                     }
+                                         },
+    "/api/v1/mobile/Auth/register":  {
+                                         "post":  {
+                                                      "tags":  [
+                                                                   "Mobile - Auth"
+                                                               ],
+                                                      "summary":  "Register a new mobile user.",
+                                                      "description":  "Creates a new user account and sends an OTP to the user\u0027s phone number for verification.\r\n\r\n**Flow:** Register → Verify OTP → Complete Profile → Login",
+                                                      "requestBody":  {
+                                                                          "content":  {
+                                                                                          "application/json":  "@{schema=}",
+                                                                                          "text/json":  "@{schema=}",
+                                                                                          "application/*+json":  "@{schema=}"
+                                                                                      },
+                                                                          "required":  true
+                                                                      },
+                                                      "responses":  {
+                                                                        "200":  {
+                                                                                    "description":  "OK",
+                                                                                    "content":  "@{application/json=}"
+                                                                                },
+                                                                        "400":  {
+                                                                                    "description":  "Bad Request",
+                                                                                    "content":  "@{application/json=}"
+                                                                                },
+                                                                        "500":  {
+                                                                                    "description":  "Internal Server Error",
+                                                                                    "content":  "@{application/json=}"
+                                                                                }
+                                                                    },
+                                                      "security":  [
+
+                                                                   ]
+                                                  }
+                                     },
+    "/api/v1/mobile/Auth/verify-otp":  {
+                                           "post":  {
+                                                        "tags":  [
+                                                                     "Mobile - Auth"
+                                                                 ],
+                                                        "summary":  "Verify the registration OTP code.",
+                                                        "description":  "Verifies the OTP sent during registration. Returns a temporary JWT token \r\nthat must be used in the Authorization header for the complete-profile step.\r\n\r\n**Flow:** Register → **Verify OTP** → Complete Profile → Login",
+                                                        "requestBody":  {
+                                                                            "content":  {
+                                                                                            "application/json":  "@{schema=}",
+                                                                                            "text/json":  "@{schema=}",
+                                                                                            "application/*+json":  "@{schema=}"
+                                                                                        },
+                                                                            "required":  true
+                                                                        },
+                                                        "responses":  {
+                                                                          "200":  {
+                                                                                      "description":  "OK",
+                                                                                      "content":  "@{application/json=}"
+                                                                                  },
+                                                                          "400":  {
+                                                                                      "description":  "Bad Request",
+                                                                                      "content":  "@{application/json=}"
+                                                                                  },
+                                                                          "500":  {
+                                                                                      "description":  "Internal Server Error",
+                                                                                      "content":  "@{application/json=}"
+                                                                                  }
+                                                                      },
+                                                        "security":  [
+
+                                                                     ]
+                                                    }
+                                       },
+    "/api/v1/mobile/Auth/complete-profile":  {
+                                                 "post":  {
+                                                              "tags":  [
+                                                                           "Mobile - Auth"
+                                                                       ],
+                                                              "summary":  "Complete the registration profile.",
+                                                              "description":  "Completes the donor profile with personal details (blood type, date of birth, etc.).\r\nRequires the temporary JWT token from the verify-otp step in the Authorization header.\r\nReturns the full authentication response with access and refresh tokens.\r\n\r\n**Flow:** Register → Verify OTP → **Complete Profile** → Login",
+                                                              "requestBody":  {
+                                                                                  "content":  {
+                                                                                                  "application/json":  "@{schema=}",
+                                                                                                  "text/json":  "@{schema=}",
+                                                                                                  "application/*+json":  "@{schema=}"
+                                                                                              },
+                                                                                  "required":  true
+                                                                              },
+                                                              "responses":  {
+                                                                                "200":  {
+                                                                                            "description":  "OK",
+                                                                                            "content":  "@{application/json=}"
+                                                                                        },
+                                                                                "400":  {
+                                                                                            "description":  "Bad Request",
+                                                                                            "content":  "@{application/json=}"
+                                                                                        },
+                                                                                "401":  {
+                                                                                            "description":  "Unauthorized",
+                                                                                            "content":  "@{application/json=}"
+                                                                                        },
+                                                                                "500":  {
+                                                                                            "description":  "Internal Server Error",
+                                                                                            "content":  "@{application/json=}"
+                                                                                        }
+                                                                            }
+                                                          }
+                                             },
+    "/api/v1/mobile/Auth/Login":  {
+                                      "post":  {
+                                                   "tags":  [
+                                                                "Mobile - Auth"
+                                                            ],
+                                                   "summary":  "Login with national ID or phone number.",
+                                                   "description":  "Authenticates the user and returns JWT access token, refresh token, and user info.\r\n\r\n**Note:** If the user has not completed their registration profile, the response will be \r\na 400 error with `data` containing the partial auth info. The Flutter client should \r\nredirect the user to the complete-profile screen.",
+                                                   "requestBody":  {
+                                                                       "content":  {
+                                                                                       "application/json":  "@{schema=}",
+                                                                                       "text/json":  "@{schema=}",
+                                                                                       "application/*+json":  "@{schema=}"
+                                                                                   },
+                                                                       "required":  true
+                                                                   },
+                                                   "responses":  {
+                                                                     "200":  {
+                                                                                 "description":  "OK",
+                                                                                 "content":  "@{application/json=}"
+                                                                             },
+                                                                     "400":  {
+                                                                                 "description":  "Bad Request",
+                                                                                 "content":  "@{application/json=}"
+                                                                             },
+                                                                     "500":  {
+                                                                                 "description":  "Internal Server Error",
+                                                                                 "content":  "@{application/json=}"
+                                                                             }
+                                                                 },
+                                                   "security":  [
+
+                                                                ]
+                                               }
+                                  },
+    "/api/v1/mobile/Auth/refresh-token":  {
+                                              "post":  {
+                                                           "tags":  [
+                                                                        "Mobile - Auth"
+                                                                    ],
+                                                           "summary":  "Refresh the JWT access token.",
+                                                           "description":  "Uses an expired access token and a valid refresh token to obtain a new token pair.\r\nBoth the access token and refresh token are rotated.",
+                                                           "requestBody":  {
+                                                                               "content":  {
+                                                                                               "application/json":  "@{schema=}",
+                                                                                               "text/json":  "@{schema=}",
+                                                                                               "application/*+json":  "@{schema=}"
+                                                                                           },
+                                                                               "required":  true
+                                                                           },
+                                                           "responses":  {
+                                                                             "200":  {
+                                                                                         "description":  "OK",
+                                                                                         "content":  "@{application/json=}"
+                                                                                     },
+                                                                             "400":  {
+                                                                                         "description":  "Bad Request",
+                                                                                         "content":  "@{application/json=}"
+                                                                                     },
+                                                                             "500":  {
+                                                                                         "description":  "Internal Server Error",
+                                                                                         "content":  "@{application/json=}"
+                                                                                     }
+                                                                         },
+                                                           "security":  [
+
+                                                                        ]
+                                                       }
+                                          },
+    "/api/v1/mobile/Auth/forgot-password":  {
+                                                "post":  {
+                                                             "tags":  [
+                                                                          "Mobile - Auth"
+                                                                      ],
+                                                             "summary":  "Request a password reset OTP.",
+                                                             "description":  "Sends an OTP to the user\u0027s registered phone number for password reset.\r\n\r\n**Flow:** Forgot Password → Verify Reset OTP → Reset Password",
+                                                             "requestBody":  {
+                                                                                 "content":  {
+                                                                                                 "application/json":  "@{schema=}",
+                                                                                                 "text/json":  "@{schema=}",
+                                                                                                 "application/*+json":  "@{schema=}"
+                                                                                             },
+                                                                                 "required":  true
+                                                                             },
+                                                             "responses":  {
+                                                                               "200":  {
+                                                                                           "description":  "OK",
+                                                                                           "content":  "@{application/json=}"
+                                                                                       },
+                                                                               "400":  {
+                                                                                           "description":  "Bad Request",
+                                                                                           "content":  "@{application/json=}"
+                                                                                       },
+                                                                               "500":  {
+                                                                                           "description":  "Internal Server Error",
+                                                                                           "content":  "@{application/json=}"
+                                                                                       }
+                                                                           },
+                                                             "security":  [
+
+                                                                          ]
+                                                         }
+                                            },
+    "/api/v1/mobile/Auth/verify-reset-otp":  {
+                                                 "post":  {
+                                                              "tags":  [
+                                                                           "Mobile - Auth"
+                                                                       ],
+                                                              "summary":  "Verify the password reset OTP code.",
+                                                              "description":  "Verifies the OTP sent during forgot-password. Returns the user ID and a reset token \r\nthat must be used in the reset-password step.\r\n\r\n**Flow:** Forgot Password → **Verify Reset OTP** → Reset Password",
+                                                              "requestBody":  {
+                                                                                  "content":  {
+                                                                                                  "application/json":  "@{schema=}",
+                                                                                                  "text/json":  "@{schema=}",
+                                                                                                  "application/*+json":  "@{schema=}"
+                                                                                              },
+                                                                                  "required":  true
+                                                                              },
+                                                              "responses":  {
+                                                                                "200":  {
+                                                                                            "description":  "OK",
+                                                                                            "content":  "@{application/json=}"
+                                                                                        },
+                                                                                "400":  {
+                                                                                            "description":  "Bad Request",
+                                                                                            "content":  "@{application/json=}"
+                                                                                        },
+                                                                                "500":  {
+                                                                                            "description":  "Internal Server Error",
+                                                                                            "content":  "@{application/json=}"
+                                                                                        }
+                                                                            },
+                                                              "security":  [
+
+                                                                           ]
+                                                          }
+                                             },
+    "/api/v1/mobile/Auth/reset-password":  {
+                                               "post":  {
+                                                            "tags":  [
+                                                                         "Mobile - Auth"
+                                                                     ],
+                                                            "summary":  "Reset the user\u0027s password.",
+                                                            "description":  "Resets the password using the user ID and reset token from the verify-reset-otp step.\r\n\r\n**Flow:** Forgot Password → Verify Reset OTP → **Reset Password**",
+                                                            "requestBody":  {
+                                                                                "content":  {
+                                                                                                "application/json":  "@{schema=}",
+                                                                                                "text/json":  "@{schema=}",
+                                                                                                "application/*+json":  "@{schema=}"
+                                                                                            },
+                                                                                "required":  true
+                                                                            },
+                                                            "responses":  {
+                                                                              "200":  {
+                                                                                          "description":  "OK",
+                                                                                          "content":  "@{application/json=}"
+                                                                                      },
+                                                                              "400":  {
+                                                                                          "description":  "Bad Request",
+                                                                                          "content":  "@{application/json=}"
+                                                                                      },
+                                                                              "500":  {
+                                                                                          "description":  "Internal Server Error",
+                                                                                          "content":  "@{application/json=}"
+                                                                                      }
+                                                                          },
+                                                            "security":  [
+
+                                                                         ]
+                                                        }
+                                           },
+    "/api/v1/mobile/Chatbot/ask":  {
+                                       "post":  {
+                                                    "tags":  [
+                                                                 "Mobile - Chatbot"
+                                                             ],
+                                                    "summary":  "Sends a message to the chatbot. Pass ConversationId to continue an existing conversation, or omit it to start a new one.",
+                                                    "requestBody":  {
+                                                                        "content":  {
+                                                                                        "application/json":  "@{schema=}",
+                                                                                        "text/json":  "@{schema=}",
+                                                                                        "application/*+json":  "@{schema=}"
+                                                                                    },
+                                                                        "required":  true
+                                                                    },
+                                                    "responses":  {
+                                                                      "200":  {
+                                                                                  "description":  "OK",
+                                                                                  "content":  "@{text/plain=; application/json=; text/json=}"
+                                                                              },
+                                                                      "401":  {
+                                                                                  "description":  "Unauthorized",
+                                                                                  "content":  "@{text/plain=; application/json=; text/json=}"
+                                                                              }
+                                                                  }
+                                                }
+                                   },
+    "/api/v1/mobile/Chatbot/history":  {
+                                           "get":  {
+                                                       "tags":  [
+                                                                    "Mobile - Chatbot"
+                                                                ],
+                                                       "summary":  "Gets the user\u0027s chat conversation history with optional title search.",
+                                                       "parameters":  [
+                                                                          {
+                                                                              "name":  "search",
+                                                                              "in":  "query",
+                                                                              "schema":  "@{type=string}"
+                                                                          },
+                                                                          {
+                                                                              "name":  "page",
+                                                                              "in":  "query",
+                                                                              "schema":  "@{pattern=^-?(?:0|[1-9]\\d*)$; type=System.Object[]; format=int32; default=1}"
+                                                                          },
+                                                                          {
+                                                                              "name":  "pageSize",
+                                                                              "in":  "query",
+                                                                              "schema":  "@{pattern=^-?(?:0|[1-9]\\d*)$; type=System.Object[]; format=int32; default=20}"
+                                                                          }
+                                                                      ],
+                                                       "responses":  {
+                                                                         "200":  {
+                                                                                     "description":  "OK",
+                                                                                     "content":  "@{text/plain=; application/json=; text/json=}"
+                                                                                 },
+                                                                         "401":  {
+                                                                                     "description":  "Unauthorized",
+                                                                                     "content":  "@{text/plain=; application/json=; text/json=}"
+                                                                                 }
+                                                                     }
+                                                   }
+                                       },
+    "/api/v1/mobile/Chatbot/{conversationId}/messages":  {
+                                                             "get":  {
+                                                                         "tags":  [
+                                                                                      "Mobile - Chatbot"
+                                                                                  ],
+                                                                         "summary":  "Gets all messages for a specific conversation.",
+                                                                         "parameters":  [
+                                                                                            {
+                                                                                                "name":  "conversationId",
+                                                                                                "in":  "path",
+                                                                                                "required":  true,
+                                                                                                "schema":  "@{type=string; format=uuid}"
+                                                                                            }
+                                                                                        ],
+                                                                         "responses":  {
+                                                                                           "200":  {
+                                                                                                       "description":  "OK",
+                                                                                                       "content":  "@{text/plain=; application/json=; text/json=}"
+                                                                                                   },
+                                                                                           "401":  {
+                                                                                                       "description":  "Unauthorized",
+                                                                                                       "content":  "@{text/plain=; application/json=; text/json=}"
+                                                                                                   },
+                                                                                           "404":  {
+                                                                                                       "description":  "Not Found",
+                                                                                                       "content":  "@{text/plain=; application/json=; text/json=}"
+                                                                                                   }
+                                                                                       }
+                                                                     }
+                                                         },
+    "/api/v1/mobile/Chatbot/{conversationId}":  {
+                                                    "delete":  {
+                                                                   "tags":  [
+                                                                                "Mobile - Chatbot"
+                                                                            ],
+                                                                   "summary":  "Deletes a specific conversation and all its messages.",
+                                                                   "parameters":  [
+                                                                                      {
+                                                                                          "name":  "conversationId",
+                                                                                          "in":  "path",
+                                                                                          "required":  true,
+                                                                                          "schema":  "@{type=string; format=uuid}"
+                                                                                      }
+                                                                                  ],
+                                                                   "responses":  {
+                                                                                     "200":  {
+                                                                                                 "description":  "OK",
+                                                                                                 "content":  "@{text/plain=; application/json=; text/json=}"
+                                                                                             },
+                                                                                     "401":  {
+                                                                                                 "description":  "Unauthorized",
+                                                                                                 "content":  "@{text/plain=; application/json=; text/json=}"
+                                                                                             },
+                                                                                     "404":  {
+                                                                                                 "description":  "Not Found",
+                                                                                                 "content":  "@{text/plain=; application/json=; text/json=}"
+                                                                                             }
+                                                                                 }
+                                                               }
+                                                },
+    "/api/v1/mobile/Notifications/device-token":  {
+                                                      "post":  {
+                                                                   "tags":  [
+                                                                                "Mobile - Notifications"
+                                                                            ],
+                                                                   "requestBody":  {
+                                                                                       "content":  {
+                                                                                                       "application/json":  "@{schema=}",
+                                                                                                       "text/json":  "@{schema=}",
+                                                                                                       "application/*+json":  "@{schema=}"
+                                                                                                   },
+                                                                                       "required":  true
+                                                                                   },
+                                                                   "responses":  {
+                                                                                     "200":  {
+                                                                                                 "description":  "OK",
+                                                                                                 "content":  "@{application/json=}"
+                                                                                             },
+                                                                                     "401":  {
+                                                                                                 "description":  "Unauthorized",
+                                                                                                 "content":  "@{application/json=}"
+                                                                                             }
+                                                                                 }
+                                                               },
+                                                      "delete":  {
+                                                                     "tags":  [
+                                                                                  "Mobile - Notifications"
+                                                                              ],
+                                                                     "parameters":  [
+                                                                                        {
+                                                                                            "name":  "token",
+                                                                                            "in":  "query",
+                                                                                            "schema":  "@{type=string}"
+                                                                                        }
+                                                                                    ],
+                                                                     "responses":  {
+                                                                                       "200":  {
+                                                                                                   "description":  "OK",
+                                                                                                   "content":  "@{application/json=}"
+                                                                                               },
+                                                                                       "401":  {
+                                                                                                   "description":  "Unauthorized",
+                                                                                                   "content":  "@{application/json=}"
+                                                                                               }
+                                                                                   }
+                                                                 }
+                                                  },
+    "/api/v1/mobile/Notifications/test-notification":  {
+                                                           "post":  {
+                                                                        "tags":  [
+                                                                                     "Mobile - Notifications"
+                                                                                 ],
+                                                                        "requestBody":  {
+                                                                                            "content":  {
+                                                                                                            "application/json":  "@{schema=}",
+                                                                                                            "text/json":  "@{schema=}",
+                                                                                                            "application/*+json":  "@{schema=}"
+                                                                                                        },
+                                                                                            "required":  true
+                                                                                        },
+                                                                        "responses":  {
+                                                                                          "200":  {
+                                                                                                      "description":  "OK",
+                                                                                                      "content":  "@{application/json=}"
+                                                                                                  },
+                                                                                          "401":  {
+                                                                                                      "description":  "Unauthorized",
+                                                                                                      "content":  "@{application/json=}"
+                                                                                                  }
+                                                                                      }
+                                                                    }
+                                                       },
+    "/api/v1/mobile/Notifications":  {
+                                         "get":  {
+                                                     "tags":  [
+                                                                  "Mobile - Notifications"
+                                                              ],
+                                                     "parameters":  [
+                                                                        {
+                                                                            "name":  "cursor",
+                                                                            "in":  "query",
+                                                                            "schema":  "@{type=string}"
+                                                                        },
+                                                                        {
+                                                                            "name":  "pageSize",
+                                                                            "in":  "query",
+                                                                            "schema":  "@{pattern=^-?(?:0|[1-9]\\d*)$; type=System.Object[]; format=int32; default=20}"
+                                                                        }
+                                                                    ],
+                                                     "responses":  {
+                                                                       "200":  {
+                                                                                   "description":  "OK",
+                                                                                   "content":  "@{application/json=}"
+                                                                               },
+                                                                       "401":  {
+                                                                                   "description":  "Unauthorized",
+                                                                                   "content":  "@{application/json=}"
+                                                                               }
+                                                                   }
+                                                 }
+                                     },
+    "/api/v1/mobile/Notifications/unread-count":  {
+                                                      "get":  {
+                                                                  "tags":  [
+                                                                               "Mobile - Notifications"
+                                                                           ],
+                                                                  "responses":  {
+                                                                                    "200":  {
+                                                                                                "description":  "OK",
+                                                                                                "content":  "@{application/json=}"
+                                                                                            },
+                                                                                    "401":  {
+                                                                                                "description":  "Unauthorized",
+                                                                                                "content":  "@{application/json=}"
+                                                                                            }
+                                                                                }
+                                                              }
+                                                  },
+    "/api/v1/mobile/Notifications/{id}/read":  {
+                                                   "patch":  {
+                                                                 "tags":  [
+                                                                              "Mobile - Notifications"
+                                                                          ],
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "id",
+                                                                                        "in":  "path",
+                                                                                        "required":  true,
+                                                                                        "schema":  "@{type=string; format=uuid}"
+                                                                                    }
+                                                                                ],
+                                                                 "responses":  {
+                                                                                   "200":  {
+                                                                                               "description":  "OK",
+                                                                                               "content":  "@{application/json=}"
+                                                                                           },
+                                                                                   "401":  {
+                                                                                               "description":  "Unauthorized",
+                                                                                               "content":  "@{application/json=}"
+                                                                                           }
+                                                                               }
+                                                             }
+                                               },
+    "/api/v1/mobile/Notifications/read-all":  {
+                                                  "patch":  {
+                                                                "tags":  [
+                                                                             "Mobile - Notifications"
+                                                                         ],
+                                                                "responses":  {
+                                                                                  "200":  {
+                                                                                              "description":  "OK",
+                                                                                              "content":  "@{application/json=}"
+                                                                                          },
+                                                                                  "401":  {
+                                                                                              "description":  "Unauthorized",
+                                                                                              "content":  "@{application/json=}"
+                                                                                          }
+                                                                              }
+                                                            }
+                                              }
+}

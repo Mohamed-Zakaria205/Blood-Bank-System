@@ -272,7 +272,7 @@ export default function AdminDashboard() {
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-gray-500" style={{ fontSize: '13px' }}>
-                        {d.city}
+                        {d.district}
                       </span>
                     </td>
                     <td className="px-4 py-3">

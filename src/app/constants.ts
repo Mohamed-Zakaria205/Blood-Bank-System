@@ -1,7 +1,7 @@
 import { BENI_SUEF_CITIES } from './data/cities';
 import type { BloodType } from './types';
 
-export const CITIES = BENI_SUEF_CITIES.map((city) => city.city_name_ar);
+export const CITIES = BENI_SUEF_CITIES.map((city) => city.city_name_en);
 
 
 export const DISEASES = [

@@ -24,7 +24,7 @@ export interface Donor {
   nationalId: string;
   phone: string;
   address: string;
-  city: string;
+  district: string;
   bloodType: BloodType;
   status: DonorStatus;
   rejectionReason?: string;
@@ -32,6 +32,7 @@ export interface Donor {
 
   // ── Backend-generated / meta fields ─────────────────────
   registeredAt?: string;
+  registeredBy?: string;
   lastDonationDate?: string;
   donations?: number;
   points?: number;
@@ -54,7 +55,7 @@ export interface Donation {
   nationalId: string;
   phone: string;
   address: string;
-  city: string;
+  district: string;
   bloodType: BloodType;
   donationType: DonationType;
   source: 'walkin' | 'app' | 'campaign';
@@ -66,8 +67,8 @@ export interface Donation {
   additionalData?: AdditionalData;
   isAllergic?: boolean;
   donorCode?: string;
-  sentToLab: boolean;
-  status: string;
+  sentToLab?: boolean;
+  status?: string;
 }
 
 /**
@@ -79,8 +80,9 @@ export interface BasicDonationRequest {
   gender: 'male' | 'female';
   age: number;
   phone: string;
-  address: string;
-  city: string;
+  governorate: string;
+  district: string;
+  area: string;
   bloodType: BloodType;
   source: 'walkin' | 'app' | 'campaign';
   campaignId?: string;

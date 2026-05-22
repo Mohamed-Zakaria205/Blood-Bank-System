@@ -7,16 +7,6 @@ import {
 } from 'lucide-react';
 import { formatLocalizedDate, toISODate } from '../../../utils/date';
 
-/** Static weekly donor data (will be replaced by API) */
-export const weekData = [
-  { day: 'الأحد', donors: 3 },
-  { day: 'الإثنين', donors: 5 },
-  { day: 'الثلاثاء', donors: 2 },
-  { day: 'الأربعاء', donors: 7 },
-  { day: 'الخميس', donors: 4 },
-  { day: 'الجمعة', donors: 1 },
-  { day: 'السبت', donors: 6 },
-];
 
 /** Today's date constant (dynamic) */
 export const TODAY = toISODate(new Date());
@@ -33,7 +23,7 @@ export function buildStats(
   return [
     {
       label: 'تبرعات اليوم',
-      value: donations.filter((d) => d.donationDate === TODAY || d.donationDate?.startsWith('2025-04-')).length,
+      value: donations.filter((d) => d.donationDate === TODAY).length,
       sub: `${donations.length} إجمالي التبرعات`,
       icon: Heart,
       color: 'text-green-600',

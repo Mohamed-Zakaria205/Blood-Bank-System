@@ -157,7 +157,7 @@ export default function DoctorDashboard() {
 
       {/* Chart + Campaigns Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <WeeklyChart />
+        <WeeklyChart donations={donations} />
         <ActiveCampaignsPanel
           campaigns={activeCampaigns}
           onViewAll={() => navigate('/doctor/campaigns')}

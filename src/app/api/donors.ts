@@ -5,9 +5,11 @@ import apiClient from './client';
 import { ApiError } from './errors';
 import type { Donor, Donation, BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest } from '../types/donor';
 import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/common';
+import type { ApiResponseWrapper } from '../types/auth';
 import { validateContract, createPaginatedSchema, DonorContractSchema } from './contract';
 import { donors as MOCK_DONORS } from '../data/donors.mock';
 import { donations as MOCK_DONATIONS } from '../data/donations.mock';
+import axios from 'axios';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
@@ -27,9 +29,23 @@ export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
     await new Promise((r) => setTimeout(r, 300));
     return { data: mockDonorStore, total: mockDonorStore.length, page: 1, limit: mockDonorStore.length };
   }
-  const { data } = await apiClient.get<PaginatedResponse<Donor>>('/donors');
-  validateContract('Donors List', createPaginatedSchema(DonorContractSchema), data);
-  return data;
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
+    items?: Donor[];
+    data?: Donor[];
+    total: number;
+    page: number;
+    limit: number;
+  }>>('/donors');
+  const rawItems = wrapper.data?.items || wrapper.data?.data || [];
+  const total = wrapper.data?.total || rawItems.length;
+  const result = {
+    data: rawItems,
+    total,
+    page: wrapper.data?.page || 1,
+    limit: wrapper.data?.limit || rawItems.length
+  };
+  validateContract('Donors List', createPaginatedSchema(DonorContractSchema), result);
+  return result;
 }
 
 /**
@@ -43,7 +59,7 @@ export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
 export async function fetchPaginatedDonors(
   filters: DonorFilters = {}, options?: { signal?: AbortSignal }
 ): Promise<PaginatedResponse<Donor>> {
-  const { page = 1, limit = 10, search = '', bloodType = '', status = '', city = '' } = filters;
+  const { page = 1, limit = 10, search = '', bloodType = '', status = '', district = '' } = filters;
 
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
@@ -63,7 +79,7 @@ export async function fetchPaginatedDonors(
     }
     if (bloodType) result = result.filter((d) => d.bloodType === bloodType);
     if (status) result = result.filter((d) => d.status === status);
-    if (city) result = result.filter((d) => d.city === city);
+    if (district) result = result.filter((d) => d.district === district);
 
     // ── Client-side pagination ─────────────────────────────
     const total = result.length;
@@ -74,11 +90,30 @@ export async function fetchPaginatedDonors(
   }
 
   // ── Real API: forward all params as query-string ─────────
-  const { data } = await apiClient.get<PaginatedResponse<Donor>>('/donors', {
-    params: { page, limit, search, bloodType, status, city }, signal: options?.signal,
+  const params: Record<string, any> = { page, limit };
+  if (search) params.search = search;
+  if (bloodType) params.bloodType = bloodType;
+  if (status) params.status = status;
+  if (district) params.district = district;
+
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
+    items?: Donor[];
+    data?: Donor[];
+    total: number;
+    page: number;
+    limit: number;
+  }>>('/donors', {
+    params,
+    signal: options?.signal,
   });
-  validateContract('Paginated Donors', createPaginatedSchema(DonorContractSchema), data);
-  return data;
+
+  const rawItems = wrapper.data?.items || wrapper.data?.data || [];
+  return {
+    data: rawItems,
+    total: wrapper.data?.total || 0,
+    page: wrapper.data?.page || 1,
+    limit: wrapper.data?.limit || 10,
+  };
 }
 
 export async function fetchDonorById(id: string): Promise<ApiResponse<Donor>> {
@@ -127,12 +162,27 @@ export async function updateDonor(
 
 /** Fetch ALL donations (unpaginated — used by dashboards for statistics) */
 export async function fetchAllDonations(): Promise<PaginatedResponse<Donation>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return { data: mockDonationStore, total: mockDonationStore.length, page: 1, limit: mockDonationStore.length };
+
+  try {
+    const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
+      items?: Donation[];
+      data?: Donation[];
+      total: number;
+      page: number;
+      limit: number;
+    }>>('/Donations', { params: { limit: 9999 } });
+
+    const rawItems = wrapper.data?.items || wrapper.data?.data || [];
+    return {
+      data: rawItems,
+      total: wrapper.data?.total || 0,
+      page: wrapper.data?.page || 1,
+      limit: wrapper.data?.limit || 10,
+    };
+  } catch (error) {
+    console.error('Error in fetchAllDonations:', error);
+    throw error;
   }
-  const { data } = await apiClient.get<PaginatedResponse<Donation>>('/donations', { params: { limit: 9999 } });
-  return data;
 }
 
 /**
@@ -141,38 +191,39 @@ export async function fetchAllDonations(): Promise<PaginatedResponse<Donation>> 
 export async function fetchPaginatedDonations(
   filters: DonorFilters = {}, options?: { signal?: AbortSignal }
 ): Promise<PaginatedResponse<Donation>> {
-  const { page = 1, limit = 10, search = '', bloodType = '', city = '' } = filters;
+  const { page = 1, limit = 10, search = '', bloodType = '', district = '' } = filters;
 
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
 
-    let result: Donation[] = mockDonationStore;
+  const params: Record<string, any> = { page, limit };
+  if (search) params.search = search;
+  if (bloodType) params.bloodType = bloodType;
+  if (district) params.district = district;
 
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        (d) =>
-          d.name.toLowerCase().includes(q) ||
-          d.nationalId.includes(q) ||
-          (d.donorCode?.toLowerCase().includes(q) ?? false) ||
-          d.donationCode.toLowerCase().includes(q) ||
-          d.phone.includes(q),
-      );
+  try {
+    const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
+      items?: Donation[];
+      data?: Donation[];
+      total: number;
+      page: number;
+      limit: number;
+    }>>('/Donations', {
+      params,
+      signal: options?.signal,
+    });
+
+    const rawItems = wrapper.data?.items || wrapper.data?.data || [];
+    return {
+      data: rawItems,
+      total: wrapper.data?.total || 0,
+      page: wrapper.data?.page || 1,
+      limit: wrapper.data?.limit || 10,
+    };
+  } catch (error) {
+    if (!axios.isCancel(error) && (error as any)?.message !== 'canceled') {
+      console.error('Error in fetchPaginatedDonations:', error);
     }
-    if (bloodType) result = result.filter((d) => d.bloodType === bloodType);
-    if (city) result = result.filter((d) => d.city === city);
-
-    const total = result.length;
-    const start = (page - 1) * limit;
-    const data = result.slice(start, start + limit);
-
-    return { data, total, page, limit };
+    throw error;
   }
-
-  const { data } = await apiClient.get<PaginatedResponse<Donation>>('/donations', {
-    params: { page, limit, search, bloodType, city }, signal: options?.signal,
-  });
-  return data;
 }
 
 /** POST /donations — Step 1: create donation with basic info */
@@ -190,8 +241,8 @@ export async function addDonation(payload: BasicDonationRequest): Promise<ApiRes
         age: payload.age,
         nationalId: payload.nationalId,
         phone: payload.phone,
-        address: payload.address,
-        city: payload.city,
+        address: `${payload.area} - ${payload.district}`,
+        district: payload.governorate,
         bloodType: payload.bloodType,
         status: 'eligible' as const,
       } satisfies Donor;
@@ -208,8 +259,8 @@ export async function addDonation(payload: BasicDonationRequest): Promise<ApiRes
       age: payload.age,
       nationalId: payload.nationalId,
       phone: payload.phone,
-      address: payload.address,
-      city: payload.city,
+      address: `${payload.area} - ${payload.district}`,
+      district: payload.governorate,
       bloodType: payload.bloodType,
       donationType: payload.donationType,
       source: payload.source,
@@ -222,7 +273,7 @@ export async function addDonation(payload: BasicDonationRequest): Promise<ApiRes
     mockDonationStore = [newDonation, ...mockDonationStore];
     return { data: { donationId }, message: 'تم تسجيل التبرع المبدئي بنجاح' };
   }
-  const { data } = await apiClient.post<ApiResponse<{ donationId: string }>>('/donations', payload);
+  const { data } = await apiClient.post<ApiResponse<{ donationId: string }>>('/Donations', payload);
   return data;
 }
 
@@ -244,7 +295,7 @@ export async function addMedicalRecord(donationId: string, payload: MedicalRecor
     }
     return { data: { donationCode }, message: 'تم إضافة السجل الطبي بنجاح' };
   }
-  const { data } = await apiClient.post<ApiResponse<{ donationCode: string }>>('/donations/' + donationId + '/medical-record', payload);
+  const { data } = await apiClient.post<ApiResponse<{ donationCode: string }>>('/Donations/' + donationId + '/medical-record', payload);
   return data;
 }
 
@@ -257,7 +308,7 @@ export async function deleteDonation(donationId: string): Promise<ApiResponse<vo
     mockDonationStore = mockDonationStore.filter(d => d.id !== donationId);
     return { data: undefined as any, message: 'تم حذف التبرع بنجاح' };
   }
-  const { data } = await apiClient.delete<ApiResponse<void>>(`/donations/${donationId}`);
+  const { data } = await apiClient.delete<ApiResponse<void>>(`/Donations/${donationId}`);
   return data;
 }
 
@@ -270,6 +321,6 @@ export async function confirmDonation(donationId: string): Promise<ApiResponse<v
     mockDonationStore[idx] = { ...mockDonationStore[idx], sentToLab: true };
     return { data: undefined as any, message: 'تم إرسال التبرع للمختبر بنجاح' };
   }
-  const { data } = await apiClient.post<ApiResponse<void>>(`/donations/${donationId}/confirm`);
+  const { data } = await apiClient.post<ApiResponse<void>>(`/Donations/${donationId}/confirm`);
   return data;
 }

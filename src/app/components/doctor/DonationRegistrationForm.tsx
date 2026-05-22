@@ -124,7 +124,7 @@ export default function DonationRegistrationForm() {
           updateField('phone', d.phone);
           updateField('nationalId', d.nationalId);
           updateField('bloodType', d.bloodType);
-          updateField('governorate', d.city);
+          updateField('governorate', d.district);
           if (d.address) {
             const parts = d.address.split(' - ');
             updateField('area', parts[0] || '');
@@ -164,8 +164,9 @@ export default function DonationRegistrationForm() {
           age: Number(values.age),
           phone: values.phone,
           nationalId: values.nationalId,
-          city: values.governorate,
-          address: [values.area, values.district].filter(Boolean).join(' - '),
+          governorate: values.governorate,
+          district: values.district,
+          area: values.area,
           bloodType: values.bloodType as BloodType,
           donationType: values.donationType as DonationType,
           source: values.source,

@@ -45,7 +45,7 @@ Validation errors should be included in the `errors` object.
   "success": true,
   "message": "Success",
   "data": {
-    "data": [
+    "items": [
       {
         "id": "uuid",
         "donorCode": "DNR-2025-1234",
@@ -167,7 +167,7 @@ Returns the updated `Donor` object.
   "success": true,
   "message": "Success",
   "data": {
-    "data": [
+    "items": [
       {
         "id": "uuid",
         "donationCode": "DTN-2025-1234",
