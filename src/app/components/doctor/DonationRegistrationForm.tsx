@@ -36,11 +36,14 @@ export default function DonationRegistrationForm() {
 
   const getInitialForm = (): SimpleForm => {
     if (appointment) {
+      const approxDob = appointment.donorAge
+        ? `${new Date().getFullYear() - appointment.donorAge}-01-01`
+        : '';
       return {
         ...initialForm,
         name: appointment.donorName || '',
         gender: appointment.donorGender || '',
-        age: appointment.donorAge ? String(appointment.donorAge) : '',
+        dateOfBirth: approxDob,
         phone: appointment.donorPhone || '',
         nationalId: appointment.donorNationalId || '',
         district: appointment.donorDistrict || 'بني سويف',
@@ -134,7 +137,10 @@ export default function DonationRegistrationForm() {
           const d = res.data;
           updateField('name', d.name);
           updateField('gender', d.gender);
-          updateField('age', String(d.age));
+          const approxDob = d.age
+            ? `${new Date().getFullYear() - d.age}-01-01`
+            : '';
+          updateField('dateOfBirth', approxDob);
           updateField('phone', d.phone);
           updateField('nationalId', d.nationalId);
           updateField('bloodType', d.bloodType);
@@ -159,7 +165,7 @@ export default function DonationRegistrationForm() {
     const step1Fields: (keyof SimpleForm)[] = [
       'name',
       'gender',
-      'age',
+      'dateOfBirth',
       'phone',
       'nationalId',
       'area',
@@ -178,7 +184,7 @@ export default function DonationRegistrationForm() {
         {
           name: values.name,
           gender: values.gender as Donor['gender'],
-          age: Number(values.age),
+          dateOfBirth: values.dateOfBirth,
           phone: values.phone,
           nationalId: values.nationalId,
           governorate: values.governorate,
@@ -196,7 +202,7 @@ export default function DonationRegistrationForm() {
         {
           onSuccess: (res) => {
             setDonationId(res.data.donationId);
-            toast.success('تم تسجيل التبرع המبدئي بنجاح');
+            toast.success('تم تسجيل التبرع المبدئي بنجاح');
             setStep(2);
           },
           onError: () => {

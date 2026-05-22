@@ -78,7 +78,7 @@ export interface BasicDonationRequest {
   nationalId: string;
   name: string;
   gender: 'male' | 'female';
-  age: number;
+  dateOfBirth: string;
   phone: string;
   governorate: string;
   district: string;

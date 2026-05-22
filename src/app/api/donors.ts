@@ -233,13 +233,29 @@ export async function addDonation(payload: BasicDonationRequest): Promise<ApiRes
     await new Promise((r) => setTimeout(r, 400));
     const donationId = 'DONATION-' + Date.now();
     const existing = mockDonorStore.find(d => d.nationalId === payload.nationalId);
+
+    // Calculate age from dateOfBirth
+    let calculatedAge = 25;
+    if (payload.dateOfBirth) {
+      const dob = new Date(payload.dateOfBirth);
+      if (!isNaN(dob.getTime())) {
+        const today = new Date();
+        let age = today.getFullYear() - dob.getFullYear();
+        const monthDiff = today.getMonth() - dob.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+          age--;
+        }
+        calculatedAge = age;
+      }
+    }
+
     if (!existing) {
       const newDonor = {
         id: 'DON-' + Date.now(),
         donorCode: 'DNR-2025-' + String(Math.floor(Math.random() * 9000) + 1000),
         name: payload.name,
         gender: payload.gender,
-        age: payload.age,
+        age: calculatedAge,
         nationalId: payload.nationalId,
         phone: payload.phone,
         address: `${payload.area} - ${payload.district}`,
@@ -257,7 +273,7 @@ export async function addDonation(payload: BasicDonationRequest): Promise<ApiRes
       donorCode: existing?.donorCode,
       name: payload.name,
       gender: payload.gender,
-      age: payload.age,
+      age: calculatedAge,
       nationalId: payload.nationalId,
       phone: payload.phone,
       address: `${payload.area} - ${payload.district}`,
@@ -265,7 +281,7 @@ export async function addDonation(payload: BasicDonationRequest): Promise<ApiRes
       bloodType: payload.bloodType,
       donationType: payload.donationType,
       source: payload.source,
-      campaignId: payload.campaignId,
+      campaignId: payload.source === 'campaign' ? payload.donationCenterId : undefined,
       donationDate: new Date().toISOString().split('T')[0],
       diseases: [],
       sentToLab: false,

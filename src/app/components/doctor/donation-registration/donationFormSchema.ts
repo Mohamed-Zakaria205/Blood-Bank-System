@@ -12,10 +12,18 @@ export const donorSchema = z
         'أدخل الاسم الثنائي على الأقل',
       ),
     gender: z.string().min(1, 'اختر الجنس'),
-    age: z.string().refine((value) => {
-      const num = Number(value);
-      return !!value && !Number.isNaN(num) && num >= 18 && num <= 65;
-    }, 'العمر يجب أن يكون بين 18 و65 سنة'),
+    dateOfBirth: z.string().refine((value) => {
+      if (!value) return false;
+      const dob = new Date(value);
+      if (isNaN(dob.getTime())) return false;
+      const today = new Date();
+      let calculatedAge = today.getFullYear() - dob.getFullYear();
+      const monthDiff = today.getMonth() - dob.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        calculatedAge--;
+      }
+      return calculatedAge >= 18 && calculatedAge <= 65;
+    }, 'تاريخ الميلاد يجب أن يجعل السن بين 18 و 65 سنة'),
     phone: z.string().min(11, 'رقم هاتف غير صحيح'),
     nationalId: z.string().regex(/^\d{14}$/, 'رقم الهوية يجب أن يكون 14 رقماً'),
     governorate: z.string(),
@@ -59,7 +67,7 @@ export type SimpleForm = z.infer<typeof donorSchema>;
 export const initialForm: SimpleForm = {
   name: '',
   gender: '',
-  age: '',
+  dateOfBirth: '',
   phone: '',
   nationalId: '',
   governorate: 'بني سويف',

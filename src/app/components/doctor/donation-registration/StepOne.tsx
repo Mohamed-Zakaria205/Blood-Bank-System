@@ -243,20 +243,17 @@ export default function StepOne({
             className="block text-gray-700 mb-1.5"
             style={{ fontSize: '13px', fontWeight: 600 }}
           >
-            العمر * <span className="text-gray-400">(18-65)</span>
+            تاريخ الميلاد * <span className="text-gray-400">(العمر 18-65)</span>
           </label>
           <input
-            type="number"
-            {...register('age')}
-            placeholder="مثال: 28"
-            min="18"
-            max="65"
-            className={`w-full px-4 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.age ? 'border-red-300' : 'border-gray-200'}`}
+            type="date"
+            {...register('dateOfBirth')}
+            className={`w-full px-4 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.dateOfBirth ? 'border-red-300' : 'border-gray-200'}`}
             style={{ fontSize: '14px' }}
           />
-          {errors.age?.message && (
+          {errors.dateOfBirth?.message && (
             <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
-              {errors.age.message}
+              {errors.dateOfBirth.message}
             </p>
           )}
         </div>
