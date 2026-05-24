@@ -9,7 +9,7 @@ import type { DonationCenter } from '../types/donationCenter';
 import type { ApiResponseWrapper } from '../types/auth';
 import { validateContract, createPaginatedSchema, DonorContractSchema } from './contract';
 import { donors as MOCK_DONORS } from '../data/donors.mock';
-import { donations as MOCK_DONATIONS } from '../data/donations.mock';
+// import { donations as MOCK_DONATIONS } from '../data/donations.mock';
 import axios from 'axios';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
@@ -18,7 +18,7 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 let mockDonorStore: Donor[] = [...MOCK_DONORS];
 
 /** In-memory store — donations (events) */
-let mockDonationStore: Donation[] = [...MOCK_DONATIONS];
+// let mockDonationStore: Donation[] = [...MOCK_DONATIONS];
 
 // ═══════════════════════════════════════════════════════════
 //  DONORS  — profile-level endpoints
@@ -363,28 +363,48 @@ export async function addMedicalRecord(donationId: string, payload: MedicalRecor
 
 /** DELETE /donations/:id — remove a donation */
 export async function deleteDonation(donationId: string): Promise<ApiResponse<void>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    const idx = mockDonationStore.findIndex(d => d.id === donationId);
-    if (idx === -1) throw new ApiError('التبرع غير موجود', 404);
-    mockDonationStore = mockDonationStore.filter(d => d.id !== donationId);
-    return { data: undefined as any, message: 'تم حذف التبرع بنجاح' };
+  // if (USE_MOCK) {
+  //   await new Promise((r) => setTimeout(r, 300));
+  //   const idx = mockDonationStore.findIndex(d => d.id === donationId);
+  //   if (idx === -1) throw new ApiError('التبرع غير موجود', 404);
+  //   mockDonationStore = mockDonationStore.filter(d => d.id !== donationId);
+  //   return { data: undefined as any, message: 'تم حذف التبرع بنجاح' };
+  // }
+  try {
+    console.log('[API] deleteDonation donationId:', donationId);
+    const { data } = await apiClient.delete<ApiResponseWrapper<any>>(`/Donations/${donationId}`);
+    console.log('[API] deleteDonation response:', data);
+    return {
+      data: undefined as any,
+      message: data.message || 'تم حذف التبرع بنجاح',
+    };
+  } catch (error) {
+    console.error('Error in deleteDonation:', error);
+    throw error;
   }
-  const { data } = await apiClient.delete<ApiResponse<void>>(`/Donations/${donationId}`);
-  return data;
 }
 
 /** POST /donations/:id/confirm — mark donation as sent to lab */
 export async function confirmDonation(donationId: string): Promise<ApiResponse<void>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    const idx = mockDonationStore.findIndex(d => d.id === donationId);
-    if (idx === -1) throw new ApiError('التبرع غير موجود', 404);
-    mockDonationStore[idx] = { ...mockDonationStore[idx], sentToLab: true };
-    return { data: undefined as any, message: 'تم إرسال التبرع للمختبر بنجاح' };
+  // if (USE_MOCK) {
+  //   await new Promise((r) => setTimeout(r, 300));
+  //   const idx = mockDonationStore.findIndex(d => d.id === donationId);
+  //   if (idx === -1) throw new ApiError('التبرع غير موجود', 404);
+  //   mockDonationStore[idx] = { ...mockDonationStore[idx], sentToLab: true };
+  //   return { data: undefined as any, message: 'تم إرسال التبرع للمختبر بنجاح' };
+  // }
+  try {
+    console.log('[API] confirmDonation donationId:', donationId);
+    const { data } = await apiClient.post<ApiResponseWrapper<any>>(`/Donations/${donationId}/confirm`);
+    console.log('[API] confirmDonation response:', data);
+    return {
+      data: undefined as any,
+      message: data.message || 'تم إرسال التبرع للمختبر بنجاح',
+    };
+  } catch (error) {
+    console.error('Error in confirmDonation:', error);
+    throw error;
   }
-  const { data } = await apiClient.post<ApiResponse<void>>(`/Donations/${donationId}/confirm`);
-  return data;
 }
 
 // ═══════════════════════════════════════════════════════════

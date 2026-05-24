@@ -74,7 +74,7 @@ export const initialForm: SimpleForm = {
   district: 'مركز وبندر بني سويف',
   area: '',
   bloodType: '',
-  donationType: 'whole',
+  donationType: 'wholeblood',
   diseases: [],
   source: 'walkin',
   campaignId: '',
@@ -90,7 +90,7 @@ export const initialForm: SimpleForm = {
 };
 
 export const DONATION_TYPE_LABELS: Record<string, string> = {
-  whole: 'دم كامل',
+  wholeblood: 'دم كامل',
   plasma: 'بلازما',
   platelets: 'صفائح دموية',
 };

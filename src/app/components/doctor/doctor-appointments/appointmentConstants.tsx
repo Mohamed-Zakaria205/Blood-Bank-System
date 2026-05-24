@@ -10,12 +10,12 @@ export const MOCK_CURRENT_HOUR = _now.getHours();
 export const MOCK_CURRENT_MIN = _now.getMinutes();
 
 export const DONATION_LABELS: Record<string, string> = {
-  whole: 'دم كامل',
+  wholeblood: 'دم كامل',
   plasma: 'بلازما',
   platelets: 'صفائح',
 };
 export const DONATION_COLORS: Record<string, string> = {
-  whole: 'bg-red-50 text-red-600 border-red-100',
+  wholeblood: 'bg-red-50 text-red-600 border-red-100',
   plasma: 'bg-blue-50 text-blue-600 border-blue-100',
   platelets: 'bg-purple-50 text-purple-600 border-purple-100',
 };

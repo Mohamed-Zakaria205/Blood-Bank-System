@@ -27,7 +27,7 @@ function deriveOutflowRecordsFromTransactions(): OutflowRecord[] {
       bagId: t.bagIds[0] ?? '',
       bagCode: t.bagCodes[0] ?? '',
       bloodType: t.bloodType,
-      donationType: bag?.donationType || 'whole',
+      donationType: bag?.donationType || 'wholeblood',
       actionType: t.type === 'issue' ? 'exported' : 'disposed',
       recipientName: t.type === 'issue' ? t.destination : undefined,
       reason: t.notes ?? (t.type === 'issue' ? 'صرف من المخزون' : 'إتلاف من المخزون'),

@@ -15,6 +15,7 @@ import { BLOOD_TYPES, CITIES } from '../../constants';
 import { usePaginatedDonations, useDeleteDonation, useConfirmDonation } from '../../hooks/useDonors';
 import { useFilterChange } from '../../hooks/useFilterChange';
 import { toast } from 'sonner';
+import { handleApiError } from '../../api/errors';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 import {
@@ -70,24 +71,26 @@ export default function DoctorDonations() {
 
   const handleDelete = (donationId: string) => {
     deleteMutation.mutate(donationId, {
-      onSuccess: () => {
-        toast.success('تم حذف التبرع بنجاح');
+      onSuccess: (res) => {
+        toast.success(res?.message || 'تم حذف التبرع بنجاح');
         setActionDonation(null);
       },
-      onError: () => {
-        toast.error('تعذر حذف التبرع');
+      onError: (err) => {
+        const apiErr = handleApiError(err);
+        toast.error(apiErr.message || 'تعذر حذف التبرع');
       },
     });
   };
 
   const handleConfirm = (donationId: string) => {
     confirmMutation.mutate(donationId, {
-      onSuccess: () => {
-        toast.success('تم إرسال التبرع للمختبر بنجاح');
+      onSuccess: (res) => {
+        toast.success(res?.message || 'تم إرسال التبرع للمختبر بنجاح');
         setActionDonation(null);
       },
-      onError: () => {
-        toast.error('تعذر إرسال التبرع للمختبر');
+      onError: (err) => {
+        const apiErr = handleApiError(err);
+        toast.error(apiErr.message || 'تعذر إرسال التبرع للمختبر');
       },
     });
   };

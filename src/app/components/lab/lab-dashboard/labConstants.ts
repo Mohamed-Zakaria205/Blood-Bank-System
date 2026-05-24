@@ -44,7 +44,7 @@ export const screeningTests: {
 ];
 
 export const donationTypeLabels: Record<string, string> = {
-  whole: 'دم كامل',
+  wholeblood: 'دم كامل',
   plasma: 'بلازما',
   platelets: 'صفائح',
 };

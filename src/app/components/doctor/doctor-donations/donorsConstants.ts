@@ -14,7 +14,7 @@ export const statusLabels: Record<string, string> = {
 
 /** Donation type Arabic labels */
 export const donationTypeLabels: Record<string, string> = {
-  whole: 'دم كامل',
+  wholeblood: 'دم كامل',
   plasma: 'بلازما',
   platelets: 'صفائح',
 };

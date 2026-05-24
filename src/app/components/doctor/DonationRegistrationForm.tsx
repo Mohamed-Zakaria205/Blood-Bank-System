@@ -64,7 +64,7 @@ export default function DonationRegistrationForm() {
         district: appointment.donorDistrict || 'بني سويف',
         area: appointment.donorArea || '',
         bloodType: appointment.donorBloodType || '',
-        donationType: appointment.donationType || 'whole',
+        donationType: appointment.donationType || 'wholeblood',
         source: 'app',
         donationTime: appointment.time || new Date().toTimeString().slice(0, 5),
       };

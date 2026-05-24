@@ -76,7 +76,7 @@ export default function StepTwo({
         </label>
         <div className="grid grid-cols-3 gap-3">
           {[
-            ['whole', 'دم كامل', '🩸'],
+            ['wholeblood', 'دم كامل', '🩸'],
             ['plasma', 'بلازما', '💧'],
             ['platelets', 'صفائح', '🔬'],
           ].map(([v, l, e]) => (
