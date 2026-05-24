@@ -105,4 +105,4 @@ export interface MedicalRecordRequest {
  * PATCH /donors/:id — request body.
  * Partial update: only the fields that changed need to be sent.
  */
-export type UpdateDonorRequest = Partial<BasicDonationRequest & MedicalRecordRequest>;
+export type UpdateDonorRequest = Partial<BasicDonationRequest & MedicalRecordRequest & { address?: string }>;

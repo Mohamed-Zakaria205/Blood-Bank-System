@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { BLOOD_TYPES, CITIES } from '../../constants';
 import { usePaginatedDonors, useUpdateDonor } from '../../hooks/useDonors';
 import { useFilterChange } from '../../hooks/useFilterChange';
+import { handleApiError } from '../../api/errors';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 import {
@@ -75,15 +76,34 @@ export default function AdminDonors() {
 
   const saveEdit = () => {
     if (!editingDonor) return;
+
+    const phone = editForm.phone || '';
+    const egPhoneRegex = /^01[0125]\d{8}$/;
+    if (!phone) {
+      toast.error('يرجى إدخال رقم الهاتف');
+      return;
+    }
+    if (!egPhoneRegex.test(phone)) {
+      toast.error('رقم الهاتف المحمول غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015');
+      return;
+    }
+
+    // Close modal immediately for snappy UX
+    setEditingDonor(null);
+
     updateMutation.mutate(
       { id: editingDonor.id, payload: editForm },
       {
         onSuccess: (res) => {
           toast.success(res.message || 'تم تحديث بيانات المتبرع بنجاح');
-          setTimeout(() => setEditingDonor(null), 800);
         },
         onError: (err) => {
-          toast.error(err instanceof Error ? err.message : 'حدث خطأ أثناء التحديث');
+          const apiErr = handleApiError(err);
+          let userFriendlyMsg = apiErr.message || 'حدث خطأ أثناء التحديث';
+          if (userFriendlyMsg.includes('phone') || userFriendlyMsg.includes('Phone')) {
+            userFriendlyMsg = 'رقم الهاتف هذا مسجل بالفعل لمتبرع آخر';
+          }
+          toast.error(userFriendlyMsg);
         },
       },
     );

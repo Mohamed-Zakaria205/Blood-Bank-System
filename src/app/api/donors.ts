@@ -62,33 +62,33 @@ export async function fetchPaginatedDonors(
 ): Promise<PaginatedResponse<Donor>> {
   const { page = 1, limit = 10, search = '', bloodType = '', status = '', district = '' } = filters;
 
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-
-    // ── Client-side filtering ──────────────────────────────
-    let result = mockDonorStore;
-
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        (d) =>
-          d.name.toLowerCase().includes(q) ||
-          d.nationalId.includes(q) ||
-          d.donorCode.toLowerCase().includes(q) ||
-          d.phone.includes(q),
-      );
-    }
-    if (bloodType) result = result.filter((d) => d.bloodType === bloodType);
-    if (status) result = result.filter((d) => d.status === status);
-    if (district) result = result.filter((d) => d.district === district);
-
-    // ── Client-side pagination ─────────────────────────────
-    const total = result.length;
-    const start = (page - 1) * limit;
-    const data = result.slice(start, start + limit);
-
-    return { data, total, page, limit };
-  }
+  // if (USE_MOCK) {
+  //   await new Promise((r) => setTimeout(r, 300));
+  // 
+  //   // ── Client-side filtering ──────────────────────────────
+  //   let result = mockDonorStore;
+  // 
+  //   if (search) {
+  //     const q = search.toLowerCase();
+  //     result = result.filter(
+  //       (d) =>
+  //         d.name.toLowerCase().includes(q) ||
+  //         d.nationalId.includes(q) ||
+  //         d.donorCode.toLowerCase().includes(q) ||
+  //         d.phone.includes(q),
+  //     );
+  //   }
+  //   if (bloodType) result = result.filter((d) => d.bloodType === bloodType);
+  //   if (status) result = result.filter((d) => d.status === status);
+  //   if (district) result = result.filter((d) => d.district === district);
+  // 
+  //   // ── Client-side pagination ─────────────────────────────
+  //   const total = result.length;
+  //   const start = (page - 1) * limit;
+  //   const data = result.slice(start, start + limit);
+  // 
+  //   return { data, total, page, limit };
+  // }
 
   // ── Real API: forward all params as query-string ─────────
   const params: Record<string, any> = { page, limit };
@@ -97,24 +97,33 @@ export async function fetchPaginatedDonors(
   if (status) params.status = status;
   if (district) params.district = district;
 
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
-    items?: Donor[];
-    data?: Donor[];
-    total: number;
-    page: number;
-    limit: number;
-  }>>('/donors', {
-    params,
-    signal: options?.signal,
-  });
+  try {
+    const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
+      items?: Donor[];
+      data?: Donor[];
+      total: number;
+      page: number;
+      limit: number;
+    }>>('/Donors', {
+      params,
+      signal: options?.signal,
+    });
 
-  const rawItems = wrapper.data?.items || wrapper.data?.data || [];
-  return {
-    data: rawItems,
-    total: wrapper.data?.total || 0,
-    page: wrapper.data?.page || 1,
-    limit: wrapper.data?.limit || 10,
-  };
+    const rawItems = wrapper.data?.items || wrapper.data?.data || [];
+    console.log('[DEBUG] fetchPaginatedDonors response wrapper:', wrapper);
+    console.log('[DEBUG] fetchPaginatedDonors rawItems:', rawItems);
+    return {
+      data: rawItems,
+      total: wrapper.data?.total || 0,
+      page: wrapper.data?.page || 1,
+      limit: wrapper.data?.limit || 10,
+    };
+  } catch (error) {
+    if (!axios.isCancel(error) && (error as any)?.message !== 'canceled') {
+      console.error('Error in fetchPaginatedDonors:', error);
+    }
+    throw error;
+  }
 }
 
 export async function fetchDonorById(id: string): Promise<ApiResponse<Donor>> {
@@ -152,16 +161,25 @@ export async function updateDonor(
   id: string,
   payload: UpdateDonorRequest,
 ): Promise<ApiResponse<Donor>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 400));
-    const idx = mockDonorStore.findIndex((d) => d.id === id);
-    if (idx === -1) throw new ApiError('المتبرع غير موجود', 404);
-    const updated = { ...mockDonorStore[idx], ...payload };
-    mockDonorStore = mockDonorStore.map((d) => (d.id === id ? updated : d));
-    return { data: updated, message: 'تم تحديث بيانات المتبرع بنجاح' };
+  // Build patch payload — only send the fields the modal allows to change.
+  // DO NOT send governorate/area/address: they are not stored on Donor and
+  // sending them without a valid governorate causes a 500 on the backend.
+  const patchPayload: Record<string, any> = {};
+  if (payload.name !== undefined)      patchPayload.name      = payload.name;
+  if (payload.phone !== undefined)     patchPayload.phone     = payload.phone;
+  if (payload.bloodType !== undefined) patchPayload.bloodType = payload.bloodType;
+  if (payload.status !== undefined)    patchPayload.status    = payload.status;
+  if (payload.district !== undefined)  patchPayload.district  = payload.district;
+
+  try {
+    console.log('[API] updateDonor payload:', patchPayload);
+    const { data } = await apiClient.patch<ApiResponseWrapper<Donor>>(`/Donors/${id}`, patchPayload);
+    console.log('[API] updateDonor response:', data);
+    return data;
+  } catch (error) {
+    console.error('Error in updateDonor:', error);
+    throw error;
   }
-  const { data } = await apiClient.patch<ApiResponse<Donor>>(`/donors/${id}`, payload);
-  return data;
 }
 
 // ═══════════════════════════════════════════════════════════
