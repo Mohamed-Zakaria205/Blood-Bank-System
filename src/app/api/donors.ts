@@ -181,6 +181,8 @@ export async function fetchAllDonations(): Promise<PaginatedResponse<Donation>> 
     }>>('/Donations', { params: { limit: 9999 } });
 
     const rawItems = wrapper.data?.items || wrapper.data?.data || [];
+    console.log('[DEBUG] fetchAllDonations response wrapper:', wrapper);
+    console.log('[DEBUG] fetchAllDonations rawItems:', rawItems);
     return {
       data: rawItems,
       total: wrapper.data?.total || 0,
@@ -220,6 +222,8 @@ export async function fetchPaginatedDonations(
     });
 
     const rawItems = wrapper.data?.items || wrapper.data?.data || [];
+    console.log('[DEBUG] fetchPaginatedDonations response wrapper:', wrapper);
+    console.log('[DEBUG] fetchPaginatedDonations rawItems:', rawItems);
     return {
       data: rawItems,
       total: wrapper.data?.total || 0,
@@ -235,7 +239,7 @@ export async function fetchPaginatedDonations(
 }
 
 /** POST /donations — Step 1: create donation with basic info */
-export async function addDonation(payload: BasicDonationRequest): Promise<ApiResponse<string>> {
+export async function addDonation(payload: BasicDonationRequest): Promise<ApiResponse<{ id: string } | string>> {
   // if (USE_MOCK) {
   //   await new Promise((r) => setTimeout(r, 400));
   //   const donationId = 'DONATION-' + Date.now();
@@ -255,7 +259,7 @@ export async function addDonation(payload: BasicDonationRequest): Promise<ApiRes
   //       calculatedAge = age;
   //     }
   //   }
-
+  //
   //   if (!existing) {
   //     const newDonor = {
   //       id: 'DON-' + Date.now(),
@@ -297,41 +301,45 @@ export async function addDonation(payload: BasicDonationRequest): Promise<ApiRes
   //   mockDonationStore = [newDonation, ...mockDonationStore];
   //   return { data: donationId, message: 'تم تسجيل التبرع المبدئي بنجاح' };
   // }
-  const { data } = await apiClient.post<ApiResponse<string>>('/Donations', payload);
+  console.log('[API] addDonation payload:', payload);
+  const { data } = await apiClient.post<ApiResponse<{ id: string } | string>>('/Donations', payload);
+  console.log('[API] addDonation response data:', data);
   return data;
 }
 
 /** POST /donations/:id/medical-record — Step 2: add medical data */
-export async function addMedicalRecord(donationId: string, payload: MedicalRecordRequest): Promise<ApiResponse<{ donationCode: string }>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 400));
-    // Update the donation in mock store with medical data
-    const idx = mockDonationStore.findIndex(d => d.id === donationId);
-    let donationCode = '';
-    if (idx !== -1) {
-      mockDonationStore[idx] = {
-        ...mockDonationStore[idx],
-        diseases: payload.diseases,
-        additionalData: payload.additionalData,
-        isAllergic: payload.isAllergic,
-        bloodType: payload.bloodType || mockDonationStore[idx].bloodType,
-        donationType: payload.donationType || mockDonationStore[idx].donationType,
-      };
-      donationCode = mockDonationStore[idx].donationCode;
-
-      // Update donor profile bloodType if available
-      const donorId = mockDonationStore[idx].donorId;
-      const donorIdx = mockDonorStore.findIndex(d => d.id === donorId);
-      if (donorIdx !== -1 && payload.bloodType) {
-        mockDonorStore[donorIdx] = {
-          ...mockDonorStore[donorIdx],
-          bloodType: payload.bloodType,
-        };
-      }
-    }
-    return { data: { donationCode }, message: 'تم إضافة السجل الطبي بنجاح' };
-  }
-  const { data } = await apiClient.post<ApiResponse<{ donationCode: string }>>('/Donations/' + donationId + '/medical-record', payload);
+export async function addMedicalRecord(donationId: string, payload: MedicalRecordRequest): Promise<ApiResponse<string>> {
+  // if (USE_MOCK) {
+  //   await new Promise((r) => setTimeout(r, 400));
+  //   // Update the donation in mock store with medical data
+  //   const idx = mockDonationStore.findIndex(d => d.id === donationId);
+  //   let donationCode = '';
+  //   if (idx !== -1) {
+  //     mockDonationStore[idx] = {
+  //       ...mockDonationStore[idx],
+  //       diseases: payload.diseases,
+  //       additionalData: payload.additionalData,
+  //       isAllergic: payload.isAllergic,
+  //       bloodType: payload.bloodType || mockDonationStore[idx].bloodType,
+  //       donationType: payload.donationType || mockDonationStore[idx].donationType,
+  //     };
+  //     donationCode = mockDonationStore[idx].donationCode;
+  //
+  //     // Update donor profile bloodType if available
+  //     const donorId = mockDonationStore[idx].donorId;
+  //     const donorIdx = mockDonorStore.findIndex(d => d.id === donorId);
+  //     if (donorIdx !== -1 && payload.bloodType) {
+  //       mockDonorStore[donorIdx] = {
+  //         ...mockDonorStore[donorIdx],
+  //         bloodType: payload.bloodType,
+  //       };
+  //     }
+  //   }
+  //   return { data: donationCode, message: 'تم إضافة السجل الطبي بنجاح' };
+  // }
+  console.log('[API] addMedicalRecord donationId:', donationId, 'payload:', payload);
+  const { data } = await apiClient.post<ApiResponse<string>>('/Donations/' + donationId + '/medical-record', payload);
+  console.log('[API] addMedicalRecord response data:', data);
   return data;
 }
 

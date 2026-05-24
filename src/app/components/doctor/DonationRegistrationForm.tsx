@@ -17,6 +17,15 @@ import { donorSchema, initialForm, type SimpleForm } from './donation-registrati
 import StepOne from './donation-registration/StepOne';
 import StepTwo from './donation-registration/StepTwo';
 
+const extractDobFromNationalId = (nid: string): string => {
+  if (!nid || nid.length !== 14) return '';
+  const century = nid[0] === '2' ? '19' : nid[0] === '3' ? '20' : '19';
+  const year = nid.substring(1, 3);
+  const month = nid.substring(3, 5);
+  const day = nid.substring(5, 7);
+  return `${century}${year}-${month}-${day}`;
+};
+
 export default function DonationRegistrationForm() {
   const navigate = useNavigate();
   useAuth();
@@ -36,14 +45,20 @@ export default function DonationRegistrationForm() {
 
   const getInitialForm = (): SimpleForm => {
     if (appointment) {
-      const approxDob = appointment.donorAge
-        ? `${new Date().getFullYear() - appointment.donorAge}-01-01`
-        : '';
+      const birthYear = appointment.donorAge
+        ? (appointment.donorAge > 120
+            ? appointment.donorAge
+            : new Date().getFullYear() - appointment.donorAge)
+        : null;
+      const approxDob = birthYear ? `${String(birthYear).padStart(4, '0')}-01-01` : '';
+      const finalDob = appointment.donorNationalId 
+        ? extractDobFromNationalId(appointment.donorNationalId) 
+        : approxDob;
       return {
         ...initialForm,
         name: appointment.donorName || '',
         gender: appointment.donorGender || '',
-        dateOfBirth: approxDob,
+        dateOfBirth: finalDob,
         phone: appointment.donorPhone || '',
         nationalId: appointment.donorNationalId || '',
         district: appointment.donorDistrict || 'بني سويف',
@@ -132,15 +147,18 @@ export default function DonationRegistrationForm() {
     }
     searchDonor.mutate(searchId, {
       onSuccess: (res) => {
+        const exactDob = extractDobFromNationalId(searchId);
         if (res.data) {
           toast.success('تم العثور على المتبرع، تم ملء البيانات تلقائياً');
           const d = res.data;
           updateField('name', d.name);
           updateField('gender', d.gender);
-          const approxDob = d.age
-            ? `${new Date().getFullYear() - d.age}-01-01`
-            : '';
-          updateField('dateOfBirth', approxDob);
+          let finalDob = exactDob;
+          if (!finalDob && d.age) {
+            const birthYear = d.age > 150 ? d.age : new Date().getFullYear() - d.age;
+            finalDob = `${String(birthYear).padStart(4, '0')}-01-01`;
+          }
+          updateField('dateOfBirth', finalDob);
           updateField('phone', d.phone);
           updateField('nationalId', d.nationalId);
           updateField('bloodType', d.bloodType);
@@ -153,6 +171,9 @@ export default function DonationRegistrationForm() {
         } else {
           toast.info('متبرع جديد، يرجى إدخال البيانات');
           updateField('nationalId', searchId);
+          if (exactDob) {
+            updateField('dateOfBirth', exactDob);
+          }
         }
       },
       onError: () => {
@@ -199,7 +220,11 @@ export default function DonationRegistrationForm() {
         },
         {
           onSuccess: (res) => {
-            setDonationId(res.data);
+            const actualId =
+              res.data && typeof res.data === 'object'
+                ? (res.data as { id: string }).id
+                : (res.data as string);
+            setDonationId(actualId);
             toast.success('تم تسجيل التبرع المبدئي بنجاح');
             setStep(2);
           },

@@ -221,10 +221,8 @@ Returns the updated `Donor` object.
   "phone": "string",
   "address": "string",
   "city": "string",
-  "bloodType": "string",
   "source": "walkin" | "app" | "campaign",
   "campaignId": "uuid | null",
-  "donationType": "whole" | "plasma" | "platelets"
 }
 ```
 
@@ -259,6 +257,8 @@ Returns the updated `Donor` object.
   "isAllergic": boolean,
   "rejectionReason": "string | null",
   "deferredUntil": "YYYY-MM-DD | null",
+  "bloodType": "string",
+  "donationType": "whole" | "plasma" | "platelets"
 }
 ```
 
