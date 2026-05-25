@@ -68,7 +68,7 @@ export function buildStats(
 export function buildQuickActions(navigate: (path: string) => void) {
   return [
     {
-      label: 'تسجيل متبرع جديد',
+      label: 'تسجيل تبرع جديد',
       icon: UserPlus,
       color: 'bg-green-50 text-green-600 border-green-100',
       action: () => navigate('/doctor/register'),

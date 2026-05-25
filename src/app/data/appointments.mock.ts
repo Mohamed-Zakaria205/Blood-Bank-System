@@ -6,7 +6,7 @@ import type {
 export const slot15Data: Slot15[] = [
   {
     id: 'S15-001',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '08:00',
     donorName: 'كريم محمود أحمد',
     donorCode: 'DNR-2025-0001',
@@ -23,7 +23,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-002',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '08:15',
     donorName: 'منى حسن الشربيني',
     donorCode: 'DNR-2025-0002',
@@ -40,7 +40,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-003',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '08:30',
     donorName: 'رامي سلامة عوض',
     donorCode: 'DNR-2025-0009',
@@ -57,7 +57,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-004',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '08:45',
     donorName: 'نورهان طلال رشاد',
     donorCode: 'DNR-2025-0006',
@@ -74,7 +74,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-005',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '09:00',
     donorName: 'مصطفى حامد البسيوني',
     donorCode: 'DNR-2025-0007',
@@ -91,7 +91,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-006',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '09:15',
     donorName: 'فاطمة عبد الرحيم سعد',
     donorNationalId: '29801150011223',
@@ -107,7 +107,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-007',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '09:30',
     donorName: 'طارق إبراهيم حسن',
     donorNationalId: '29201180022334',
@@ -123,7 +123,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-008',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '09:45',
     donorName: 'إيمان مصطفى خليل',
     donorNationalId: '30001200033445',
@@ -139,7 +139,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-009',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '13:00',
     donorName: 'سامي عبد الله نور',
     donorNationalId: '29501250044556',
@@ -154,7 +154,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-010',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '13:15',
     donorName: 'أحمد طارق محمود',
     donorNationalId: '29001300055667',
@@ -169,7 +169,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-011',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '13:30',
     donorName: 'ريم إبراهيم السيد',
     donorNationalId: '29701350066778',
@@ -185,7 +185,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-012',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '14:00',
     donorName: 'خالد وليد الحسيني',
     donorNationalId: '29401400077889',
@@ -200,7 +200,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-013',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '14:30',
     donorName: 'أميرة محمد علي',
     donorNationalId: '30201450088990',
@@ -216,7 +216,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-014',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '15:00',
     donorName: 'باسم حسين العدل',
     donorNationalId: '28901500099001',
@@ -231,7 +231,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-015',
-    date: '2026-05-11',
+    date: '2026-05-25',
     time: '08:00',
     donorName: 'وليد منصور خليل',
     donorNationalId: '29601550010112',
@@ -247,7 +247,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-016',
-    date: '2026-05-11',
+    date: '2026-05-25',
     time: '08:15',
     donorName: 'لبنى مصطفى عزيز',
     donorNationalId: '30001600021223',
@@ -263,7 +263,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-017',
-    date: '2026-05-11',
+    date: '2026-05-25',
     time: '08:30',
     donorName: 'هشام كمال فتحي',
     donorNationalId: '29401650032334',
@@ -279,7 +279,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-018',
-    date: '2026-05-11',
+    date: '2026-05-25',
     time: '08:45',
     donorName: 'نجوى عبد الفتاح',
     donorNationalId: '29801700043445',
@@ -295,7 +295,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-019',
-    date: '2026-05-11',
+    date: '2026-05-25',
     time: '09:00',
     donorName: 'سعيد علي رضا',
     donorNationalId: '29001750054556',
@@ -311,7 +311,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-020',
-    date: '2026-05-11',
+    date: '2026-05-25',
     time: '09:30',
     donorName: 'دينا محمد فؤاد',
     donorCode: 'DNR-2025-0008',
@@ -328,7 +328,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-021',
-    date: '2026-05-11',
+    date: '2026-05-25',
     time: '10:00',
     donorName: 'مروان ��حمد السيد',
     donorNationalId: '29201850076778',
@@ -343,7 +343,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-022',
-    date: '2026-05-11',
+    date: '2026-05-25',
     time: '13:00',
     donorName: 'حنان يوسف مراد',
     donorNationalId: '29601900087889',
@@ -358,7 +358,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-023',
-    date: '2026-05-12',
+    date: '2026-05-26',
     time: '08:00',
     donorName: 'عبد الله عمر فاروق',
     donorNationalId: '29201950098990',
@@ -374,7 +374,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-024',
-    date: '2026-05-12',
+    date: '2026-05-26',
     time: '08:30',
     donorName: 'رانيا كمال إبراهيم',
     donorNationalId: '29802000009001',
@@ -390,7 +390,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-025',
-    date: '2026-05-12',
+    date: '2026-05-26',
     time: '09:00',
     donorName: 'حسن أحمد بدوي',
     donorNationalId: '29402050010112',
@@ -405,7 +405,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-026',
-    date: '2026-05-12',
+    date: '2026-05-26',
     time: '13:30',
     donorName: 'إسراء محمود عيد',
     donorNationalId: '30102100021223',
@@ -420,7 +420,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-027',
-    date: '2026-05-13',
+    date: '2026-05-27',
     time: '09:00',
     donorName: 'محمد صلاح جابر',
     donorNationalId: '29302150032334',
@@ -435,7 +435,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-028',
-    date: '2026-05-13',
+    date: '2026-05-27',
     time: '09:30',
     donorName: 'نهاد إبراهيم ماهر',
     donorNationalId: '29702200043445',
@@ -450,7 +450,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-029',
-    date: '2026-05-13',
+    date: '2026-05-27',
     time: '10:00',
     donorName: 'كمال حسين وليد',
     donorNationalId: '28902250054556',
@@ -465,7 +465,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-030',
-    date: '2026-05-14',
+    date: '2026-05-28',
     time: '08:00',
     donorName: 'وسام عبد الله حمدي',
     donorNationalId: '29402300065667',
@@ -481,7 +481,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-031',
-    date: '2026-05-14',
+    date: '2026-05-28',
     time: '08:15',
     donorName: 'آية علي منصور',
     donorNationalId: '29802350076778',
@@ -497,7 +497,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-032',
-    date: '2026-05-14',
+    date: '2026-05-28',
     time: '08:30',
     donorName: 'تامر محمود الوكيل',
     donorNationalId: '29202400087889',
@@ -513,7 +513,7 @@ export const slot15Data: Slot15[] = [
   },
   {
     id: 'S15-033',
-    date: '2026-05-14',
+    date: '2026-05-28',
     time: '09:00',
     donorName: 'مني إبراهيم سالم',
     donorNationalId: '29602450098990',
@@ -532,7 +532,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   // April 29 (Today)
   {
     id: 'SL-001',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '08:00',
     capacity: 3,
     isDisabled: false,
@@ -566,7 +566,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-002',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '08:30',
     capacity: 3,
     isDisabled: false,
@@ -584,7 +584,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-003',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '09:00',
     capacity: 3,
     isDisabled: false,
@@ -609,7 +609,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-004',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '09:30',
     capacity: 3,
     isDisabled: false,
@@ -617,7 +617,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-005',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '10:00',
     capacity: 3,
     isDisabled: false,
@@ -651,7 +651,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-006',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '10:30',
     capacity: 3,
     isDisabled: false,
@@ -667,7 +667,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-007',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '11:00',
     capacity: 3,
     isDisabled: true,
@@ -675,7 +675,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-008',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '11:30',
     capacity: 3,
     isDisabled: true,
@@ -683,7 +683,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-009',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '13:00',
     capacity: 3,
     isDisabled: false,
@@ -699,7 +699,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-010',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '13:30',
     capacity: 3,
     isDisabled: false,
@@ -707,7 +707,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-011',
-    date: '2026-05-10',
+    date: '2026-05-24',
     time: '14:00',
     capacity: 3,
     isDisabled: false,
@@ -716,7 +716,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   // April 30
   {
     id: 'SL-012',
-    date: '2026-05-11',
+    date: '2026-05-25',
     time: '08:00',
     capacity: 4,
     isDisabled: false,
@@ -741,7 +741,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-013',
-    date: '2026-05-11',
+    date: '2026-05-25',
     time: '09:00',
     capacity: 4,
     isDisabled: false,
@@ -779,7 +779,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-014',
-    date: '2026-05-11',
+    date: '2026-05-25',
     time: '10:00',
     capacity: 4,
     isDisabled: false,
@@ -796,7 +796,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-015',
-    date: '2026-05-11',
+    date: '2026-05-25',
     time: '11:00',
     capacity: 3,
     isDisabled: false,
@@ -804,7 +804,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-016',
-    date: '2026-05-11',
+    date: '2026-05-25',
     time: '13:00',
     capacity: 3,
     isDisabled: false,
@@ -828,7 +828,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   // May 1
   {
     id: 'SL-017',
-    date: '2026-05-12',
+    date: '2026-05-26',
     time: '08:00',
     capacity: 3,
     isDisabled: false,
@@ -845,7 +845,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-018',
-    date: '2026-05-12',
+    date: '2026-05-26',
     time: '09:00',
     capacity: 3,
     isDisabled: false,
@@ -854,7 +854,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-019',
-    date: '2026-05-12',
+    date: '2026-05-26',
     time: '10:00',
     capacity: 3,
     isDisabled: false,
@@ -877,7 +877,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-020',
-    date: '2026-05-12',
+    date: '2026-05-26',
     time: '11:00',
     capacity: 3,
     isDisabled: true,
@@ -885,7 +885,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-021',
-    date: '2026-05-12',
+    date: '2026-05-26',
     time: '13:00',
     capacity: 3,
     isDisabled: false,
@@ -894,7 +894,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   // May 2
   {
     id: 'SL-022',
-    date: '2026-05-13',
+    date: '2026-05-27',
     time: '09:00',
     capacity: 3,
     isDisabled: false,
@@ -910,7 +910,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-023',
-    date: '2026-05-13',
+    date: '2026-05-27',
     time: '10:00',
     capacity: 3,
     isDisabled: false,
@@ -918,7 +918,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-024',
-    date: '2026-05-13',
+    date: '2026-05-27',
     time: '11:00',
     capacity: 3,
     isDisabled: false,
@@ -927,7 +927,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   // May 3
   {
     id: 'SL-025',
-    date: '2026-05-14',
+    date: '2026-05-28',
     time: '08:00',
     capacity: 3,
     isDisabled: false,
@@ -958,7 +958,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-026',
-    date: '2026-05-14',
+    date: '2026-05-28',
     time: '09:00',
     capacity: 3,
     isDisabled: false,
@@ -967,7 +967,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-027',
-    date: '2026-05-14',
+    date: '2026-05-28',
     time: '09:00',
     capacity: 3,
     isDisabled: false,
@@ -975,7 +975,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-028',
-    date: '2026-05-15',
+    date: '2026-05-29',
     time: '10:00',
     capacity: 3,
     isDisabled: false,
@@ -983,7 +983,7 @@ export const appointmentSlots: AppointmentSlot[] = [
   },
   {
     id: 'SL-029',
-    date: '2026-05-16',
+    date: '2026-05-30',
     time: '08:00',
     capacity: 3,
     isDisabled: false,

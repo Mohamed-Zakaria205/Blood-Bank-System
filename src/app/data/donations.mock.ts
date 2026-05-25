@@ -16,7 +16,7 @@ export const donations: Donation[] = [
     bloodType: 'O+',
     donationType: 'wholeblood',
     source: 'walkin',
-    donationDate: '2025-04-20',
+    donationDate: '2026-05-24',
     diseases: [],
     additionalData: {
       weight: 75,
@@ -40,7 +40,7 @@ export const donations: Donation[] = [
     bloodType: 'A+',
     donationType: 'plasma',
     source: 'app',
-    donationDate: '2025-04-21',
+    donationDate: '2026-05-24',
     diseases: [],
     additionalData: {
       weight: 58,
@@ -64,7 +64,7 @@ export const donations: Donation[] = [
     bloodType: 'B-',
     donationType: 'wholeblood',
     source: 'app',
-    donationDate: '2025-04-22',
+    donationDate: '2026-05-25',
     diseases: ['hypertension'],
     additionalData: {
       weight: 82,
@@ -88,7 +88,7 @@ export const donations: Donation[] = [
     bloodType: 'AB+',
     donationType: 'platelets',
     source: 'walkin',
-    donationDate: '2025-04-23',
+    donationDate: '2026-05-26',
     diseases: [],
     additionalData: {
       weight: 62,
@@ -112,7 +112,7 @@ export const donations: Donation[] = [
     bloodType: 'O-',
     donationType: 'wholeblood',
     source: 'walkin',
-    donationDate: '2025-04-23',
+    donationDate: '2026-05-26',
     diseases: ['diabetes', 'hypertension'],
   },
   {
@@ -156,7 +156,7 @@ export const donations: Donation[] = [
     bloodType: 'B+',
     donationType: 'wholeblood',
     source: 'walkin',
-    donationDate: '2025-04-25',
+    donationDate: '2026-05-27',
     diseases: [],
     additionalData: {
       weight: 78,
@@ -182,7 +182,7 @@ export const donations: Donation[] = [
     source: 'campaign',
     campaignId: 'CAM-001',
     campaignName: 'حملة التبرع - مستشفى بني سويف العام',
-    donationDate: '2025-04-26',
+    donationDate: '2026-05-28',
     diseases: ['anemia'],
     isAllergic: false,
   },
@@ -201,7 +201,7 @@ export const donations: Donation[] = [
     bloodType: 'O+',
     donationType: 'wholeblood',
     source: 'walkin',
-    donationDate: '2025-04-26',
+    donationDate: '2026-05-28',
     diseases: [],
     additionalData: {
       weight: 88,
@@ -225,7 +225,7 @@ export const donations: Donation[] = [
     bloodType: 'A+',
     donationType: 'plasma',
     source: 'app',
-    donationDate: '2025-04-26',
+    donationDate: '2026-05-28',
     diseases: [],
     additionalData: {
       weight: 61,

@@ -5,20 +5,24 @@ interface WeeklyChartProps {
   donations: Donation[];
 }
 
-/** Build current-week donation counts (Sun → Sat) from real API data */
+/** Build current-week donation counts — Egyptian week: السبت → الجمعة */
 function buildWeekData(donations: Donation[]) {
-  const dayNames = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+  // Egyptian week starts on Saturday (JS getDay: 6=Sat, 0=Sun, ..., 5=Fri)
+  const dayNames = ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
 
-  // Get the start of the current week (Sunday)
   const now = new Date();
+  // Days elapsed since last Saturday: Sun=1, Mon=2, ..., Sat=0
+  const daysFromSat = (now.getDay() + 1) % 7;
   const startOfWeek = new Date(now);
-  startOfWeek.setDate(now.getDate() - now.getDay());
+  startOfWeek.setDate(now.getDate() - daysFromSat);
   startOfWeek.setHours(0, 0, 0, 0);
 
+  // Build Sat→Fri — in RTL flexbox, index 0 (السبت) renders on the right ✓
   return dayNames.map((day, i) => {
     const dayDate = new Date(startOfWeek);
     dayDate.setDate(startOfWeek.getDate() + i);
-    const dateStr = dayDate.toISOString().split('T')[0];
+    // Use local date (not toISOString) to avoid UTC offset shifting the date
+    const dateStr = `${dayDate.getFullYear()}-${String(dayDate.getMonth() + 1).padStart(2, '0')}-${String(dayDate.getDate()).padStart(2, '0')}`;
     const count = donations.filter((d) => d.donationDate === dateStr).length;
     return { day, donors: count };
   });

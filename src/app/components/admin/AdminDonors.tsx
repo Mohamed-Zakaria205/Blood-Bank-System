@@ -39,7 +39,7 @@ export default function AdminDonors() {
     refetch,
   } = usePaginatedDonors({
     page,
-    limit: 15,
+    limit: 10,
     search,
     bloodType: filterBlood,
     status: filterStatus,
@@ -48,7 +48,7 @@ export default function AdminDonors() {
 
   const donors = response?.data || [];
   const total = response?.total || 0;
-  const totalPages = Math.ceil(total / 15) || 1;
+  const totalPages = Math.ceil(total / 10) || 1;
 
   const [editingDonor, setEditingDonor] = useState<Donor | null>(null);
   const [editForm, setEditForm] = useState<Partial<Donor>>({});

@@ -79,7 +79,7 @@ export default function DoctorDashboard() {
               fontWeight: 700,
             }}
           >
-            <UserPlus className="w-5 h-5" /> تسجيل متبرع
+            <UserPlus className="w-5 h-5" /> تسجيل تبرع
           </button>
           <button
             onClick={() => navigate('/doctor/campaigns')}
