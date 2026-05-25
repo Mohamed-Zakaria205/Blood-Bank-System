@@ -11,6 +11,7 @@ import { Form } from '../ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { BloodType, DonationType, DonorStatus } from '../../types/common';
 import type { Donor } from '../../types/donor';
+import { EGYPT_DATA } from '../../data/egypt';
 
 // ── Sub-components ──
 import { donorSchema, initialForm, type SimpleForm } from './donation-registration/donationFormSchema';
@@ -162,12 +163,23 @@ export default function DonationRegistrationForm() {
           updateField('phone', d.phone);
           updateField('nationalId', d.nationalId);
           updateField('bloodType', d.bloodType || '');
-          updateField('governorate', d.district);
-          if (d.address) {
-            const parts = d.address.split(' - ');
-            updateField('area', parts[0] || '');
-            if (parts[1]) updateField('district', parts[1]);
+          const gov = d.governorate || 'بني سويف';
+          let dist = d.district || 'مركز وبندر بني سويف';
+          
+          const govObj = EGYPT_DATA.find((g) => g.name_ar === gov);
+          if (govObj) {
+            const exactDist = govObj.cities.find((c) => c.city_name_ar === dist);
+            if (!exactDist) {
+              const partialDist = govObj.cities.find(
+                (c) => c.city_name_ar.includes(dist) || dist.includes(c.city_name_ar)
+              );
+              if (partialDist) dist = partialDist.city_name_ar;
+            }
           }
+
+          updateField('governorate', gov);
+          updateField('district', dist);
+          updateField('area', d.area || '');
         } else {
           toast.info('متبرع جديد، يرجى إدخال البيانات');
           updateField('nationalId', searchId);

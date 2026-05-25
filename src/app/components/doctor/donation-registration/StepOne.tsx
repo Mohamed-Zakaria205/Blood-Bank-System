@@ -336,12 +336,12 @@ export default function StepOne({
               المحافظة *
             </label>
             <select
-              {...register('governorate', {
-                onChange: () => {
-                  updateField('district', '');
-                  updateField('area', '');
-                },
-              })}
+              value={form.governorate || ''}
+              onChange={(e) => {
+                updateField('governorate', e.target.value);
+                updateField('district', '');
+                updateField('area', '');
+              }}
               className="w-full px-3 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
               style={{ fontSize: '13px' }}
             >
@@ -362,11 +362,11 @@ export default function StepOne({
               المركز *
             </label>
             <select
-              {...register('district', {
-                onChange: () => {
-                  updateField('area', '');
-                },
-              })}
+              value={form.district || ''}
+              onChange={(e) => {
+                updateField('district', e.target.value);
+                updateField('area', '');
+              }}
               className="w-full px-3 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
               style={{ fontSize: '13px' }}
             >
@@ -388,7 +388,8 @@ export default function StepOne({
             </label>
             {currentAreas.length > 0 ? (
               <select
-                {...register('area')}
+                value={form.area || ''}
+                onChange={(e) => updateField('area', e.target.value)}
                 className={`w-full px-3 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${errors.area ? 'border-red-300' : 'border-gray-200'}`}
                 style={{ fontSize: '13px' }}
               >
