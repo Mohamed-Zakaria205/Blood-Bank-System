@@ -94,9 +94,16 @@ function processQueue(error: unknown) {
  * Force-logout: clear all stored credentials and redirect.
  * Called when the refresh token itself is invalid/expired.
  */
-function forceLogout() {
-  localStorage.removeItem('bloodlink_user');
-  window.location.href = '/login';
+async function forceLogout() {
+  try {
+    const { logoutApi } = await import('./auth');
+    await logoutApi();
+  } catch (err) {
+    console.error('forceLogout API call failed', err);
+  } finally {
+    localStorage.removeItem('bloodlink_user');
+    window.location.href = '/login';
+  }
 }
 
 apiClient.interceptors.response.use(

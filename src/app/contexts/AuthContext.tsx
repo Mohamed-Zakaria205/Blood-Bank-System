@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { loginApi, logoutApi, getMeApi } from '../api/auth';
 import type { User, UserRole } from '../types/auth';
+import { PageLoader } from '../components/shared/LoadingSkeleton';
 
 // ── Context shape ──────────────────────────────────────────
 interface AuthContextType {
@@ -8,6 +9,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   isLoading: boolean;
+  isVerifying: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,6 +25,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   });
 
+  const [isVerifying, setIsVerifying] = useState(true);
+
   useEffect(() => {
     // Verify session with the backend on mount
     getMeApi()
@@ -34,6 +38,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Session invalid or expired
         setUser(null);
         localStorage.removeItem('bloodlink_user');
+      })
+      .finally(() => {
+        setIsVerifying(false);
       });
   }, []);
 
@@ -67,8 +74,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('bloodlink_user');
   }, []);
 
+  if (isVerifying) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50" dir="rtl">
+        <PageLoader message="جاري التحقق من الجلسة والاتصال بالخادم..." />
+      </div>
+    );
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, isLoading, isVerifying }}>
       {children}
     </AuthContext.Provider>
   );

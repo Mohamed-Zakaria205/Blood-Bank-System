@@ -119,7 +119,18 @@ export async function refreshTokenApi(): Promise<void> {
  */
 export async function logoutApi(): Promise<void> {
   try {
-    await apiClient.post('/Auth/logout');
+    const { default: axios } = await import('axios');
+    const baseURL = import.meta.env.VITE_API_URL ?? '/api/v1/system';
+    await axios.post(
+      `${baseURL}/Auth/logout`,
+      {},
+      {
+        withCredentials: true,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      }
+    );
   } catch (err) {
     // Swallow errors — we clear local state regardless
     console.error('Logout API failed', err);
