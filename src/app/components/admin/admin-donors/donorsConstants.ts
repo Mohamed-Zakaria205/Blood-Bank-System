@@ -23,9 +23,10 @@ export const donationTypeLabels: Record<string, string> = {
 export const adminDonorsHeaders = [
   'رمز المتبرع',
   'الاسم',
-  'المدينة',
+  'العنوان',
   'الفصيلة',
-  'المصدر',
+  'آخر تبرع',
+  'عدد التبرعات',
   'الحالة',
   'إجراء',
 ] as const;

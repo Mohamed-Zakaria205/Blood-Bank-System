@@ -161,7 +161,7 @@ export default function DonationRegistrationForm() {
           updateField('dateOfBirth', finalDob);
           updateField('phone', d.phone);
           updateField('nationalId', d.nationalId);
-          updateField('bloodType', d.bloodType);
+          updateField('bloodType', d.bloodType || '');
           updateField('governorate', d.district);
           if (d.address) {
             const parts = d.address.split(' - ');

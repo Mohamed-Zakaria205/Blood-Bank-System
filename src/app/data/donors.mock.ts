@@ -1,6 +1,6 @@
 import type { Donor } from '../types';
 
-export const donors: Donor[] = [
+export const donors: (Donor & { source?: string })[] = [
   {
     id: 'DON-001',
     donorCode: 'DNR-2025-0001',

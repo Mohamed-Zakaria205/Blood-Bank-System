@@ -34,9 +34,9 @@ export function useAdminDashboardData() {
       )
       .slice(0, 6);
       
-    const campaignDonors = donors.filter((d) => d.source === 'campaign');
-    const walkinDonors = donors.filter((d) => d.source === 'walkin');
-    const appDonors = donors.filter((d) => d.source === 'app');
+    const campaignDonors = donors.filter((d) => (d as any).source === 'campaign');
+    const walkinDonors = donors.filter((d) => (d as any).source === 'walkin');
+    const appDonors = donors.filter((d) => (d as any).source === 'app');
 
     return {
       doctors,

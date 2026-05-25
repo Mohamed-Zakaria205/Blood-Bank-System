@@ -25,7 +25,10 @@ export interface Donor {
   phone: string;
   address: string;
   district: string;
-  bloodType: BloodType;
+  governorate?: string;
+  area?: string;
+  dateOfBirth?: string;
+  bloodType?: BloodType;
   status: DonorStatus;
   rejectionReason?: string;
   deferredUntil?: string;
@@ -36,9 +39,9 @@ export interface Donor {
   lastDonationDate?: string;
   donations?: number;
   points?: number;
-  source?: 'walkin' | 'app' | 'campaign';
   campaignId?: string;
   campaignName?: string;
+  hasAppAccount?: boolean;
 }
 
 /**

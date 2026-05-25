@@ -55,7 +55,7 @@ export default function DoctorEligibility() {
   const filtered = useMemo(() => {
     return enriched.filter((d) => {
       const matchSearch =
-        d.name.includes(search) || d.phone.includes(search) || d.bloodType.includes(search);
+        d.name.includes(search) || d.phone.includes(search) || (d.bloodType || '').includes(search);
       const matchStatus = filterStatus === 'all' || d.elig.status === filterStatus;
       const matchBlood = filterBlood === 'all' || d.bloodType === filterBlood;
       return matchSearch && matchStatus && matchBlood;

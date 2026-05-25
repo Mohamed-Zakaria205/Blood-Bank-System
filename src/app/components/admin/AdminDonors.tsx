@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Search, Filter, Edit2, ChevronDown, Building2, Smartphone } from 'lucide-react';
+import { Search, Filter, Edit2, ChevronDown, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import { BLOOD_TYPES, CITIES } from '../../constants';
 import { usePaginatedDonors, useUpdateDonor } from '../../hooks/useDonors';
+import { fetchDonorById } from '../../api/donors';
 import { useFilterChange } from '../../hooks/useFilterChange';
 import { handleApiError } from '../../api/errors';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
@@ -24,6 +25,7 @@ import {
   adminDonorsHeaders,
 } from './admin-donors/donorsConstants';
 import EditDonorModal from './admin-donors/EditDonorModal';
+import ViewDonorModal from './admin-donors/ViewDonorModal';
 
 export default function AdminDonors() {
   const [page, setPage] = useState(1);
@@ -52,6 +54,8 @@ export default function AdminDonors() {
 
   const [editingDonor, setEditingDonor] = useState<Donor | null>(null);
   const [editForm, setEditForm] = useState<Partial<Donor>>({});
+  const [viewingDonorId, setViewingDonorId] = useState<string | null>(null);
+  const [loadingDetailsId, setLoadingDetailsId] = useState<string | null>(null);
 
   const updateMutation = useUpdateDonor();
 
@@ -69,9 +73,17 @@ export default function AdminDonors() {
     );
   if (isError)
     return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
-  const openEdit = (d: Donor) => {
-    setEditingDonor(d);
-    setEditForm({ ...d });
+  const openEdit = async (d: Donor) => {
+    setLoadingDetailsId(d.id);
+    try {
+      const res = await fetchDonorById(d.id);
+      setEditingDonor(res.data);
+      setEditForm({ ...res.data });
+    } catch (err) {
+      toast.error('تعذر تحميل بيانات المتبرع الكاملة للتعديل');
+    } finally {
+      setLoadingDetailsId(null);
+    }
   };
 
   const saveEdit = () => {
@@ -88,6 +100,17 @@ export default function AdminDonors() {
       return;
     }
 
+    const nationalId = editForm.nationalId || '';
+    const nationalIdRegex = /^\d{14}$/;
+    if (!nationalId) {
+      toast.error('يرجى إدخال الرقم القومي');
+      return;
+    }
+    if (!nationalIdRegex.test(nationalId)) {
+      toast.error('الرقم القومي غير صحيح، يجب أن يتكون من 14 رقماً');
+      return;
+    }
+
     // Close modal immediately for snappy UX
     setEditingDonor(null);
 
@@ -95,14 +118,36 @@ export default function AdminDonors() {
       { id: editingDonor.id, payload: editForm },
       {
         onSuccess: (res) => {
-          toast.success(res.message || 'تم تحديث بيانات المتبرع بنجاح');
+          let msg = res.message || 'تم تحديث بيانات المتبرع بنجاح';
+          if (msg.toLowerCase() === 'success') {
+            msg = 'تم تحديث بيانات المتبرع بنجاح';
+          }
+          toast.success(msg);
         },
         onError: (err) => {
           const apiErr = handleApiError(err);
+          const rawMsg = (apiErr.message || '').toLowerCase();
           let userFriendlyMsg = apiErr.message || 'حدث خطأ أثناء التحديث';
-          if (userFriendlyMsg.includes('phone') || userFriendlyMsg.includes('Phone')) {
+
+          // English to Arabic error mapping
+          if (rawMsg.includes('phone') || rawMsg.includes('رقم الهاتف')) {
             userFriendlyMsg = 'رقم الهاتف هذا مسجل بالفعل لمتبرع آخر';
+          } else if (rawMsg.includes('nationalid') || rawMsg.includes('national id') || rawMsg.includes('الرقم القومي')) {
+            userFriendlyMsg = 'الرقم القومي هذا مسجل بالفعل لمتبرع آخر';
+          } else if (rawMsg.includes('not found')) {
+            userFriendlyMsg = 'المتبرع غير موجود في النظام';
+          } else if (rawMsg.includes('blood') || rawMsg.includes('bloodtype')) {
+            userFriendlyMsg = 'فصيلة الدم غير صالحة';
+          } else if (rawMsg.includes('validation')) {
+            userFriendlyMsg = 'يوجد خطأ في البيانات المدخلة، يرجى مراجعتها';
+          } else if (rawMsg.includes('unauthorized') || rawMsg.includes('forbidden')) {
+            userFriendlyMsg = 'ليس لديك صلاحية لتعديل بيانات هذا المتبرع';
+          } else if (rawMsg.includes('network error')) {
+            userFriendlyMsg = 'خطأ في الاتصال بالخادم، يرجى التحقق من الإنترنت';
+          } else if (rawMsg.includes('server error') || rawMsg.includes('500')) {
+            userFriendlyMsg = 'حدث خطأ في الخادم، يرجى المحاولة لاحقاً';
           }
+
           toast.error(userFriendlyMsg);
         },
       },
@@ -209,7 +254,7 @@ export default function AdminDonors() {
                 {adminDonorsHeaders.map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-right text-gray-500 whitespace-nowrap"
+                    className={`px-4 py-3 ${h === 'إجراء' ? 'text-center' : 'text-right'} text-gray-500 whitespace-nowrap`}
                     style={{ fontSize: '12px', fontWeight: 600 }}
                   >
                     {h}
@@ -244,7 +289,7 @@ export default function AdminDonors() {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span className="text-gray-500" style={{ fontSize: '13px' }}>
-                      {d.district}
+                      {d.address || '—'}
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
@@ -252,26 +297,18 @@ export default function AdminDonors() {
                       className="px-2 py-0.5 bg-red-50 text-red-600 rounded"
                       style={{ fontSize: '12px', fontWeight: 700 }}
                     >
-                      {d.bloodType}
+                      {d.bloodType || '—'}
                     </span>
                   </td>
-
                   <td className="px-4 py-3 whitespace-nowrap">
-                    {d.source === 'app' ? (
-                      <span
-                        className="flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded-full w-fit"
-                        style={{ fontSize: '11px', fontWeight: 700 }}
-                      >
-                        <Smartphone className="w-3 h-3" /> من التطبيق
-                      </span>
-                    ) : (
-                      <span
-                        className="flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 rounded-full w-fit"
-                        style={{ fontSize: '11px', fontWeight: 700 }}
-                      >
-                        <Building2 className="w-3 h-3" /> داخل البنك
-                      </span>
-                    )}
+                    <span className="text-gray-500 font-mono" style={{ fontSize: '13px' }}>
+                      {d.lastDonationDate || '—'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <span className="text-gray-500" style={{ fontSize: '13px' }}>
+                      {d.donations !== undefined ? d.donations : 0}
+                    </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
@@ -282,17 +319,28 @@ export default function AdminDonors() {
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <button
-                      onClick={() => openEdit(d)}
-                      className="text-green-600 hover:text-green-700 px-2 py-1 rounded-lg hover:bg-green-50 transition-all flex items-center gap-1"
-                      style={{ fontSize: '12px', fontWeight: 600 }}
-                    >
-                      <Edit2 className="w-3.5 h-3.5" /> تعديل
-                    </button>
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => setViewingDonorId(d.id)}
+                        className="text-blue-600 hover:text-blue-700 px-2.5 py-1 rounded-lg hover:bg-blue-50 transition-all flex items-center gap-1"
+                        style={{ fontSize: '12px', fontWeight: 600 }}
+                      >
+                        <Eye className="w-3.5 h-3.5" /> عرض
+                      </button>
+                      <button
+                        onClick={() => openEdit(d)}
+                        disabled={loadingDetailsId === d.id}
+                        className={`text-green-600 hover:text-green-700 px-2.5 py-1 rounded-lg hover:bg-green-50 transition-all flex items-center gap-1 ${loadingDetailsId === d.id ? 'opacity-50 cursor-wait' : ''}`}
+                        style={{ fontSize: '12px', fontWeight: 600 }}
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                        {loadingDetailsId === d.id ? 'جارٍ التحميل...' : 'تعديل'}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
-              {donors.length === 0 && <EmptyState colSpan={7} message="لا توجد نتائج مطابقة" />}
+              {donors.length === 0 && <EmptyState colSpan={8} message="لا توجد نتائج مطابقة" />}
             </tbody>
           </table>
         </div>
@@ -351,6 +399,14 @@ export default function AdminDonors() {
           onCancel={() => { setEditingDonor(null); updateMutation.reset(); }}
           loading={updateMutation.isPending}
           saved={updateMutation.isSuccess}
+        />
+      )}
+
+      {/* View Modal */}
+      {viewingDonorId && (
+        <ViewDonorModal
+          donorId={viewingDonorId}
+          onClose={() => setViewingDonorId(null)}
         />
       )}
     </div>

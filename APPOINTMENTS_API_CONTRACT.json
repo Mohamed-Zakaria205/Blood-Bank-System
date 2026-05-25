@@ -1,0 +1,385 @@
+{
+  "info": {
+    "title": "Blood Bank System - Doctor Appointments API Contract",
+    "version": "1.0.0",
+    "description": "API contract for endpoints required by the Doctor Appointments module in the frontend.",
+    "baseUrl": "/api/v1"
+  },
+  "definitions": {
+    "BloodType": {
+      "type": "string",
+      "enum": ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
+    },
+    "DonationType": {
+      "type": "string",
+      "enum": ["wholeblood", "plasma", "platelets"]
+    },
+    "Slot15Status": {
+      "type": "string",
+      "enum": ["available", "booked", "completed", "missed", "disabled", "cancelled"]
+    },
+    "AppointmentBooking": {
+      "type": "object",
+      "required": ["id", "donorName", "phone", "source", "status"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+        },
+        "donorName": {
+          "type": "string",
+          "example": "محمد أحمد علي"
+        },
+        "donorCode": {
+          "type": "string",
+          "nullable": true,
+          "example": "DN-83921"
+        },
+        "phone": {
+          "type": "string",
+          "example": "01091234567"
+        },
+        "bloodType": {
+          "$ref": "#/definitions/BloodType",
+          "nullable": true
+        },
+        "source": {
+          "type": "string",
+          "enum": ["app", "manual"],
+          "example": "app"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["confirmed", "cancelled"],
+          "example": "confirmed"
+        }
+      }
+    },
+    "AppointmentSlot": {
+      "type": "object",
+      "required": ["id", "date", "time", "capacity", "bookings", "isDisabled"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "example": "e58fa2b1-12cd-43ef-8789-9a0bcd123456"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "example": "2026-05-25"
+        },
+        "time": {
+          "type": "string",
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+          "example": "09:00"
+        },
+        "capacity": {
+          "type": "integer",
+          "example": 5
+        },
+        "bookings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AppointmentBooking"
+          }
+        },
+        "isDisabled": {
+          "type": "boolean",
+          "example": false
+        },
+        "campaignId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true,
+          "example": null
+        }
+      }
+    },
+    "Slot15": {
+      "type": "object",
+      "required": ["id", "date", "time", "status"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "example": "c83bfa99-710e-4ba9-b7b5-22b7c4d51b3a"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "example": "2026-05-25"
+        },
+        "time": {
+          "type": "string",
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+          "example": "10:15"
+        },
+        "donorName": {
+          "type": "string",
+          "nullable": true,
+          "example": "أحمد محمود محمد"
+        },
+        "donorCode": {
+          "type": "string",
+          "nullable": true,
+          "example": "DN-48201"
+        },
+        "donorNationalId": {
+          "type": "string",
+          "pattern": "^\\d{14}$",
+          "nullable": true,
+          "example": "30105200102345"
+        },
+        "donorPhone": {
+          "type": "string",
+          "nullable": true,
+          "example": "01123456789"
+        },
+        "donorBloodType": {
+          "$ref": "#/definitions/BloodType",
+          "nullable": true
+        },
+        "donorGender": {
+          "type": "string",
+          "enum": ["male", "female"],
+          "nullable": true,
+          "example": "male"
+        },
+        "donorAge": {
+          "type": "integer",
+          "nullable": true,
+          "example": 25
+        },
+        "donorDistrict": {
+          "type": "string",
+          "nullable": true,
+          "example": "الدقي"
+        },
+        "donorArea": {
+          "type": "string",
+          "nullable": true,
+          "example": "ش الحريري"
+        },
+        "donationType": {
+          "$ref": "#/definitions/DonationType",
+          "nullable": true
+        },
+        "status": {
+          "$ref": "#/definitions/Slot15Status"
+        },
+        "campaignId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true,
+          "example": "b2f0a12e-ca9d-407b-91f6-ecbd23a48e77"
+        },
+        "notes": {
+          "type": "string",
+          "nullable": true,
+          "example": "أول مرة تبرع"
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true,
+          "example": null
+        },
+        "cancelledAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true,
+          "example": "2026-05-25T01:30:00Z"
+        },
+        "cancelledBy": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true,
+          "example": "d58ae1b0-2bcd-4ef3-9781-a0bcdae12345"
+        },
+        "cancelledByName": {
+          "type": "string",
+          "nullable": true,
+          "example": "د. أحمد حسن"
+        },
+        "cancellationReason": {
+          "type": "string",
+          "nullable": true,
+          "example": "تأجيل بسبب عدم استيفاء شروط الوزن"
+        }
+      }
+    }
+  },
+  "endpoints": [
+    {
+      "name": "Fetch Appointment Slots",
+      "method": "GET",
+      "path": "/appointments/slots",
+      "description": "Fetch slot booking summary. Used by components to display overall slot layout, capacities, and daily schedules.",
+      "queryParams": {
+        "page": {
+          "type": "integer",
+          "required": false,
+          "description": "Page number for pagination",
+          "default": 1
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Number of items per page",
+          "default": 10
+        }
+      },
+      "response": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Slots fetched successfully"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/AppointmentSlot"
+                }
+              },
+              "total": {
+                "type": "integer",
+                "example": 50
+              },
+              "page": {
+                "type": "integer",
+                "example": 1
+              },
+              "limit": {
+                "type": "integer",
+                "example": 10
+              }
+            }
+          },
+          "errors": {
+            "type": "object",
+            "nullable": true,
+            "example": null
+          }
+        }
+      }
+    },
+    {
+      "name": "Fetch 15-Minute Detailed Slots (Individual Appointments)",
+      "method": "GET",
+      "path": "/appointments/slot15",
+      "description": "Fetch detailed 15-minute slot data showing individual donors booked. This is used directly on the Doctor Dashboard to show upcoming appointments for today, and in the appointments management page.",
+      "queryParams": {
+        "page": {
+          "type": "integer",
+          "required": false,
+          "description": "Page number for pagination",
+          "default": 1
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Number of items per page",
+          "default": 20
+        }
+      },
+      "response": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Detailed appointments fetched successfully"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Slot15"
+                }
+              },
+              "total": {
+                "type": "integer",
+                "example": 150
+              },
+              "page": {
+                "type": "integer",
+                "example": 1
+              },
+              "limit": {
+                "type": "integer",
+                "example": 20
+              }
+            }
+          },
+          "errors": {
+            "type": "object",
+            "nullable": true,
+            "example": null
+          }
+        }
+      }
+    },
+    {
+      "name": "Cancel Appointment Slot",
+      "method": "POST",
+      "path": "/appointments/slots/{slotId}/cancel",
+      "description": "Allows a doctor to cancel a specific 15-minute appointment slot, specifying a cancellation reason.",
+      "pathParams": {
+        "slotId": {
+          "type": "string",
+          "required": true,
+          "description": "The ID of the 15-minute slot to cancel"
+        }
+      },
+      "requestBody": {
+        "type": "object",
+        "required": ["reason"],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "The cancellation reason given by the doctor",
+            "example": "المتبرع لم يستوفِ شروط التبرع (الوزن أقل من 50 كجم)"
+          }
+        }
+      },
+      "response": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Appointment cancelled successfully"
+          },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "example": null
+          },
+          "errors": {
+            "type": "object",
+            "nullable": true,
+            "example": null
+          }
+        }
+      }
+    }
+  ]
+}

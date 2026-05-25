@@ -2,7 +2,6 @@
 // Donors & Donations API service
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
-import { ApiError } from './errors';
 import type { Donor, Donation, BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest } from '../types/donor';
 import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/common';
 import type { DonationCenter } from '../types/donationCenter';
@@ -110,10 +109,15 @@ export async function fetchPaginatedDonors(
     });
 
     const rawItems = wrapper.data?.items || wrapper.data?.data || [];
+    const mappedItems: Donor[] = rawItems.map((item: any) => ({
+      ...item,
+      status: item.eligibilityStatus || item.status,
+      donations: item.donationsNumber !== undefined ? item.donationsNumber : item.donations,
+    }));
     console.log('[DEBUG] fetchPaginatedDonors response wrapper:', wrapper);
-    console.log('[DEBUG] fetchPaginatedDonors rawItems:', rawItems);
+    console.log('[DEBUG] fetchPaginatedDonors rawItems mapped:', mappedItems);
     return {
-      data: rawItems,
+      data: mappedItems,
       total: wrapper.data?.total || 0,
       page: wrapper.data?.page || 1,
       limit: wrapper.data?.limit || 10,
@@ -127,14 +131,18 @@ export async function fetchPaginatedDonors(
 }
 
 export async function fetchDonorById(id: string): Promise<ApiResponse<Donor>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 200));
-    const donor = mockDonorStore.find((d) => d.id === id);
-    if (!donor) throw new ApiError('المتبرع غير موجود', 404);
+  // Always use the real API — the paginated donors list already hits the real
+  // backend (mock was disabled), so the IDs returned are backend UUIDs that
+  // will never be found in the in-memory mockDonorStore.
+  try {
+    const { data: wrapper } = await apiClient.get<any>(`/Donors/${id}`);
+    // Handle both wrapped { success, data: {...} } and bare donor responses
+    const donor: Donor = wrapper?.data ?? wrapper;
     return { data: donor };
+  } catch (error) {
+    console.error('[API] fetchDonorById error:', error);
+    throw error;
   }
-  const { data } = await apiClient.get<ApiResponse<Donor>>(`/donors/${id}`);
-  return data;
 }
 
 export async function searchDonorByNationalId(nationalId: string): Promise<ApiResponse<Donor | null>> {
@@ -168,8 +176,11 @@ export async function updateDonor(
   if (payload.name !== undefined)      patchPayload.name      = payload.name;
   if (payload.phone !== undefined)     patchPayload.phone     = payload.phone;
   if (payload.bloodType !== undefined) patchPayload.bloodType = payload.bloodType;
-  if (payload.status !== undefined)    patchPayload.status    = payload.status;
   if (payload.district !== undefined)  patchPayload.district  = payload.district;
+  if (payload.governorate !== undefined) patchPayload.governorate = payload.governorate;
+  if (payload.area !== undefined)      patchPayload.area      = payload.area;
+  if (payload.nationalId !== undefined) patchPayload.nationalId = payload.nationalId;
+  if (payload.dateOfBirth !== undefined) patchPayload.dateOfBirth = payload.dateOfBirth;
 
   try {
     console.log('[API] updateDonor payload:', patchPayload);
