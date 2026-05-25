@@ -22,7 +22,7 @@ export const DURATION_OPTIONS = [
 export const FORM_DEFAULTS = {
   title: '',
   location: '',
-  city: 'بني سويف',
+  city: 'مركز وبندر بني سويف',
   date: '',
   targetDonors: '',
   description: '',
