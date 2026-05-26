@@ -12,6 +12,8 @@ export interface Campaign {
   endDate?: string;
   targetDonors: number;
   registeredDonors: number;
+  /** Number of app-booked appointments for this campaign — returned by the backend. */
+  appointmentsCount?: number;
   status: CampaignStatus;
   createdBy: string;
   createdByName: string;

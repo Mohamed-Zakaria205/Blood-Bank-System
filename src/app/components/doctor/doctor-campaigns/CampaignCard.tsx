@@ -13,11 +13,11 @@ import {
 import type { Campaign } from '../../../types/campaign';
 import type { AppointmentSlot } from '../../../types/appointment';
 import { statusColors, statusLabels } from './campaignConstants';
+import { useAppointmentSlots } from '../../../hooks/useAppointments';
 
 interface CampaignCardProps {
   campaign: Campaign;
   isMyCampaign: boolean;
-  slots: AppointmentSlot[];
   expandedCampaign: string | null;
   onToggleExpand: (id: string) => void;
   onCancelSlot: (slot: AppointmentSlot) => void;
@@ -26,12 +26,21 @@ interface CampaignCardProps {
 export default function CampaignCard({
   campaign: c,
   isMyCampaign,
-  slots,
   expandedCampaign,
   onToggleExpand,
   onCancelSlot,
 }: CampaignCardProps) {
   const navigate = useNavigate();
+  const isExpanded = expandedCampaign === c.id;
+
+  // ── Lazy fetch: only fires when the card is expanded ──
+  const { data: campApts = [], isLoading: isSlotsLoading } = useAppointmentSlots(
+    isExpanded ? { campaignId: c.id } : undefined,
+  );
+
+  // Use server-provided count for the badge; fall back to fetched length after load
+  const badgeCount = c.appointmentsCount ?? campApts.length;
+
   const pct = Math.round((c.registeredDonors / c.targetDonors) * 100);
   const progressColor =
     c.status === 'completed'
@@ -49,9 +58,6 @@ export default function CampaignCard({
         : pct >= 40
           ? 'text-yellow-500'
           : 'text-red-500';
-
-  const campApts = slots.filter((s) => s.campaignId === c.id);
-  const isExpanded = expandedCampaign === c.id;
 
   return (
     <div
@@ -133,8 +139,8 @@ export default function CampaignCard({
         </div>
       </div>
 
-      {/* Campaign Appointments */}
-      {campApts.length > 0 && (
+      {/* Campaign Appointments — only shown if the campaign has any */}
+      {badgeCount > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-100">
           <button
             onClick={() => onToggleExpand(c.id)}
@@ -152,7 +158,7 @@ export default function CampaignCard({
                 className="px-2 py-0.5 bg-green-600 text-white rounded-full"
                 style={{ fontSize: '11px', fontWeight: 700 }}
               >
-                {campApts.length}
+                {badgeCount}
               </span>
             </div>
             <ChevronDown
@@ -161,101 +167,109 @@ export default function CampaignCard({
           </button>
           {isExpanded && (
             <div className="mt-3 space-y-2">
-              {campApts.map((apt) => {
-                const isCancelled = apt.status === 'cancelled';
-                const isCompleted = apt.status === 'completed';
-                const isMissed = apt.status === 'missed';
-                const isBooked = apt.status === 'booked';
-                return (
-                  <div
-                    key={apt.id}
-                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all group ${
-                      isCancelled
-                        ? 'bg-red-50 border-red-100'
-                        : isCompleted
-                          ? 'bg-gray-50 border-gray-100'
-                          : 'bg-gray-50 border-gray-100 hover:border-green-200 hover:bg-green-50 cursor-pointer'
-                    }`}
-                    onClick={() => isBooked && navigate(`/doctor/register?apt=${apt.id}`)}
-                  >
-                    <div className="flex-shrink-0 text-center w-14">
-                      <span
-                        className={`font-mono ${isCancelled ? 'text-red-400 line-through' : 'text-green-700'}`}
-                        style={{ fontSize: '13px', fontWeight: 700 }}
-                        dir="ltr"
-                      >
-                        {apt.time}
-                      </span>
-                      <p className="text-gray-400" style={{ fontSize: '10px' }}>
-                        {apt.date}
-                      </p>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p
-                        className={`truncate ${isCancelled ? 'text-red-400 line-through' : 'text-gray-900'}`}
-                        style={{ fontSize: '13px', fontWeight: 600 }}
-                      >
-                        {apt.donorName}
-                      </p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        {apt.donorBloodType && (
-                          <span
-                            className={`${isCancelled ? 'text-red-300' : 'text-red-600'}`}
-                            style={{
-                              fontSize: '11px',
-                              fontWeight: 700,
-                            }}
-                          >
-                            {apt.donorBloodType}
-                          </span>
-                        )}
-                        {isCancelled && apt.cancelledByName && (
-                          <span className="text-red-400" style={{ fontSize: '10px' }}>
-                            ألغاه: {apt.cancelledByName}
-                          </span>
+              {isSlotsLoading ? (
+                <div className="space-y-2">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="h-14 bg-gray-100 rounded-xl animate-pulse" />
+                  ))}
+                </div>
+              ) : (
+                campApts.map((apt) => {
+                  const isCancelled = apt.status === 'cancelled';
+                  const isCompleted = apt.status === 'completed';
+                  const isMissed = apt.status === 'missed';
+                  const isBooked = apt.status === 'booked';
+                  return (
+                    <div
+                      key={apt.id}
+                      className={`flex items-center gap-3 p-3 rounded-xl border transition-all group ${
+                        isCancelled
+                          ? 'bg-red-50 border-red-100'
+                          : isCompleted
+                            ? 'bg-gray-50 border-gray-100'
+                            : 'bg-gray-50 border-gray-100 hover:border-green-200 hover:bg-green-50 cursor-pointer'
+                      }`}
+                      onClick={() => isBooked && navigate(`/doctor/register?apt=${apt.id}`)}
+                    >
+                      <div className="flex-shrink-0 text-center w-14">
+                        <span
+                          className={`font-mono ${isCancelled ? 'text-red-400 line-through' : 'text-green-700'}`}
+                          style={{ fontSize: '13px', fontWeight: 700 }}
+                          dir="ltr"
+                        >
+                          {apt.time}
+                        </span>
+                        <p className="text-gray-400" style={{ fontSize: '10px' }}>
+                          {apt.date}
+                        </p>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p
+                          className={`truncate ${isCancelled ? 'text-red-400 line-through' : 'text-gray-900'}`}
+                          style={{ fontSize: '13px', fontWeight: 600 }}
+                        >
+                          {apt.donorName}
+                        </p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          {apt.donorBloodType && (
+                            <span
+                              className={`${isCancelled ? 'text-red-300' : 'text-red-600'}`}
+                              style={{
+                                fontSize: '11px',
+                                fontWeight: 700,
+                              }}
+                            >
+                              {apt.donorBloodType}
+                            </span>
+                          )}
+                          {isCancelled && apt.cancelledByName && (
+                            <span className="text-red-400" style={{ fontSize: '10px' }}>
+                              ألغاه: {apt.cancelledByName}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-white ${
+                            isCompleted
+                              ? 'bg-gray-400'
+                              : isMissed
+                                ? 'bg-orange-500'
+                                : isCancelled
+                                  ? 'bg-red-500'
+                                  : 'bg-green-600'
+                          }`}
+                          style={{ fontSize: '10px', fontWeight: 700 }}
+                        >
+                          {isCompleted
+                            ? 'مكتمل'
+                            : isMissed
+                              ? 'لم يحضر'
+                              : isCancelled
+                                ? 'ملغى'
+                                : 'محجوز'}
+                        </span>
+                        {isBooked && (
+                          <>
+                            <UserPlus className="w-4 h-4 text-green-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onCancelSlot(apt);
+                              }}
+                              className="p-1 rounded-lg border border-red-200 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-red-50 transition-all"
+                              title="إلغاء الموعد"
+                            >
+                              <XCircle className="w-3.5 h-3.5" />
+                            </button>
+                          </>
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-white ${
-                          isCompleted
-                            ? 'bg-gray-400'
-                            : isMissed
-                              ? 'bg-orange-500'
-                              : isCancelled
-                                ? 'bg-red-500'
-                                : 'bg-green-600'
-                        }`}
-                        style={{ fontSize: '10px', fontWeight: 700 }}
-                      >
-                        {isCompleted
-                          ? 'مكتمل'
-                          : isMissed
-                            ? 'لم يحضر'
-                            : isCancelled
-                              ? 'ملغى'
-                              : 'محجوز'}
-                      </span>
-                      {isBooked && (
-                        <>
-                          <UserPlus className="w-4 h-4 text-green-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onCancelSlot(apt);
-                            }}
-                            className="p-1 rounded-lg border border-red-200 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-red-50 transition-all"
-                            title="إلغاء الموعد"
-                          >
-                            <XCircle className="w-3.5 h-3.5" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           )}
         </div>

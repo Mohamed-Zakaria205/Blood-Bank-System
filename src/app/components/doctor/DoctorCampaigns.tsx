@@ -11,7 +11,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '../ui/pagination';
-import { useAppointmentSlots, useCancelAppointment } from '../../hooks/useAppointments';
+import { useCancelAppointment } from '../../hooks/useAppointments';
 import { CancelModal } from '../shared/CancelModal';
 import type { Campaign } from '../../types/campaign';
 import type { AppointmentSlot } from '../../types/appointment';
@@ -25,7 +25,7 @@ import CreateCampaignModal from './doctor-campaigns/CreateCampaignModal';
 
 export default function DoctorCampaigns() {
   const { user } = useAuth();
-  const { data: slots = [] } = useAppointmentSlots();
+
   const [page, setPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState('');
   
@@ -164,7 +164,6 @@ export default function DoctorCampaigns() {
             key={c.id}
             campaign={c}
             isMyCampaign={c.createdBy === user?.id}
-            slots={slots}
             expandedCampaign={expandedCampaign}
             onToggleExpand={(id) => setExpandedCampaign(expandedCampaign === id ? null : id)}
             onCancelSlot={(apt) => setCancelTarget(apt)}
