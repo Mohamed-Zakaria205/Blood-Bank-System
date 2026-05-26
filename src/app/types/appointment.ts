@@ -47,6 +47,8 @@ export interface AppointmentSlot {
   donorBloodType?: BloodType;
   donorGender?: 'male' | 'female';
   donorAge?: number;
+  donorDateOfBirth?: string;
+  donorGovernorate?: string;
   donorDistrict?: string;
   donorArea?: string;
   donationType?: DonationType;

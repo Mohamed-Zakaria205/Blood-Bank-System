@@ -94,9 +94,11 @@ export default function DonationRegistrationForm() {
             : new Date().getFullYear() - appointment.donorAge)
         : null;
       const approxDob = birthYear ? `${String(birthYear).padStart(4, '0')}-01-01` : '';
-      const finalDob = appointment.donorNationalId 
-        ? extractDobFromNationalId(appointment.donorNationalId) 
-        : approxDob;
+      const finalDob = appointment.donorDateOfBirth
+        ? normalizeDateToISO(appointment.donorDateOfBirth)
+        : (appointment.donorNationalId 
+            ? extractDobFromNationalId(appointment.donorNationalId) 
+            : approxDob);
       return {
         ...initialForm,
         name: appointment.donorName || '',
@@ -104,7 +106,8 @@ export default function DonationRegistrationForm() {
         dateOfBirth: finalDob,
         phone: appointment.donorPhone || '',
         nationalId: appointment.donorNationalId || '',
-        district: appointment.donorDistrict || 'بني سويف',
+        governorate: appointment.donorGovernorate || 'بني سويف',
+        district: appointment.donorDistrict || 'مركز وبندر بني سويف',
         area: appointment.donorArea || '',
         bloodType: appointment.donorBloodType || '',
         donationType: appointment.donationType || 'wholeblood',
@@ -149,6 +152,8 @@ export default function DonationRegistrationForm() {
     register('diseases');
     register('isAllergic');
     register('governorate');
+    register('district');
+    register('area');
     register('donationTime');
     register('donationCenterId');
   }, [register]);
