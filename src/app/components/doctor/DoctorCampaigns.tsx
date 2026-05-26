@@ -11,10 +11,10 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '../ui/pagination';
-import { useSlot15Data, useCancelAppointment } from '../../hooks/useAppointments';
+import { useAppointmentSlots, useCancelAppointment } from '../../hooks/useAppointments';
 import { CancelModal } from '../shared/CancelModal';
 import type { Campaign } from '../../types/campaign';
-import type { Slot15 } from '../../types/appointment';
+import type { AppointmentSlot } from '../../types/appointment';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 
 // ── Sub-components ──
@@ -25,7 +25,7 @@ import CreateCampaignModal from './doctor-campaigns/CreateCampaignModal';
 
 export default function DoctorCampaigns() {
   const { user } = useAuth();
-  const { data: slots = [] } = useSlot15Data();
+  const { data: slots = [] } = useAppointmentSlots();
   const [page, setPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState('');
   
@@ -48,7 +48,7 @@ export default function DoctorCampaigns() {
   const cancelMutation = useCancelAppointment();
   const [showModal, setShowModal] = useState(false);
   const [expandedCampaign, setExpandedCampaign] = useState<string | null>(null);
-  const [cancelTarget, setCancelTarget] = useState<Slot15 | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<AppointmentSlot | null>(null);
 
   // ── Form state ──
   const [form, setForm] = useState<CampaignFormState>(FORM_DEFAULTS);

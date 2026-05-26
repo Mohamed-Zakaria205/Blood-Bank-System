@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useDonors, useDonations } from '../../../hooks/useDonors';
 import { useCampaigns } from '../../../hooks/useCampaigns';
-import { useSlot15Data } from '../../../hooks/useAppointments';
+import { useAppointmentSlots } from '../../../hooks/useAppointments';
 import { toISODate } from '../../../utils/date';
 
 export function useDoctorDashboardData() {
@@ -11,14 +11,13 @@ export function useDoctorDashboardData() {
   const { data: donors = [], isLoading: isLoadingDonors, isError: isErrorDonors, refetch } = useDonors();
   const { data: donations = [], isLoading: isLoadingDonations } = useDonations();
   const { data: campaigns = [], isLoading: isLoadingCampaigns } = useCampaigns();
-  const { data: slot15Data = [], isLoading: isLoadingSlots } = useSlot15Data();
+  const today = toISODate(new Date());
+  const { data: slot15Data = [], isLoading: isLoadingSlots } = useAppointmentSlots({ date: today });
 
   const isLoading = isLoadingDonors || isLoadingDonations || isLoadingCampaigns || isLoadingSlots;
   const isError = isErrorDonors;
 
   const derivedData = useMemo(() => {
-    // Bug 1 & 4 fix: compute TODAY dynamically, not hardcoded
-    const today = toISODate(new Date());
 
     const myDonors = donors.filter((d) => d.registeredBy === user?.id);
     const activeCampaigns = campaigns.filter((c) => c.status === 'active');
@@ -52,7 +51,7 @@ export function useDoctorDashboardData() {
       campaignDonors,
       upcomingToday,
     };
-  }, [donors, donations, campaigns, slot15Data, user?.id]);
+  }, [donors, donations, campaigns, slot15Data, user?.id, today]);
 
   return {
     donors,

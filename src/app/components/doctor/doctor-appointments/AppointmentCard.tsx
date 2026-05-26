@@ -10,10 +10,9 @@ import {
   Megaphone,
   Ban,
 } from 'lucide-react';
-import type { Slot15 } from '../../../types';
+import type { AppointmentSlot } from '../../../types';
 import { useCampaigns } from '../../../hooks/useCampaigns';
 import {
-  getEffectiveStatus,
   STATUS_CONFIG,
   DONATION_LABELS,
   DONATION_COLORS,
@@ -37,16 +36,22 @@ function CampaignBadge({ campaignId }: { campaignId?: string }) {
 
 // ── Appointment Card (detailed — today view) ──
 interface AppointmentCardProps {
-  slot: Slot15;
+  slot: AppointmentSlot;
   onRegister: () => void;
   onCancel: () => void;
+  onNoShow: () => void;
 }
 
-export default function AppointmentCard({ slot, onRegister, onCancel }: AppointmentCardProps) {
-  const eff = getEffectiveStatus(slot);
-  const cfg = STATUS_CONFIG[eff];
+export default function AppointmentCard({
+  slot,
+  onRegister,
+  onCancel,
+  onNoShow,
+}: AppointmentCardProps) {
+  const status = slot.status;
+  const cfg = STATUS_CONFIG[status];
 
-  if (eff === 'available') {
+  if (status === 'available') {
     return (
       <div
         className={`rounded-xl border ${cfg.border} ${cfg.bg} px-4 py-3 flex items-center justify-between`}
@@ -71,11 +76,11 @@ export default function AppointmentCard({ slot, onRegister, onCancel }: Appointm
           {cfg.icon}
           <span
             className={`px-2 py-0.5 rounded-full text-white ${
-              eff === 'booked'
+              status === 'booked'
                 ? 'bg-green-600'
-                : eff === 'completed'
+                : status === 'completed'
                   ? 'bg-gray-400'
-                  : eff === 'no_show'
+                  : status === 'missed'
                     ? 'bg-orange-500'
                     : 'bg-red-500'
             }`}
@@ -147,7 +152,7 @@ export default function AppointmentCard({ slot, onRegister, onCancel }: Appointm
       </div>
 
       {/* Cancellation log */}
-      {eff === 'cancelled' && slot.cancelledByName && (
+      {status === 'cancelled' && slot.cancelledByName && (
         <div className="mt-3 p-3 bg-red-100/60 rounded-xl border border-red-200 space-y-1">
           <div className="flex items-center gap-1.5">
             <Ban className="w-3.5 h-3.5 text-red-500" />
@@ -174,14 +179,21 @@ export default function AppointmentCard({ slot, onRegister, onCancel }: Appointm
         </div>
       )}
 
-      {eff === 'booked' && (
+      {status === 'booked' && (
         <div className="mt-3 flex gap-2">
           <button
             onClick={onCancel}
             className="flex-1 py-2 border-2 border-red-200 text-red-600 rounded-xl hover:bg-red-50 hover:border-red-400 flex items-center justify-center gap-1.5 transition-all"
             style={{ fontSize: '12px', fontWeight: 700 }}
           >
-            <XCircle className="w-4 h-4" /> إلغاء الموعد
+            <XCircle className="w-4 h-4" /> إلغاء
+          </button>
+          <button
+            onClick={onNoShow}
+            className="flex-1 py-2 border-2 border-orange-200 text-orange-600 rounded-xl hover:bg-orange-50 hover:border-orange-400 flex items-center justify-center gap-1.5 transition-all"
+            style={{ fontSize: '12px', fontWeight: 700 }}
+          >
+            <AlertTriangle className="w-4 h-4" /> لم يحضر
           </button>
           <button
             onClick={onRegister}
@@ -192,7 +204,7 @@ export default function AppointmentCard({ slot, onRegister, onCancel }: Appointm
           </button>
         </div>
       )}
-      {eff === 'no_show' && (
+      {status === 'missed' && (
         <div className="mt-2 px-3 py-2 bg-orange-100 rounded-xl flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 text-orange-600" />
           <span className="text-orange-700" style={{ fontSize: '12px', fontWeight: 600 }}>

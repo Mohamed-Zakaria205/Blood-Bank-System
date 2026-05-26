@@ -11,16 +11,16 @@ import {
 } from 'lucide-react';
 
 import type { Campaign } from '../../../types/campaign';
-import type { Slot15 } from '../../../types/appointment';
+import type { AppointmentSlot } from '../../../types/appointment';
 import { statusColors, statusLabels } from './campaignConstants';
 
 interface CampaignCardProps {
   campaign: Campaign;
   isMyCampaign: boolean;
-  slots: Slot15[];
+  slots: AppointmentSlot[];
   expandedCampaign: string | null;
   onToggleExpand: (id: string) => void;
-  onCancelSlot: (slot: Slot15) => void;
+  onCancelSlot: (slot: AppointmentSlot) => void;
 }
 
 export default function CampaignCard({

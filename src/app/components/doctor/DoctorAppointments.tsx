@@ -4,8 +4,13 @@ import { ar } from 'date-fns/locale';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { AlertTriangle, Filter, Bell } from 'lucide-react';
-import type { Slot15, CancellationNotification } from '../../types';
-import { useSlot15Data, useCancelAppointment } from '../../hooks/useAppointments';
+import type { AppointmentSlot, CancellationNotification } from '../../types';
+import {
+  useAppointmentSlots,
+  useAppointmentStats,
+  useCancelAppointment,
+  useMarkNoShow,
+} from '../../hooks/useAppointments';
 import { useAuth } from '../../contexts/AuthContext';
 import { CancelModal } from '../shared/CancelModal';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
@@ -13,40 +18,49 @@ import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkelet
 // ── Sub-components ──
 import {
   TODAY,
-  ALL_SLOTS,
   WEEK_DATES,
   WEEK_DAY_NAMES,
   STATUS_CONFIG,
-  isSlotPast,
-  getEffectiveStatus,
 } from './doctor-appointments/appointmentConstants';
 import type { EffectiveStatus } from './doctor-appointments/appointmentConstants';
 import AppointmentCard from './doctor-appointments/AppointmentCard';
 import AppointmentRow from './doctor-appointments/AppointmentRow';
 import NotificationsPanel from './doctor-appointments/NotificationsPanel';
 
+// Compute month range for the month view
+const _d = new Date();
+const MONTH_START = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}-01`;
+const MONTH_END = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}-31`;
+
 export default function DoctorAppointments() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // ── Server state via React Query ──
-  const { data: slots = [], isLoading, isError, refetch } = useSlot15Data();
-  const cancelMutation = useCancelAppointment();
+  const [view, setView] = useState<'today' | 'week' | 'month'>('today');
+  const [filterStatus, setFilterStatus] = useState<'all' | EffectiveStatus>('all');
+  const [cancelTarget, setCancelTarget] = useState<AppointmentSlot | null>(null);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   // ── In-session cancellation notifications (ephemeral, not persisted) ──
   const [notifications, setNotifications] = useState<CancellationNotification[]>([]);
-
   const unreadCount = notifications.filter((n) => !n.read).length;
-
   const markNotificationRead = (id: string) =>
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
-
   const markAllRead = () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
 
-  const [view, setView] = useState<'today' | 'week' | 'month'>('today');
-  const [filterStatus, setFilterStatus] = useState<'all' | EffectiveStatus>('all');
-  const [cancelTarget, setCancelTarget] = useState<Slot15 | null>(null);
-  const [showNotifications, setShowNotifications] = useState(false);
+  // ── Determine date filter based on view ──
+  const dateFilter =
+    view === 'today'
+      ? { date: TODAY }
+      : view === 'week'
+        ? { dateFrom: WEEK_DATES[0], dateTo: WEEK_DATES[6] }
+        : { dateFrom: MONTH_START, dateTo: MONTH_END };
+
+  // ── Server state via React Query ──
+  const { data: slots = [], isLoading, isError, refetch } = useAppointmentSlots(dateFilter);
+  const { data: stats } = useAppointmentStats({ date: TODAY });
+  const cancelMutation = useCancelAppointment();
+  const noShowMutation = useMarkNoShow();
 
   if (isLoading)
     return (
@@ -58,27 +72,20 @@ export default function DoctorAppointments() {
     );
   if (isError) return <ErrorState message="تعذر تحميل المواعيد" onRetry={() => refetch()} />;
 
-  // Build slot map
-  const slotMap: Record<string, Record<string, Slot15>> = {};
-  slots.forEach((s) => {
-    if (!slotMap[s.date]) slotMap[s.date] = {};
-    slotMap[s.date][s.time] = s;
-  });
-
-  // Stats for today
-  const todaySlots = slots.filter((s) => s.date === TODAY);
-  const stats = {
-    booked: todaySlots.filter((s) => getEffectiveStatus(s) === 'booked').length,
-    completed: todaySlots.filter((s) => getEffectiveStatus(s) === 'completed').length,
-    no_show: todaySlots.filter((s) => getEffectiveStatus(s) === 'no_show').length,
-    cancelled: todaySlots.filter((s) => getEffectiveStatus(s) === 'cancelled').length,
-  };
-
+  // Today's no-show slots (backend sets status = 'missed')
   const noShowSlots = slots.filter((s) => s.date === TODAY && s.status === 'missed');
 
-  const handleRegister = (slot: Slot15) => navigate(`/doctor/register?apt=${slot.id}`);
+  const handleRegister = (slot: AppointmentSlot) => navigate(`/doctor/register?apt=${slot.id}`);
+  const handleCancel = (slot: AppointmentSlot) => setCancelTarget(slot);
 
-  const handleCancel = (slot: Slot15) => setCancelTarget(slot);
+  const handleNoShow = async (slot: AppointmentSlot) => {
+    try {
+      await noShowMutation.mutateAsync(slot.id);
+      toast.warning(`تم تسجيل غياب ${slot.donorName || 'المتبرع'}`);
+    } catch {
+      toast.error('تعذر تسجيل الغياب');
+    }
+  };
 
   const confirmCancel = async (reason: string) => {
     if (!cancelTarget) return;
@@ -91,7 +98,7 @@ export default function DoctorAppointments() {
     });
 
     await cancelMutation.mutateAsync({ slotId: cancelTarget.id, reason });
-    
+
     // Build in-session notification
     setNotifications((prev) => [
       {
@@ -108,67 +115,76 @@ export default function DoctorAppointments() {
       },
       ...prev,
     ]);
-    
+
     toast.success('تم إلغاء الموعد بنجاح');
     setCancelTarget(null);
   };
 
-  // ── TODAY timeline ──
-  const renderToday = () => (
-    <div className="space-y-2">
-      {ALL_SLOTS.map((time) => {
-        const slot = slotMap[TODAY]?.[time];
-        const isPast = isSlotPast(TODAY, time);
-        return (
-          <div key={time} className="flex gap-3 items-stretch">
-            <div
-              className={`flex-shrink-0 w-16 flex flex-col items-center justify-center rounded-xl py-2 ${
-                isPast ? 'bg-gray-100' : 'bg-green-50 border border-green-100'
-              }`}
-            >
-              <span
-                className={`font-mono ${isPast ? 'text-gray-400' : 'text-green-700'}`}
-                style={{ fontSize: '13px', fontWeight: 700 }}
-                dir="ltr"
+  // ── Apply client-side status filter (week/month views) ──
+  const applyFilter = (daySlots: AppointmentSlot[]) =>
+    filterStatus === 'all' ? daySlots : daySlots.filter((s) => s.status === filterStatus);
+
+  // ── TODAY timeline — dynamic: render only slots the backend returned ──
+  const renderToday = () => {
+    const todaySlots = slots
+      .filter((s) => s.date === TODAY)
+      .sort((a, b) => a.time.localeCompare(b.time));
+
+    if (todaySlots.length === 0) {
+      return (
+        <div className="py-12 text-center text-gray-400 bg-white rounded-2xl border border-gray-100">
+          <p style={{ fontSize: '14px' }}>لا توجد مواعيد اليوم</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-2">
+        {todaySlots.map((slot) => {
+          const isFiltered = filterStatus !== 'all' && slot.status !== filterStatus;
+          if (isFiltered) return null;
+          return (
+            <div key={slot.id} className="flex gap-3 items-stretch">
+              <div
+                className={`flex-shrink-0 w-16 flex flex-col items-center justify-center rounded-xl py-2 ${
+                  slot.status === 'completed' || slot.status === 'missed' || slot.status === 'cancelled'
+                    ? 'bg-gray-100'
+                    : 'bg-green-50 border border-green-100'
+                }`}
               >
-                {time}
-              </span>
-            </div>
-            <div className="flex-1">
-              {slot ? (
+                <span
+                  className={`font-mono ${
+                    slot.status === 'completed' || slot.status === 'missed' || slot.status === 'cancelled'
+                      ? 'text-gray-400'
+                      : 'text-green-700'
+                  }`}
+                  style={{ fontSize: '13px', fontWeight: 700 }}
+                  dir="ltr"
+                >
+                  {slot.time}
+                </span>
+              </div>
+              <div className="flex-1">
                 <AppointmentCard
                   slot={slot}
                   onRegister={() => handleRegister(slot)}
                   onCancel={() => handleCancel(slot)}
+                  onNoShow={() => handleNoShow(slot)}
                 />
-              ) : (
-                <div
-                  className={`rounded-xl border border-dashed border-gray-200 px-4 py-3 flex items-center gap-2 ${isPast ? 'bg-gray-50' : 'bg-white'}`}
-                >
-                  <div
-                    className={`w-1.5 h-1.5 rounded-full ${isPast ? 'bg-gray-300' : 'bg-green-300'}`}
-                  />
-                  <span className="text-gray-300" style={{ fontSize: '13px' }}>
-                    {isPast ? 'لا يوجد حجز — انتهى الوقت' : 'متاح — لا يوجد حجز'}
-                  </span>
-                </div>
-              )}
+              </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
-  );
+          );
+        })}
+      </div>
+    );
+  };
 
   // ── WEEK view ──
   const renderWeek = () => (
     <div className="space-y-6">
       {WEEK_DATES.map((date, idx) => {
         const daySlots = slots.filter((s) => s.date === date);
-        const filtered =
-          filterStatus === 'all'
-            ? daySlots
-            : daySlots.filter((s) => getEffectiveStatus(s) === filterStatus);
+        const filtered = applyFilter(daySlots);
         return (
           <div
             key={date}
@@ -206,14 +222,17 @@ export default function DoctorAppointments() {
                     : 'لا توجد نتائج مطابقة للفلتر'}
                 </p>
               ) : (
-                filtered.map((slot) => (
-                  <AppointmentRow
-                    key={slot.id}
-                    slot={slot}
-                    onRegister={() => handleRegister(slot)}
-                    onCancel={() => handleCancel(slot)}
-                  />
-                ))
+                filtered
+                  .sort((a, b) => a.time.localeCompare(b.time))
+                  .map((slot) => (
+                    <AppointmentRow
+                      key={slot.id}
+                      slot={slot}
+                      onRegister={() => handleRegister(slot)}
+                      onCancel={() => handleCancel(slot)}
+                      onNoShow={() => handleNoShow(slot)}
+                    />
+                  ))
               )}
             </div>
           </div>
@@ -224,12 +243,8 @@ export default function DoctorAppointments() {
 
   // ── MONTH view ──
   const renderMonth = () => {
-    const _d = new Date();
-    const monthStart = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}-01`;
-    const monthEnd = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}-31`;
-    const allMonthSlots = slots.filter((s) => s.date >= monthStart && s.date <= monthEnd);
-    const grouped: Record<string, Slot15[]> = {};
-    allMonthSlots.forEach((s) => {
+    const grouped: Record<string, AppointmentSlot[]> = {};
+    slots.forEach((s) => {
       if (!grouped[s.date]) grouped[s.date] = [];
       grouped[s.date].push(s);
     });
@@ -238,10 +253,7 @@ export default function DoctorAppointments() {
         {Object.entries(grouped)
           .sort(([a], [b]) => a.localeCompare(b))
           .map(([date, daySlots]) => {
-            const filtered =
-              filterStatus === 'all'
-                ? daySlots
-                : daySlots.filter((s) => getEffectiveStatus(s) === filterStatus);
+            const filtered = applyFilter(daySlots);
             return (
               <div
                 key={date}
@@ -264,14 +276,17 @@ export default function DoctorAppointments() {
                   </span>
                 </div>
                 <div className="p-4 space-y-2">
-                  {filtered.map((slot) => (
-                    <AppointmentRow
-                      key={slot.id}
-                      slot={slot}
-                      onRegister={() => handleRegister(slot)}
-                      onCancel={() => handleCancel(slot)}
-                    />
-                  ))}
+                  {filtered
+                    .sort((a, b) => a.time.localeCompare(b.time))
+                    .map((slot) => (
+                      <AppointmentRow
+                        key={slot.id}
+                        slot={slot}
+                        onRegister={() => handleRegister(slot)}
+                        onCancel={() => handleCancel(slot)}
+                        onNoShow={() => handleNoShow(slot)}
+                      />
+                    ))}
                 </div>
               </div>
             );
@@ -349,38 +364,38 @@ export default function DoctorAppointments() {
         </div>
       )}
 
-      {/* Stats */}
+      {/* Stats — use backend stats for today, fallback to counting from loaded slots */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           {
-            key: 'booked',
+            key: 'booked' as EffectiveStatus,
             label: 'محجوز',
-            count: stats.booked,
+            count: stats?.booked ?? slots.filter((s) => s.date === TODAY && s.status === 'booked').length,
             color: 'bg-green-50 border-green-100 text-green-700',
           },
           {
-            key: 'completed',
+            key: 'completed' as EffectiveStatus,
             label: 'مكتمل',
-            count: stats.completed,
+            count: stats?.completed ?? slots.filter((s) => s.date === TODAY && s.status === 'completed').length,
             color: 'bg-gray-50 border-gray-200 text-gray-600',
           },
           {
-            key: 'no_show',
+            key: 'missed' as EffectiveStatus,
             label: 'لم يحضر',
-            count: stats.no_show,
+            count: stats?.missed ?? slots.filter((s) => s.date === TODAY && s.status === 'missed').length,
             color: 'bg-orange-50 border-orange-100 text-orange-700',
           },
           {
-            key: 'cancelled',
+            key: 'cancelled' as EffectiveStatus,
             label: 'ملغى',
-            count: stats.cancelled,
+            count: stats?.cancelled ?? slots.filter((s) => s.date === TODAY && s.status === 'cancelled').length,
             color: 'bg-red-50 border-red-100 text-red-700',
           },
         ].map((s) => (
           <div
             key={s.key}
             onClick={() =>
-              setFilterStatus(filterStatus === (s.key as EffectiveStatus) ? 'all' : (s.key as EffectiveStatus))
+              setFilterStatus(filterStatus === s.key ? 'all' : s.key)
             }
             className={`p-4 rounded-2xl border cursor-pointer transition-all ${s.color} ${filterStatus === s.key ? 'ring-2 ring-offset-1 ring-current shadow-md' : 'hover:shadow-sm'}`}
           >
@@ -390,24 +405,22 @@ export default function DoctorAppointments() {
         ))}
       </div>
 
-      {/* Filter bar (week/month) */}
-      {view !== 'today' && (
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="flex items-center gap-1 text-gray-500" style={{ fontSize: '13px' }}>
-            <Filter className="w-4 h-4" /> فلتر:
-          </span>
-          {(['all', 'booked', 'completed', 'no_show', 'cancelled'] as const).map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilterStatus(f)}
-              className={`px-3 py-1.5 rounded-xl border transition-all ${filterStatus === f ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-200 hover:border-green-300'}`}
-              style={{ fontSize: '12px', fontWeight: 600 }}
-            >
-              {f === 'all' ? 'الكل' : STATUS_CONFIG[f].label}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Filter bar (all views) */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="flex items-center gap-1 text-gray-500" style={{ fontSize: '13px' }}>
+          <Filter className="w-4 h-4" /> فلتر:
+        </span>
+        {(['all', 'booked', 'completed', 'missed', 'cancelled'] as const).map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilterStatus(f)}
+            className={`px-3 py-1.5 rounded-xl border transition-all ${filterStatus === f ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-200 hover:border-green-300'}`}
+            style={{ fontSize: '12px', fontWeight: 600 }}
+          >
+            {f === 'all' ? 'الكل' : STATUS_CONFIG[f].label}
+          </button>
+        ))}
+      </div>
 
       {/* Content */}
       <div>

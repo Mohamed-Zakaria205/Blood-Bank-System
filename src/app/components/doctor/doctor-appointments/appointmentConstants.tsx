@@ -1,13 +1,11 @@
-// ── Shared types, constants and helpers for DoctorAppointments module ──
+// ── Shared constants and helpers for DoctorAppointments module ──
 import React from 'react';
 import { Clock, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
-import type { Slot15 } from '../../../types';
+import type { AppointmentSlotStatus } from '../../../types/appointment';
 
-// ── Constants ──
+// ── Date helpers ──
 const _now = new Date();
 export const TODAY = _now.toISOString().split('T')[0];
-export const MOCK_CURRENT_HOUR = _now.getHours();
-export const MOCK_CURRENT_MIN = _now.getMinutes();
 
 export const DONATION_LABELS: Record<string, string> = {
   wholeblood: 'دم كامل',
@@ -30,34 +28,10 @@ export const WEEK_DATES = Array.from({ length: 7 }, (_, i) => {
 });
 export const WEEK_DAY_NAMES = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 
-export const ALL_SLOTS: string[] = [];
-for (let h = 8; h < 17; h++) {
-  for (const m of [0, 15, 30, 45]) {
-    ALL_SLOTS.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
-  }
-}
-
-// ── Helpers ──
-export function isSlotPast(date: string, time: string): boolean {
-  if (date < TODAY) return true;
-  if (date > TODAY) return false;
-  const [h, m] = time.split(':').map(Number);
-  return h < MOCK_CURRENT_HOUR || (h === MOCK_CURRENT_HOUR && m <= MOCK_CURRENT_MIN);
-}
-
-export type EffectiveStatus = 'booked' | 'completed' | 'no_show' | 'cancelled' | 'available';
-
-export function getEffectiveStatus(slot: Slot15): EffectiveStatus {
-  if (slot.status === 'completed') return 'completed';
-  if (slot.status === 'missed') return 'no_show';
-  if (slot.status === 'cancelled') return 'cancelled';
-  if (slot.status === 'disabled') return 'cancelled';
-  if (slot.status === 'booked') {
-    if (isSlotPast(slot.date, slot.time)) return 'cancelled';
-    return 'booked';
-  }
-  return 'available';
-}
+// ── Status ──
+// The backend is the source of truth for all statuses.
+// No more client-side derivation (removed getEffectiveStatus + isSlotPast).
+export type EffectiveStatus = AppointmentSlotStatus;
 
 export const STATUS_CONFIG: Record<
   EffectiveStatus,
@@ -83,7 +57,7 @@ export const STATUS_CONFIG: Record<
     text: 'text-gray-600',
     icon: <CheckCircle2 className="w-4 h-4 text-gray-400" />,
   },
-  no_show: {
+  missed: {
     label: 'لم يحضر',
     bg: 'bg-orange-50',
     border: 'border-orange-200',

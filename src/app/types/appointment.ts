@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// Appointment types
+// Appointment types — synced with backend SystemAppointmentSlotDto
 // ═══════════════════════════════════════════════════════════
 import type { BloodType, DonationType } from './common';
 
@@ -21,47 +21,22 @@ export interface CancellationNotification {
   read: boolean;
 }
 
-export interface AppointmentBooking {
-  id: string;
-  donorName: string;
-  donorCode?: string;
-  phone: string;
-  bloodType?: BloodType;
-  source: 'app' | 'manual';
-  status: 'confirmed' | 'cancelled';
-}
-
-export interface AppointmentSlot {
-  id: string;
-  date: string;
-  time: string;
-  capacity: number;
-  bookings: AppointmentBooking[];
-  isDisabled: boolean;
-  campaignId?: string;
-}
-
-export interface TimeSlot {
-  time: string;
-  status: 'available' | 'booked';
-  donorName?: string;
-  donorCode?: string;
-}
-
-export interface AppointmentDay {
-  date: string;
-  slots: TimeSlot[];
-}
-
-export type Slot15Status =
+/**
+ * Status values as returned by the backend.
+ * The backend is the source of truth — no client-side derivation.
+ */
+export type AppointmentSlotStatus =
   | 'available'
   | 'booked'
   | 'completed'
   | 'missed'
-  | 'disabled'
   | 'cancelled';
 
-export interface Slot15 {
+/**
+ * Unified appointment slot — replaces the old Slot15 interface.
+ * Maps to the backend SystemAppointmentSlotDto.
+ */
+export interface AppointmentSlot {
   id: string;
   date: string;
   time: string;
@@ -75,7 +50,7 @@ export interface Slot15 {
   donorDistrict?: string;
   donorArea?: string;
   donationType?: DonationType;
-  status: Slot15Status;
+  status: AppointmentSlotStatus;
   campaignId?: string;
   notes?: string;
   completedAt?: string;
@@ -83,4 +58,16 @@ export interface Slot15 {
   cancelledBy?: string;
   cancelledByName?: string;
   cancellationReason?: string;
+}
+
+/**
+ * Response shape for GET /appointments/stats
+ */
+export interface AppointmentStats {
+  booked: number;
+  completed: number;
+  missed: number;
+  cancelled: number;
+  available: number;
+  total: number;
 }

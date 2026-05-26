@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router';
 import { Check, Smartphone } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCampaigns } from '../../hooks/useCampaigns';
-import { useSlot15Data } from '../../hooks/useAppointments';
+import { useAppointmentSlots } from '../../hooks/useAppointments';
 import { useAddDonation, useAddMedicalRecord, useSearchDonor, useDonationCenters } from '../../hooks/useDonors';
 import { toast } from 'sonner';
 import { useForm, Path, PathValue } from 'react-hook-form';
@@ -74,7 +74,7 @@ export default function DonationRegistrationForm() {
   useAuth();
   const [searchParams] = useSearchParams();
   const { data: campaignsData = [] } = useCampaigns();
-  const { data: slot15DataFromHook = [] } = useSlot15Data();
+  const { data: appointmentSlotsData = [] } = useAppointmentSlots();
   const { data: donationCenters = [] } = useDonationCenters();
   const addDonation = useAddDonation();
   const addMedicalRecord = useAddMedicalRecord();
@@ -84,7 +84,7 @@ export default function DonationRegistrationForm() {
 
   // Pre-fill from appointment if ?apt=S15-xxx
   const aptId = searchParams.get('apt');
-  const appointment = aptId ? slot15DataFromHook.find((s) => s.id === aptId) ?? null : null;
+  const appointment = aptId ? appointmentSlotsData.find((s) => s.id === aptId) ?? null : null;
 
   const getInitialForm = (): SimpleForm => {
     if (appointment) {

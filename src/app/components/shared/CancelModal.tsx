@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { XCircle, X, CalendarDays, Clock, User, Megaphone, AlertTriangle } from 'lucide-react';
-import type { Slot15 } from '../../types';
+import type { AppointmentSlot } from '../../types';
 import { useCampaigns } from '../../hooks/useCampaigns';
 
 interface CancelModalProps {
-  slot: Slot15;
+  slot: AppointmentSlot;
   doctorName: string;
   onConfirm: (reason: string) => Promise<void> | void;
   onClose: () => void;

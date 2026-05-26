@@ -1,40 +1,118 @@
 // ═══════════════════════════════════════════════════════════
 // Appointments API service
+// Base URL: /api/v1/system (via apiClient)
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
-import type { AppointmentSlot, Slot15 } from '../types/appointment';
+import type { AppointmentSlot, AppointmentStats } from '../types/appointment';
 import type { PaginatedResponse } from '../types/common';
-import { appointmentSlots as MOCK_SLOTS, slot15Data as MOCK_SLOT15 } from '../data/appointments.mock';
+import {
+  appointmentSlotsData as MOCK_SLOTS,
+} from '../data/appointments.mock';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
-/** In-memory stores so mutations persist across refetches */
+// ── In-memory store so mutations persist across refetches ──
 let mockSlots: AppointmentSlot[] = [...MOCK_SLOTS];
-let mockSlot15: Slot15[] = [...MOCK_SLOT15];
 
-export async function fetchAppointmentSlots(): Promise<PaginatedResponse<AppointmentSlot>> {
+export interface AppointmentFilters {
+  date?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  status?: string;
+  campaignId?: string;
+  page?: number;
+  limit?: number;
+}
+
+// ─────────────────────────────────────────────────────────────
+// GET /appointments/slots
+// Replaces the old /appointments/slot15 endpoint.
+// ─────────────────────────────────────────────────────────────
+export async function fetchAppointmentSlots(
+  filters?: AppointmentFilters,
+): Promise<PaginatedResponse<AppointmentSlot>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return { data: mockSlots, total: mockSlots.length, page: 1, limit: mockSlots.length };
+
+    let filtered = [...mockSlots];
+
+    // Apply client-side filtering on mock data to simulate server behaviour
+    if (filters?.date) {
+      filtered = filtered.filter((s) => s.date === filters.date);
+    } else {
+      if (filters?.dateFrom) {
+        filtered = filtered.filter((s) => s.date >= filters.dateFrom!);
+      }
+      if (filters?.dateTo) {
+        filtered = filtered.filter((s) => s.date <= filters.dateTo!);
+      }
+    }
+    if (filters?.status) {
+      filtered = filtered.filter((s) => s.status === filters.status);
+    }
+    if (filters?.campaignId) {
+      filtered = filtered.filter((s) => s.campaignId === filters.campaignId);
+    }
+
+    return {
+      data: filtered,
+      total: filtered.length,
+      page: filters?.page ?? 1,
+      limit: filters?.limit ?? filtered.length,
+    };
   }
-  const { data } = await apiClient.get<PaginatedResponse<AppointmentSlot>>('/appointments/slots');
+
+  const { data } = await apiClient.get<PaginatedResponse<AppointmentSlot>>(
+    '/appointments/slots',
+    { params: filters },
+  );
   return data;
 }
 
-export async function fetchSlot15Data(): Promise<PaginatedResponse<Slot15>> {
+// ─────────────────────────────────────────────────────────────
+// GET /appointments/stats
+// Returns aggregated stats for a date (defaults to today on server).
+// ─────────────────────────────────────────────────────────────
+export interface AppointmentStatsParams {
+  date?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export async function fetchAppointmentStats(
+  params?: AppointmentStatsParams,
+): Promise<{ data: AppointmentStats }> {
   if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return { data: mockSlot15, total: mockSlot15.length, page: 1, limit: mockSlot15.length };
+    await new Promise((r) => setTimeout(r, 200));
+    // Calculate live stats from mock data for the requested date
+    const today = new Date().toISOString().split('T')[0];
+    const targetDate = params?.date ?? today;
+    const daySlots = mockSlots.filter((s) => s.date === targetDate);
+    const stats: AppointmentStats = {
+      booked: daySlots.filter((s) => s.status === 'booked').length,
+      completed: daySlots.filter((s) => s.status === 'completed').length,
+      missed: daySlots.filter((s) => s.status === 'missed').length,
+      cancelled: daySlots.filter((s) => s.status === 'cancelled').length,
+      available: 0, // not tracked in mock — server computes from capacity
+      total: daySlots.length,
+    };
+    return { data: stats };
   }
-  const { data } = await apiClient.get<PaginatedResponse<Slot15>>('/appointments/slot15');
+
+  const { data } = await apiClient.get<{ data: AppointmentStats }>(
+    '/appointments/stats',
+    { params },
+  );
   return data;
 }
 
+// ─────────────────────────────────────────────────────────────
+// POST /appointments/slots/{slotId}/cancel
+// ─────────────────────────────────────────────────────────────
 export async function cancelAppointment(slotId: string, reason: string): Promise<void> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 400));
-    // ✅ Mutate the in-memory array so refetch returns the cancelled status
-    mockSlot15 = mockSlot15.map((s) =>
+    mockSlots = mockSlots.map((s) =>
       s.id === slotId
         ? {
             ...s,
@@ -47,4 +125,25 @@ export async function cancelAppointment(slotId: string, reason: string): Promise
     return;
   }
   await apiClient.post(`/appointments/slots/${slotId}/cancel`, { reason });
+}
+
+// ─────────────────────────────────────────────────────────────
+// POST /appointments/slots/{slotId}/no-show
+// Marks the appointment as missed (donor didn't show up).
+// ─────────────────────────────────────────────────────────────
+export async function markNoShow(slotId: string): Promise<void> {
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 300));
+    mockSlots = mockSlots.map((s) =>
+      s.id === slotId
+        ? {
+            ...s,
+            status: 'missed' as const,
+            notes: s.notes ?? 'لم يحضر',
+          }
+        : s,
+    );
+    return;
+  }
+  await apiClient.post(`/appointments/slots/${slotId}/no-show`);
 }

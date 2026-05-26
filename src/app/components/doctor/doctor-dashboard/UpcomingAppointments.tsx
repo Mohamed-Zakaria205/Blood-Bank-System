@@ -1,8 +1,8 @@
 import { CalendarDays, ArrowUpRight } from 'lucide-react';
-import type { Slot15 } from '../../../types/appointment';
+import type { AppointmentSlot } from '../../../types/appointment';
 
 interface UpcomingAppointmentsProps {
-  appointments: Slot15[];
+  appointments: AppointmentSlot[];
   onViewAll: () => void;
   onRegister: (aptId: string) => void;
 }

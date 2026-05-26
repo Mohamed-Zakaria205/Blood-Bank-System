@@ -1,21 +1,26 @@
-import { XCircle, UserPlus } from 'lucide-react';
-import type { Slot15 } from '../../../types';
+import { XCircle, UserPlus, AlertTriangle } from 'lucide-react';
+import type { AppointmentSlot } from '../../../types';
 import {
-  getEffectiveStatus,
   STATUS_CONFIG,
   DONATION_LABELS,
   DONATION_COLORS,
 } from './appointmentConstants';
 
 interface AppointmentRowProps {
-  slot: Slot15;
+  slot: AppointmentSlot;
   onRegister: () => void;
   onCancel: () => void;
+  onNoShow: () => void;
 }
 
-export default function AppointmentRow({ slot, onRegister, onCancel }: AppointmentRowProps) {
-  const eff = getEffectiveStatus(slot);
-  const cfg = STATUS_CONFIG[eff];
+export default function AppointmentRow({
+  slot,
+  onRegister,
+  onCancel,
+  onNoShow,
+}: AppointmentRowProps) {
+  const status = slot.status;
+  const cfg = STATUS_CONFIG[status];
   return (
     <div
       className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${cfg.border} ${cfg.bg} transition-all`}
@@ -66,8 +71,18 @@ export default function AppointmentRow({ slot, onRegister, onCancel }: Appointme
         >
           {cfg.label}
         </span>
-        {eff === 'booked' && (
+        {status === 'booked' && (
           <>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onNoShow();
+              }}
+              title="تسجيل غياب"
+              className="p-1.5 border border-orange-200 text-orange-500 rounded-lg hover:bg-orange-50 transition-all"
+            >
+              <AlertTriangle className="w-3.5 h-3.5" />
+            </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
