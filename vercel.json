@@ -5,6 +5,10 @@
       "destination": "https://bloodlink.runasp.net/api/:path*"
     },
     {
+      "source": "/hubs/:path*",
+      "destination": "https://bloodlink.runasp.net/hubs/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
