@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { useNavigate } from 'react-router';
@@ -44,7 +44,18 @@ export default function DoctorAppointments() {
   const [showNotifications, setShowNotifications] = useState(false);
 
   // ── In-session cancellation notifications (real-time via SignalR + local optimistic) ──
-  const [notifications, setNotifications] = useState<CancellationNotification[]>([]);
+  const [notifications, setNotifications] = useState<CancellationNotification[]>(() => {
+    try {
+      const stored = localStorage.getItem('doctor_notifications');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('doctor_notifications', JSON.stringify(notifications));
+  }, [notifications]);
   const unreadCount = notifications.filter((n) => !n.read).length;
   const markNotificationRead = (id: string) =>
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
