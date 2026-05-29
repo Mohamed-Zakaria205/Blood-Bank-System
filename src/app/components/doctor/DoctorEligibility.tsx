@@ -30,17 +30,6 @@ import BloodTypeBar from './doctor-eligibility/BloodTypeBar';
 export default function DoctorEligibility() {
   const { data: donorsData = [], isLoading, isError, refetch } = useDonors();
 
-  if (isLoading)
-    return (
-      <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
-        <CardSkeleton count={3} />
-        <TableSkeleton rows={5} cols={6} />
-      </div>
-    );
-  if (isError)
-    return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
-
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'eligible' | 'soon' | 'not_yet'>('all');
   const [filterBlood, setFilterBlood] = useState<BloodType | 'all'>('all');
@@ -61,6 +50,17 @@ export default function DoctorEligibility() {
       return matchSearch && matchStatus && matchBlood;
     });
   }, [enriched, search, filterStatus, filterBlood]);
+
+  if (isLoading)
+    return (
+      <div className="space-y-6 p-2">
+        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <CardSkeleton count={3} />
+        <TableSkeleton rows={5} cols={6} />
+      </div>
+    );
+  if (isError)
+    return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
 
   const counts = {
     eligible: enriched.filter((d) => d.elig.status === 'eligible').length,
