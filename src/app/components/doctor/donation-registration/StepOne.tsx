@@ -37,9 +37,14 @@ export default function StepOne({
   updateField,
   onNext,
 }: StepOneProps) {
-  const currentGovernorateObj = EGYPT_DATA.find((g) => g.name_ar === form.governorate);
+  const normalize = (s: string) => s.trim().replace(/\s+/g, ' ');
+  const currentGovernorateObj = EGYPT_DATA.find(
+    (g) => normalize(g.name_ar) === normalize(form.governorate || ''),
+  );
   const currentCities = currentGovernorateObj?.cities || [];
-  const currentDistrictObj = currentCities.find((c) => c.city_name_ar === form.district);
+  const currentDistrictObj = currentCities.find(
+    (c) => normalize(c.city_name_ar) === normalize(form.district || ''),
+  );
   const currentAreas = currentDistrictObj?.areas || [];
 
   return (

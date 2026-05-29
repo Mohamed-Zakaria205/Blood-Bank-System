@@ -4,17 +4,21 @@
 import type { BloodType, DonationType } from './common';
 
 /**
- * In-session notification created on the client when a doctor
- * cancels an appointment. Not persisted to the backend — purely
- * ephemeral UI state scoped to the DoctorAppointments page.
+ * Cancellation notification — used for both:
+ *   1. Real-time SignalR push events from the backend (donor cancellations)
+ *   2. Local optimistic notifications (staff/doctor cancellations)
+ *
+ * Backend payload fields: id, appointmentId, donorName, time, date,
+ *   reason, cancelledAt, cancelledByName
  */
 export interface CancellationNotification {
   id: string;
+  appointmentId?: string;  // from backend push — kept for backward compat
   donorName: string;
-  donorPhone?: string;
+  donorPhone?: string;     // only available in local optimistic notifications
   date: string;
   time: string;
-  campaignId?: string;
+  campaignId?: string;     // only available in local optimistic notifications
   cancelledAt: string;
   cancelledByName: string;
   reason?: string;
@@ -54,6 +58,7 @@ export interface AppointmentSlot {
   donationType?: DonationType;
   status: AppointmentSlotStatus;
   campaignId?: string;
+  centerId?: string;
   notes?: string;
   completedAt?: string;
   cancelledAt?: string;

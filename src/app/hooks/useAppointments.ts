@@ -4,6 +4,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchAppointmentSlots,
+  fetchAppointmentSlotById,
   fetchAppointmentStats,
   cancelAppointment,
   markNoShow,
@@ -33,6 +34,19 @@ export function useAppointmentStats(params?: AppointmentStatsParams) {
     queryKey: ['appointment-stats', params],
     queryFn: () => fetchAppointmentStats(params),
     select: (res) => res.data,
+  });
+}
+
+/**
+ * Fetch a single appointment slot by ID.
+ * Used by DonationRegistrationForm to pre-fill donor data.
+ * Only runs when slotId is provided (enabled guard).
+ */
+export function useAppointmentSlotById(slotId: string | null) {
+  return useQuery({
+    queryKey: ['appointment-slot', slotId],
+    queryFn: () => fetchAppointmentSlotById(slotId!),
+    enabled: !!slotId,
   });
 }
 

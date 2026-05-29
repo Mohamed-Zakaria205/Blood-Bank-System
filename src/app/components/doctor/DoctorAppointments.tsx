@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { AlertTriangle, Filter, Bell } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import type { AppointmentSlot, CancellationNotification } from '../../types';
 import {
   useAppointmentSlots,
@@ -11,6 +12,7 @@ import {
   useCancelAppointment,
   useMarkNoShow,
 } from '../../hooks/useAppointments';
+import { useAppointmentsHub } from '../../hooks/useAppointmentsHub';
 import { useAuth } from '../../contexts/AuthContext';
 import { CancelModal } from '../shared/CancelModal';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
@@ -41,24 +43,55 @@ export default function DoctorAppointments() {
   const [cancelTarget, setCancelTarget] = useState<AppointmentSlot | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  // ── In-session cancellation notifications (ephemeral, not persisted) ──
+  // ── In-session cancellation notifications (real-time via SignalR + local optimistic) ──
   const [notifications, setNotifications] = useState<CancellationNotification[]>([]);
   const unreadCount = notifications.filter((n) => !n.read).length;
   const markNotificationRead = (id: string) =>
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
   const markAllRead = () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
 
-  // ── Determine date filter based on view ──
-  const dateFilter =
+  const qc = useQueryClient();
+
+  // Real-time push from SignalR: a donor cancelled a confirmed appointment
+  const handleRemoteCancellation = useCallback((notification: CancellationNotification) => {
+    setNotifications((prev) => {
+      // Deduplicate by id in case the push fires more than once
+      if (prev.some((n) => n.id === notification.id)) return prev;
+      return [{ ...notification, read: false }, ...prev];
+    });
+    // Refresh the slots + stats so the cancelled slot disappears from the list
+    qc.invalidateQueries({ queryKey: ['appointment-slots'] });
+    qc.invalidateQueries({ queryKey: ['appointment-stats'] });
+    toast.info(`إلغاء جديد: ${notification.donorName || 'متبرع'} — ${notification.date}`);
+  }, [qc]);
+
+  // Connect to SignalR hub — null centerId joins "Global" broadcast group
+  useAppointmentsHub({
+    centerId: null,
+    onCancelled: handleRemoteCancellation,
+    enabled: !!user,
+  });
+
+  // ── Determine date range based on view (shared by stats & slots) ──
+  const dateRange =
     view === 'today'
       ? { date: TODAY }
       : view === 'week'
         ? { dateFrom: WEEK_DATES[0], dateTo: WEEK_DATES[6] }
         : { dateFrom: MONTH_START, dateTo: MONTH_END };
 
+  // ── Slots filter: date range + server-side status filter ──
+  // 'all' = no status param → backend returns all non-available slots
+  const slotsFilter = {
+    ...dateRange,
+    ...(filterStatus !== 'all' ? { status: filterStatus } : {}),
+  };
+
   // ── Server state via React Query ──
-  const { data: slots = [], isLoading, isError, refetch } = useAppointmentSlots(dateFilter);
-  const { data: stats } = useAppointmentStats({ date: TODAY });
+  // Server already filters by status, so no client-side filtering needed
+  const { data: slots = [], isLoading, isError, refetch } = useAppointmentSlots(slotsFilter);
+  
+  const { data: stats } = useAppointmentStats(dateRange);
   const cancelMutation = useCancelAppointment();
   const noShowMutation = useMarkNoShow();
 
@@ -120,9 +153,8 @@ export default function DoctorAppointments() {
     setCancelTarget(null);
   };
 
-  // ── Apply client-side status filter (week/month views) ──
-  const applyFilter = (daySlots: AppointmentSlot[]) =>
-    filterStatus === 'all' ? daySlots : daySlots.filter((s) => s.status === filterStatus);
+  // ── No more client-side status filter — the backend handles it ──
+  const applyFilter = (daySlots: AppointmentSlot[]) => daySlots;
 
   // ── TODAY timeline — dynamic: render only slots the backend returned ──
   const renderToday = () => {
@@ -141,8 +173,6 @@ export default function DoctorAppointments() {
     return (
       <div className="space-y-2">
         {todaySlots.map((slot) => {
-          const isFiltered = filterStatus !== 'all' && slot.status !== filterStatus;
-          if (isFiltered) return null;
           return (
             <div key={slot.id} className="flex gap-3 items-stretch">
               <div

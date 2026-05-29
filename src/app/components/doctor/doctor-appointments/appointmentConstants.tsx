@@ -5,7 +5,16 @@ import type { AppointmentSlotStatus } from '../../../types/appointment';
 
 // ── Date helpers ──
 const _now = new Date();
-export const TODAY = _now.toISOString().split('T')[0];
+
+// Helper to format date as YYYY-MM-DD using local time (avoids UTC shift at night)
+const formatLocalDate = (d: Date) => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+export const TODAY = formatLocalDate(_now);
 
 export const DONATION_LABELS: Record<string, string> = {
   wholeblood: 'دم كامل',
@@ -18,15 +27,18 @@ export const DONATION_COLORS: Record<string, string> = {
   platelets: 'bg-purple-50 text-purple-600 border-purple-100',
 };
 
-// Compute Sun–Sat of the current week dynamically
+// Compute Sat–Fri of the current week dynamically (Middle Eastern week starts on Saturday)
 const _startOfWeek = new Date(_now);
-_startOfWeek.setDate(_now.getDate() - _now.getDay()); // rewind to Sunday
+const dayOfWeek = _now.getDay(); // 0: Sun, 1: Mon, ... 5: Fri, 6: Sat
+const offsetToSaturday = (dayOfWeek + 1) % 7; // Sat:0, Sun:1, Mon:2, ..., Fri:6
+_startOfWeek.setDate(_now.getDate() - offsetToSaturday);
+
 export const WEEK_DATES = Array.from({ length: 7 }, (_, i) => {
   const d = new Date(_startOfWeek);
   d.setDate(_startOfWeek.getDate() + i);
-  return d.toISOString().split('T')[0];
+  return formatLocalDate(d);
 });
-export const WEEK_DAY_NAMES = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+export const WEEK_DAY_NAMES = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
 
 // ── Status ──
 // The backend is the source of truth for all statuses.

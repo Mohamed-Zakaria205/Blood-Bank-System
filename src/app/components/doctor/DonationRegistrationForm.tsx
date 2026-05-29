@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router';
 import { Check, Smartphone } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCampaigns } from '../../hooks/useCampaigns';
-import { useAppointmentSlots } from '../../hooks/useAppointments';
+import { useAppointmentSlotById } from '../../hooks/useAppointments';
 import { useAddDonation, useAddMedicalRecord, useSearchDonor, useDonationCenters } from '../../hooks/useDonors';
 import { toast } from 'sonner';
 import { useForm, Path, PathValue } from 'react-hook-form';
@@ -74,7 +74,6 @@ export default function DonationRegistrationForm() {
   useAuth();
   const [searchParams] = useSearchParams();
   const { data: campaignsData = [] } = useCampaigns();
-  const { data: appointmentSlotsData = [] } = useAppointmentSlots();
   const { data: donationCenters = [] } = useDonationCenters();
   const addDonation = useAddDonation();
   const addMedicalRecord = useAddMedicalRecord();
@@ -82,9 +81,9 @@ export default function DonationRegistrationForm() {
   const [donationId, setDonationId] = useState<string | null>(null);
   const [searchId, setSearchId] = useState('');
 
-  // Pre-fill from appointment if ?apt=S15-xxx
+  // Pre-fill from appointment — fetch the specific slot by ID
   const aptId = searchParams.get('apt');
-  const appointment = aptId ? appointmentSlotsData.find((s) => s.id === aptId) ?? null : null;
+  const { data: appointment = null } = useAppointmentSlotById(aptId);
 
   const getInitialForm = (): SimpleForm => {
     if (appointment) {
@@ -99,6 +98,14 @@ export default function DonationRegistrationForm() {
         : (appointment.donorNationalId 
             ? extractDobFromNationalId(appointment.donorNationalId) 
             : approxDob);
+      // Determine the donation source based on appointment metadata
+      let source: SimpleForm['source'] = 'app';
+      if (appointment.campaignId) {
+        source = 'campaign';
+      } else if (appointment.centerId) {
+        source = 'walkin';
+      }
+
       return {
         ...initialForm,
         name: appointment.donorName || '',
@@ -111,7 +118,9 @@ export default function DonationRegistrationForm() {
         area: appointment.donorArea || '',
         bloodType: appointment.donorBloodType || '',
         donationType: appointment.donationType || 'wholeblood',
-        source: 'app',
+        source: source,
+        campaignId: appointment.campaignId || '',
+        donationCenterId: appointment.centerId || '',
         donationTime: appointment.time || new Date().toTimeString().slice(0, 5),
       };
     }
@@ -142,6 +151,19 @@ export default function DonationRegistrationForm() {
     reset(getInitialForm());
     setStep(1);
   }, [appointment?.id, reset]);
+
+  // Explicitly sync address fields AFTER reset settles.
+  // The controlled <select> for governorate/district reads form state via watch(),
+  // so we push the values again in a microtask to guarantee they stick.
+  useEffect(() => {
+    if (!appointment) return;
+    const gov = appointment.donorGovernorate?.trim() || '';
+    const dist = appointment.donorDistrict?.trim() || '';
+    const area = appointment.donorArea?.trim() || '';
+    if (gov) setValue('governorate', gov, { shouldDirty: true });
+    if (dist) setValue('district', dist, { shouldDirty: true });
+    if (area) setValue('area', area, { shouldDirty: true });
+  }, [appointment?.id, appointment?.donorGovernorate, appointment?.donorDistrict, appointment?.donorArea, setValue]);
 
   useEffect(() => {
     register('source');

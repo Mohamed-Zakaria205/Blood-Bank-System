@@ -20,7 +20,14 @@ export default function AppointmentRow({
   onNoShow,
 }: AppointmentRowProps) {
   const status = slot.status;
-  const cfg = STATUS_CONFIG[status];
+  const cfg = STATUS_CONFIG[status] || {
+    label: status || 'غير معروف',
+    bg: 'bg-gray-100',
+    border: 'border-gray-300',
+    text: 'text-gray-500',
+    icon: <></>,
+  };
+
   return (
     <div
       className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${cfg.border} ${cfg.bg} transition-all`}

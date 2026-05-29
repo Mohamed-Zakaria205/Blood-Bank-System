@@ -57,6 +57,13 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
       },
+      // SignalR Hubs — must enable WebSocket proxying
+      "/hubs": {
+        target: "https://bloodlink.runasp.net",
+        ws: true,
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
 
