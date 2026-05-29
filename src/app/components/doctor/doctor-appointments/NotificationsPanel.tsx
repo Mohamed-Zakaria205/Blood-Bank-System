@@ -1,4 +1,6 @@
 import { Bell, BellOff, ChevronUp } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { ar } from 'date-fns/locale';
 import type { CancellationNotification } from '../../../types';
 
 interface NotificationsPanelProps {
@@ -88,8 +90,8 @@ export default function NotificationsPanel({
                   </p>
                 )}
               </div>
-              <span className="text-gray-300 flex-shrink-0" style={{ fontSize: '10px' }}>
-                {n.cancelledAt}
+              <span className="text-gray-400 flex-shrink-0" style={{ fontSize: '10px' }}>
+                {n.cancelledAt ? formatDistanceToNow(new Date(n.cancelledAt), { addSuffix: true, locale: ar }) : ''}
               </span>
             </div>
           ))
