@@ -44,8 +44,12 @@ export function useAppointmentsHub({
   useEffect(() => {
     if (!enabled) return;
 
-    // Use a relative URL — the Vite proxy routes /hubs/* to the backend
-    const hubUrl = '/hubs/appointments';
+    // In dev the Vite proxy handles /hubs/* → backend.
+    // In production (Vercel) WebSockets are NOT supported through rewrites,
+    // so we connect directly to the backend origin.
+    const hubUrl = import.meta.env.DEV
+      ? '/hubs/appointments'
+      : 'https://bloodlink.runasp.net/hubs/appointments';
 
     const connection = new HubConnectionBuilder()
       .withUrl(hubUrl, {
