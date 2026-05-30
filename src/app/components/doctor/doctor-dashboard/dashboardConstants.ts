@@ -23,7 +23,16 @@ export function buildStats(
   return [
     {
       label: 'تبرعات اليوم',
-      value: donations.filter((d) => d.donationDate === TODAY).length,
+      value: donations.filter((d) => {
+        if (!d.donationDate) return false;
+        if (d.donationDate.includes('T')) {
+          const dObj = new Date(d.donationDate);
+          if (isNaN(dObj.getTime())) return false;
+          const localStr = `${dObj.getFullYear()}-${String(dObj.getMonth() + 1).padStart(2, '0')}-${String(dObj.getDate()).padStart(2, '0')}`;
+          return localStr === TODAY;
+        }
+        return d.donationDate === TODAY;
+      }).length,
       sub: `${donations.length} إجمالي التبرعات`,
       icon: Heart,
       color: 'text-green-600',

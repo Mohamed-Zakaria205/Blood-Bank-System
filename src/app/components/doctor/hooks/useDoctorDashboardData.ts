@@ -26,15 +26,27 @@ export function useDoctorDashboardData() {
       (c) => c.createdBy === user?.id || (c as any).createdById === user?.id,
     );
 
+    // Helper to safely parse donationDate and match with today (handles ISO UTC strings from backend)
+    const isTodayDonation = (dDate: string | undefined) => {
+      if (!dDate) return false;
+      if (dDate.includes('T')) {
+        const dObj = new Date(dDate);
+        if (isNaN(dObj.getTime())) return false;
+        const localStr = `${dObj.getFullYear()}-${String(dObj.getMonth() + 1).padStart(2, '0')}-${String(dObj.getDate()).padStart(2, '0')}`;
+        return localStr === today;
+      }
+      return dDate === today;
+    };
+
     // Bug 3 fix: count "today" badges using donations + donationDate, not donors + registeredAt
     const walkinToday = donations.filter(
-      (d) => d.donationDate === today && d.source === 'walkin',
+      (d) => isTodayDonation(d.donationDate) && d.source === 'walkin',
     ).length;
     const appToday = donations.filter(
-      (d) => d.donationDate === today && d.source === 'app',
+      (d) => isTodayDonation(d.donationDate) && d.source === 'app',
     ).length;
     const campaignToday = donations.filter(
-      (d) => d.donationDate === today && d.source === 'campaign',
+      (d) => isTodayDonation(d.donationDate) && d.source === 'campaign',
     ).length;
     const campaignDonors = donations.filter((d) => d.source === 'campaign');
 

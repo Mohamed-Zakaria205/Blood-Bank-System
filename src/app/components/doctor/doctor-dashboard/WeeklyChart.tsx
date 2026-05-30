@@ -23,7 +23,18 @@ function buildWeekData(donations: Donation[]) {
     dayDate.setDate(startOfWeek.getDate() + i);
     // Use local date (not toISOString) to avoid UTC offset shifting the date
     const dateStr = `${dayDate.getFullYear()}-${String(dayDate.getMonth() + 1).padStart(2, '0')}-${String(dayDate.getDate()).padStart(2, '0')}`;
-    const count = donations.filter((d) => d.donationDate === dateStr).length;
+    const count = donations.filter((d) => {
+      if (!d.donationDate) return false;
+      // If the backend returned an ISO string (e.g. 2026-05-30T23:00:00Z),
+      // we must parse it to a local Date object first, then format to local YYYY-MM-DD
+      if (d.donationDate.includes('T')) {
+        const dObj = new Date(d.donationDate);
+        if (isNaN(dObj.getTime())) return false;
+        const localStr = `${dObj.getFullYear()}-${String(dObj.getMonth() + 1).padStart(2, '0')}-${String(dObj.getDate()).padStart(2, '0')}`;
+        return localStr === dateStr;
+      }
+      return d.donationDate === dateStr;
+    }).length;
     return { day, donors: count };
   });
 }
