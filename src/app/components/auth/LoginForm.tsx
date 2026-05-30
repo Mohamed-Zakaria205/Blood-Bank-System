@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // LoginForm — email / password fields + submit button
 // ═══════════════════════════════════════════════════════════
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Droplet,
   Eye,
@@ -53,12 +53,12 @@ export default function LoginForm({
 
   // Sync external demo-account selection into the form
   // (using a ref-guarded effect to avoid infinite loops)
-  const lastFilledRole = useState<string | null>(null);
-  if (demoAccount && demoAccount.role !== lastFilledRole[0]) {
+  const lastFilledRole = useRef<string | null>(null);
+  if (demoAccount && demoAccount.role !== lastFilledRole.current) {
     setValue('email', demoAccount.email, { shouldDirty: true });
     setValue('password', demoAccount.password, { shouldDirty: true });
     clearErrors();
-    lastFilledRole[1](demoAccount.role);
+    lastFilledRole.current = demoAccount.role;
   }
 
   const handleFormSubmit = handleSubmit((values) => {
@@ -67,7 +67,7 @@ export default function LoginForm({
 
   const handleFieldChange = () => {
     onInputChange();
-    lastFilledRole[1](null);
+    lastFilledRole.current = null;
   };
 
   return (

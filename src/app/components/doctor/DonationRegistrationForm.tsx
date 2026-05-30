@@ -102,7 +102,7 @@ export default function DonationRegistrationForm() {
   useEffect(() => {
     reset(getInitialForm());
     setStep(1);
-  }, [appointment?.id, reset]);
+  }, [appointment, reset]);
 
   // Explicitly sync address fields AFTER reset settles.
   // The controlled <select> for governorate/district reads form state via watch(),
@@ -115,7 +115,7 @@ export default function DonationRegistrationForm() {
     if (gov) setValue('governorate', gov, { shouldDirty: true });
     if (dist) setValue('district', dist, { shouldDirty: true });
     if (area) setValue('area', area, { shouldDirty: true });
-  }, [appointment?.id, appointment?.donorGovernorate, appointment?.donorDistrict, appointment?.donorArea, setValue]);
+  }, [appointment, setValue]);
 
   useEffect(() => {
     register('source');

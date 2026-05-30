@@ -7,14 +7,13 @@ import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/comm
 import type { DonationCenter } from '../types/donationCenter';
 import type { ApiResponseWrapper } from '../types/auth';
 import { validateContract, createPaginatedSchema, DonorContractSchema } from './contract';
-import { donors as MOCK_DONORS } from '../data/donors.mock';
+// import { donors as MOCK_DONORS } from '../data/donors.mock';
 // import { donations as MOCK_DONATIONS } from '../data/donations.mock';
 import axios from 'axios';
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 /** In-memory store — donors (profiles) */
-let mockDonorStore: Donor[] = [...MOCK_DONORS];
+// let mockDonorStore: Donor[] = [...MOCK_DONORS];
 
 /** In-memory store — donations (events) */
 // let mockDonationStore: Donation[] = [...MOCK_DONATIONS];
@@ -25,10 +24,10 @@ let mockDonorStore: Donor[] = [...MOCK_DONORS];
 
 /** Fetch all donors (unpaginated — used by components that need the full list) */
 export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return { data: mockDonorStore, total: mockDonorStore.length, page: 1, limit: mockDonorStore.length };
-  }
+  // if (USE_MOCK) {
+  //   await new Promise((r) => setTimeout(r, 300));
+  //   return { data: mockDonorStore, total: mockDonorStore.length, page: 1, limit: mockDonorStore.length };
+  // }
   const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
     items?: Donor[];
     data?: Donor[];
@@ -173,12 +172,12 @@ export async function updateDonor(
   // DO NOT send governorate/area/address: they are not stored on Donor and
   // sending them without a valid governorate causes a 500 on the backend.
   const patchPayload: Record<string, any> = {};
-  if (payload.name !== undefined)      patchPayload.name      = payload.name;
-  if (payload.phone !== undefined)     patchPayload.phone     = payload.phone;
+  if (payload.name !== undefined) patchPayload.name = payload.name;
+  if (payload.phone !== undefined) patchPayload.phone = payload.phone;
   if (payload.bloodType !== undefined) patchPayload.bloodType = payload.bloodType;
-  if (payload.district !== undefined)  patchPayload.district  = payload.district;
+  if (payload.district !== undefined) patchPayload.district = payload.district;
   if (payload.governorate !== undefined) patchPayload.governorate = payload.governorate;
-  if (payload.area !== undefined)      patchPayload.area      = payload.area;
+  if (payload.area !== undefined) patchPayload.area = payload.area;
   if (payload.nationalId !== undefined) patchPayload.nationalId = payload.nationalId;
   if (payload.dateOfBirth !== undefined) patchPayload.dateOfBirth = payload.dateOfBirth;
 

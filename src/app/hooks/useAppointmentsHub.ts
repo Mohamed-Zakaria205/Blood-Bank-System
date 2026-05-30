@@ -49,7 +49,7 @@ export function useAppointmentsHub({
     // so we connect directly to the backend origin.
     const hubUrl = import.meta.env.DEV
       ? '/hubs/appointments'
-      : 'https://bloodlink.runasp.net/hubs/appointments';
+      : (import.meta.env.VITE_HUB_URL ?? 'https://bloodlink.runasp.net/hubs/appointments');
 
     const connection = new HubConnectionBuilder()
       .withUrl(hubUrl, {
