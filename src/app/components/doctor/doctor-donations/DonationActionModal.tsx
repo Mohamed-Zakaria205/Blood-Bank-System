@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import {
   CheckCircle2,
   Activity,
@@ -62,12 +62,12 @@ export default function DonationActionModal({
           {/* ── Header ── */}
           <div className="text-center mb-2">
             <div
-              className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 ${alreadySent ? 'bg-green-100' : 'bg-amber-100'}`}
+              className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 ${alreadySent ? 'bg-green-100 dark:bg-green-500/20' : 'bg-amber-100 dark:bg-amber-500/20'}`}
             >
               {alreadySent ? (
-                <CheckCircle2 className="w-9 h-9 text-green-600" />
+                <CheckCircle2 className="w-9 h-9 text-green-600 dark:text-green-500" />
               ) : (
-                <FlaskConical className="w-8 h-8 text-amber-600" />
+                <FlaskConical className="w-8 h-8 text-amber-600 dark:text-amber-500" />
               )}
             </div>
             <h2 className="text-foreground mb-1" style={{ fontSize: '20px', fontWeight: 800 }}>
@@ -81,13 +81,13 @@ export default function DonationActionModal({
           </div>
 
           {/* ── Donation Code ── */}
-          <div className="p-4 bg-gradient-to-l from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl flex items-center justify-between">
+          <div className="p-4 bg-gradient-to-l from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-200 dark:border-green-900/30 rounded-2xl flex items-center justify-between">
             <div>
               <p className="text-muted-foreground mb-0.5" style={{ fontSize: '11px', fontWeight: 600 }}>
                 رمز التبرع
               </p>
               <p
-                className="text-green-700 font-mono"
+                className="text-green-700 dark:text-green-400 font-mono"
                 style={{ fontSize: '22px', fontWeight: 800, letterSpacing: '0.5px' }}
               >
                 {donation.donationCode}
@@ -107,27 +107,27 @@ export default function DonationActionModal({
               <Activity className="w-3.5 h-3.5 text-green-600" /> البيانات الطبية
             </p>
             <div className="grid grid-cols-3 gap-3">
-              <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-center">
+              <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-xl text-center">
                 <p className="text-muted-foreground mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
                   فصيلة الدم
                 </p>
-                <p className="text-red-700 font-mono" style={{ fontSize: '20px', fontWeight: 900 }}>
+                <p className="text-red-700 dark:text-red-400 font-mono" style={{ fontSize: '20px', fontWeight: 900 }}>
                   {donation.bloodType || '—'}
                 </p>
               </div>
-              <div className="p-3 bg-blue-50 border border-blue-100 rounded-xl text-center">
+              <div className="p-3 bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 rounded-xl text-center">
                 <p className="text-muted-foreground mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
                   نوع التبرع
                 </p>
-                <p className="text-blue-700" style={{ fontSize: '13px', fontWeight: 700 }}>
+                <p className="text-blue-700 dark:text-blue-400" style={{ fontSize: '13px', fontWeight: 700 }}>
                   {donationTypeLabels[donation.donationType] || '—'}
                 </p>
               </div>
-              <div className="p-3 bg-green-50 border border-green-100 rounded-xl text-center">
+              <div className="p-3 bg-green-50 dark:bg-green-500/10 border border-green-100 dark:border-green-500/20 rounded-xl text-center">
                 <p className="text-muted-foreground mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
                   المتبرع
                 </p>
-                <p className="text-green-700" style={{ fontSize: '13px', fontWeight: 700 }}>
+                <p className="text-green-700 dark:text-green-400" style={{ fontSize: '13px', fontWeight: 700 }}>
                   {donation.name}
                 </p>
               </div>
@@ -142,8 +142,8 @@ export default function DonationActionModal({
             >
               <CalendarDays className="w-3.5 h-3.5 text-purple-500" /> تاريخ التبرع
             </p>
-            <div className="p-3 bg-purple-50 border border-purple-100 rounded-xl text-center">
-              <p className="text-purple-700" style={{ fontSize: '14px', fontWeight: 700 }}>
+            <div className="p-3 bg-purple-50 dark:bg-purple-500/10 border border-purple-100 dark:border-purple-500/20 rounded-xl text-center">
+              <p className="text-purple-700 dark:text-purple-400" style={{ fontSize: '14px', fontWeight: 700 }}>
                 {today}
               </p>
             </div>
@@ -153,22 +153,22 @@ export default function DonationActionModal({
           <div className="p-3 bg-muted/40 border border-border rounded-xl flex items-center justify-center gap-2">
             {donation.source === 'walkin' ? (
               <>
-                <Building2 className="w-4 h-4 text-green-600" />
-                <span className="text-green-700" style={{ fontSize: '13px', fontWeight: 600 }}>
+                <Building2 className="w-4 h-4 text-green-600 dark:text-green-500" />
+                <span className="text-green-700 dark:text-green-400" style={{ fontSize: '13px', fontWeight: 600 }}>
                   تبرع داخل البنك
                 </span>
               </>
             ) : donation.source === 'campaign' ? (
               <>
-                <Megaphone className="w-4 h-4 text-purple-600" />
-                <span className="text-purple-700" style={{ fontSize: '13px', fontWeight: 600 }}>
+                <Megaphone className="w-4 h-4 text-purple-600 dark:text-purple-500" />
+                <span className="text-purple-700 dark:text-purple-400" style={{ fontSize: '13px', fontWeight: 600 }}>
                   تبرع من حملة{donation.campaignName ? ` — ${donation.campaignName}` : ''}
                 </span>
               </>
             ) : (
               <>
-                <Smartphone className="w-4 h-4 text-blue-600" />
-                <span className="text-blue-700" style={{ fontSize: '13px', fontWeight: 600 }}>
+                <Smartphone className="w-4 h-4 text-blue-600 dark:text-blue-500" />
+                <span className="text-blue-700 dark:text-blue-400" style={{ fontSize: '13px', fontWeight: 600 }}>
                   حجز من التطبيق
                 </span>
               </>
@@ -177,12 +177,12 @@ export default function DonationActionModal({
 
           {/* ── Action Buttons ── */}
           {alreadySent ? (
-            <div className="p-4 bg-green-50 border-2 border-green-200 rounded-2xl text-center">
-              <CheckCircle2 className="w-8 h-8 text-green-600 mx-auto mb-2" />
-              <p className="text-green-700" style={{ fontSize: '14px', fontWeight: 700 }}>
+            <div className="p-4 bg-green-50 dark:bg-green-500/10 border-2 border-green-200 dark:border-green-500/20 rounded-2xl text-center">
+              <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-500 mx-auto mb-2" />
+              <p className="text-green-700 dark:text-green-400" style={{ fontSize: '14px', fontWeight: 700 }}>
                 تم تأكيد وإرسال هذا التبرع للمختبر
               </p>
-              <p className="text-green-500 mt-1" style={{ fontSize: '12px' }}>
+              <p className="text-green-500 dark:text-green-600 mt-1" style={{ fontSize: '12px' }}>
                 البيانات مقفلة وجاري استكمال الفحوصات المخبرية
               </p>
             </div>
@@ -214,8 +214,8 @@ export default function DonationActionModal({
                   </button>
                 </div>
               ) : (
-                <div className="p-4 bg-red-50 border-2 border-red-200 rounded-2xl space-y-3">
-                  <p className="text-red-700 text-center" style={{ fontSize: '14px', fontWeight: 700 }}>
+                <div className="p-4 bg-red-50 dark:bg-red-500/10 border-2 border-red-200 dark:border-red-500/20 rounded-2xl space-y-3">
+                  <p className="text-red-700 dark:text-red-400 text-center" style={{ fontSize: '14px', fontWeight: 700 }}>
                     هل أنت متأكد من حذف هذا التبرع؟
                   </p>
                   <p className="text-red-500 text-center" style={{ fontSize: '12px' }}>
