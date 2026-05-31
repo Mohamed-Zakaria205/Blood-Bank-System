@@ -29,7 +29,7 @@ describe('handleApiError function', () => {
   });
 
   it('should parse a standard AxiosError and extract message', () => {
-    const config = { url: '/test' };
+    const config = { url: '/test' } as any;
     const axiosError = new AxiosError('Network Error', 'ERR_BAD_REQUEST', config);
     axiosError.response = {
       status: 400,
@@ -46,7 +46,7 @@ describe('handleApiError function', () => {
   });
 
   it('should fall back to title when message is absent in AxiosError response', () => {
-    const config = { url: '/test' };
+    const config = { url: '/test' } as any;
     const axiosError = new AxiosError('Network Error', 'ERR_BAD_REQUEST', config);
     axiosError.response = {
       status: 404,
@@ -61,7 +61,7 @@ describe('handleApiError function', () => {
   });
 
   it('should extract validation errors from ASP.NET errors object in AxiosError', () => {
-    const config = { url: '/test' };
+    const config = { url: '/test' } as any;
     const axiosError = new AxiosError('Validation Failed', 'ERR_BAD_REQUEST', config);
     axiosError.response = {
       status: 422,
@@ -84,7 +84,7 @@ describe('handleApiError function', () => {
   });
 
   it('should fallback to error.message if no response data is present in AxiosError', () => {
-    const config = { url: '/test' };
+    const config = { url: '/test' } as any;
     const axiosError = new AxiosError('Connection Timeout', 'ECONNABORTED', config);
 
     const result = handleApiError(axiosError);
@@ -92,7 +92,7 @@ describe('handleApiError function', () => {
   });
 
   it('should use default Arabic network error message when no error message or data title is present', () => {
-    const config = { url: '/test' };
+    const config = { url: '/test' } as any;
     const axiosError = new AxiosError(undefined, undefined, config);
 
     const result = handleApiError(axiosError);
