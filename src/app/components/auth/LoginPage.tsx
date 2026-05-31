@@ -110,7 +110,6 @@ export default function LoginPage() {
             loading={loading}
             onSubmit={handleSubmit}
             onInputChange={handleInputChange}
-            demoAccount={null}
           />
 
           {/* Footer note */}

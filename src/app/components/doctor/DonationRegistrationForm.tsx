@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { Check, Smartphone } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -162,11 +162,19 @@ export default function DonationRegistrationForm() {
     setValue('diseases', next, { shouldDirty: true, shouldValidate: true });
   };
 
+  // Abort controller ref — cancels in-flight search when the component unmounts
+  // or when the user triggers a new search before the previous one finishes.
+  const searchAbortRef = useRef<AbortController | null>(null);
+
   const handleSearch = () => {
     if (!searchId || searchId.length !== 14) {
       toast.error('يرجى إدخال رقم قومي صحيح (14 رقم)');
       return;
     }
+    // Abort any previous in-flight request
+    searchAbortRef.current?.abort();
+    const controller = new AbortController();
+    searchAbortRef.current = controller;
     searchDonor.mutate(searchId, {
       onSuccess: (res) => {
         const exactDob = extractDobFromNationalId(searchId);
@@ -448,6 +456,7 @@ export default function DonationRegistrationForm() {
                 selectedCenter={selectedCenter}
                 updateField={updateField}
                 onNext={handleNextStep}
+                submitting={submitting}
               />
             </>
           )}

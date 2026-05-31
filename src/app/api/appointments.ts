@@ -6,14 +6,7 @@ import apiClient from './client';
 import type { ApiResponseWrapper } from '../types/auth';
 import type { AppointmentSlot, AppointmentStats } from '../types/appointment';
 import type { PaginatedResponse } from '../types/common';
-import {
-  appointmentSlotsData as MOCK_SLOTS,
-} from '../data/appointments.mock';
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
-
-// ── In-memory store so mutations persist across refetches ──
-let mockSlots: AppointmentSlot[] = [...MOCK_SLOTS];
 
 export interface AppointmentFilters {
   centerId?: string;

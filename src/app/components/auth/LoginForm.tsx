@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // LoginForm — email / password fields + submit button
 // ═══════════════════════════════════════════════════════════
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import {
   Droplet,
   Eye,
@@ -13,7 +13,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '../ui/form';
-import { loginSchema, type LoginFormValues, type DemoAccount } from './loginConstants';
+import { loginSchema, type LoginFormValues } from './loginConstants';
 
 interface LoginFormProps {
   /** Auth error message to display (e.g. invalid credentials) */
@@ -24,8 +24,6 @@ interface LoginFormProps {
   onSubmit: (values: LoginFormValues) => void;
   /** Called when the user types, to clear parent-level error/role state */
   onInputChange: () => void;
-  /** Externally-selected demo account to pre-fill the form */
-  demoAccount: DemoAccount | null;
 }
 
 export default function LoginForm({
@@ -33,7 +31,6 @@ export default function LoginForm({
   loading,
   onSubmit,
   onInputChange,
-  demoAccount,
 }: LoginFormProps) {
   const [showPass, setShowPass] = useState(false);
 
@@ -46,20 +43,9 @@ export default function LoginForm({
   const {
     register,
     handleSubmit,
-    setValue,
     clearErrors,
     formState: { errors },
   } = formMethods;
-
-  // Sync external demo-account selection into the form
-  // (using a ref-guarded effect to avoid infinite loops)
-  const lastFilledRole = useRef<string | null>(null);
-  if (demoAccount && demoAccount.role !== lastFilledRole.current) {
-    setValue('email', demoAccount.email, { shouldDirty: true });
-    setValue('password', demoAccount.password, { shouldDirty: true });
-    clearErrors();
-    lastFilledRole.current = demoAccount.role;
-  }
 
   const handleFormSubmit = handleSubmit((values) => {
     onSubmit(values);
@@ -67,7 +53,6 @@ export default function LoginForm({
 
   const handleFieldChange = () => {
     onInputChange();
-    lastFilledRole.current = null;
   };
 
   return (

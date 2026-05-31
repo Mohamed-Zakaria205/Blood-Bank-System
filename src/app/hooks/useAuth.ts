@@ -23,6 +23,10 @@ export function useChangePassword() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: (payload: ChangePasswordRequest) => changePasswordApi(user?.id ?? '', payload),
+    mutationFn: (payload: ChangePasswordRequest) => {
+      // Guard: never fire the API call if the user is not authenticated
+      if (!user?.id) return Promise.reject(new Error('User not authenticated'));
+      return changePasswordApi(user.id, payload);
+    },
   });
 }

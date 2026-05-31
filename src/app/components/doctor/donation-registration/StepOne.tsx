@@ -24,6 +24,8 @@ interface StepOneProps {
   selectedCenter: DonationCenter | undefined;
   updateField: <K extends keyof SimpleForm>(key: K, value: SimpleForm[K]) => void;
   onNext: () => void;
+  /** True while the Step-1 API call (addDonation) is in-flight */
+  submitting: boolean;
 }
 
 export default function StepOne({
@@ -36,6 +38,7 @@ export default function StepOne({
   selectedCenter,
   updateField,
   onNext,
+  submitting,
 }: StepOneProps) {
   const normalize = (s: string) => s.trim().replace(/\s+/g, ' ');
   const currentGovernorateObj = EGYPT_DATA.find(
@@ -427,11 +430,24 @@ export default function StepOne({
         <button
           type="button"
           onClick={onNext}
-          className="w-full flex items-center justify-center gap-2 py-3.5 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-all shadow-sm"
+          disabled={submitting}
+          className="w-full flex items-center justify-center gap-2 py-3.5 bg-green-600 hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl transition-all shadow-sm"
           style={{ fontSize: '14px', fontWeight: 700 }}
         >
-          التالي — البيانات الطبية
-          <ChevronLeft className="w-5 h-5" />
+          {submitting ? (
+            <>
+              <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              جاري التسجيل...
+            </>
+          ) : (
+            <>
+              التالي — البيانات الطبية
+              <ChevronLeft className="w-5 h-5" />
+            </>
+          )}
         </button>
       </div>
     </>

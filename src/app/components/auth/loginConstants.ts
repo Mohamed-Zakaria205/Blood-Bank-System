@@ -26,14 +26,10 @@ export const loginSchema = z.object({
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
 
-// ── Demo account descriptors ───────────────────────────────
-export interface DemoAccount {
+export interface SystemRole {
   role: UserRole;
   label: string;
   desc: string;
-  sublabel: string;
-  email: string;
-  password: string;
   icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   accent: string;
   light: string;
@@ -41,14 +37,11 @@ export interface DemoAccount {
   textColor: string;
 }
 
-export const demoAccounts: DemoAccount[] = [
+export const systemRoles: SystemRole[] = [
   {
     role: 'admin',
     label: 'المدير العام',
     desc: 'إدارة النظام والتقارير',
-    sublabel: 'admin123',
-    email: 'admin@bloodlink.benisuef.eg',
-    password: 'admin123',
     icon: ShieldCheck,
     accent: '#15803d',
     light: '#f0fdf4',
@@ -59,9 +52,6 @@ export const demoAccounts: DemoAccount[] = [
     role: 'doctor',
     label: 'الطبيب',
     desc: 'تسجيل المتبرعين والحملات',
-    sublabel: 'doctor123',
-    email: 'dr.ahmed.hassan@bloodlink.benisuef.eg',
-    password: 'doctor123',
     icon: Stethoscope,
     accent: '#0369a1',
     light: '#f0f9ff',
@@ -72,9 +62,6 @@ export const demoAccounts: DemoAccount[] = [
     role: 'lab',
     label: 'طبيب التحاليل',
     desc: 'فحص العينات وإدخال النتائج',
-    sublabel: 'lab123',
-    email: 'lab.yasmin.hossam@bloodlink.benisuef.eg',
-    password: 'lab123',
     icon: FlaskConical,
     accent: '#7c3aed',
     light: '#faf5ff',
@@ -85,9 +72,6 @@ export const demoAccounts: DemoAccount[] = [
     role: 'inventory',
     label: 'أمين المخزون',
     desc: 'إدارة حقائب الدم والمخزون',
-    sublabel: 'inventory123',
-    email: 'inv.nadia.fathi@bloodlink.benisuef.eg',
-    password: 'inventory123',
     icon: Package,
     accent: '#b45309',
     light: '#fffbeb',

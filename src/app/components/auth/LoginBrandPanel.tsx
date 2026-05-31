@@ -3,7 +3,7 @@
 // role descriptions, and system stats (desktop only).
 // ═══════════════════════════════════════════════════════════
 import { Droplet } from 'lucide-react';
-import { demoAccounts, systemStats } from './loginConstants';
+import { systemRoles, systemStats } from './loginConstants';
 
 export default function LoginBrandPanel() {
   return (
@@ -92,7 +92,7 @@ export default function LoginBrandPanel() {
 
           {/* 4 Roles list */}
           <div className="space-y-2.5 mb-10">
-            {demoAccounts.map(({ icon: Icon, label, desc }) => (
+            {systemRoles.map(({ icon: Icon, label, desc }) => (
               <div
                 key={label}
                 className="flex items-center gap-3 p-3 rounded-xl"

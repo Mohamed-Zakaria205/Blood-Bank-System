@@ -113,8 +113,7 @@ export async function fetchPaginatedDonors(
       status: item.eligibilityStatus || item.status,
       donations: item.donationsNumber !== undefined ? item.donationsNumber : item.donations,
     }));
-    console.log('[DEBUG] fetchPaginatedDonors response wrapper:', wrapper);
-    console.log('[DEBUG] fetchPaginatedDonors rawItems mapped:', mappedItems);
+
     return {
       data: mappedItems,
       total: wrapper.data?.total || 0,
@@ -182,9 +181,7 @@ export async function updateDonor(
   if (payload.dateOfBirth !== undefined) patchPayload.dateOfBirth = payload.dateOfBirth;
 
   try {
-    console.log('[API] updateDonor payload:', patchPayload);
     const { data } = await apiClient.patch<ApiResponseWrapper<Donor>>(`/Donors/${id}`, patchPayload);
-    console.log('[API] updateDonor response:', data);
     return data;
   } catch (error) {
     console.error('Error in updateDonor:', error);
@@ -209,8 +206,7 @@ export async function fetchAllDonations(): Promise<PaginatedResponse<Donation>> 
     }>>('/Donations', { params: { limit: 9999 } });
 
     const rawItems = wrapper.data?.items || wrapper.data?.data || [];
-    console.log('[DEBUG] fetchAllDonations response wrapper:', wrapper);
-    console.log('[DEBUG] fetchAllDonations rawItems:', rawItems);
+
     return {
       data: rawItems,
       total: wrapper.data?.total || 0,
@@ -250,8 +246,7 @@ export async function fetchPaginatedDonations(
     });
 
     const rawItems = wrapper.data?.items || wrapper.data?.data || [];
-    console.log('[DEBUG] fetchPaginatedDonations response wrapper:', wrapper);
-    console.log('[DEBUG] fetchPaginatedDonations rawItems:', rawItems);
+
     return {
       data: rawItems,
       total: wrapper.data?.total || 0,
@@ -329,9 +324,7 @@ export async function addDonation(payload: BasicDonationRequest): Promise<ApiRes
   //   mockDonationStore = [newDonation, ...mockDonationStore];
   //   return { data: donationId, message: 'تم تسجيل التبرع المبدئي بنجاح' };
   // }
-  console.log('[API] addDonation payload:', payload);
   const { data } = await apiClient.post<ApiResponse<{ id: string } | string>>('/Donations', payload);
-  console.log('[API] addDonation response data:', data);
   return data;
 }
 
@@ -365,9 +358,7 @@ export async function addMedicalRecord(donationId: string, payload: MedicalRecor
   //   }
   //   return { data: donationCode, message: 'تم إضافة السجل الطبي بنجاح' };
   // }
-  console.log('[API] addMedicalRecord donationId:', donationId, 'payload:', payload);
   const { data } = await apiClient.post<ApiResponse<string>>('/Donations/' + donationId + '/medical-record', payload);
-  console.log('[API] addMedicalRecord response data:', data);
   return data;
 }
 
@@ -381,9 +372,7 @@ export async function deleteDonation(donationId: string): Promise<ApiResponse<vo
   //   return { data: undefined as any, message: 'تم حذف التبرع بنجاح' };
   // }
   try {
-    console.log('[API] deleteDonation donationId:', donationId);
     const { data } = await apiClient.delete<ApiResponseWrapper<any>>(`/Donations/${donationId}`);
-    console.log('[API] deleteDonation response:', data);
     return {
       data: undefined as any,
       message: data.message || 'تم حذف التبرع بنجاح',
@@ -404,9 +393,7 @@ export async function confirmDonation(donationId: string): Promise<ApiResponse<v
   //   return { data: undefined as any, message: 'تم إرسال التبرع للمختبر بنجاح' };
   // }
   try {
-    console.log('[API] confirmDonation donationId:', donationId);
     const { data } = await apiClient.post<ApiResponseWrapper<any>>(`/Donations/${donationId}/confirm`);
-    console.log('[API] confirmDonation response:', data);
     return {
       data: undefined as any,
       message: data.message || 'تم إرسال التبرع للمختبر بنجاح',
