@@ -137,7 +137,7 @@ apiClient.interceptors.response.use(
 
     // ── Skip refresh for auth endpoints (login returns 401 for bad creds) ──
     const url = originalRequest.url || '';
-    if (url.includes('/Auth/login') || url.includes('/Auth/refresh') || url.includes('/Auth/me')) {
+    if (url.includes('/Auth/login') || url.includes('/Auth/refresh')) {
       return Promise.reject(error);
     }
 

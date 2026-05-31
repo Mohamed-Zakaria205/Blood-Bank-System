@@ -76,12 +76,11 @@ export async function loginApi(credentials: LoginRequest): Promise<User> {
 
 /**
  * Fetch the currently authenticated user's profile.
- * Uses the RAW axios instance (not apiClient) intentionally — a 401 here
- * means "no session", not "token expired". We must NOT trigger the
- * refresh interceptor or it causes an infinite redirect loop on app load.
+ * Uses apiClient so that if the access token is expired, the interceptor
+ * can silently refresh it using the refresh token before returning 401.
  */
 export async function getMeApi(): Promise<User> {
-  const { data: wrapper } = await rawAxios.get<GetMeResponse>('/Auth/me');
+  const { data: wrapper } = await apiClient.get<GetMeResponse>('/Auth/me');
 
   if (!wrapper.success) {
     throw new ApiError(wrapper.message || 'الجلسة غير صالحة', 401);
