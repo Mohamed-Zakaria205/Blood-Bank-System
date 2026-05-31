@@ -30,7 +30,6 @@ vi.mock('axios', () => {
 
 // Now import the API functions
 import { loginApi, getMeApi, refreshTokenApi, logoutApi, changePasswordApi } from './auth';
-import { ApiError } from './errors';
 
 describe('Auth API Services', () => {
   beforeEach(() => {
