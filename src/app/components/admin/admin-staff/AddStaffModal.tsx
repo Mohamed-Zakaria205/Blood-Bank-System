@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import {
   UserPlus,
   X,
@@ -56,20 +56,20 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white z-10">
+        <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card z-10">
           <div>
-            <h3 className="text-gray-900" style={{ fontSize: '18px', fontWeight: 700 }}>
+            <h3 className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
               إضافة كادر طبي جديد
             </h3>
-            <p className="text-gray-500 mt-0.5" style={{ fontSize: '13px' }}>
+            <p className="text-muted-foreground mt-0.5" style={{ fontSize: '13px' }}>
               أدخل جميع البيانات المطلوبة
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl"
+            className="p-2 text-muted-foreground hover:text-muted-foreground hover:bg-muted rounded-xl"
           >
             <X className="w-5 h-5" />
           </button>
@@ -80,7 +80,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
             {/* Role Selector */}
             <div>
               <label
-                className="block text-gray-700 mb-2"
+                className="block text-foreground mb-2"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 نوع الحساب *
@@ -98,18 +98,18 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                           shouldValidate: true,
                         })
                       }
-                      className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${roleValue === r ? `${cfg.borderColor} ${cfg.bgColor}` : 'border-gray-200 bg-white hover:border-gray-300'}`}
+                      className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${roleValue === r ? `${cfg.borderColor} ${cfg.bgColor}` : 'border-border bg-card hover:border-border'}`}
                     >
                       <div
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${roleValue === r ? cfg.bgColor : 'bg-gray-100'}`}
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${roleValue === r ? cfg.bgColor : 'bg-muted'}`}
                       >
                         <cfg.icon
-                          className={`w-5 h-5 ${roleValue === r ? cfg.color : 'text-gray-400'}`}
+                          className={`w-5 h-5 ${roleValue === r ? cfg.color : 'text-muted-foreground'}`}
                         />
                       </div>
                       <div className="text-right">
                         <p
-                          className={roleValue === r ? cfg.color : 'text-gray-600'}
+                          className={roleValue === r ? cfg.color : 'text-muted-foreground'}
                           style={{ fontSize: '14px', fontWeight: 700 }}
                         >
                           {cfg.label}
@@ -121,13 +121,13 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
               </div>
             </div>
 
-            <div className="border-t border-gray-100" />
+            <div className="border-t border-border" />
 
             {/* Personal Info Section */}
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <UserIcon className="w-4 h-4 text-green-600" />
-                <span className="text-gray-700" style={{ fontSize: '13px', fontWeight: 700 }}>
+                <span className="text-foreground" style={{ fontSize: '13px', fontWeight: 700 }}>
                   البيانات الشخصية
                 </span>
               </div>
@@ -135,7 +135,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                 {/* Full Name */}
                 <div className="sm:col-span-2">
                   <label
-                    className="block text-gray-700 mb-1.5"
+                    className="block text-foreground mb-1.5"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     الاسم الكامل *
@@ -144,7 +144,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                     type="text"
                     {...register('fullName')}
                     placeholder="مثال: د. أحمد محمد عبد الله"
-                    className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.fullName ? 'border-red-300' : 'border-gray-200'}`}
+                    className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.fullName ? 'border-red-300' : 'border-border'}`}
                     style={{ fontSize: '13px' }}
                   />
                   {errors.fullName?.message && (
@@ -157,7 +157,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                 {/* National ID */}
                 <div>
                   <label
-                    className="block text-gray-700 mb-1.5"
+                    className="block text-foreground mb-1.5"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     <CreditCard className="w-3.5 h-3.5 inline ml-1 text-green-600" />
@@ -175,7 +175,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                     maxLength={14}
                     inputMode="numeric"
                     pattern="[0-9]*"
-                    className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.nationalId ? 'border-red-300' : 'border-gray-200'}`}
+                    className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.nationalId ? 'border-red-300' : 'border-border'}`}
                     style={{ fontSize: '13px' }}
                     dir="ltr"
                   />
@@ -189,7 +189,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                 {/* Phone */}
                 <div>
                   <label
-                    className="block text-gray-700 mb-1.5"
+                    className="block text-foreground mb-1.5"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     <Phone className="w-3.5 h-3.5 inline ml-1 text-green-600" />
@@ -207,7 +207,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                     maxLength={11}
                     inputMode="numeric"
                     pattern="[0-9]*"
-                    className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.phone ? 'border-red-300' : 'border-gray-200'}`}
+                    className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.phone ? 'border-red-300' : 'border-border'}`}
                     style={{ fontSize: '13px' }}
                     dir="ltr"
                   />
@@ -221,7 +221,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                 {/* Address */}
                 <div>
                   <label
-                    className="block text-gray-700 mb-1.5"
+                    className="block text-foreground mb-1.5"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     <MapPin className="w-3.5 h-3.5 inline ml-1 text-green-600" />
@@ -231,7 +231,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                     type="text"
                     {...register('address')}
                     placeholder="شارع، حي، رقم..."
-                    className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.address ? 'border-red-300' : 'border-gray-200'}`}
+                    className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.address ? 'border-red-300' : 'border-border'}`}
                     style={{ fontSize: '13px' }}
                   />
                   {errors.address?.message && (
@@ -244,14 +244,14 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                 {/* City */}
                 <div>
                   <label
-                    className="block text-gray-700 mb-1.5"
+                    className="block text-foreground mb-1.5"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     المدينة
                   </label>
                   <select
                     {...register('city')}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
+                    className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400"
                     style={{ fontSize: '13px' }}
                   >
                     {CITIES.map((c) => (
@@ -264,13 +264,13 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
               </div>
             </div>
 
-            <div className="border-t border-gray-100" />
+            <div className="border-t border-border" />
 
             {/* Account Info Section */}
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Mail className="w-4 h-4 text-green-600" />
-                <span className="text-gray-700" style={{ fontSize: '13px', fontWeight: 700 }}>
+                <span className="text-foreground" style={{ fontSize: '13px', fontWeight: 700 }}>
                   بيانات الحساب
                 </span>
               </div>
@@ -278,7 +278,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                 {/* Email */}
                 <div>
                   <label
-                    className="block text-gray-700 mb-1.5"
+                    className="block text-foreground mb-1.5"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     البريد الإلكتروني *
@@ -287,7 +287,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                     type="email"
                     {...register('email')}
                     placeholder="example@bloodlink.benisuef.eg"
-                    className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.email ? 'border-red-300' : 'border-gray-200'}`}
+                    className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.email ? 'border-red-300' : 'border-border'}`}
                     style={{ fontSize: '13px' }}
                     dir="ltr"
                   />
@@ -301,7 +301,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                 {/* Password */}
                 <div>
                   <label
-                    className="block text-gray-700 mb-1.5"
+                    className="block text-foreground mb-1.5"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     كلمة المرور *
@@ -311,13 +311,13 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                       type={showPass ? 'text' : 'password'}
                       {...register('password')}
                       placeholder="6 أحرف على الأقل"
-                      className={`w-full px-4 pl-10 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 ${errors.password ? 'border-red-300' : 'border-gray-200'}`}
+                      className={`w-full px-4 pl-10 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 ${errors.password ? 'border-red-300' : 'border-border'}`}
                       style={{ fontSize: '13px' }}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPass(!showPass)}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                     >
                       {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -330,11 +330,11 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                 </div>
               </div>
             </div>
-            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-100">
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-border">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-5 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
+                className="px-5 py-2.5 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
                 style={{ fontSize: '14px', fontWeight: 600 }}
               >
                 إلغاء

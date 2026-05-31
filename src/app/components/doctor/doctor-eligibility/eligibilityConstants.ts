@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock, XCircle, AlertTriangle } from 'lucide-react';
+﻿import { CheckCircle2, Clock, XCircle, AlertTriangle } from 'lucide-react';
 import type { Donor } from '../../../types/donor';
 
 // ──────────────────────────────────────────
@@ -72,10 +72,10 @@ export const statusCfg = {
   },
   not_yet: {
     label: 'لم يحن وقته',
-    badge: 'bg-gray-100 text-gray-500',
+    badge: 'bg-muted text-muted-foreground',
     icon: XCircle,
     dot: 'bg-gray-400',
-    row: 'border-gray-100',
+    row: 'border-border',
   },
   deferred: {
     label: 'موجّل',

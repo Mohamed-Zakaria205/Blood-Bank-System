@@ -1,8 +1,8 @@
-// ── Shared types and constants for DoctorCampaigns module ──
+﻿// ── Shared types and constants for DoctorCampaigns module ──
 
 export const statusColors: Record<string, string> = {
   active: 'bg-emerald-100 text-emerald-700',
-  completed: 'bg-gray-100 text-gray-600',
+  completed: 'bg-muted text-muted-foreground',
 };
 
 export const statusLabels: Record<string, string> = {

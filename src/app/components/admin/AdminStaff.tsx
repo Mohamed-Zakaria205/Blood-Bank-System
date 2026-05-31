@@ -88,7 +88,7 @@ export default function AdminStaff() {
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={5} cols={6} />
       </div>
@@ -103,10 +103,10 @@ export default function AdminStaff() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+          <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
             إدارة الكوادر الطبية
           </h1>
-          <p className="text-gray-500" style={{ fontSize: '14px' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
             {total} حساب مسجل في النظام
           </p>
         </div>
@@ -122,7 +122,7 @@ export default function AdminStaff() {
       {/* Stats/Filters */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'الكل', val: '', color: 'text-gray-900', bg: 'bg-gray-50' },
+          { label: 'الكل', val: '', color: 'text-foreground', bg: 'bg-muted' },
           { label: 'أطباء', val: 'doctor', color: 'text-teal-700', bg: 'bg-teal-50' },
           { label: 'دكاترة تحاليل', val: 'lab', color: 'text-green-700', bg: 'bg-green-50' },
           { label: 'أمناء المخازن', val: 'inventory', color: 'text-blue-700', bg: 'bg-blue-50' },
@@ -132,7 +132,7 @@ export default function AdminStaff() {
             onClick={() => handleFilterChange(setFilterRole, s.val)}
             className={`${s.bg} rounded-xl p-4 text-center hover:opacity-80 transition-all ${filterRole === s.val ? 'ring-2 ring-offset-1 ring-green-400' : ''}`}
           >
-            <div className={`text-gray-900 ${s.color}`} style={{ fontSize: '18px', fontWeight: 800 }}>
+            <div className={`${s.color}`} style={{ fontSize: '18px', fontWeight: 800 }}>
               {s.label}
             </div>
           </button>
@@ -140,15 +140,15 @@ export default function AdminStaff() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+      <div className="bg-card rounded-2xl p-4 border border-border shadow-sm">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="relative sm:col-span-1">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               value={search}
               onChange={(e) => handleFilterChange(setSearch, e.target.value)}
               placeholder="ابحث بالاسم أو البريد أو الهاتف..."
-              className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+              className="w-full pr-9 pl-4 py-2.5 border border-border rounded-xl bg-input-background text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 placeholder:text-muted-foreground"
               style={{ fontSize: '13px' }}
             />
           </div>
@@ -156,7 +156,7 @@ export default function AdminStaff() {
             <select
               value={filterRole}
               onChange={(e) => handleFilterChange(setFilterRole, e.target.value)}
-              className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
+              className="w-full pr-4 pl-8 py-2.5 border border-border rounded-xl text-foreground bg-input-background outline-none focus:border-green-400 appearance-none"
               style={{ fontSize: '13px' }}
             >
               <option value="">كل الأدوار</option>
@@ -164,35 +164,35 @@ export default function AdminStaff() {
               <option value="lab">دكتور تحاليل</option>
               <option value="inventory">أمين مخزن</option>
             </select>
-            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
           </div>
           <div className="relative">
             <select
               value={filterStatus}
               onChange={(e) => handleFilterChange(setFilterStatus, e.target.value)}
-              className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
+              className="w-full pr-4 pl-8 py-2.5 border border-border rounded-xl text-foreground bg-input-background outline-none focus:border-green-400 appearance-none"
               style={{ fontSize: '13px' }}
             >
               <option value="">كل الحالات</option>
               <option value="active">نشط</option>
               <option value="inactive">معطل</option>
             </select>
-            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-gray-100">
-          <span className="text-gray-500" style={{ fontSize: '13px' }}>
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-border">
+          <span className="text-muted-foreground" style={{ fontSize: '13px' }}>
             {total} نتيجة
           </span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[800px]">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-muted/40">
                 {[
                   'الاسم والدور',
                   'رقم الهوية',
@@ -205,7 +205,7 @@ export default function AdminStaff() {
                 ].map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-right text-gray-500 whitespace-nowrap"
+                    className="px-4 py-3 text-right text-muted-foreground whitespace-nowrap"
                     style={{ fontSize: '12px', fontWeight: 600 }}
                   >
                     {h}
@@ -213,11 +213,11 @@ export default function AdminStaff() {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border">
               {staff.map((u) => {
                 const cfg = roleConfig[u.role as StaffRole] || roleConfig.doctor;
                 return (
-                  <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={u.id} className="hover:bg-accent/40 transition-colors">
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
                         <div
@@ -226,7 +226,7 @@ export default function AdminStaff() {
                           <cfg.icon className={`w-4 h-4 ${cfg.color}`} />
                         </div>
                         <div>
-                          <p className="text-gray-900" style={{ fontSize: '13px', fontWeight: 600 }}>
+                          <p className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
                             {u.name}
                           </p>
                           <span
@@ -239,23 +239,23 @@ export default function AdminStaff() {
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="text-gray-600 font-mono" style={{ fontSize: '12px' }}>
+                      <span className="text-muted-foreground font-mono" style={{ fontSize: '12px' }}>
                         {u.nationalId || '—'}
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="text-gray-600 font-mono" style={{ fontSize: '12px' }}>
+                      <span className="text-muted-foreground font-mono" style={{ fontSize: '12px' }}>
                         {u.phone || '—'}
                       </span>
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-600 font-mono" style={{ fontSize: '11px' }}>
+                        <span className="text-muted-foreground font-mono" style={{ fontSize: '11px' }}>
                           {u.email}
                         </span>
                         <button
                           onClick={() => copyEmail(u.email)}
-                          className="p-1 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all"
+                          className="p-1 text-muted-foreground hover:text-green-600 hover:bg-green-50 rounded-lg transition-all"
                         >
                           {copied === u.email ? (
                             <Check className="w-3.5 h-3.5 text-green-600" />
@@ -266,12 +266,12 @@ export default function AdminStaff() {
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="text-gray-500" style={{ fontSize: '12px' }}>
+                      <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                         {u.address || '—'}
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="text-gray-400" style={{ fontSize: '12px' }}>
+                      <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                         {u.createdAt}
                       </span>
                     </td>
@@ -301,7 +301,7 @@ export default function AdminStaff() {
         
         {/* Pagination UI */}
         {totalPages > 1 && (
-          <div className="p-4 border-t border-gray-100 flex items-center justify-center bg-gray-50">
+          <div className="p-4 border-t border-border flex items-center justify-center bg-muted/40">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>

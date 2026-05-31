@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { Toaster as Sonner, ToasterProps } from 'sonner';
 
@@ -23,7 +23,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           
           // Loading: Default muted palette since richColors doesn't cover loading heavily
           loading: 
-            'bg-white border-gray-200 text-gray-800 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-300',
+            'bg-card border-border text-foreground dark:bg-gray-900 dark:border-gray-800 dark:text-muted-foreground/50',
             
           // Icon sizing and styling
           icon: 'w-5 h-5 flex-shrink-0',

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+﻿import { useState, useRef } from 'react';
 import { Settings2, Save, Check } from 'lucide-react';
 import { BLOOD_TYPES } from '../../constants';
 import type { BloodType } from '../../types';
@@ -48,7 +48,7 @@ export default function InventoryAlerts() {
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={5} cols={6} />
       </div>
@@ -100,16 +100,16 @@ export default function InventoryAlerts() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+          <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
             المخزون وتحليلات الدم
           </h1>
-          <p className="text-gray-500" style={{ fontSize: '14px' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
             نظرة شاملة — {totalAlerts} تنبيه نشط
           </p>
         </div>
         <button
           onClick={() => setEditThresholds((p) => !p)}
-          className={`flex items-center gap-2 px-4 py-2.5 border rounded-xl transition-all ${editThresholds ? 'bg-green-600 text-white border-green-600' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+          className={`flex items-center gap-2 px-4 py-2.5 border rounded-xl transition-all ${editThresholds ? 'bg-green-600 text-white border-green-600' : 'border-border text-muted-foreground hover:bg-muted/40'}`}
           style={{ fontSize: '13px', fontWeight: 600 }}
         >
           <Settings2 className="w-4 h-4" />
@@ -165,15 +165,15 @@ export default function InventoryAlerts() {
 
       {/* Threshold editor */}
       {editThresholds && (
-        <div className="bg-white rounded-2xl p-6 border border-green-200 shadow-sm">
-          <h2 className="text-gray-900 mb-4" style={{ fontSize: '16px', fontWeight: 700 }}>
+        <div className="bg-card rounded-2xl p-6 border border-green-200 shadow-sm">
+          <h2 className="text-foreground mb-4" style={{ fontSize: '16px', fontWeight: 700 }}>
             ضبط الحدود الدنيا للمخزون
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {BLOOD_TYPES.map((t) => (
               <div key={t}>
                 <label
-                  className="flex items-center gap-2 text-gray-700 mb-1.5"
+                  className="flex items-center gap-2 text-foreground mb-1.5"
                   style={{ fontSize: '13px', fontWeight: 600 }}
                 >
                   <span
@@ -194,7 +194,7 @@ export default function InventoryAlerts() {
                       [t]: parseInt(e.target.value) || 1,
                     }))
                   }
-                  className="w-full px-3 py-2 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 text-center"
+                  className="w-full px-3 py-2 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 text-center"
                   style={{ fontSize: '14px', fontWeight: 700 }}
                 />
               </div>

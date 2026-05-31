@@ -66,7 +66,7 @@ export default function AdminDonors() {
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={7} cols={8} />
       </div>
@@ -159,10 +159,10 @@ export default function AdminDonors() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+          <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
             المتبرعون
           </h1>
-          <p className="text-gray-500" style={{ fontSize: '14px' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
             {total} متبرع مسجل في النظام
           </p>
         </div>
@@ -174,15 +174,15 @@ export default function AdminDonors() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+      <div className="bg-card rounded-2xl p-4 border border-border shadow-sm">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="relative lg:col-span-1">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               value={search}
               onChange={(e) => handleFilterChange(setSearch, e.target.value)}
               placeholder="ابحث بالاسم أو الرمز أو الهاتف..."
-              className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 bg-gray-50 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all"
+              className="w-full pr-9 pl-4 py-2.5 border border-border rounded-xl text-foreground bg-input-background outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all placeholder:text-muted-foreground"
               style={{ fontSize: '13px' }}
             />
           </div>
@@ -190,7 +190,7 @@ export default function AdminDonors() {
             <select
               value={filterBlood}
               onChange={(e) => handleFilterChange(setFilterBlood, e.target.value)}
-              className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
+              className="w-full pr-4 pl-8 py-2.5 border border-border rounded-xl text-foreground bg-input-background outline-none focus:border-green-400 appearance-none"
               style={{ fontSize: '13px' }}
             >
               <option value="">كل الفصائل</option>
@@ -200,13 +200,13 @@ export default function AdminDonors() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
           </div>
           <div className="relative">
             <select
               value={filterStatus}
               onChange={(e) => handleFilterChange(setFilterStatus, e.target.value)}
-              className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
+              className="w-full pr-4 pl-8 py-2.5 border border-border rounded-xl text-foreground bg-input-background outline-none focus:border-green-400 appearance-none"
               style={{ fontSize: '13px' }}
             >
               <option value="">كل الحالات</option>
@@ -214,13 +214,13 @@ export default function AdminDonors() {
               <option value="ineligible">غير مؤهل</option>
               <option value="deferred">موجل</option>
             </select>
-            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
           </div>
           <div className="relative">
             <select
               value={filterCity}
               onChange={(e) => handleFilterChange(setFilterCity, e.target.value)}
-              className="w-full pr-4 pl-8 py-2.5 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 outline-none focus:border-green-400 appearance-none"
+              className="w-full pr-4 pl-8 py-2.5 border border-border rounded-xl text-foreground bg-input-background outline-none focus:border-green-400 appearance-none"
               style={{ fontSize: '13px' }}
             >
               <option value="">كل المدن</option>
@@ -230,7 +230,7 @@ export default function AdminDonors() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
           </div>
         </div>
       </div>
@@ -238,11 +238,11 @@ export default function AdminDonors() {
       {/* Stats row can be hidden or removed since we have server pagination and these numbers would be inaccurate if only derived from the current page. Leaving them out or just displaying the total count is better. */}
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-600" style={{ fontSize: '13px' }}>
+            <Filter className="w-4 h-4 text-muted-foreground" />
+            <span className="text-muted-foreground" style={{ fontSize: '13px' }}>
               {total} نتيجة
             </span>
           </div>
@@ -250,11 +250,11 @@ export default function AdminDonors() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[700px]">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-muted/40">
                 {adminDonorsHeaders.map((h) => (
                   <th
                     key={h}
-                    className={`px-4 py-3 ${h === 'إجراء' ? 'text-center' : 'text-right'} text-gray-500 whitespace-nowrap`}
+                    className={`px-4 py-3 ${h === 'إجراء' ? 'text-center' : 'text-right'} text-muted-foreground whitespace-nowrap`}
                     style={{ fontSize: '12px', fontWeight: 600 }}
                   >
                     {h}
@@ -262,9 +262,9 @@ export default function AdminDonors() {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border">
               {donors.map((d) => (
-                <tr key={d.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={d.id} className="hover:bg-accent/40 transition-colors">
                   <td className="px-4 py-3 whitespace-nowrap">
                     {d.status === 'eligible' ? (
                       <span
@@ -275,7 +275,7 @@ export default function AdminDonors() {
                       </span>
                     ) : (
                       <span
-                        className="text-gray-300 bg-gray-50 px-2 py-0.5 rounded border border-dashed border-gray-200"
+                        className="text-muted-foreground/50 bg-muted px-2 py-0.5 rounded border border-dashed border-border"
                         style={{ fontSize: '11px' }}
                       >
                         —
@@ -283,12 +283,12 @@ export default function AdminDonors() {
                     )}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="text-gray-900" style={{ fontSize: '13px', fontWeight: 600 }}>
+                    <span className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
                       {d.name}
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="text-gray-500" style={{ fontSize: '13px' }}>
+                    <span className="text-muted-foreground" style={{ fontSize: '13px' }}>
                       {d.address || '—'}
                     </span>
                   </td>
@@ -301,12 +301,12 @@ export default function AdminDonors() {
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="text-gray-500 font-mono" style={{ fontSize: '13px' }}>
+                    <span className="text-muted-foreground font-mono" style={{ fontSize: '13px' }}>
                       {d.lastDonationDate || '—'}
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="text-gray-500" style={{ fontSize: '13px' }}>
+                    <span className="text-muted-foreground" style={{ fontSize: '13px' }}>
                       {d.donations !== undefined ? d.donations : 0}
                     </span>
                   </td>
@@ -346,7 +346,7 @@ export default function AdminDonors() {
         </div>
         {/* Pagination UI */}
         {totalPages > 1 && (
-          <div className="p-4 border-t border-gray-100 flex items-center justify-center bg-gray-50">
+          <div className="p-4 border-t border-border flex items-center justify-center bg-muted/40">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>

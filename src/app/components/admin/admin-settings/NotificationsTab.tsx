@@ -1,4 +1,4 @@
-import { Save, Check } from 'lucide-react';
+﻿import { Save, Check } from 'lucide-react';
 import type { NotifSettings } from './settingsConstants';
 import { notificationOptions } from './settingsConstants';
 
@@ -16,18 +16,18 @@ export default function NotificationsTab({
   onSave,
 }: NotificationsTabProps) {
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-      <h2 className="text-gray-900 mb-6" style={{ fontSize: '18px', fontWeight: 700 }}>
+    <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+      <h2 className="text-foreground mb-6" style={{ fontSize: '18px', fontWeight: 700 }}>
         إعدادات الإشعارات
       </h2>
       <div className="space-y-4">
         {notificationOptions.map((n) => (
-          <div key={n.key} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+          <div key={n.key} className="flex items-center justify-between p-4 bg-muted/40 rounded-xl">
             <div>
-              <p className="text-gray-900" style={{ fontSize: '14px', fontWeight: 600 }}>
+              <p className="text-foreground" style={{ fontSize: '14px', fontWeight: 600 }}>
                 {n.label}
               </p>
-              <p className="text-gray-500" style={{ fontSize: '12px' }}>
+              <p className="text-muted-foreground" style={{ fontSize: '12px' }}>
                 {n.desc}
               </p>
             </div>
@@ -36,7 +36,7 @@ export default function NotificationsTab({
               className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${settings[n.key] ? 'bg-green-600' : 'bg-gray-300'}`}
             >
               <span
-                className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${settings[n.key] ? 'right-0.5' : 'left-0.5'}`}
+                className={`absolute top-0.5 w-5 h-5 bg-card rounded-full shadow transition-all ${settings[n.key] ? 'right-0.5' : 'left-0.5'}`}
               />
             </button>
           </div>

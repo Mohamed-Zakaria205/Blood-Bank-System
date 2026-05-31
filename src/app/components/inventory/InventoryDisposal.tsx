@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import {
   AlertTriangle,
   CheckCircle,
@@ -49,7 +49,7 @@ export default function InventoryDisposal() {
   if (isLoadingBags || isLoadingOutflow)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={5} cols={6} />
       </div>
@@ -172,10 +172,10 @@ export default function InventoryDisposal() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+        <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
           إتلاف وإخراج الحقائب
         </h1>
-        <p className="text-gray-500" style={{ fontSize: '14px' }}>
+        <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
           تسجيل إتلاف الحقائب التالفة أو المنتهية أو المرفوضة مع الحفاظ على سجل تدقيق كامل
         </p>
       </div>
@@ -207,8 +207,8 @@ export default function InventoryDisposal() {
           {
             label: 'إجمالي المُتلَف',
             value: disposedCount,
-            color: 'text-gray-500',
-            bg: 'bg-gray-50 border-gray-200',
+            color: 'text-muted-foreground',
+            bg: 'bg-muted/40 border-border',
             Icon: CheckCircle,
           },
         ].map((s) => (

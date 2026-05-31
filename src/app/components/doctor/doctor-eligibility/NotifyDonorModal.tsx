@@ -1,4 +1,4 @@
-import { Bell, Zap, Send, Smartphone } from 'lucide-react';
+﻿import { Bell, Zap, Send, Smartphone } from 'lucide-react';
 import type { NotifModal } from './eligibilityConstants';
 
 interface NotifyDonorModalProps {
@@ -12,7 +12,7 @@ export default function NotifyDonorModal({ modal, onSend, onCancel }: NotifyDono
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
         {/* Header */}
         <div
           className={`p-5 border-b ${isEmergency ? 'bg-red-50 border-red-100' : 'bg-green-50 border-green-100'}`}
@@ -28,10 +28,10 @@ export default function NotifyDonorModal({ modal, onSend, onCancel }: NotifyDono
               )}
             </div>
             <div>
-              <h3 className="text-gray-900" style={{ fontSize: '17px', fontWeight: 700 }}>
+              <h3 className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
                 {isEmergency ? 'إشعار طارئ' : 'إشعار جاهزية للتبرع'}
               </h3>
-              <p className="text-gray-500" style={{ fontSize: '12px' }}>
+              <p className="text-muted-foreground" style={{ fontSize: '12px' }}>
                 {modal.donor.name}
               </p>
             </div>
@@ -40,17 +40,17 @@ export default function NotifyDonorModal({ modal, onSend, onCancel }: NotifyDono
 
         <div className="p-5 space-y-4">
           {/* Recipient info */}
-          <div className="p-3 bg-gray-50 rounded-xl space-y-1.5">
+          <div className="p-3 bg-muted/40 rounded-xl space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-gray-500" style={{ fontSize: '12px' }}>
+              <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                 المتبرع
               </span>
-              <span className="text-gray-800" style={{ fontSize: '13px', fontWeight: 600 }}>
+              <span className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
                 {modal.donor.name}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-500" style={{ fontSize: '12px' }}>
+              <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                 الفصيلة
               </span>
               <span
@@ -61,10 +61,10 @@ export default function NotifyDonorModal({ modal, onSend, onCancel }: NotifyDono
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-500" style={{ fontSize: '12px' }}>
+              <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                 الهاتف
               </span>
-              <span className="text-gray-800 font-mono" style={{ fontSize: '13px' }}>
+              <span className="text-foreground font-mono" style={{ fontSize: '13px' }}>
                 {modal.donor.phone}
               </span>
             </div>
@@ -73,13 +73,13 @@ export default function NotifyDonorModal({ modal, onSend, onCancel }: NotifyDono
           {/* Message preview */}
           <div>
             <label
-              className="block text-gray-700 mb-2"
+              className="block text-foreground mb-2"
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
               محتوى الإشعار
             </label>
-            <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl">
-              <p className="text-gray-700" style={{ fontSize: '13px', lineHeight: '1.6' }}>
+            <div className="p-3 bg-muted/40 border border-border rounded-xl">
+              <p className="text-foreground" style={{ fontSize: '13px', lineHeight: '1.6' }}>
                 {isEmergency
                   ? `🚨 طلب دم طارئ — بنك دم بني سويف\nفصيلة الدم: ${modal.donor.bloodType}\nيرجى التواصل فوراً على: 082-XXXXXXX`
                   : `💚 أنت الآن مؤهل للتبرع بالدم مجدداً!\nآخر تبرع: ${modal.donor.lastDonationDate ?? 'لم يتبرع'}\nاحجز موعدك عبر التطبيق أو تواصل معنا.`}
@@ -105,7 +105,7 @@ export default function NotifyDonorModal({ modal, onSend, onCancel }: NotifyDono
           </button>
           <button
             onClick={onCancel}
-            className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200"
+            className="flex-1 py-2.5 bg-muted text-foreground rounded-xl hover:bg-muted"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
             إلغاء

@@ -60,6 +60,8 @@
   --destructive-foreground: #d4867c;
   --border: rgba(168, 193, 188, 0.1);
   --input: #1a3330;
+  --input-background: #1a3330;
+  --switch-background: #3d6b5e;
   --ring: #4d9e78;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
@@ -184,13 +186,12 @@
   color-scheme: dark;
 }
 
-/* Global smooth transition for dark/light switching */
-.dark *,
-.dark *::before,
-.dark *::after {
-  transition-property: background-color, border-color, color, box-shadow;
-  transition-duration: 250ms;
-  transition-timing-function: ease;
+
+
+/* Disable transitions during rapid/programmatic changes */
+.no-transition,
+.no-transition * {
+  transition: none !important;
 }
 
 /* ── Page Backgrounds ── */

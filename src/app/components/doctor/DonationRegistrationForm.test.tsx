@@ -89,7 +89,7 @@ describe('DonationRegistrationForm Component', () => {
 
     // Mock search mutation
     mockUseSearchDonor.mockReturnValue({
-      mutate: vi.fn((searchId, options) => {
+      mutate: vi.fn((_searchId, options) => {
         options?.onSuccess?.({ data: null });
         options?.onSettled?.();
       }),
@@ -98,7 +98,7 @@ describe('DonationRegistrationForm Component', () => {
 
     // Mock add donation mutation
     mockUseAddDonation.mockReturnValue({
-      mutate: vi.fn((payload, options) => {
+      mutate: vi.fn((_payload, options) => {
         options?.onSuccess?.({ data: 'donation-123' });
         options?.onSettled?.();
       }),
@@ -107,7 +107,7 @@ describe('DonationRegistrationForm Component', () => {
 
     // Mock add medical record mutation
     mockUseAddMedicalRecord.mockReturnValue({
-      mutate: vi.fn((payload, options) => {
+      mutate: vi.fn((_payload, options) => {
         options?.onSuccess?.({ success: true });
         options?.onSettled?.();
       }),
@@ -178,7 +178,7 @@ describe('DonationRegistrationForm Component', () => {
       };
 
       mockUseSearchDonor.mockReturnValue({
-        mutate: vi.fn((searchId, options) => {
+        mutate: vi.fn((_searchId, options) => {
           options?.onSuccess?.({ data: mockDonor });
         }),
         isPending: false,
@@ -205,7 +205,7 @@ describe('DonationRegistrationForm Component', () => {
 
     it('displays "متبرع جديد" toast if donor search returns null', async () => {
       mockUseSearchDonor.mockReturnValue({
-        mutate: vi.fn((searchId, options) => {
+        mutate: vi.fn((_searchId, options) => {
           options?.onSuccess?.({ data: null });
         }),
         isPending: false,

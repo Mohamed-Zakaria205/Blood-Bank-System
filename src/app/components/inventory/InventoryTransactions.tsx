@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Search, Download } from 'lucide-react';
 import { BLOOD_TYPES } from '../../constants';
 import type { BloodType, TransactionType } from '../../types';
@@ -64,7 +64,7 @@ export default function InventoryTransactions() {
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={5} cols={6} />
       </div>
@@ -83,15 +83,15 @@ export default function InventoryTransactions() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+          <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
             سجل العمليات
           </h1>
-          <p className="text-gray-500" style={{ fontSize: '14px' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
             {total} عملية مسجلة
           </p>
         </div>
         <button
-          className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
+          className="flex items-center gap-2 px-4 py-2.5 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
           style={{ fontSize: '13px', fontWeight: 600 }}
         >
           <Download className="w-4 h-4" /> تصدير
@@ -102,12 +102,12 @@ export default function InventoryTransactions() {
       <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
         <button
           onClick={() => handleFilterChange<TransactionType | ''>(setFilterType, '')}
-          className={`p-3 rounded-xl border-2 text-right transition-all ${filterType === '' ? 'bg-gray-100 text-gray-900 border-gray-300 ring-2 ring-offset-1 ring-gray-400' : 'bg-white border-gray-100 hover:border-gray-200'}`}
+          className={`p-3 rounded-xl border-2 text-right transition-all ${filterType === '' ? 'bg-muted text-foreground border-border ring-2 ring-offset-1 ring-gray-400' : 'bg-card border-border hover:border-border'}`}
         >
-          <div className="text-gray-900" style={{ fontSize: '20px', fontWeight: 800 }}>
+          <div className="text-foreground" style={{ fontSize: '20px', fontWeight: 800 }}>
             الكل
           </div>
-          <div className="text-gray-600" style={{ fontSize: '11px', fontWeight: 600 }}>
+          <div className="text-muted-foreground" style={{ fontSize: '11px', fontWeight: 600 }}>
             جميع العمليات
           </div>
         </button>
@@ -115,12 +115,12 @@ export default function InventoryTransactions() {
           <button
             key={t}
             onClick={() => handleFilterChange<TransactionType | ''>(setFilterType, t)}
-            className={`p-3 rounded-xl border-2 text-right transition-all ${filterType === t ? typeColors[t] + ' border-current ring-2 ring-offset-1' : 'bg-white border-gray-100 hover:border-gray-200'}`}
+            className={`p-3 rounded-xl border-2 text-right transition-all ${filterType === t ? typeColors[t] + ' border-current ring-2 ring-offset-1' : 'bg-card border-border hover:border-border'}`}
           >
-            <div className="text-gray-900" style={{ fontSize: '20px', fontWeight: 800 }}>
+            <div className="text-foreground" style={{ fontSize: '20px', fontWeight: 800 }}>
               {typeIcons[t]}
             </div>
-            <div className="text-gray-600" style={{ fontSize: '11px', fontWeight: 600 }}>
+            <div className="text-muted-foreground" style={{ fontSize: '11px', fontWeight: 600 }}>
               {typeLabels[t]}
             </div>
           </button>
@@ -130,19 +130,19 @@ export default function InventoryTransactions() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             value={search}
             onChange={(e) => handleFilterChange(setSearch, e.target.value)}
             placeholder="بحث برقم العملية أو كود الحقيبة..."
-            className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
+            className="w-full pr-9 pl-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400"
             style={{ fontSize: '13px' }}
           />
         </div>
         <select
           value={filterBlood}
           onChange={(e) => handleFilterChange(setFilterBlood, e.target.value as BloodType | '')}
-          className="px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
+          className="px-4 py-2.5 border border-border rounded-xl bg-card text-foreground outline-none"
           style={{ fontSize: '13px' }}
         >
           <option value="">كل الفصائل</option>
@@ -155,11 +155,11 @@ export default function InventoryTransactions() {
       </div>
 
       {/* Transactions table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-muted/40">
                 {[
                   'رقم العملية',
                   'النوع',
@@ -173,7 +173,7 @@ export default function InventoryTransactions() {
                 ].map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-right text-gray-500"
+                    className="px-4 py-3 text-right text-muted-foreground"
                     style={{ fontSize: '12px', fontWeight: 600 }}
                   >
                     {h}
@@ -181,9 +181,9 @@ export default function InventoryTransactions() {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border">
               {transactions.map((t) => (
-                <tr key={t.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={t.id} className="hover:bg-muted/40 transition-colors">
                   <td className="px-4 py-3">
                     <span
                       className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded"
@@ -205,14 +205,14 @@ export default function InventoryTransactions() {
                       {t.bagCodes.slice(0, 2).map((c) => (
                         <span
                           key={c}
-                          className="font-mono text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded"
+                          className="font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded"
                           style={{ fontSize: '10px' }}
                         >
                           {c}
                         </span>
                       ))}
                       {t.bagCodes.length > 2 && (
-                        <span className="text-gray-400" style={{ fontSize: '10px' }}>
+                        <span className="text-muted-foreground" style={{ fontSize: '10px' }}>
                           +{t.bagCodes.length - 2}
                         </span>
                       )}
@@ -227,25 +227,25 @@ export default function InventoryTransactions() {
                     </span>
                   </td>
                   <td
-                    className="px-4 py-3 text-gray-700"
+                    className="px-4 py-3 text-foreground"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     {t.quantity}
                   </td>
-                  <td className="px-4 py-3 text-gray-600" style={{ fontSize: '12px' }}>
+                  <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '12px' }}>
                     {t.destination ?? '—'}
                   </td>
-                  <td className="px-4 py-3 text-gray-600" style={{ fontSize: '12px' }}>
+                  <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '12px' }}>
                     {t.performedByName.split(' ').slice(1, 3).join(' ')}
                   </td>
                   <td
-                    className="px-4 py-3 text-gray-400"
+                    className="px-4 py-3 text-muted-foreground"
                     style={{ fontSize: '11px', whiteSpace: 'nowrap' }}
                   >
                     {t.timestamp}
                   </td>
                   <td
-                    className="px-4 py-3 text-gray-400"
+                    className="px-4 py-3 text-muted-foreground"
                     style={{ fontSize: '11px', maxWidth: '150px' }}
                   >
                     <span className="block truncate">{t.notes ?? '—'}</span>
@@ -259,7 +259,7 @@ export default function InventoryTransactions() {
         
         {/* Pagination UI */}
         {totalPages > 1 && (
-          <div className="p-4 border-t border-gray-100 flex items-center justify-center bg-gray-50">
+          <div className="p-4 border-t border-border flex items-center justify-center bg-muted/40">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>

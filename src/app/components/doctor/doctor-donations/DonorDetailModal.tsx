@@ -1,4 +1,4 @@
-import {
+﻿import {
   X,
   Building2,
   Smartphone,
@@ -20,11 +20,11 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white">
+        <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card">
           <div>
-            <h3 className="text-gray-900" style={{ fontSize: '18px', fontWeight: 700 }}>
+            <h3 className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
               تفاصيل التبرع
             </h3>
             <p className="text-green-600 font-mono" style={{ fontSize: '12px' }}>
@@ -33,7 +33,7 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl"
+            className="p-2 text-muted-foreground hover:text-muted-foreground hover:bg-muted rounded-xl"
           >
             <X className="w-5 h-5" />
           </button>
@@ -42,7 +42,7 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
         <div className="p-6 space-y-5">
           {/* Personal Info */}
           <div>
-            <h4 className="text-gray-700 mb-3" style={{ fontSize: '14px', fontWeight: 700 }}>
+            <h4 className="text-foreground mb-3" style={{ fontSize: '14px', fontWeight: 700 }}>
               البيانات الشخصية
             </h4>
             <div className="grid grid-cols-2 gap-3">
@@ -56,12 +56,12 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
                 ['العنوان', donation.address],
                 ['فصيلة الدم', donation.bloodType],
               ].map(([label, val]) => (
-                <div key={label} className="p-3 bg-gray-50 rounded-xl">
-                  <p className="text-gray-400" style={{ fontSize: '11px' }}>
+                <div key={label} className="p-3 bg-muted/40 rounded-xl">
+                  <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                     {label}
                   </p>
                   <p
-                    className="text-gray-900 mt-0.5"
+                    className="text-foreground mt-0.5"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     {val}
@@ -73,27 +73,27 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
 
           {/* Donation Details */}
           <div>
-            <h4 className="text-gray-700 mb-3" style={{ fontSize: '14px', fontWeight: 700 }}>
+            <h4 className="text-foreground mb-3" style={{ fontSize: '14px', fontWeight: 700 }}>
               بيانات التبرع
             </h4>
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-gray-50 rounded-xl">
-                <p className="text-gray-400" style={{ fontSize: '11px' }}>
+              <div className="p-3 bg-muted/40 rounded-xl">
+                <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                   نوع التبرع
                 </p>
                 <p
-                  className="text-gray-900 mt-0.5"
+                  className="text-foreground mt-0.5"
                   style={{ fontSize: '13px', fontWeight: 600 }}
                 >
                   {donationTypeLabels[donation.donationType]}
                 </p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-xl">
-                <p className="text-gray-400" style={{ fontSize: '11px' }}>
+              <div className="p-3 bg-muted/40 rounded-xl">
+                <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                   تاريخ التبرع
                 </p>
                 <p
-                  className="text-gray-900 mt-0.5"
+                  className="text-foreground mt-0.5"
                   style={{ fontSize: '13px', fontWeight: 600 }}
                 >
                   {donation.donationDate || '—'}
@@ -104,7 +104,7 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
               <div
                 className={`p-3 rounded-xl ${donation.source === 'campaign' ? 'bg-purple-50' : donation.source === 'app' ? 'bg-blue-50' : 'bg-green-50'}`}
               >
-                <p className="text-gray-400" style={{ fontSize: '11px' }}>
+                <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                   مصدر التبرع
                 </p>
                 <p
@@ -130,7 +130,7 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
               {/* Campaign name */}
               {donation.source === 'campaign' && donation.campaignName && (
                 <div className="p-3 bg-purple-50 rounded-xl">
-                  <p className="text-gray-400" style={{ fontSize: '11px' }}>
+                  <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                     اسم الحملة
                   </p>
                   <p
@@ -147,7 +147,7 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
           {/* Additional Data */}
           {donation.additionalData && (
             <div>
-              <h4 className="text-gray-700 mb-3" style={{ fontSize: '14px', fontWeight: 700 }}>
+              <h4 className="text-foreground mb-3" style={{ fontSize: '14px', fontWeight: 700 }}>
                 البيانات الطبية التكميلية
               </h4>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

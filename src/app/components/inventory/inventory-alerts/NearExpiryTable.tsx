@@ -1,4 +1,4 @@
-import { Clock } from 'lucide-react';
+﻿import { Clock } from 'lucide-react';
 import { EmptyState } from '../../shared/EmptyState';
 import type { BloodBag } from '../../../types';
 
@@ -22,10 +22,10 @@ export default function NearExpiryTable({ bags }: NearExpiryTableProps) {
     .sort((a, b) => daysUntil(a.expiryDate) - daysUntil(b.expiryDate));
 
   return (
-    <div className="bg-white rounded-2xl border border-orange-200 shadow-sm overflow-hidden">
+    <div className="bg-card rounded-2xl border border-orange-200 shadow-sm overflow-hidden">
       <div className="p-5 border-b border-orange-100 flex items-center gap-2">
         <Clock className="w-5 h-5 text-orange-500" />
-        <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
+        <h2 className="text-foreground" style={{ fontSize: '16px', fontWeight: 700 }}>
           حقائب قريبة الانتهاء (خلال 5 أيام)
         </h2>
       </div>
@@ -65,7 +65,7 @@ export default function NearExpiryTable({ bags }: NearExpiryTableProps) {
                       {bag.bloodType}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-600" style={{ fontSize: '12px' }}>
+                  <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '12px' }}>
                     {bag.expiryDate}
                   </td>
                   <td className="px-4 py-3">

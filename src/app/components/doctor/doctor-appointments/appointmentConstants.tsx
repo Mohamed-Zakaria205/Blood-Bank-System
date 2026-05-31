@@ -1,4 +1,4 @@
-// ── Shared constants and helpers for DoctorAppointments module ──
+﻿// ── Shared constants and helpers for DoctorAppointments module ──
 import React from 'react';
 import { Clock, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 import type { AppointmentSlotStatus } from '../../../types/appointment';
@@ -64,10 +64,10 @@ export const STATUS_CONFIG: Record<
   },
   completed: {
     label: 'مكتمل',
-    bg: 'bg-gray-50',
-    border: 'border-gray-200',
-    text: 'text-gray-600',
-    icon: <CheckCircle2 className="w-4 h-4 text-gray-400" />,
+    bg: 'bg-muted/40',
+    border: 'border-border',
+    text: 'text-muted-foreground',
+    icon: <CheckCircle2 className="w-4 h-4 text-muted-foreground" />,
   },
   missed: {
     label: 'لم يحضر',
@@ -85,9 +85,9 @@ export const STATUS_CONFIG: Record<
   },
   available: {
     label: 'متاح',
-    bg: 'bg-white',
-    border: 'border-dashed border-gray-200',
-    text: 'text-gray-400',
+    bg: 'bg-card',
+    border: 'border-dashed border-border',
+    text: 'text-muted-foreground',
     icon: <></>,
   },
 };

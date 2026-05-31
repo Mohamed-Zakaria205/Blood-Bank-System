@@ -7,6 +7,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { useChartTheme } from '../../../hooks/useChartTheme';
 
 interface MonthlyStats {
   month: string;
@@ -19,27 +20,29 @@ interface DonationTrendsChartProps {
 }
 
 export default function DonationTrendsChart({ data }: DonationTrendsChartProps) {
+  const chart = useChartTheme();
+
   return (
-    <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+    <div className="lg:col-span-2 bg-card rounded-2xl p-6 border border-border shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
+          <h2 className="text-foreground" style={{ fontSize: '16px', fontWeight: 700 }}>
             اتجاهات التبرع
           </h2>
-          <p className="text-gray-400" style={{ fontSize: '12px' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '12px' }}>
             عدد التبرعات والمتبرعين الجدد شهرياً
           </p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-green-600" />
-            <span className="text-gray-500" style={{ fontSize: '12px' }}>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: chart.primary }} />
+            <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
               تبرعات
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-blue-400" />
-            <span className="text-gray-500" style={{ fontSize: '12px' }}>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: chart.secondary }} />
+            <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
               متبرعون جدد
             </span>
           </div>
@@ -47,28 +50,30 @@ export default function DonationTrendsChart({ data }: DonationTrendsChartProps) 
       </div>
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={data}>
-          <CartesianGrid key="grid" strokeDasharray="3 3" stroke="#f0f0f0" />
+          <CartesianGrid key="grid" strokeDasharray="3 3" stroke={chart.gridStroke} />
           <XAxis
             key="x-axis"
             dataKey="month"
-            tick={{ fontSize: 11, fill: '#9CA3AF', fontFamily: 'Tajawal' }}
+            tick={{ fontSize: 11, fill: chart.tickFill, fontFamily: 'Tajawal' }}
           />
-          <YAxis key="y-axis" tick={{ fontSize: 11, fill: '#9CA3AF' }} />
+          <YAxis key="y-axis" tick={{ fontSize: 11, fill: chart.tickFill }} />
           <Tooltip
             key="tooltip"
             contentStyle={{
               fontFamily: 'Tajawal',
               borderRadius: '12px',
-              border: 'none',
+              border: `1px solid ${chart.tooltipBorder}`,
               boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
               fontSize: '13px',
+              backgroundColor: chart.tooltipBg,
+              color: chart.labelColor,
             }}
           />
           <Line
             key="line-donations"
             type="monotone"
             dataKey="donations"
-            stroke="#16a34a"
+            stroke={chart.primary}
             strokeWidth={2.5}
             dot={false}
             name="التبرعات"
@@ -77,7 +82,7 @@ export default function DonationTrendsChart({ data }: DonationTrendsChartProps) 
             key="line-newDonors"
             type="monotone"
             dataKey="newDonors"
-            stroke="#60a5fa"
+            stroke={chart.secondary}
             strokeWidth={2.5}
             dot={false}
             name="متبرعون جدد"

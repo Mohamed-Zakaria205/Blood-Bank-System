@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+﻿import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { Check, Smartphone } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -394,10 +394,10 @@ export default function DonationRegistrationForm() {
       <form onSubmit={handleFormSubmit} className="max-w-2xl mx-auto space-y-5">
         {/* Header */}
         <div>
-          <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+          <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
             تسجيل تبرع جديد
           </h1>
-          <p className="text-gray-500" style={{ fontSize: '14px' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
             أدخل البيانات الأساسية للمتبرع
           </p>
         </div>
@@ -418,12 +418,12 @@ export default function DonationRegistrationForm() {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-5">
+        <div className="bg-card rounded-2xl p-6 border border-border shadow-sm space-y-5">
           {/* ── Step Indicator ── */}
           <div className="flex items-center gap-3 pb-1">
             <div className="flex flex-col items-center gap-1.5">
               <div
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${step >= 1 ? 'bg-green-600' : 'bg-gray-200'}`}
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${step >= 1 ? 'bg-green-600' : 'bg-muted'}`}
               >
                 {step > 1 ? (
                   <Check className="w-4 h-4 text-white" />
@@ -434,7 +434,7 @@ export default function DonationRegistrationForm() {
                 )}
               </div>
               <span
-                className={`${step === 1 ? 'text-green-700' : 'text-gray-400'} text-center`}
+                className={`${step === 1 ? 'text-green-700' : 'text-muted-foreground'} text-center`}
                 style={{ fontSize: '11px', fontWeight: 600 }}
               >
                 البيانات
@@ -444,22 +444,22 @@ export default function DonationRegistrationForm() {
             </div>
             <div className="flex-1 mb-5">
               <div
-                className={`h-0.5 w-full transition-all ${step > 1 ? 'bg-green-500' : 'bg-gray-200'}`}
+                className={`h-0.5 w-full transition-all ${step > 1 ? 'bg-green-500' : 'bg-muted'}`}
               />
             </div>
             <div className="flex flex-col items-center gap-1.5">
               <div
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${step === 2 ? 'bg-green-600' : 'bg-gray-200'}`}
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${step === 2 ? 'bg-green-600' : 'bg-muted'}`}
               >
                 <span
-                  className={step === 2 ? 'text-white' : 'text-gray-400'}
+                  className={step === 2 ? 'text-white' : 'text-muted-foreground'}
                   style={{ fontSize: '13px', fontWeight: 800 }}
                 >
                   2
                 </span>
               </div>
               <span
-                className={`${step === 2 ? 'text-green-700' : 'text-gray-400'} text-center`}
+                className={`${step === 2 ? 'text-green-700' : 'text-muted-foreground'} text-center`}
                 style={{ fontSize: '11px', fontWeight: 600 }}
               >
                 البيانات
@@ -469,7 +469,7 @@ export default function DonationRegistrationForm() {
             </div>
           </div>
 
-          <div className="border-t border-gray-100" />
+          <div className="border-t border-border" />
 
           {/* ── Step Content ── */}
           {step === 1 && (
@@ -481,7 +481,7 @@ export default function DonationRegistrationForm() {
                   value={searchId}
                   onChange={(e) => setSearchId(e.target.value.replace(/\D/g, '').slice(0, 14))}
                   placeholder="ابحث بالرقم القومي (14 رقم)"
-                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                  className="flex-1 px-4 py-3 border border-border rounded-xl bg-muted/40 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
                   dir="ltr"
                 />
                 <button
@@ -495,7 +495,7 @@ export default function DonationRegistrationForm() {
                 </button>
               </div>
 
-              <div className="border-t border-gray-100 mb-4" />
+              <div className="border-t border-border mb-4" />
 
               <StepOne
                 form={form}
@@ -529,7 +529,7 @@ export default function DonationRegistrationForm() {
           <button
             type="button"
             onClick={() => navigate('/doctor/donations')}
-            className="flex-1 py-3.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
+            className="flex-1 py-3.5 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
             إلغاء

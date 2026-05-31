@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import {
   Search,
   Check,
@@ -41,7 +41,7 @@ export default function InventoryBags() {
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={5} cols={6} />
       </div>
@@ -127,10 +127,10 @@ export default function InventoryBags() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+        <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
           حقائب الدم
         </h1>
-        <p className="text-gray-500" style={{ fontSize: '14px' }}>
+        <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
           جرد شامل لجميع الحقائب المخزنة
         </p>
       </div>
@@ -215,19 +215,19 @@ export default function InventoryBags() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="بحث بكود الحقيبة أو الفصيلة..."
-            className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
+            className="w-full pr-9 pl-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400"
             style={{ fontSize: '13px' }}
           />
         </div>
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value as BloodType | 'all')}
-          className="px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
+          className="px-4 py-2.5 border border-border rounded-xl bg-card text-foreground outline-none"
           style={{ fontSize: '13px' }}
         >
           <option value="all">كل الفصائل</option>
@@ -240,11 +240,11 @@ export default function InventoryBags() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-muted/40">
                 <th className="px-4 py-3" style={{ width: '44px' }} />
                 {[
                   'كود الحقيبة',
@@ -257,7 +257,7 @@ export default function InventoryBags() {
                 ].map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-right text-gray-500"
+                    className="px-4 py-3 text-right text-muted-foreground"
                     style={{ fontSize: '12px', fontWeight: 600 }}
                   >
                     {h}
@@ -265,7 +265,7 @@ export default function InventoryBags() {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border">
               {displayBags.map((bag) => {
                 const { label, cls, isExpired, isAvailable } = getBagStatus(bag);
                 const days = daysUntil(bag.expiryDate);
@@ -274,7 +274,7 @@ export default function InventoryBags() {
                 return (
                   <tr
                     key={bag.id}
-                    className={`hover:bg-gray-50 transition-colors
+                    className={`hover:bg-muted/40 transition-colors
                       ${isExpired ? 'bg-red-50/30' : ''}
                       ${isSelected ? 'bg-green-50/60' : ''}`}
                   >
@@ -287,7 +287,7 @@ export default function InventoryBags() {
                             ${
                               isSelected
                                 ? 'bg-green-600 border-green-600'
-                                : 'border-gray-300 hover:border-green-400'
+                                : 'border-border hover:border-green-400'
                             }`}
                         >
                           {isSelected && <Check className="w-3 h-3 text-white" />}
@@ -317,15 +317,15 @@ export default function InventoryBags() {
                         {bag.bloodType}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-600" style={{ fontSize: '12px' }}>
+                    <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '12px' }}>
                       {donTypeLabels[bag.donationType]}
                     </td>
-                    <td className="px-4 py-3 text-gray-600" style={{ fontSize: '12px' }}>
+                    <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '12px' }}>
                       {bag.collectedDate}
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`${isExpired ? 'text-red-600' : isNear ? 'text-orange-500' : 'text-gray-600'}`}
+                        className={`${isExpired ? 'text-red-600' : isNear ? 'text-orange-500' : 'text-muted-foreground'}`}
                         style={{
                           fontSize: '12px',
                           fontWeight: isExpired || isNear ? 700 : 400,

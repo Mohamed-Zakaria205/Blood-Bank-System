@@ -1,4 +1,4 @@
-import {
+﻿import {
   Droplets,
   Activity,
   FlaskConical,
@@ -39,12 +39,12 @@ export default function StepTwo({
       {/* Blood Type — optional */}
       <div>
         <label
-          className="block text-gray-700 mb-2"
+          className="block text-foreground mb-2"
           style={{ fontSize: '13px', fontWeight: 600 }}
         >
           <Droplets className="w-4 h-4 inline ml-1 text-red-500" />
           فصيلة الدم{' '}
-          <span className="text-gray-400" style={{ fontWeight: 400 }}>
+          <span className="text-muted-foreground" style={{ fontWeight: 400 }}>
             (اختياري)
           </span>
         </label>
@@ -54,7 +54,7 @@ export default function StepTwo({
               key={t}
               type="button"
               onClick={() => updateField('bloodType', form.bloodType === t ? '' : t)}
-              className={`py-3 rounded-xl border-2 transition-all ${form.bloodType === t ? 'border-red-500 bg-red-50 text-red-600' : 'border-gray-200 text-gray-600 hover:border-red-200'}`}
+              className={`py-3 rounded-xl border-2 transition-all ${form.bloodType === t ? 'border-red-500 bg-red-50 text-red-600' : 'border-border text-muted-foreground hover:border-red-200'}`}
               style={{
                 fontSize: '15px',
                 fontWeight: form.bloodType === t ? 800 : 500,
@@ -69,7 +69,7 @@ export default function StepTwo({
       {/* Donation Type */}
       <div>
         <label
-          className="block text-gray-700 mb-2"
+          className="block text-foreground mb-2"
           style={{ fontSize: '13px', fontWeight: 600 }}
         >
           نوع التبرع
@@ -84,11 +84,11 @@ export default function StepTwo({
               key={v}
               type="button"
               onClick={() => updateField('donationType', v)}
-              className={`py-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1 ${form.donationType === v ? 'border-green-600 bg-green-50' : 'border-gray-200 hover:border-green-200'}`}
+              className={`py-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1 ${form.donationType === v ? 'border-green-600 bg-green-50' : 'border-border hover:border-green-200'}`}
             >
               <span style={{ fontSize: '20px' }}>{e}</span>
               <span
-                className={form.donationType === v ? 'text-green-700' : 'text-gray-600'}
+                className={form.donationType === v ? 'text-green-700' : 'text-muted-foreground'}
                 style={{
                   fontSize: '12px',
                   fontWeight: form.donationType === v ? 700 : 500,
@@ -101,17 +101,17 @@ export default function StepTwo({
         </div>
       </div>
 
-      <div className="border-t border-gray-100" />
+      <div className="border-t border-border" />
 
       {/* ── Medical Screening ── */}
       <div>
         <p
-          className="text-gray-700 mb-3 flex items-center gap-2"
+          className="text-foreground mb-3 flex items-center gap-2"
           style={{ fontSize: '13px', fontWeight: 700 }}
         >
           <FlaskConical className="w-4 h-4 text-blue-500" />
           الفحص الطبي{' '}
-          <span className="text-gray-400" style={{ fontWeight: 400 }}>
+          <span className="text-muted-foreground" style={{ fontWeight: 400 }}>
             (اختياري)
           </span>
         </p>
@@ -120,7 +120,7 @@ export default function StepTwo({
         <div className="grid grid-cols-3 gap-3 mb-3">
           <div>
             <label
-              className="text-gray-600 mb-1.5 flex items-center gap-1"
+              className="text-muted-foreground mb-1.5 flex items-center gap-1"
               style={{ fontSize: '12px', fontWeight: 600 }}
             >
               <Scale className="w-3.5 h-3.5 text-blue-500" /> الوزن (كغ)
@@ -129,8 +129,8 @@ export default function StepTwo({
               type="number"
               {...register('weight')}
               placeholder="مثال: 75"
-              className={`w-full px-3 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:ring-2 ${
-                errors.weight ? 'border-red-400 focus:ring-red-100' : 'border-gray-200 focus:border-blue-400 focus:ring-blue-100'
+              className={`w-full px-3 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:ring-2 ${
+                errors.weight ? 'border-red-400 focus:ring-red-100' : 'border-border focus:border-blue-400 focus:ring-blue-100'
               }`}
               style={{ fontSize: '13px' }}
               dir="ltr"
@@ -139,7 +139,7 @@ export default function StepTwo({
           </div>
           <div>
             <label
-              className="text-gray-600 mb-1.5 flex items-center gap-1"
+              className="text-muted-foreground mb-1.5 flex items-center gap-1"
               style={{ fontSize: '12px', fontWeight: 600 }}
             >
               <Heart className="w-3.5 h-3.5 text-red-500" /> ضغط الدم
@@ -147,8 +147,8 @@ export default function StepTwo({
             <input
               {...register('bloodPressure')}
               placeholder="120/80"
-              className={`w-full px-3 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:ring-2 ${
-                errors.bloodPressure ? 'border-red-400 focus:ring-red-100' : 'border-gray-200 focus:border-red-400 focus:ring-red-100'
+              className={`w-full px-3 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:ring-2 ${
+                errors.bloodPressure ? 'border-red-400 focus:ring-red-100' : 'border-border focus:border-red-400 focus:ring-red-100'
               }`}
               style={{ fontSize: '13px' }}
               dir="ltr"
@@ -157,7 +157,7 @@ export default function StepTwo({
           </div>
           <div>
             <label
-              className="text-gray-600 mb-1.5 flex items-center gap-1"
+              className="text-muted-foreground mb-1.5 flex items-center gap-1"
               style={{ fontSize: '12px', fontWeight: 600 }}
             >
               <Droplets className="w-3.5 h-3.5 text-purple-500" /> الهيموجلوبين
@@ -167,8 +167,8 @@ export default function StepTwo({
               {...register('hemoglobin')}
               placeholder="مثال: 13.5"
               step="0.1"
-              className={`w-full px-3 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:ring-2 ${
-                errors.hemoglobin ? 'border-red-400 focus:ring-red-100' : 'border-gray-200 focus:border-purple-400 focus:ring-purple-100'
+              className={`w-full px-3 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:ring-2 ${
+                errors.hemoglobin ? 'border-red-400 focus:ring-red-100' : 'border-border focus:border-purple-400 focus:ring-purple-100'
               }`}
               style={{ fontSize: '13px' }}
               dir="ltr"
@@ -181,40 +181,40 @@ export default function StepTwo({
         <button
           type="button"
           onClick={() => updateField('isAllergic', !form.isAllergic)}
-          className={`w-full flex items-center justify-between p-3.5 rounded-xl border-2 transition-all ${form.isAllergic ? 'border-orange-400 bg-orange-50' : 'border-gray-200 hover:border-orange-200'}`}
+          className={`w-full flex items-center justify-between p-3.5 rounded-xl border-2 transition-all ${form.isAllergic ? 'border-orange-400 bg-orange-50' : 'border-border hover:border-orange-200'}`}
         >
           <div className="flex items-center gap-2">
             <AlertTriangle
-              className={`w-4 h-4 ${form.isAllergic ? 'text-orange-500' : 'text-gray-400'}`}
+              className={`w-4 h-4 ${form.isAllergic ? 'text-orange-500' : 'text-muted-foreground'}`}
             />
             <span
-              className={form.isAllergic ? 'text-orange-700' : 'text-gray-600'}
+              className={form.isAllergic ? 'text-orange-700' : 'text-muted-foreground'}
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
               لديه حساسية (IsAllergic)
             </span>
           </div>
           <div
-            className={`w-10 h-5 rounded-full transition-all relative ${form.isAllergic ? 'bg-orange-500' : 'bg-gray-200'}`}
+            className={`w-10 h-5 rounded-full transition-all relative ${form.isAllergic ? 'bg-orange-500' : 'bg-muted'}`}
           >
             <div
-              className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${form.isAllergic ? 'left-5' : 'left-0.5'}`}
+              className={`absolute top-0.5 w-4 h-4 bg-card rounded-full shadow transition-all ${form.isAllergic ? 'left-5' : 'left-0.5'}`}
             />
           </div>
         </button>
       </div>
 
-      <div className="border-t border-gray-100" />
+      <div className="border-t border-border" />
 
       {/* Chronic Diseases */}
       <div>
         <label
-          className="block text-gray-700 mb-2"
+          className="block text-foreground mb-2"
           style={{ fontSize: '13px', fontWeight: 600 }}
         >
           <Activity className="w-4 h-4 inline ml-1 text-orange-500" />
           الأمراض المزمنة{' '}
-          <span className="text-gray-400" style={{ fontWeight: 400 }}>
+          <span className="text-muted-foreground" style={{ fontWeight: 400 }}>
             (اختياري — اضغط للتحديد)
           </span>
         </label>
@@ -227,7 +227,7 @@ export default function StepTwo({
               className={`px-3 py-1.5 rounded-full border-2 transition-all ${
                 form.diseases.includes(d.id)
                   ? 'border-red-400 bg-red-50 text-red-700'
-                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                  : 'border-border text-muted-foreground hover:border-border'
               }`}
               style={{
                 fontSize: '12px',
@@ -251,12 +251,12 @@ export default function StepTwo({
         )}
       </div>
 
-      <div className="border-t border-gray-100" />
+      <div className="border-t border-border" />
 
       {/* Donor Status */}
       <div>
         <label
-          className="block text-gray-700 mb-2"
+          className="block text-foreground mb-2"
           style={{ fontSize: '13px', fontWeight: 600 }}
         >
           حالة المتبرع *
@@ -265,23 +265,23 @@ export default function StepTwo({
           <button
             type="button"
             onClick={() => updateField('status', 'eligible')}
-            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${form.status === 'eligible' ? 'border-green-600 bg-green-50' : 'border-gray-200 hover:border-green-200'}`}
+            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${form.status === 'eligible' ? 'border-green-600 bg-green-50' : 'border-border hover:border-green-200'}`}
           >
             <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${form.status === 'eligible' ? 'bg-green-600' : 'bg-gray-100'}`}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${form.status === 'eligible' ? 'bg-green-600' : 'bg-muted'}`}
             >
               <UserCheck
-                className={`w-4 h-4 ${form.status === 'eligible' ? 'text-white' : 'text-gray-400'}`}
+                className={`w-4 h-4 ${form.status === 'eligible' ? 'text-white' : 'text-muted-foreground'}`}
               />
             </div>
             <div className="text-right">
               <p
-                className={form.status === 'eligible' ? 'text-green-700' : 'text-gray-700'}
+                className={form.status === 'eligible' ? 'text-green-700' : 'text-foreground'}
                 style={{ fontSize: '12px', fontWeight: 700 }}
               >
                 مؤهل ✅
               </p>
-              <p className="text-gray-400" style={{ fontSize: '10px' }}>
+              <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
                 يمكنه التبرع
               </p>
             </div>
@@ -289,23 +289,23 @@ export default function StepTwo({
           <button
             type="button"
             onClick={() => updateField('status', 'deferred')}
-            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${form.status === 'deferred' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-orange-200'}`}
+            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${form.status === 'deferred' ? 'border-orange-500 bg-orange-50' : 'border-border hover:border-orange-200'}`}
           >
             <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${form.status === 'deferred' ? 'bg-orange-500' : 'bg-gray-100'}`}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${form.status === 'deferred' ? 'bg-orange-500' : 'bg-muted'}`}
             >
               <Clock
-                className={`w-4 h-4 ${form.status === 'deferred' ? 'text-white' : 'text-gray-400'}`}
+                className={`w-4 h-4 ${form.status === 'deferred' ? 'text-white' : 'text-muted-foreground'}`}
               />
             </div>
             <div className="text-right">
               <p
-                className={form.status === 'deferred' ? 'text-orange-700' : 'text-gray-700'}
+                className={form.status === 'deferred' ? 'text-orange-700' : 'text-foreground'}
                 style={{ fontSize: '12px', fontWeight: 700 }}
               >
                 موجل ⏳
               </p>
-              <p className="text-gray-400" style={{ fontSize: '10px' }}>
+              <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
                 تأجيل مؤقت
               </p>
             </div>
@@ -313,23 +313,23 @@ export default function StepTwo({
           <button
             type="button"
             onClick={() => updateField('status', 'ineligible')}
-            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${form.status === 'ineligible' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-red-200'}`}
+            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${form.status === 'ineligible' ? 'border-red-500 bg-red-50' : 'border-border hover:border-red-200'}`}
           >
             <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${form.status === 'ineligible' ? 'bg-red-500' : 'bg-gray-100'}`}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${form.status === 'ineligible' ? 'bg-red-500' : 'bg-muted'}`}
             >
               <UserX
-                className={`w-4 h-4 ${form.status === 'ineligible' ? 'text-white' : 'text-gray-400'}`}
+                className={`w-4 h-4 ${form.status === 'ineligible' ? 'text-white' : 'text-muted-foreground'}`}
               />
             </div>
             <div className="text-right">
               <p
-                className={form.status === 'ineligible' ? 'text-red-700' : 'text-gray-700'}
+                className={form.status === 'ineligible' ? 'text-red-700' : 'text-foreground'}
                 style={{ fontSize: '12px', fontWeight: 700 }}
               >
                 غير مؤهل ❌
               </p>
-              <p className="text-gray-400" style={{ fontSize: '10px' }}>
+              <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
                 لا يمكنه التبرع
               </p>
             </div>
@@ -351,7 +351,7 @@ export default function StepTwo({
                 {...register('rejectionReason')}
                 placeholder="اذكر سبب تأجيل التبرع..."
                 rows={2}
-                className="w-full px-3 py-2.5 border border-orange-200 rounded-xl bg-white text-gray-900 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 resize-none"
+                className="w-full px-3 py-2.5 border border-orange-200 rounded-xl bg-card text-foreground outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 resize-none"
                 style={{ fontSize: '13px' }}
               />
             </div>
@@ -366,7 +366,7 @@ export default function StepTwo({
               <input
                 type="date"
                 {...register('deferredUntil')}
-                className="w-full px-3 py-2.5 border border-orange-200 rounded-xl bg-white text-gray-900 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                className="w-full px-3 py-2.5 border border-orange-200 rounded-xl bg-card text-foreground outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                 style={{ fontSize: '13px' }}
                 dir="ltr"
               />
@@ -389,7 +389,7 @@ export default function StepTwo({
                 {...register('rejectionReason')}
                 placeholder="اذكر سبب رفض التبرع..."
                 rows={2}
-                className="w-full px-3 py-2.5 border border-red-200 rounded-xl bg-white text-gray-900 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 resize-none"
+                className="w-full px-3 py-2.5 border border-red-200 rounded-xl bg-card text-foreground outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 resize-none"
                 style={{ fontSize: '13px' }}
               />
               {errors.rejectionReason?.message && (
@@ -404,11 +404,11 @@ export default function StepTwo({
       </div>
 
       {/* Step 2 navigation */}
-      <div className="border-t border-gray-100 pt-2 flex gap-3">
+      <div className="border-t border-border pt-2 flex gap-3">
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center justify-center gap-2 px-5 py-3.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
+          className="flex items-center justify-center gap-2 px-5 py-3.5 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
           style={{ fontSize: '14px', fontWeight: 600 }}
         >
           <ChevronRight className="w-5 h-5" /> رجوع

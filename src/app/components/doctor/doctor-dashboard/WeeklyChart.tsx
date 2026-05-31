@@ -47,23 +47,22 @@ export default function WeeklyChart({ donations }: WeeklyChartProps) {
   const avgPerDay = Math.round(total / weekData.length);
 
   return (
-    <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="lg:col-span-2 bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
       {/* Card header */}
-      <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-50">
+      <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-border">
         <div>
-          <h2 className="text-gray-900" style={{ fontSize: '15px', fontWeight: 700 }}>
+          <h2 className="text-foreground" style={{ fontSize: '15px', fontWeight: 700 }}>
             المتبرعون هذا الأسبوع
           </h2>
-          <p className="text-gray-400 mt-0.5" style={{ fontSize: '11px' }}>
+          <p className="text-muted-foreground mt-0.5" style={{ fontSize: '11px' }}>
             إجمالي {total} متبرع — المعدل اليومي {avgPerDay}
           </p>
         </div>
         <div
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border"
-          style={{ background: '#f0fdf4', borderColor: '#bbf7d0' }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-green-200 bg-green-50"
         >
-          <TrendingUp className="w-3.5 h-3.5" style={{ color: '#16a34a' }} />
-          <span style={{ fontSize: '12px', fontWeight: 700, color: '#15803d' }}>
+          <TrendingUp className="w-3.5 h-3.5 text-green-600" />
+          <span className="text-green-700" style={{ fontSize: '12px', fontWeight: 700 }}>
             هذا الأسبوع
           </span>
         </div>
@@ -80,12 +79,12 @@ export default function WeeklyChart({ donations }: WeeklyChartProps) {
               style={{ bottom: `${(v / maxVal) * 140 + 24}px` }}
             >
               <span
-                className="text-gray-300 flex-shrink-0 text-right"
+                className="text-muted-foreground/50 flex-shrink-0 text-right"
                 style={{ fontSize: '9px', fontWeight: 600, width: '14px' }}
               >
                 {v}
               </span>
-              <div className="flex-1 border-t border-dashed border-gray-100" />
+              <div className="flex-1 border-t border-dashed border-border" />
             </div>
           ))}
 
@@ -102,7 +101,7 @@ export default function WeeklyChart({ donations }: WeeklyChartProps) {
                     className={`px-1.5 py-0.5 rounded-md transition-all ${
                       isToday
                         ? 'bg-green-600 text-white'
-                        : 'bg-gray-100 text-gray-500 group-hover:bg-green-50 group-hover:text-green-700'
+                        : 'bg-muted text-muted-foreground group-hover:bg-green-50 group-hover:text-green-700'
                     }`}
                     style={{ fontSize: '11px', fontWeight: 700, lineHeight: '1.4' }}
                   >
@@ -117,14 +116,14 @@ export default function WeeklyChart({ donations }: WeeklyChartProps) {
                         ? 'linear-gradient(180deg, #15803d 0%, #22c55e 100%)'
                         : d.donors > 0
                         ? 'linear-gradient(180deg, #86efac 0%, #bbf7d0 100%)'
-                        : '#f3f4f6',
+                        : 'var(--muted)',
                       boxShadow: isToday ? '0 4px 12px rgba(34,197,94,0.30)' : undefined,
                     }}
                   />
                   {/* Day name */}
                   <div className="flex flex-col items-center gap-0.5">
                     <span
-                      className={isToday ? 'text-green-700' : 'text-gray-400'}
+                      className={isToday ? 'text-green-700' : 'text-muted-foreground'}
                       style={{ fontSize: '10px', fontWeight: isToday ? 700 : 500 }}
                     >
                       {d.day.slice(0, 3)}
@@ -138,29 +137,29 @@ export default function WeeklyChart({ donations }: WeeklyChartProps) {
         </div>
 
         {/* Legend + footer */}
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
+        <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
               <div
                 className="w-3 h-3 rounded"
                 style={{ background: 'linear-gradient(180deg, #15803d, #22c55e)' }}
               />
-              <span className="text-gray-500" style={{ fontSize: '11px' }}>
+              <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
                 اليوم الحالي
               </span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-green-100 border border-green-200" />
-              <span className="text-gray-500" style={{ fontSize: '11px' }}>
+              <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
                 أيام الأسبوع
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gray-50">
-            <Users className="w-3.5 h-3.5 text-gray-400" />
-            <span className="text-gray-500" style={{ fontSize: '11px' }}>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/40">
+            <Users className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
               الأعلى:{' '}
-              <span style={{ fontWeight: 700, color: '#374151' }}>
+              <span className="text-foreground" style={{ fontWeight: 700 }}>
                 {maxVal} متبرع
               </span>
             </span>

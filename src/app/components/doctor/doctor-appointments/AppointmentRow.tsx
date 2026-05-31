@@ -1,4 +1,4 @@
-import { XCircle, UserPlus, AlertTriangle } from 'lucide-react';
+﻿import { XCircle, UserPlus, AlertTriangle } from 'lucide-react';
 import type { AppointmentSlot } from '../../../types';
 import {
   STATUS_CONFIG,
@@ -22,9 +22,9 @@ export default function AppointmentRow({
   const status = slot.status;
   const cfg = STATUS_CONFIG[status] || {
     label: status || 'غير معروف',
-    bg: 'bg-gray-100',
-    border: 'border-gray-300',
-    text: 'text-gray-500',
+    bg: 'bg-muted',
+    border: 'border-border',
+    text: 'text-muted-foreground',
     icon: <></>,
   };
 
@@ -35,7 +35,7 @@ export default function AppointmentRow({
       {/* Time */}
       <div className="flex-shrink-0 w-16 text-center">
         <span
-          className="text-gray-700 font-mono"
+          className="text-foreground font-mono"
           style={{ fontSize: '14px', fontWeight: 700 }}
           dir="ltr"
         >
@@ -44,10 +44,10 @@ export default function AppointmentRow({
       </div>
       {/* Donor */}
       <div className="flex-1 min-w-0">
-        <p className="text-gray-900 truncate" style={{ fontSize: '13px', fontWeight: 600 }}>
+        <p className="text-foreground truncate" style={{ fontSize: '13px', fontWeight: 600 }}>
           {slot.donorName || '—'}
         </p>
-        <p className="text-gray-400 font-mono" style={{ fontSize: '11px' }}>
+        <p className="text-muted-foreground font-mono" style={{ fontSize: '11px' }}>
           {slot.donorNationalId?.slice(0, 8)}...
         </p>
       </div>

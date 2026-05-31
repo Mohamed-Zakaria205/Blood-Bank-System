@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Lock, Check } from 'lucide-react';
 import { useChangePassword } from '../../../hooks/useAuth';
 
@@ -55,8 +55,8 @@ export default function SecurityTab() {
   ] as const;
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-      <h2 className="text-gray-900 mb-6" style={{ fontSize: '18px', fontWeight: 700 }}>
+    <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+      <h2 className="text-foreground mb-6" style={{ fontSize: '18px', fontWeight: 700 }}>
         تغيير كلمة المرور
       </h2>
 
@@ -91,7 +91,7 @@ export default function SecurityTab() {
         {passwordFields.map((f) => (
           <div key={f.key}>
             <label
-              className="block text-gray-700 mb-1.5"
+              className="block text-foreground mb-1.5"
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
               {f.label}
@@ -101,7 +101,7 @@ export default function SecurityTab() {
               value={passwords[f.key]}
               onChange={(e) => setPasswords((p) => ({ ...p, [f.key]: e.target.value }))}
               disabled={changePasswordMutation.isPending}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 disabled:opacity-60"
+              className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 disabled:opacity-60"
               style={{ fontSize: '13px' }}
             />
           </div>

@@ -1,4 +1,4 @@
-// ── Shared types and constants for InventoryBags module ──
+﻿// ── Shared types and constants for InventoryBags module ──
 import type { BloodBag } from '../../../types';
 
 export const TODAY = new Date('2025-04-29');
@@ -54,7 +54,7 @@ export function getBagStatus(bag: BloodBag) {
     };
   return {
     label: bag.status,
-    cls: 'bg-gray-100 text-gray-500',
+    cls: 'bg-muted text-muted-foreground',
     isExpired: false,
     isAvailable: false,
   };

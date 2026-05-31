@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import {
   Search,
   Upload,
@@ -34,7 +34,7 @@ export default function InventoryHistory() {
   if (isLoadingBags || isLoadingOutflow)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={5} cols={6} />
       </div>
@@ -78,15 +78,15 @@ export default function InventoryHistory() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+          <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
             سجل الصادر
           </h1>
-          <p className="text-gray-500" style={{ fontSize: '14px' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
             {outflowRecords.length} عملية مسجلة (تصدير + إتلاف)
           </p>
         </div>
         <button
-          className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
+          className="flex items-center gap-2 px-4 py-2.5 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
           style={{ fontSize: '13px', fontWeight: 600 }}
         >
           <Download className="w-4 h-4" /> تصدير التقرير
@@ -143,12 +143,12 @@ export default function InventoryHistory() {
       </div>
 
       {/* Ratio bar */}
-      <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+      <div className="bg-card rounded-2xl p-5 border border-border shadow-sm">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-gray-700" style={{ fontSize: '14px', fontWeight: 700 }}>
+          <span className="text-foreground" style={{ fontSize: '14px', fontWeight: 700 }}>
             نسبة التوزيع الكلي
           </span>
-          <span className="text-gray-500" style={{ fontSize: '12px' }}>
+          <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
             إجمالي: {total} حقيبة
           </span>
         </div>
@@ -183,7 +183,7 @@ export default function InventoryHistory() {
           ].map((l) => (
             <div key={l.label} className="flex items-center gap-1.5">
               <div className={`w-2.5 h-2.5 rounded-full ${l.color}`} />
-              <span className="text-gray-500" style={{ fontSize: '11px' }}>
+              <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
                 {l.label}
               </span>
             </div>
@@ -195,19 +195,19 @@ export default function InventoryHistory() {
       <div className="space-y-3">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="بحث بكود الحقيبة أو الفصيلة أو المستلم..."
-              className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
+              className="w-full pr-9 pl-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400"
               style={{ fontSize: '13px' }}
             />
           </div>
           <select
             value={filterBloodType}
             onChange={(e) => setFilterBloodType(e.target.value as BloodType | 'all')}
-            className="px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
+            className="px-4 py-2.5 border border-border rounded-xl bg-card text-foreground outline-none"
             style={{ fontSize: '13px' }}
           >
             <option value="all">كل الفصائل</option>
@@ -230,7 +230,7 @@ export default function InventoryHistory() {
             <button
               key={val}
               onClick={() => setFilterAction(val)}
-              className={`px-4 py-2 rounded-xl transition-all ${filterAction === val ? 'bg-green-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+              className={`px-4 py-2 rounded-xl transition-all ${filterAction === val ? 'bg-green-600 text-white' : 'bg-card border border-border text-muted-foreground hover:bg-muted/40'}`}
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
               {label}
@@ -240,7 +240,7 @@ export default function InventoryHistory() {
             <select
               value={filterController}
               onChange={(e) => setFilterController(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
+              className="px-3 py-2 border border-border rounded-xl bg-card text-foreground outline-none"
               style={{ fontSize: '13px' }}
             >
               <option value="">كل المنفذين</option>
@@ -259,7 +259,7 @@ export default function InventoryHistory() {
                 setFilterBloodType('all');
                 setSearch('');
               }}
-              className="px-3 py-2 text-gray-400 hover:text-red-500 hover:bg-red-50 border border-gray-200 rounded-xl transition-all"
+              className="px-3 py-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 border border-border rounded-xl transition-all"
               style={{ fontSize: '12px', fontWeight: 600 }}
             >
               × مسح الفلاتر
@@ -269,15 +269,15 @@ export default function InventoryHistory() {
       </div>
 
       {/* History Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-muted/40">
                 {historyTableHeaders.map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-right text-gray-500 whitespace-nowrap"
+                    className="px-4 py-3 text-right text-muted-foreground whitespace-nowrap"
                     style={{ fontSize: '11px', fontWeight: 600 }}
                   >
                     {h}
@@ -285,9 +285,9 @@ export default function InventoryHistory() {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border">
               {filtered.map((r) => (
-                <tr key={r.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={r.id} className="hover:bg-muted/40 transition-colors">
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
                       className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded"
@@ -298,7 +298,7 @@ export default function InventoryHistory() {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
-                      className="font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded"
+                      className="font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded"
                       style={{ fontSize: '11px' }}
                     >
                       {r.bagCode}
@@ -329,19 +329,19 @@ export default function InventoryHistory() {
                     </span>
                   </td>
                   <td
-                    className="px-4 py-3 text-gray-700 whitespace-nowrap"
+                    className="px-4 py-3 text-foreground whitespace-nowrap"
                     style={{ fontSize: '12px', fontWeight: 500 }}
                   >
                     {r.recipientName ?? '—'}
                   </td>
                   <td
-                    className="px-4 py-3 text-gray-600 whitespace-nowrap"
+                    className="px-4 py-3 text-muted-foreground whitespace-nowrap"
                     style={{ fontSize: '11px' }}
                   >
                     {(r.performedByName || '').split(' ').slice(1, 3).join(' ')}
                   </td>
                   <td
-                    className="px-4 py-3 text-gray-400 whitespace-nowrap"
+                    className="px-4 py-3 text-muted-foreground whitespace-nowrap"
                     style={{ fontSize: '11px' }}
                   >
                     {r.timestamp}
@@ -349,7 +349,7 @@ export default function InventoryHistory() {
                   <td className="px-4 py-3">
                     <button
                       onClick={() => setDetailRecord(r)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-all"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-muted text-muted-foreground rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-all"
                       style={{ fontSize: '11px', fontWeight: 600 }}
                     >
                       <Eye className="w-3.5 h-3.5" /> عرض

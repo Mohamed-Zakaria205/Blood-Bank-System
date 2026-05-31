@@ -1,4 +1,4 @@
-import { Search, Trash2, Package, Check, X } from 'lucide-react';
+﻿import { Search, Trash2, Package, Check, X } from 'lucide-react';
 import type { BloodBag } from '../../../types';
 import {
   DISPOSAL_REASONS,
@@ -41,20 +41,20 @@ export default function DisposalForm({
   onOpenConfirm,
 }: DisposalFormProps) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
       {/* Form header */}
       <div
-        className="flex items-center gap-3 px-6 py-4 border-b border-gray-100"
+        className="flex items-center gap-3 px-6 py-4 border-b border-border"
         style={{ background: 'linear-gradient(to left, #fff7f7, #fff)' }}
       >
         <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
           <Trash2 className="w-5 h-5 text-red-600" />
         </div>
         <div>
-          <h2 className="text-gray-900" style={{ fontSize: '15px', fontWeight: 700 }}>
+          <h2 className="text-foreground" style={{ fontSize: '15px', fontWeight: 700 }}>
             تسجيل إتلاف جديد
           </h2>
-          <p className="text-gray-500" style={{ fontSize: '11px' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
             حدد الحقيبة (أو أكثر) وأدخل تفاصيل الإتلاف
           </p>
         </div>
@@ -64,7 +64,7 @@ export default function DisposalForm({
         {/* ── Bag selection ── */}
         <div>
           <label
-            className="block text-gray-700 mb-2"
+            className="block text-foreground mb-2"
             style={{ fontSize: '13px', fontWeight: 600 }}
           >
             تحديد الحقيبة / الحقائب <span className="text-red-500">*</span>
@@ -72,45 +72,45 @@ export default function DisposalForm({
 
           {/* Search */}
           <div className="relative mb-3">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               value={bagSearch}
               onChange={(e) => onBagSearchChange(e.target.value)}
               placeholder="بحث بكود الحقيبة أو فصيلة الدم..."
-              className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-red-300"
+              className="w-full pr-9 pl-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-red-300"
               style={{ fontSize: '13px' }}
             />
           </div>
 
           {/* Bag table */}
           <div
-            className="border border-gray-100 rounded-xl overflow-hidden"
+            className="border border-border rounded-xl overflow-hidden"
             style={{ maxHeight: '220px', overflowY: 'auto' }}
           >
             {candidateBags.length === 0 ? (
               <div className="py-10 text-center">
-                <Package className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-400" style={{ fontSize: '13px' }}>
+                <Package className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
+                <p className="text-muted-foreground" style={{ fontSize: '13px' }}>
                   لا توجد حقائب مطابقة للبحث
                 </p>
               </div>
             ) : (
               <table className="w-full">
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-border">
                   {candidateBags.map((bag) => {
                     const isSelected = selectedBagIds.includes(bag.id);
                     return (
                       <tr
                         key={bag.id}
                         onClick={() => onToggleSelect(bag.id)}
-                        className={`cursor-pointer transition-colors hover:bg-gray-50 ${isSelected ? 'bg-red-50/70' : ''}`}
+                        className={`cursor-pointer transition-colors hover:bg-muted/40 ${isSelected ? 'bg-red-50/70' : ''}`}
                       >
                         <td className="px-3 py-2.5 w-10">
                           <div
                             className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                               isSelected
                                 ? 'bg-red-600 border-red-600'
-                                : 'border-gray-300 hover:border-red-400'
+                                : 'border-border hover:border-red-400'
                             }`}
                           >
                             {isSelected && <Check className="w-3 h-3 text-white" />}
@@ -132,13 +132,13 @@ export default function DisposalForm({
                             {bag.bloodType}
                           </span>
                         </td>
-                        <td className="px-3 py-2.5 text-gray-400" style={{ fontSize: '11px' }}>
+                        <td className="px-3 py-2.5 text-muted-foreground" style={{ fontSize: '11px' }}>
                           {donTypeLabels[bag.donationType]}
                         </td>
                         <td className="px-3 py-2.5">
                           <BagStatusChip bag={bag} />
                         </td>
-                        <td className="px-3 py-2.5 text-gray-400" style={{ fontSize: '10px' }}>
+                        <td className="px-3 py-2.5 text-muted-foreground" style={{ fontSize: '10px' }}>
                           {bag.expiryDate}
                         </td>
                       </tr>
@@ -190,7 +190,7 @@ export default function DisposalForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label
-              className="block text-gray-700 mb-1.5"
+              className="block text-foreground mb-1.5"
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
               سبب الإتلاف <span className="text-red-500">*</span>
@@ -198,7 +198,7 @@ export default function DisposalForm({
             <select
               value={category}
               onChange={(e) => onCategoryChange(e.target.value)}
-              className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-red-300 ${formErrors.category ? 'border-red-300' : 'border-gray-200'}`}
+              className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-red-300 ${formErrors.category ? 'border-red-300' : 'border-border'}`}
               style={{ fontSize: '13px' }}
             >
               <option value="">— اختر السبب —</option>
@@ -217,7 +217,7 @@ export default function DisposalForm({
 
           <div>
             <label
-              className="block text-gray-700 mb-1.5"
+              className="block text-foreground mb-1.5"
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
               الحالة الجديدة للحقيبة
@@ -233,12 +233,12 @@ export default function DisposalForm({
                   <div
                     onClick={() => onTargetStatusChange(val as 'disposed' | 'rejected')}
                     className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
-                      targetStatus === val ? 'border-red-600' : 'border-gray-300'
+                      targetStatus === val ? 'border-red-600' : 'border-border'
                     }`}
                   >
                     {targetStatus === val && <div className="w-2 h-2 rounded-full bg-red-600" />}
                   </div>
-                  <span className="text-gray-700" style={{ fontSize: '13px' }}>
+                  <span className="text-foreground" style={{ fontSize: '13px' }}>
                     {lbl}
                   </span>
                 </label>
@@ -250,27 +250,27 @@ export default function DisposalForm({
         {/* ── Notes ── */}
         <div>
           <label
-            className="block text-gray-700 mb-1.5"
+            className="block text-foreground mb-1.5"
             style={{ fontSize: '13px', fontWeight: 600 }}
           >
-            ملاحظات إضافية <span className="text-gray-400">(اختياري)</span>
+            ملاحظات إضافية <span className="text-muted-foreground">(اختياري)</span>
           </label>
           <textarea
             value={notes}
             onChange={(e) => onNotesChange(e.target.value)}
             rows={2}
             placeholder="أي تفاصيل إضافية حول سبب الإتلاف أو حالة الحقيبة..."
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-red-300 resize-none"
+            className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-red-300 resize-none"
             style={{ fontSize: '13px' }}
           />
         </div>
 
         {/* Staff info */}
-        <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-100 rounded-xl">
+        <div className="flex items-center gap-2 p-3 bg-muted/40 border border-border rounded-xl">
           <span style={{ fontSize: '14px' }}>📋</span>
-          <p className="text-gray-500" style={{ fontSize: '11px' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
             سيتم تسجيل هذا الإتلاف تلقائياً باسم{' '}
-            <strong className="text-gray-700">{getCurrentUserName()}</strong> مع التاريخ والوقت
+            <strong className="text-foreground">{getCurrentUserName()}</strong> مع التاريخ والوقت
             الحالي
           </p>
         </div>
@@ -281,7 +281,7 @@ export default function DisposalForm({
           className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl transition-all ${
             selectedBagIds.length > 0
               ? 'bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow-md'
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'bg-muted text-muted-foreground cursor-not-allowed'
           }`}
           style={{ fontSize: '14px', fontWeight: 700 }}
         >

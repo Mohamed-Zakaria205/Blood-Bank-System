@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide-react';
+﻿import { Trash2 } from 'lucide-react';
 import type { BloodBag } from '../../../types';
 
 interface DisposeBagModalProps {
@@ -20,16 +20,16 @@ export default function DisposeBagModal({
 }: DisposeBagModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md p-6">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
             <Trash2 className="w-6 h-6 text-red-600" />
           </div>
           <div>
-            <h3 className="text-gray-900" style={{ fontSize: '17px', fontWeight: 700 }}>
+            <h3 className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
               تأكيد الإتلاف
             </h3>
-            <p className="text-gray-500" style={{ fontSize: '12px' }}>
+            <p className="text-muted-foreground" style={{ fontSize: '12px' }}>
               {bag.bagCode} — فصيلة {bag.bloodType}
             </p>
           </div>
@@ -41,7 +41,7 @@ export default function DisposeBagModal({
         </div>
         <div className="mb-5">
           <label
-            className="block text-gray-700 mb-1.5"
+            className="block text-foreground mb-1.5"
             style={{ fontSize: '13px', fontWeight: 600 }}
           >
             سبب الإتلاف
@@ -51,7 +51,7 @@ export default function DisposeBagModal({
             onChange={(e) => onReasonChange(e.target.value)}
             rows={2}
             placeholder="انتهاء الصلاحية / رفض طبي / تلف..."
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-red-400 resize-none"
+            className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-red-400 resize-none"
             style={{ fontSize: '13px' }}
           />
         </div>
@@ -72,7 +72,7 @@ export default function DisposeBagModal({
           </button>
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all"
+            className="flex-1 py-2.5 bg-muted text-foreground rounded-xl hover:bg-muted transition-all"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
             إلغاء

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { AlertTriangle, TrendingUp, TrendingDown, Droplets, RefreshCw } from 'lucide-react';
 import type { BloodInventoryItem } from '../../types';
 import { useBloodInventory } from '../../hooks/useInventory';
@@ -37,7 +37,7 @@ export default function AdminInventory() {
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={5} cols={6} />
       </div>
@@ -78,10 +78,10 @@ export default function AdminInventory() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+          <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
             مخزون الدم
           </h1>
-          <p className="text-gray-500" style={{ fontSize: '14px' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
             آخر تحديث: اليوم، {new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}
           </p>
         </div>
@@ -103,8 +103,8 @@ export default function AdminInventory() {
           {
             label: 'إجمالي الوحدات',
             value: totalUnits,
-            color: 'text-gray-900',
-            bg: 'bg-white border border-gray-100',
+            color: 'text-foreground',
+            bg: 'bg-card border border-border',
             icon: Droplets,
             iconColor: 'text-green-600',
             iconBg: 'bg-green-50',
@@ -146,7 +146,7 @@ export default function AdminInventory() {
             <div className={s.color} style={{ fontSize: '28px', fontWeight: 800 }}>
               {s.value}
             </div>
-            <div className="text-gray-600" style={{ fontSize: '13px' }}>
+            <div className="text-muted-foreground" style={{ fontSize: '13px' }}>
               {s.label}
             </div>
           </div>
@@ -156,8 +156,8 @@ export default function AdminInventory() {
       {/* Chart + Table */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bar Chart */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-          <h2 className="text-gray-900 mb-5" style={{ fontSize: '16px', fontWeight: 700 }}>
+        <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+          <h2 className="text-foreground mb-5" style={{ fontSize: '16px', fontWeight: 700 }}>
             مستويات المخزون بالفصائل
           </h2>
           <ResponsiveContainer width="100%" height={240}>
@@ -210,7 +210,7 @@ export default function AdminInventory() {
             ].map(([label, color]) => (
               <div key={label} className="flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-                <span className="text-gray-500" style={{ fontSize: '12px' }}>
+                <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                   {label}
                 </span>
               </div>
@@ -219,19 +219,19 @@ export default function AdminInventory() {
         </div>
 
         {/* Inventory List */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-          <h2 className="text-gray-900 mb-5" style={{ fontSize: '16px', fontWeight: 700 }}>
+        <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+          <h2 className="text-foreground mb-5" style={{ fontSize: '16px', fontWeight: 700 }}>
             تفاصيل المخزون
           </h2>
           <div className="space-y-3">
             {inventory.map((b) => (
               <div
                 key={b.type}
-                className={`p-4 rounded-xl border ${b.status === 'critical' ? 'bg-red-50 border-red-100' : b.status === 'low' ? 'bg-yellow-50 border-yellow-100' : 'bg-gray-50 border-gray-100'}`}
+                className={`p-4 rounded-xl border ${b.status === 'critical' ? 'bg-red-50 border-red-100' : b.status === 'low' ? 'bg-yellow-50 border-yellow-100' : 'bg-muted/40 border-border'}`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-gray-200">
+                    <div className="w-10 h-10 bg-card rounded-xl flex items-center justify-center border border-border">
                       <span className="text-red-600" style={{ fontSize: '13px', fontWeight: 800 }}>
                         {b.type}
                       </span>
@@ -243,11 +243,11 @@ export default function AdminInventory() {
                             type="number"
                             value={editUnits}
                             onChange={(e) => setEditUnits(e.target.value)}
-                            className="w-20 px-2 py-1 border border-green-300 rounded-lg text-gray-900 outline-none focus:border-green-500 text-center"
+                            className="w-20 px-2 py-1 border border-green-300 rounded-lg text-foreground outline-none focus:border-green-500 text-center"
                             style={{ fontSize: '14px', fontWeight: 700 }}
                             autoFocus
                           />
-                          <span className="text-gray-500" style={{ fontSize: '12px' }}>
+                          <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                             وحدة
                           </span>
                           <button
@@ -259,7 +259,7 @@ export default function AdminInventory() {
                           </button>
                           <button
                             onClick={() => setEditId(null)}
-                            className="px-2 py-1 text-gray-500 hover:bg-gray-200 rounded-lg"
+                            className="px-2 py-1 text-muted-foreground hover:bg-muted rounded-lg"
                             style={{ fontSize: '12px' }}
                           >
                             ×
@@ -268,17 +268,17 @@ export default function AdminInventory() {
                       ) : (
                         <div>
                           <span
-                            className="text-gray-900"
+                            className="text-foreground"
                             style={{ fontSize: '16px', fontWeight: 800 }}
                           >
                             {b.units}
                           </span>
-                          <span className="text-gray-500 mr-1" style={{ fontSize: '13px' }}>
+                          <span className="text-muted-foreground mr-1" style={{ fontSize: '13px' }}>
                             وحدة
                           </span>
                         </div>
                       )}
-                      <p className="text-gray-400" style={{ fontSize: '11px' }}>
+                      <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                         الحد الأدنى: {b.minRequired} | آخر تحديث: {b.lastUpdated}
                       </p>
                     </div>
@@ -295,13 +295,13 @@ export default function AdminInventory() {
                         setEditId(b.type);
                         setEditUnits(String(b.units));
                       }}
-                      className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-white rounded-lg transition-all"
+                      className="p-1.5 text-muted-foreground hover:text-green-600 hover:bg-card rounded-lg transition-all"
                     >
                       <RefreshCw className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
-                <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full ${barColors[b.status] === '#22c55e' ? 'bg-green-500' : barColors[b.status] === '#f59e0b' ? 'bg-yellow-400' : 'bg-red-500'}`}
                     style={{
@@ -318,8 +318,8 @@ export default function AdminInventory() {
 
       {/* Alerts */}
       {(criticalCount > 0 || lowCount > 0) && (
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-          <h2 className="text-gray-900 mb-4" style={{ fontSize: '16px', fontWeight: 700 }}>
+        <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+          <h2 className="text-foreground mb-4" style={{ fontSize: '16px', fontWeight: 700 }}>
             تنبيهات المخزون
           </h2>
           <div className="space-y-3">

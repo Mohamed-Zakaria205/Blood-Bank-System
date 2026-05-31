@@ -1,4 +1,4 @@
-import { X, Save } from 'lucide-react';
+﻿import { X, Save } from 'lucide-react';
 import { BLOOD_TYPES } from '../../../constants';
 import type { Donor } from '../../../types';
 import { EGYPT_DATA } from '../../../data/egypt';
@@ -34,10 +34,10 @@ export default function EditDonorModal({
         if (e.target === e.currentTarget) onCancel();
       }}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card">
           <div>
-            <h3 className="text-gray-900" style={{ fontSize: '18px', fontWeight: 700 }}>
+            <h3 className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
               تعديل بيانات المتبرع
             </h3>
             <p className="text-green-600 font-mono" style={{ fontSize: '12px' }}>
@@ -46,7 +46,7 @@ export default function EditDonorModal({
           </div>
           <button
             onClick={onCancel}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl"
+            className="p-2 text-muted-foreground hover:text-muted-foreground hover:bg-muted rounded-xl"
           >
             <X className="w-5 h-5" />
           </button>
@@ -55,7 +55,7 @@ export default function EditDonorModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label
-                className="block text-gray-700 mb-1.5"
+                className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 الاسم الكامل
@@ -63,13 +63,13 @@ export default function EditDonorModal({
               <input
                 value={form.name || ''}
                 onChange={(e) => onFormChange({ ...form, name: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
                 style={{ fontSize: '13px' }}
               />
             </div>
             <div>
               <label
-                className="block text-gray-700 mb-1.5"
+                className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 رقم الهاتف
@@ -77,14 +77,14 @@ export default function EditDonorModal({
               <input
                 value={form.phone || ''}
                 onChange={(e) => onFormChange({ ...form, phone: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
                 style={{ fontSize: '13px' }}
                 dir="ltr"
               />
             </div>
             <div>
               <label
-                className="block text-gray-700 mb-1.5"
+                className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 الرقم القومي
@@ -96,14 +96,14 @@ export default function EditDonorModal({
                   onFormChange({ ...form, nationalId: val });
                 }}
                 maxLength={14}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
                 style={{ fontSize: '13px' }}
                 dir="ltr"
               />
             </div>
             <div>
               <label
-                className="block text-gray-700 mb-1.5"
+                className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 تاريخ الميلاد
@@ -112,13 +112,13 @@ export default function EditDonorModal({
                 type="date"
                 value={form.dateOfBirth || ''}
                 onChange={(e) => onFormChange({ ...form, dateOfBirth: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
                 style={{ fontSize: '13px' }}
               />
             </div>
             <div>
               <label
-                className="block text-gray-700 mb-1.5"
+                className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 فصيلة الدم
@@ -131,7 +131,7 @@ export default function EditDonorModal({
                     bloodType: (e.target.value || undefined) as Donor['bloodType'],
                   })
                 }
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
+                className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400"
                 style={{ fontSize: '13px' }}
               >
                 <option value=""></option>
@@ -145,15 +145,15 @@ export default function EditDonorModal({
 
 
             {/* العنوان (المحافظة + المركز + المنطقة) */}
-            <div className="col-span-2 border-t border-gray-100 pt-4 mt-2">
-              <h4 className="text-gray-900 mb-3" style={{ fontSize: '14px', fontWeight: 700 }}>
+            <div className="col-span-2 border-t border-border pt-4 mt-2">
+              <h4 className="text-foreground mb-3" style={{ fontSize: '14px', fontWeight: 700 }}>
                 العنوان بالتفصيل
               </h4>
               <div className="grid grid-cols-3 gap-4">
                 {/* Governorate */}
                 <div>
                   <label
-                    className="block text-gray-500 mb-1.5"
+                    className="block text-muted-foreground mb-1.5"
                     style={{ fontSize: '11px', fontWeight: 600 }}
                   >
                     المحافظة *
@@ -168,7 +168,7 @@ export default function EditDonorModal({
                         area: '',
                       });
                     }}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
+                    className="w-full px-3 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400"
                     style={{ fontSize: '13px' }}
                   >
                     <option value="">— اختر المحافظة —</option>
@@ -183,7 +183,7 @@ export default function EditDonorModal({
                 {/* District */}
                 <div>
                   <label
-                    className="block text-gray-500 mb-1.5"
+                    className="block text-muted-foreground mb-1.5"
                     style={{ fontSize: '11px', fontWeight: 600 }}
                   >
                     المركز *
@@ -197,7 +197,7 @@ export default function EditDonorModal({
                         area: '',
                       });
                     }}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
+                    className="w-full px-3 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400"
                     style={{ fontSize: '13px' }}
                   >
                     <option value="">— اختر المركز —</option>
@@ -212,7 +212,7 @@ export default function EditDonorModal({
                 {/* Area */}
                 <div>
                   <label
-                    className="block text-gray-500 mb-1.5"
+                    className="block text-muted-foreground mb-1.5"
                     style={{ fontSize: '11px', fontWeight: 600 }}
                   >
                     المنطقة / الشارع *
@@ -221,7 +221,7 @@ export default function EditDonorModal({
                     <select
                       value={form.area || ''}
                       onChange={(e) => onFormChange({ ...form, area: e.target.value })}
-                      className="w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
+                      className="w-full px-3 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400"
                       style={{ fontSize: '13px' }}
                     >
                       <option value="">— اختر المنطقة —</option>
@@ -236,7 +236,7 @@ export default function EditDonorModal({
                       value={form.area || ''}
                       onChange={(e) => onFormChange({ ...form, area: e.target.value })}
                       placeholder="أدخل المنطقة / الشارع"
-                      className="w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
+                      className="w-full px-3 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400"
                       style={{ fontSize: '13px' }}
                     />
                   )}
@@ -245,10 +245,10 @@ export default function EditDonorModal({
             </div>
           </div>
         </div>
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-100">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-border">
           <button
             onClick={onCancel}
-            className="px-5 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
+            className="px-5 py-2.5 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
             إلغاء

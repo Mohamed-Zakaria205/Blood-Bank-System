@@ -1,4 +1,4 @@
-import { Trash2, AlertTriangle, AlertOctagon } from 'lucide-react';
+﻿import { Trash2, AlertTriangle, AlertOctagon } from 'lucide-react';
 import type { BloodBag } from '../../../types';
 import {
   DISPOSAL_REASONS,
@@ -28,14 +28,14 @@ export default function ConfirmDisposalModal({
 }: ConfirmDisposalModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
         {/* Modal header */}
         <div className="flex items-center gap-3 px-6 py-5 bg-red-50 border-b border-red-100">
           <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
             <AlertTriangle className="w-6 h-6 text-red-600" />
           </div>
           <div>
-            <h3 className="text-gray-900" style={{ fontSize: '17px', fontWeight: 700 }}>
+            <h3 className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
               تأكيد الإتلاف النهائي
             </h3>
             <p className="text-red-600" style={{ fontSize: '12px' }}>
@@ -47,7 +47,7 @@ export default function ConfirmDisposalModal({
         <div className="p-6 space-y-4">
           {/* Bags list */}
           <div>
-            <p className="text-gray-500 mb-2" style={{ fontSize: '11px', fontWeight: 600 }}>
+            <p className="text-muted-foreground mb-2" style={{ fontSize: '11px', fontWeight: 600 }}>
               الحقائب المحددة للإتلاف ({selectedBagsData.length})
             </p>
             <div className="space-y-1.5 max-h-36 overflow-y-auto">
@@ -68,7 +68,7 @@ export default function ConfirmDisposalModal({
                   >
                     {bag.bloodType}
                   </span>
-                  <span className="text-gray-500" style={{ fontSize: '11px' }}>
+                  <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
                     {donTypeLabels[bag.donationType]}
                   </span>
                   <span className="mr-auto">
@@ -80,7 +80,7 @@ export default function ConfirmDisposalModal({
           </div>
 
           {/* Details summary */}
-          <div className="bg-gray-50 rounded-xl border border-gray-100 divide-y divide-gray-100">
+          <div className="bg-muted/40 rounded-xl border border-border divide-y divide-border">
             {[
               {
                 icon: '🗂️',
@@ -98,13 +98,13 @@ export default function ConfirmDisposalModal({
               <div key={item.label} className="flex items-start gap-3 px-4 py-2.5">
                 <span style={{ fontSize: '14px', lineHeight: 1.6 }}>{item.icon}</span>
                 <span
-                  className="text-gray-400 w-28 flex-shrink-0 pt-0.5"
+                  className="text-muted-foreground w-28 flex-shrink-0 pt-0.5"
                   style={{ fontSize: '12px' }}
                 >
                   {item.label}
                 </span>
                 <span
-                  className="text-gray-800 flex-1"
+                  className="text-foreground flex-1"
                   style={{ fontSize: '13px', fontWeight: 600 }}
                 >
                   {item.value}
@@ -141,7 +141,7 @@ export default function ConfirmDisposalModal({
           </button>
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all"
+            className="flex-1 py-2.5 bg-muted text-foreground rounded-xl hover:bg-muted transition-all"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
             إلغاء

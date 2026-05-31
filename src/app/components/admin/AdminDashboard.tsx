@@ -51,14 +51,14 @@ export default function AdminDashboard() {
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={4} />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <TableSkeleton rows={4} cols={5} />
           </div>
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm animate-pulse">
-            <div className="h-48 bg-gray-100 rounded-xl" />
+          <div className="bg-card rounded-2xl p-6 border border-border shadow-sm animate-pulse">
+            <div className="h-48 bg-muted rounded-xl" />
           </div>
         </div>
       </div>
@@ -116,10 +116,10 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+          <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
             لوحة التحكم
           </h1>
-          <p className="text-gray-500 mt-0.5" style={{ fontSize: '14px' }}>
+          <p className="text-muted-foreground mt-0.5" style={{ fontSize: '14px' }}>
             مرحباً {user?.name} — {format(new Date(), 'EEEE، d MMMM yyyy', { locale: ar })}
           </p>
         </div>
@@ -141,18 +141,18 @@ export default function AdminDashboard() {
           <button
             key={i}
             onClick={s.action}
-            className={`bg-white rounded-2xl p-5 border ${s.border} shadow-sm hover:shadow-md transition-all text-right`}
+            className={`bg-card rounded-2xl p-5 border ${s.border} shadow-sm hover:shadow-md transition-all text-right`}
           >
             <div className={`w-11 h-11 ${s.bg} rounded-xl flex items-center justify-center mb-4`}>
               <s.icon className={`w-5 h-5 ${s.color}`} />
             </div>
-            <div className="text-gray-900" style={{ fontSize: '30px', fontWeight: 800 }}>
+            <div className="text-foreground" style={{ fontSize: '30px', fontWeight: 800 }}>
               {s.value}
             </div>
-            <div className="text-gray-700 mt-0.5" style={{ fontSize: '13px', fontWeight: 600 }}>
+            <div className="text-foreground mt-0.5" style={{ fontSize: '13px', fontWeight: 600 }}>
               {s.label}
             </div>
-            <div className="text-gray-400 mt-0.5" style={{ fontSize: '12px' }}>
+            <div className="text-muted-foreground mt-0.5" style={{ fontSize: '12px' }}>
               {s.sub}
             </div>
           </button>
@@ -161,52 +161,52 @@ export default function AdminDashboard() {
 
       {/* Donor Sources */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl p-4 border border-green-100 shadow-sm flex items-center gap-4">
+        <div className="bg-card rounded-2xl p-4 border border-green-100 shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0">
             <Building2 className="w-6 h-6 text-green-600" />
           </div>
           <div>
-            <div className="text-gray-900" style={{ fontSize: '26px', fontWeight: 800 }}>
+            <div className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
               {walkinDonors.length}
             </div>
-            <div className="text-gray-600" style={{ fontSize: '13px', fontWeight: 600 }}>
+            <div className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
               تبرع داخل البنك
             </div>
-            <div className="text-gray-400" style={{ fontSize: '11px' }}>
+            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>
               {donors.length > 0 ? Math.round((walkinDonors.length / donors.length) * 100) : 0}% من
               الإجمالي
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm flex items-center gap-4">
+        <div className="bg-card rounded-2xl p-4 border border-purple-100 shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center flex-shrink-0">
             <Megaphone className="w-6 h-6 text-purple-600" />
           </div>
           <div>
-            <div className="text-gray-900" style={{ fontSize: '26px', fontWeight: 800 }}>
+            <div className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
               {campaignDonors.length}
             </div>
-            <div className="text-gray-600" style={{ fontSize: '13px', fontWeight: 600 }}>
+            <div className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
               عن طريق حملة
             </div>
-            <div className="text-gray-400" style={{ fontSize: '11px' }}>
+            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>
               {donors.length > 0 ? Math.round((campaignDonors.length / donors.length) * 100) : 0}%
               من الإجمالي
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-4 border border-blue-100 shadow-sm flex items-center gap-4">
+        <div className="bg-card rounded-2xl p-4 border border-blue-100 shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
             <Smartphone className="w-6 h-6 text-blue-600" />
           </div>
           <div>
-            <div className="text-gray-900" style={{ fontSize: '26px', fontWeight: 800 }}>
+            <div className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
               {appDonors.length}
             </div>
-            <div className="text-gray-600" style={{ fontSize: '13px', fontWeight: 600 }}>
+            <div className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
               حجز من التطبيق
             </div>
-            <div className="text-gray-400" style={{ fontSize: '11px' }}>
+            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>
               {donors.length > 0 ? Math.round((appDonors.length / donors.length) * 100) : 0}% من
               الإجمالي
             </div>
@@ -226,9 +226,9 @@ export default function AdminDashboard() {
       {/* Recent Donors + Alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Donors */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
+        <div className="lg:col-span-2 bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+          <div className="p-5 border-b border-border flex items-center justify-between">
+            <h2 className="text-foreground" style={{ fontSize: '16px', fontWeight: 700 }}>
               أحدث المتبرعين
             </h2>
             <button
@@ -242,11 +242,11 @@ export default function AdminDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gray-50">
+                <tr className="bg-muted/40">
                   {recentDonorsHeaders.map((h) => (
                     <th
                       key={h}
-                      className="px-4 py-3 text-right text-gray-500"
+                      className="px-4 py-3 text-right text-muted-foreground"
                       style={{ fontSize: '12px', fontWeight: 600 }}
                     >
                       {h}
@@ -254,9 +254,9 @@ export default function AdminDashboard() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-border">
                 {recentDonors.map((d) => (
-                  <tr key={d.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={d.id} className="hover:bg-accent/40 transition-colors">
                     <td className="px-4 py-3">
                       <span
                         className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded"
@@ -266,12 +266,12 @@ export default function AdminDashboard() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-gray-900" style={{ fontSize: '13px', fontWeight: 600 }}>
+                      <span className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
                         {d.name}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-gray-500" style={{ fontSize: '13px' }}>
+                      <span className="text-muted-foreground" style={{ fontSize: '13px' }}>
                         {d.district}
                       </span>
                     </td>

@@ -1,4 +1,4 @@
-import { AlertTriangle } from 'lucide-react';
+﻿import { AlertTriangle } from 'lucide-react';
 
 interface ConsumptionItem {
   type: string;
@@ -20,10 +20,10 @@ export default function ConsumptionByTypePanel({
   liveInventory,
 }: ConsumptionByTypePanelProps) {
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+    <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
       <div className="flex items-center gap-2 mb-5">
         <AlertTriangle className="w-5 h-5 text-green-600" />
-        <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
+        <h2 className="text-foreground" style={{ fontSize: '16px', fontWeight: 700 }}>
           الاستهلاك حسب الفصيلة
         </h2>
       </div>
@@ -35,7 +35,7 @@ export default function ConsumptionByTypePanel({
           return (
             <div
               key={type}
-              className={`p-4 rounded-xl border ${isHigh ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-100'}`}
+              className={`p-4 rounded-xl border ${isHigh ? 'bg-red-50 border-red-200' : 'bg-muted/40 border-border'}`}
             >
               <div className="flex items-center justify-between mb-2">
                 <span
@@ -46,20 +46,20 @@ export default function ConsumptionByTypePanel({
                 </span>
                 {isHigh && <AlertTriangle className="w-4 h-4 text-red-500" />}
               </div>
-              <div className="text-gray-900" style={{ fontSize: '20px', fontWeight: 800 }}>
+              <div className="text-foreground" style={{ fontSize: '20px', fontWeight: 800 }}>
                 {issued}
               </div>
-              <div className="text-gray-500" style={{ fontSize: '11px' }}>
+              <div className="text-muted-foreground" style={{ fontSize: '11px' }}>
                 وحدة مُصرفة
               </div>
-              <div className="mt-2 w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <div className="mt-2 w-full h-1.5 bg-muted rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full ${isHigh ? 'bg-red-500' : 'bg-green-500'}`}
                   style={{ width: `${Math.min(ratio * 100, 100)}%` }}
                 />
               </div>
               <div
-                className={`mt-1 ${isHigh ? 'text-red-500' : 'text-gray-400'}`}
+                className={`mt-1 ${isHigh ? 'text-red-500' : 'text-muted-foreground'}`}
                 style={{ fontSize: '10px' }}
               >
                 {isHigh ? 'استهلاك مرتفع' : 'طبيعي'}

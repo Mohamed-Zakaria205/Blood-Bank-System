@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import {
   CheckCircle2,
   Activity,
@@ -46,13 +46,13 @@ export default function DonationActionModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <div className="flex items-center justify-between p-5 pb-0">
           <div />
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl"
+            className="p-2 text-muted-foreground hover:text-muted-foreground hover:bg-muted rounded-xl"
           >
             <X className="w-5 h-5" />
           </button>
@@ -70,10 +70,10 @@ export default function DonationActionModal({
                 <FlaskConical className="w-8 h-8 text-amber-600" />
               )}
             </div>
-            <h2 className="text-gray-900 mb-1" style={{ fontSize: '20px', fontWeight: 800 }}>
+            <h2 className="text-foreground mb-1" style={{ fontSize: '20px', fontWeight: 800 }}>
               {alreadySent ? 'تم الإرسال للمختبر ✅' : 'مراجعة بيانات التبرع'}
             </h2>
-            <p className="text-gray-400" style={{ fontSize: '13px' }}>
+            <p className="text-muted-foreground" style={{ fontSize: '13px' }}>
               {alreadySent
                 ? 'تم إرسال هذا التبرع لدكتور التحاليل'
                 : 'يرجى مراجعة البيانات قبل الإرسال'}
@@ -83,7 +83,7 @@ export default function DonationActionModal({
           {/* ── Donation Code ── */}
           <div className="p-4 bg-gradient-to-l from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl flex items-center justify-between">
             <div>
-              <p className="text-gray-500 mb-0.5" style={{ fontSize: '11px', fontWeight: 600 }}>
+              <p className="text-muted-foreground mb-0.5" style={{ fontSize: '11px', fontWeight: 600 }}>
                 رمز التبرع
               </p>
               <p
@@ -99,16 +99,16 @@ export default function DonationActionModal({
           </div>
 
           {/* ── Medical Info ── */}
-          <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+          <div className="bg-card border border-border rounded-2xl p-4 shadow-sm">
             <p
-              className="text-gray-500 mb-3 flex items-center gap-1.5"
+              className="text-muted-foreground mb-3 flex items-center gap-1.5"
               style={{ fontSize: '12px', fontWeight: 700 }}
             >
               <Activity className="w-3.5 h-3.5 text-green-600" /> البيانات الطبية
             </p>
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-center">
-                <p className="text-gray-400 mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
+                <p className="text-muted-foreground mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
                   فصيلة الدم
                 </p>
                 <p className="text-red-700 font-mono" style={{ fontSize: '20px', fontWeight: 900 }}>
@@ -116,7 +116,7 @@ export default function DonationActionModal({
                 </p>
               </div>
               <div className="p-3 bg-blue-50 border border-blue-100 rounded-xl text-center">
-                <p className="text-gray-400 mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
+                <p className="text-muted-foreground mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
                   نوع التبرع
                 </p>
                 <p className="text-blue-700" style={{ fontSize: '13px', fontWeight: 700 }}>
@@ -124,7 +124,7 @@ export default function DonationActionModal({
                 </p>
               </div>
               <div className="p-3 bg-green-50 border border-green-100 rounded-xl text-center">
-                <p className="text-gray-400 mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
+                <p className="text-muted-foreground mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
                   المتبرع
                 </p>
                 <p className="text-green-700" style={{ fontSize: '13px', fontWeight: 700 }}>
@@ -135,9 +135,9 @@ export default function DonationActionModal({
           </div>
 
           {/* ── Date & Time ── */}
-          <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+          <div className="bg-card border border-border rounded-2xl p-4 shadow-sm">
             <p
-              className="text-gray-500 mb-3 flex items-center gap-1.5"
+              className="text-muted-foreground mb-3 flex items-center gap-1.5"
               style={{ fontSize: '12px', fontWeight: 700 }}
             >
               <CalendarDays className="w-3.5 h-3.5 text-purple-500" /> تاريخ التبرع
@@ -150,7 +150,7 @@ export default function DonationActionModal({
           </div>
 
           {/* ── Source ── */}
-          <div className="p-3 bg-gray-50 border border-gray-100 rounded-xl flex items-center justify-center gap-2">
+          <div className="p-3 bg-muted/40 border border-border rounded-xl flex items-center justify-center gap-2">
             {donation.source === 'walkin' ? (
               <>
                 <Building2 className="w-4 h-4 text-green-600" />
@@ -224,7 +224,7 @@ export default function DonationActionModal({
                   <div className="flex gap-3">
                     <button
                       onClick={() => setShowDeleteConfirm(false)}
-                      className="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
+                      className="flex-1 py-2.5 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
                       style={{ fontSize: '13px', fontWeight: 600 }}
                     >
                       إلغاء

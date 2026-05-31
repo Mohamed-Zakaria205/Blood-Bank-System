@@ -1,4 +1,4 @@
-import {
+﻿import {
   X,
   Upload,
   Trash2,
@@ -26,7 +26,7 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
       style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-md"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-md"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -50,14 +50,14 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
               >
                 {isExport ? 'تفاصيل عملية التصدير' : 'تفاصيل عملية الإتلاف'}
               </p>
-              <p className="text-gray-400" style={{ fontSize: '11px' }}>
+              <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                 {record.id}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-white transition-all"
+            className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-card transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -65,23 +65,23 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
 
         <div className="p-6 space-y-4">
           {/* Bag info */}
-          <div className="p-4 bg-gray-50 rounded-xl space-y-2">
-            <p className="text-gray-500" style={{ fontSize: '11px', fontWeight: 600 }}>
+          <div className="p-4 bg-muted/40 rounded-xl space-y-2">
+            <p className="text-muted-foreground" style={{ fontSize: '11px', fontWeight: 600 }}>
               معلومات الحقيبة
             </p>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600" style={{ fontSize: '12px' }}>
+              <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                 كود الحقيبة
               </span>
               <span
-                className="font-mono text-gray-800 bg-gray-200 px-2 py-0.5 rounded"
+                className="font-mono text-foreground bg-muted px-2 py-0.5 rounded"
                 style={{ fontSize: '12px', fontWeight: 700 }}
               >
                 {record.bagCode}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600" style={{ fontSize: '12px' }}>
+              <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                 الفصيلة
               </span>
               <span
@@ -92,10 +92,10 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600" style={{ fontSize: '12px' }}>
+              <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                 نوع الدم
               </span>
-              <span className="text-gray-700" style={{ fontSize: '12px' }}>
+              <span className="text-foreground" style={{ fontSize: '12px' }}>
                 {donTypeLabels[record.donationType] ?? record.donationType}
               </span>
             </div>
@@ -104,7 +104,7 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
           {/* Recipient info (export only) */}
           {isExport && (
             <div className="space-y-3">
-              <p className="text-gray-500" style={{ fontSize: '11px', fontWeight: 600 }}>
+              <p className="text-muted-foreground" style={{ fontSize: '11px', fontWeight: 600 }}>
                 بيانات المستلم
               </p>
               <div className="flex items-start gap-3">
@@ -112,10 +112,10 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
                   <User className="w-4 h-4 text-blue-500" />
                 </div>
                 <div>
-                  <p className="text-gray-500" style={{ fontSize: '11px' }}>
+                  <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                     اسم المريض
                   </p>
-                  <p className="text-gray-900" style={{ fontSize: '14px', fontWeight: 600 }}>
+                  <p className="text-foreground" style={{ fontSize: '14px', fontWeight: 600 }}>
                     {record.recipientName || '—'}
                   </p>
                 </div>
@@ -125,11 +125,11 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
                   <CreditCard className="w-4 h-4 text-purple-500" />
                 </div>
                 <div>
-                  <p className="text-gray-500" style={{ fontSize: '11px' }}>
+                  <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                     الرقم القومي
                   </p>
                   <p
-                    className="text-gray-900 font-mono"
+                    className="text-foreground font-mono"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     {record.nationalId || '—'}
@@ -141,11 +141,11 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
                   <Phone className="w-4 h-4 text-green-500" />
                 </div>
                 <div>
-                  <p className="text-gray-500" style={{ fontSize: '11px' }}>
+                  <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                     رقم الهاتف
                   </p>
                   <p
-                    className="text-gray-900 font-mono"
+                    className="text-foreground font-mono"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     {record.phone || '—'}
@@ -161,40 +161,40 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
               <FileText className="w-4 h-4 text-orange-500" />
             </div>
             <div>
-              <p className="text-gray-500" style={{ fontSize: '11px' }}>
+              <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                 {isExport ? 'سبب التصدير' : 'سبب الإتلاف'}
               </p>
-              <p className="text-gray-800" style={{ fontSize: '13px' }}>
+              <p className="text-foreground" style={{ fontSize: '13px' }}>
                 {record.reason}
               </p>
             </div>
           </div>
 
           {/* Audit info */}
-          <div className="pt-3 border-t border-gray-100 space-y-2">
+          <div className="pt-3 border-t border-border space-y-2">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <UserCheck className="w-4 h-4 text-gray-500" />
+              <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                <UserCheck className="w-4 h-4 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-gray-500" style={{ fontSize: '11px' }}>
+                <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                   المنفذ
                 </p>
-                <p className="text-gray-800" style={{ fontSize: '13px', fontWeight: 600 }}>
+                <p className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
                   {record.performedByName}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Clock className="w-4 h-4 text-gray-500" />
+              <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                <Clock className="w-4 h-4 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-gray-500" style={{ fontSize: '11px' }}>
+                <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                   التاريخ والوقت
                 </p>
                 <p
-                  className="text-gray-800 font-mono"
+                  className="text-foreground font-mono"
                   style={{ fontSize: '13px', fontWeight: 600 }}
                 >
                   {record.timestamp}
@@ -207,7 +207,7 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
         <div className="px-6 pb-6">
           <button
             onClick={onClose}
-            className="w-full py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all"
+            className="w-full py-2.5 bg-muted text-foreground rounded-xl hover:bg-muted transition-all"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
             إغلاق

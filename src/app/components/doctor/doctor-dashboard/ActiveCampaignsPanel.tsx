@@ -1,4 +1,4 @@
-import { Megaphone, ArrowUpRight } from 'lucide-react';
+﻿import { Megaphone, ArrowUpRight } from 'lucide-react';
 import type { Campaign } from '../../../types/campaign';
 
 interface ActiveCampaignsPanelProps {
@@ -8,9 +8,9 @@ interface ActiveCampaignsPanelProps {
 
 export default function ActiveCampaignsPanel({ campaigns, onViewAll }: ActiveCampaignsPanelProps) {
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+    <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
+        <h2 className="text-foreground" style={{ fontSize: '16px', fontWeight: 700 }}>
           الحملات النشطة
         </h2>
         <button
@@ -25,10 +25,10 @@ export default function ActiveCampaignsPanel({ campaigns, onViewAll }: ActiveCam
         {campaigns.slice(0, 4).map((c) => {
           const pct = Math.round((c.registeredDonors / c.targetDonors) * 100);
           return (
-            <div key={c.id} className="p-3 bg-gray-50 rounded-xl">
+            <div key={c.id} className="p-3 bg-muted/40 rounded-xl">
               <div className="flex items-start justify-between mb-1.5">
                 <p
-                  className="text-gray-900 text-right"
+                  className="text-foreground text-right"
                   style={{ fontSize: '12px', fontWeight: 700 }}
                 >
                   {c.title}
@@ -41,14 +41,14 @@ export default function ActiveCampaignsPanel({ campaigns, onViewAll }: ActiveCam
                 </span>
               </div>
               <div className="flex justify-between mb-1">
-                <span className="text-gray-500" style={{ fontSize: '10px' }}>
+                <span className="text-muted-foreground" style={{ fontSize: '10px' }}>
                   {c.registeredDonors} / {c.targetDonors}
                 </span>
                 <span className="text-green-600" style={{ fontSize: '10px', fontWeight: 700 }}>
                   {pct}%
                 </span>
               </div>
-              <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                 <div
                   className="h-full bg-green-500 rounded-full"
                   style={{ width: `${Math.min(pct, 100)}%` }}
@@ -58,7 +58,7 @@ export default function ActiveCampaignsPanel({ campaigns, onViewAll }: ActiveCam
           );
         })}
         {campaigns.length === 0 && (
-          <div className="py-6 text-center text-gray-400">
+          <div className="py-6 text-center text-muted-foreground">
             <Megaphone className="w-8 h-8 mx-auto mb-2 opacity-40" />
             <p style={{ fontSize: '13px' }}>لا توجد حملات نشطة</p>
           </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import {
   UserPlus,
@@ -98,7 +98,7 @@ export default function DoctorDonations() {
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={7} cols={10} />
       </div>
@@ -112,10 +112,10 @@ export default function DoctorDonations() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+          <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
             التبرعات
           </h1>
-          <p className="text-gray-500" style={{ fontSize: '14px' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
             {total} تبرع مسجل
           </p>
         </div>
@@ -135,13 +135,13 @@ export default function DoctorDonations() {
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="بحث بالاسم أو الرقم القومي أو رمز التبرع..."
             value={search}
             onChange={(e) => handleFilterChange(setSearch, e.target.value)}
-            className="w-full pr-9 pl-3 py-2.5 border border-gray-200 rounded-xl bg-white outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+            className="w-full pr-9 pl-3 py-2.5 border border-border rounded-xl bg-card outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
             style={{ fontSize: '13px' }}
           />
         </div>
@@ -149,7 +149,7 @@ export default function DoctorDonations() {
           <select
             value={filterBlood}
             onChange={(e) => handleFilterChange(setFilterBlood, e.target.value)}
-            className="appearance-none px-4 py-2.5 pr-3 pl-8 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none focus:border-green-400"
+            className="appearance-none px-4 py-2.5 pr-3 pl-8 border border-border rounded-xl bg-card text-foreground outline-none focus:border-green-400"
             style={{ fontSize: '13px' }}
           >
             <option value="">كل الفصائل</option>
@@ -159,13 +159,13 @@ export default function DoctorDonations() {
               </option>
             ))}
           </select>
-          <ChevronDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+          <ChevronDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
         </div>
         <div className="relative">
           <select
             value={filterCity}
             onChange={(e) => handleFilterChange(setFilterCity, e.target.value)}
-            className="appearance-none px-4 py-2.5 pr-3 pl-8 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none focus:border-green-400"
+            className="appearance-none px-4 py-2.5 pr-3 pl-8 border border-border rounded-xl bg-card text-foreground outline-none focus:border-green-400"
             style={{ fontSize: '13px' }}
           >
             <option value="">كل المدن</option>
@@ -175,20 +175,20 @@ export default function DoctorDonations() {
               </option>
             ))}
           </select>
-          <ChevronDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+          <ChevronDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-right" style={{ fontSize: '13px' }}>
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-100">
+              <tr className="bg-muted/40 border-b border-border">
                 {tableHeaders.map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-gray-500 whitespace-nowrap"
+                    className="px-4 py-3 text-muted-foreground whitespace-nowrap"
                     style={{ fontSize: '12px', fontWeight: 600 }}
                   >
                     {h}
@@ -196,9 +196,9 @@ export default function DoctorDonations() {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border">
               {donations.map((d) => (
-                <tr key={d.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={d.id} className="hover:bg-muted/40 transition-colors">
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
                       className="text-green-600 font-mono"
@@ -208,16 +208,16 @@ export default function DoctorDonations() {
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="text-gray-900" style={{ fontWeight: 600 }}>
+                    <span className="text-foreground" style={{ fontWeight: 600 }}>
                       {d.name}
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="text-gray-500">{genderLabels[d.gender]}</span>
+                    <span className="text-muted-foreground">{genderLabels[d.gender]}</span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
-                      className="text-gray-700 font-mono"
+                      className="text-foreground font-mono"
                       style={{ fontSize: '12px' }}
                       dir="ltr"
                     >
@@ -225,7 +225,7 @@ export default function DoctorDonations() {
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="text-gray-500" style={{ fontSize: '13px' }}>
+                    <span className="text-muted-foreground" style={{ fontSize: '13px' }}>
                       {d.district}
                     </span>
                   </td>
@@ -238,7 +238,7 @@ export default function DoctorDonations() {
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="text-gray-500" style={{ fontSize: '12px' }}>
+                    <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                       {donationTypeLabels[d.donationType]}
                     </span>
                   </td>
@@ -289,7 +289,7 @@ export default function DoctorDonations() {
                   <td className="px-4 py-3 whitespace-nowrap">
                     <button
                       onClick={() => setViewing(d)}
-                      className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all"
+                      className="p-1.5 text-muted-foreground hover:text-green-600 hover:bg-green-50 rounded-lg transition-all"
                     >
                       <Eye className="w-4 h-4" />
                     </button>
@@ -302,7 +302,7 @@ export default function DoctorDonations() {
         </div>
         {/* Pagination UI */}
         {totalPages > 1 && (
-          <div className="p-4 border-t border-gray-100 flex items-center justify-center bg-gray-50">
+          <div className="p-4 border-t border-border flex items-center justify-center bg-muted/40">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>

@@ -62,7 +62,7 @@ export default function DoctorCampaigns() {
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={5} cols={6} />
       </div>
@@ -113,10 +113,10 @@ export default function DoctorCampaigns() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+          <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
             حملات التبرع
           </h1>
-          <p className="text-gray-500" style={{ fontSize: '14px' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
             {total} حملة مسجلة
           </p>
         </div>
@@ -134,14 +134,14 @@ export default function DoctorCampaigns() {
         {[
           {
             label: 'حملات نشطة',
-            color: 'text-emerald-700',
-            bg: 'bg-emerald-50',
+            color: 'text-emerald-700 dark:text-emerald-400',
+            bg: 'bg-emerald-50 dark:bg-emerald-500/10',
             val: 'active',
           },
           {
             label: 'حملات منتهية',
-            color: 'text-gray-600',
-            bg: 'bg-gray-100',
+            color: 'text-muted-foreground',
+            bg: 'bg-muted',
             val: 'completed',
           },
         ].map((s, i) => (
@@ -150,7 +150,7 @@ export default function DoctorCampaigns() {
             onClick={() => handleFilterStatus(s.val)}
             className={`${s.bg} rounded-xl p-4 text-center transition-all hover:opacity-80 ${filterStatus === s.val ? 'ring-2 ring-offset-1 ring-green-400' : ''}`}
           >
-            <div className={`text-gray-900 ${s.color}`} style={{ fontSize: '18px', fontWeight: 800 }}>
+            <div className={`${s.color}`} style={{ fontSize: '18px', fontWeight: 800 }}>
               {s.label}
             </div>
           </button>
@@ -170,7 +170,7 @@ export default function DoctorCampaigns() {
           />
         ))}
         {campaigns.length === 0 && (
-          <div className="col-span-2 py-16 text-center text-gray-400 bg-white rounded-2xl border border-gray-100">
+          <div className="col-span-2 py-16 text-center text-muted-foreground bg-card rounded-2xl border border-border">
             <p style={{ fontSize: '14px' }}>لا توجد حملات</p>
           </div>
         )}

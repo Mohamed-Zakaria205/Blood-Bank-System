@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import {
   Check,
   X,
@@ -72,19 +72,19 @@ export default function ExportBagsModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
         {/* Modal header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-green-50">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-border bg-green-50">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
               <Upload className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <h3 className="text-gray-900" style={{ fontSize: '17px', fontWeight: 700 }}>
+              <h3 className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
                 تصدير{' '}
                 {selectedBagsData.length > 1 ? `${selectedBagsData.length} حقائب` : 'حقيبة دم'}
               </h3>
-              <p className="text-gray-500" style={{ fontSize: '12px' }}>
+              <p className="text-muted-foreground" style={{ fontSize: '12px' }}>
                 {step === 1 ? 'أدخل بيانات المستلِم' : 'مراجعة وتأكيد نهائي'}
               </p>
             </div>
@@ -103,7 +103,7 @@ export default function ExportBagsModal({
                 1
               </div>
               <div
-                className={`w-6 h-0.5 ${step >= 2 ? 'bg-green-600' : 'bg-gray-200'}`}
+                className={`w-6 h-0.5 ${step >= 2 ? 'bg-green-600' : 'bg-muted'}`}
               />
               <div
                 className="w-6 h-6 rounded-full flex items-center justify-center text-white"
@@ -118,7 +118,7 @@ export default function ExportBagsModal({
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-white transition-all"
+              className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-card transition-all"
             >
               <X className="w-5 h-5" />
             </button>
@@ -127,15 +127,15 @@ export default function ExportBagsModal({
 
         {/* Selected bags chips */}
         <div className="px-6 pt-4">
-          <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-            <p className="text-gray-400 mb-2" style={{ fontSize: '11px', fontWeight: 600 }}>
+          <div className="p-3 bg-muted/40 rounded-xl border border-border">
+            <p className="text-muted-foreground mb-2" style={{ fontSize: '11px', fontWeight: 600 }}>
               الحقائب المحددة
             </p>
             <div className="flex flex-wrap gap-1.5">
               {selectedBagsData.map((bag) => (
                 <span
                   key={bag.id}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-white border border-gray-200 rounded-lg"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-card border border-border rounded-lg"
                 >
                   <span
                     className="font-mono text-green-600"
@@ -160,7 +160,7 @@ export default function ExportBagsModal({
           <div className="p-6 space-y-4">
             <div>
               <label
-                className="block text-gray-700 mb-1.5"
+                className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 اسم المريض المستلِم *
@@ -174,8 +174,8 @@ export default function ExportBagsModal({
                   }))
                 }
                 placeholder="الاسم بالكامل"
-                className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400
-                  ${errors.recipientName ? 'border-red-300' : 'border-gray-200'}`}
+                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400
+                  ${errors.recipientName ? 'border-red-300' : 'border-border'}`}
                 style={{ fontSize: '13px' }}
               />
               {errors.recipientName && (
@@ -188,7 +188,7 @@ export default function ExportBagsModal({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label
-                  className="block text-gray-700 mb-1.5"
+                  className="block text-foreground mb-1.5"
                   style={{ fontSize: '13px', fontWeight: 600 }}
                 >
                   الرقم القومي <span className="text-red-500">*</span>
@@ -203,8 +203,8 @@ export default function ExportBagsModal({
                   }
                   placeholder="14 رقم"
                   maxLength={14}
-                  className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400
-                    ${errors.nationalId ? 'border-red-300' : 'border-gray-200'}`}
+                  className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400
+                    ${errors.nationalId ? 'border-red-300' : 'border-border'}`}
                   style={{ fontSize: '13px' }}
                 />
                 {errors.nationalId && (
@@ -215,7 +215,7 @@ export default function ExportBagsModal({
               </div>
               <div>
                 <label
-                  className="block text-gray-700 mb-1.5"
+                  className="block text-foreground mb-1.5"
                   style={{ fontSize: '13px', fontWeight: 600 }}
                 >
                   رقم الهاتف
@@ -225,8 +225,8 @@ export default function ExportBagsModal({
                   onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
                   placeholder="01xxxxxxxxx"
                   maxLength={11}
-                  className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400
-                    ${errors.phone ? 'border-red-300' : 'border-gray-200'}`}
+                  className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400
+                    ${errors.phone ? 'border-red-300' : 'border-border'}`}
                   style={{ fontSize: '13px' }}
                 />
                 {errors.phone && (
@@ -239,7 +239,7 @@ export default function ExportBagsModal({
 
             <div>
               <label
-                className="block text-gray-700 mb-1.5"
+                className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 سبب التصدير *
@@ -249,8 +249,8 @@ export default function ExportBagsModal({
                 onChange={(e) => setForm((p) => ({ ...p, reason: e.target.value }))}
                 rows={2}
                 placeholder="مثال: نقل دم بعد عملية جراحية"
-                className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 resize-none
-                  ${errors.reason ? 'border-red-300' : 'border-gray-200'}`}
+                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 resize-none
+                  ${errors.reason ? 'border-red-300' : 'border-border'}`}
                 style={{ fontSize: '13px' }}
               />
               {errors.reason && (
@@ -285,7 +285,7 @@ export default function ExportBagsModal({
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-xl border border-gray-100 divide-y divide-gray-100">
+            <div className="bg-muted/40 rounded-xl border border-border divide-y divide-border">
               {[
                 {
                   icon: '👤',
@@ -321,13 +321,13 @@ export default function ExportBagsModal({
                 <div key={item.label} className="flex items-start gap-3 px-4 py-2.5">
                   <span style={{ fontSize: '15px', lineHeight: 1.5 }}>{item.icon}</span>
                   <span
-                    className="text-gray-400 w-28 flex-shrink-0 pt-0.5"
+                    className="text-muted-foreground w-28 flex-shrink-0 pt-0.5"
                     style={{ fontSize: '12px' }}
                   >
                     {item.label}
                   </span>
                   <span
-                    className="text-gray-800 flex-1"
+                    className="text-foreground flex-1"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     {item.value}
@@ -351,7 +351,7 @@ export default function ExportBagsModal({
               </button>
               <button
                 onClick={onClose}
-                className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all"
+                className="flex-1 py-2.5 bg-muted text-foreground rounded-xl hover:bg-muted transition-all"
                 style={{ fontSize: '14px', fontWeight: 600 }}
               >
                 إلغاء
@@ -375,7 +375,7 @@ export default function ExportBagsModal({
               </button>
               <button
                 onClick={() => setStep(1)}
-                className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all"
+                className="px-5 py-2.5 bg-muted text-foreground rounded-xl hover:bg-muted transition-all"
                 style={{ fontSize: '14px', fontWeight: 600 }}
               >
                 رجوع

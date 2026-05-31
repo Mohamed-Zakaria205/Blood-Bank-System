@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+﻿import { useState, useCallback, useEffect } from 'react';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { useNavigate } from 'react-router';
@@ -116,7 +116,7 @@ export default function DoctorAppointments() {
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={5} cols={6} />
       </div>
@@ -182,7 +182,7 @@ export default function DoctorAppointments() {
 
     if (todaySlots.length === 0) {
       return (
-        <div className="py-12 text-center text-gray-400 bg-white rounded-2xl border border-gray-100">
+        <div className="py-12 text-center text-muted-foreground bg-card rounded-2xl border border-border">
           <p style={{ fontSize: '14px' }}>لا توجد مواعيد اليوم</p>
         </div>
       );
@@ -196,14 +196,14 @@ export default function DoctorAppointments() {
               <div
                 className={`flex-shrink-0 w-16 flex flex-col items-center justify-center rounded-xl py-2 ${
                   slot.status === 'completed' || slot.status === 'missed' || slot.status === 'cancelled'
-                    ? 'bg-gray-100'
+                    ? 'bg-muted'
                     : 'bg-green-50 border border-green-100'
                 }`}
               >
                 <span
                   className={`font-mono ${
                     slot.status === 'completed' || slot.status === 'missed' || slot.status === 'cancelled'
-                      ? 'text-gray-400'
+                      ? 'text-muted-foreground'
                       : 'text-green-700'
                   }`}
                   style={{ fontSize: '13px', fontWeight: 700 }}
@@ -236,27 +236,27 @@ export default function DoctorAppointments() {
         return (
           <div
             key={date}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+            className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden"
           >
             <div
-              className={`px-5 py-3 flex items-center justify-between ${date === TODAY ? 'bg-green-600 text-white' : 'bg-gray-50 border-b border-gray-100'}`}
+              className={`px-5 py-3 flex items-center justify-between ${date === TODAY ? 'bg-green-600 text-white' : 'bg-muted/40 border-b border-border'}`}
             >
               <div className="flex items-center gap-3">
                 <span
-                  className={date === TODAY ? 'text-white' : 'text-gray-900'}
+                  className={date === TODAY ? 'text-white' : 'text-foreground'}
                   style={{ fontSize: '15px', fontWeight: 700 }}
                 >
                   {WEEK_DAY_NAMES[idx]} {date === TODAY ? '— اليوم' : ''}
                 </span>
                 <span
-                  className={`font-mono ${date === TODAY ? 'text-green-100' : 'text-gray-400'}`}
+                  className={`font-mono ${date === TODAY ? 'text-green-100' : 'text-muted-foreground'}`}
                   style={{ fontSize: '12px' }}
                 >
                   {date}
                 </span>
               </div>
               <span
-                className={`px-3 py-1 rounded-full ${date === TODAY ? 'bg-white/20 text-white' : 'bg-green-100 text-green-700'}`}
+                className={`px-3 py-1 rounded-full ${date === TODAY ? 'bg-card/20 text-white' : 'bg-green-100 text-green-700'}`}
                 style={{ fontSize: '12px', fontWeight: 700 }}
               >
                 {daySlots.length} موعد
@@ -264,7 +264,7 @@ export default function DoctorAppointments() {
             </div>
             <div className="p-4 space-y-2">
               {filtered.length === 0 ? (
-                <p className="text-center text-gray-400 py-4" style={{ fontSize: '13px' }}>
+                <p className="text-center text-muted-foreground py-4" style={{ fontSize: '13px' }}>
                   {daySlots.length === 0
                     ? 'لا توجد مواعيد هذا اليوم'
                     : 'لا توجد نتائج مطابقة للفلتر'}
@@ -305,19 +305,19 @@ export default function DoctorAppointments() {
             return (
               <div
                 key={date}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+                className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden"
               >
                 <div
-                  className={`px-5 py-3 flex items-center justify-between ${date === TODAY ? 'bg-green-600 text-white' : 'bg-gray-50 border-b border-gray-100'}`}
+                  className={`px-5 py-3 flex items-center justify-between ${date === TODAY ? 'bg-green-600 text-white' : 'bg-muted/40 border-b border-border'}`}
                 >
                   <span
-                    className={date === TODAY ? 'text-white' : 'text-gray-900'}
+                    className={date === TODAY ? 'text-white' : 'text-foreground'}
                     style={{ fontSize: '14px', fontWeight: 700 }}
                   >
                     {date} {date === TODAY ? '— اليوم' : ''}
                   </span>
                   <span
-                    className={`px-3 py-1 rounded-full ${date === TODAY ? 'bg-white/20 text-white' : 'bg-green-100 text-green-700'}`}
+                    className={`px-3 py-1 rounded-full ${date === TODAY ? 'bg-card/20 text-white' : 'bg-green-100 text-green-700'}`}
                     style={{ fontSize: '12px', fontWeight: 700 }}
                   >
                     {daySlots.length} موعد
@@ -348,10 +348,10 @@ export default function DoctorAppointments() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+          <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
             جدول المواعيد
           </h1>
-          <p className="text-gray-500" style={{ fontSize: '14px' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
             {format(new Date(), 'EEEE، d MMMM yyyy — HH:mm', { locale: ar })}
           </p>
         </div>
@@ -359,7 +359,7 @@ export default function DoctorAppointments() {
           {/* Notification bell */}
           <button
             onClick={() => setShowNotifications((v) => !v)}
-            className={`relative p-2.5 rounded-xl border transition-all ${showNotifications ? 'bg-red-50 border-red-200 text-red-600' : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300'}`}
+            className={`relative p-2.5 rounded-xl border transition-all ${showNotifications ? 'bg-red-50 border-red-200 text-red-600' : 'bg-card border-border text-muted-foreground hover:border-border'}`}
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
@@ -372,12 +372,12 @@ export default function DoctorAppointments() {
             )}
           </button>
           {/* View toggle */}
-          <div className="flex bg-gray-100 p-1 rounded-xl gap-1">
+          <div className="flex bg-muted p-1 rounded-xl gap-1">
             {(['today', 'week', 'month'] as const).map((v) => (
               <button
                 key={v}
                 onClick={() => setView(v)}
-                className={`px-4 py-2 rounded-xl transition-all ${view === v ? 'bg-white shadow-sm text-green-700' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`px-4 py-2 rounded-xl transition-all ${view === v ? 'bg-card shadow-sm text-green-700' : 'text-muted-foreground hover:text-foreground'}`}
                 style={{ fontSize: '13px', fontWeight: view === v ? 700 : 500 }}
               >
                 {v === 'today' ? 'اليوم' : v === 'week' ? 'الأسبوع' : 'الشهر'}
@@ -425,7 +425,7 @@ export default function DoctorAppointments() {
             key: 'completed' as EffectiveStatus,
             label: 'مكتمل',
             count: stats?.completed ?? slots.filter((s) => s.date === TODAY && s.status === 'completed').length,
-            color: 'bg-gray-50 border-gray-200 text-gray-600',
+            color: 'bg-muted/40 border-border text-muted-foreground',
           },
           {
             key: 'missed' as EffectiveStatus,
@@ -455,14 +455,14 @@ export default function DoctorAppointments() {
 
       {/* Filter bar (all views) */}
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="flex items-center gap-1 text-gray-500" style={{ fontSize: '13px' }}>
+        <span className="flex items-center gap-1 text-muted-foreground" style={{ fontSize: '13px' }}>
           <Filter className="w-4 h-4" /> فلتر:
         </span>
         {(['all', 'booked', 'completed', 'missed', 'cancelled'] as const).map((f) => (
           <button
             key={f}
             onClick={() => setFilterStatus(f)}
-            className={`px-3 py-1.5 rounded-xl border transition-all ${filterStatus === f ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-200 hover:border-green-300'}`}
+            className={`px-3 py-1.5 rounded-xl border transition-all ${filterStatus === f ? 'bg-green-600 text-white border-green-600' : 'bg-card text-muted-foreground border-border hover:border-green-300'}`}
             style={{ fontSize: '12px', fontWeight: 600 }}
           >
             {f === 'all' ? 'الكل' : STATUS_CONFIG[f].label}

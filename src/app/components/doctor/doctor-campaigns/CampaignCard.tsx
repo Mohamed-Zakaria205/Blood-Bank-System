@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router';
+﻿import { useNavigate } from 'react-router';
 import {
   MapPin,
   Calendar,
@@ -61,7 +61,7 @@ export default function CampaignCard({
 
   return (
     <div
-      className={`bg-white rounded-2xl p-6 border shadow-sm hover:shadow-md transition-all ${isMyCampaign ? 'border-green-100' : 'border-gray-100'}`}
+      className={`bg-card rounded-2xl p-6 border shadow-sm hover:shadow-md transition-all ${isMyCampaign ? 'border-green-100' : 'border-border'}`}
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
@@ -81,29 +81,29 @@ export default function CampaignCard({
               </span>
             )}
           </div>
-          <h3 className="text-gray-900" style={{ fontSize: '15px', fontWeight: 700 }}>
+          <h3 className="text-foreground" style={{ fontSize: '15px', fontWeight: 700 }}>
             {c.title}
           </h3>
         </div>
       </div>
       <div className="space-y-2 mb-4">
-        <div className="flex items-center gap-2 text-gray-500">
-          <MapPin className="w-4 h-4 flex-shrink-0 text-gray-400" />
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <MapPin className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
           <span style={{ fontSize: '13px' }}>
             {c.location} — {c.city}
           </span>
         </div>
-        <div className="flex items-center gap-2 text-gray-500">
-          <Calendar className="w-4 h-4 flex-shrink-0 text-gray-400" />
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Calendar className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
           <span style={{ fontSize: '13px' }}>{c.date}</span>
         </div>
-        <div className="flex items-center gap-2 text-gray-500">
-          <Users className="w-4 h-4 flex-shrink-0 text-gray-400" />
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Users className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
           <span style={{ fontSize: '13px' }}>{c.createdByName}</span>
         </div>
       </div>
       {c.description && (
-        <p className="text-gray-400 mb-4" style={{ fontSize: '12px' }}>
+        <p className="text-muted-foreground mb-4" style={{ fontSize: '12px' }}>
           {c.description}
         </p>
       )}
@@ -111,14 +111,14 @@ export default function CampaignCard({
       {/* Progress */}
       <div>
         <div className="flex justify-between mb-1.5">
-          <span className="text-gray-600" style={{ fontSize: '12px', fontWeight: 600 }}>
+          <span className="text-muted-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
             الإنجاز
           </span>
           <span className={progressTextColor} style={{ fontSize: '12px', fontWeight: 700 }}>
             {c.registeredDonors} / {c.targetDonors}
           </span>
         </div>
-        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full transition-all ${progressColor}`}
             style={{ width: `${Math.min(pct, 100)}%` }}
@@ -129,7 +129,7 @@ export default function CampaignCard({
             {pct}% مكتمل
           </span>
           {c.status !== 'completed' && (
-            <div className="flex items-center gap-1 text-gray-400">
+            <div className="flex items-center gap-1 text-muted-foreground">
               <TrendingUp className="w-3 h-3" />
               <span style={{ fontSize: '11px' }}>
                 يتبقى {c.targetDonors - c.registeredDonors} متبرع
@@ -141,10 +141,10 @@ export default function CampaignCard({
 
       {/* Campaign Appointments — only shown if the campaign has any */}
       {badgeCount > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-100">
+        <div className="mt-4 pt-4 border-t border-border">
           <button
             onClick={() => onToggleExpand(c.id)}
-            className={`w-full flex items-center justify-between py-2.5 px-3 rounded-xl transition-all ${isExpanded ? 'bg-green-50 border border-green-100' : 'hover:bg-gray-50 border border-gray-100'}`}
+            className={`w-full flex items-center justify-between py-2.5 px-3 rounded-xl transition-all ${isExpanded ? 'bg-green-50 border border-green-100' : 'hover:bg-muted/40 border border-border'}`}
           >
             <div className="flex items-center gap-2">
               <CalendarDays className="w-4 h-4 text-green-600" />
@@ -170,7 +170,7 @@ export default function CampaignCard({
               {isSlotsLoading ? (
                 <div className="space-y-2">
                   {[...Array(3)].map((_, i) => (
-                    <div key={i} className="h-14 bg-gray-100 rounded-xl animate-pulse" />
+                    <div key={i} className="h-14 bg-muted rounded-xl animate-pulse" />
                   ))}
                 </div>
               ) : (
@@ -186,8 +186,8 @@ export default function CampaignCard({
                         isCancelled
                           ? 'bg-red-50 border-red-100'
                           : isCompleted
-                            ? 'bg-gray-50 border-gray-100'
-                            : 'bg-gray-50 border-gray-100 hover:border-green-200 hover:bg-green-50 cursor-pointer'
+                            ? 'bg-muted/40 border-border'
+                            : 'bg-muted/40 border-border hover:border-green-200 hover:bg-green-50 cursor-pointer'
                       }`}
                       onClick={() => isBooked && navigate(`/doctor/register?apt=${apt.id}`)}
                     >
@@ -199,13 +199,13 @@ export default function CampaignCard({
                         >
                           {apt.time}
                         </span>
-                        <p className="text-gray-400" style={{ fontSize: '10px' }}>
+                        <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
                           {apt.date}
                         </p>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p
-                          className={`truncate ${isCancelled ? 'text-red-400 line-through' : 'text-gray-900'}`}
+                          className={`truncate ${isCancelled ? 'text-red-400 line-through' : 'text-foreground'}`}
                           style={{ fontSize: '13px', fontWeight: 600 }}
                         >
                           {apt.donorName}

@@ -9,7 +9,7 @@ export function PageLoader({ message = 'جاري التحميل...' }: { message
       <div className="relative w-12 h-12">
         <div className="w-12 h-12 rounded-full border-4 border-green-100 border-t-green-600 animate-spin" />
       </div>
-      <p className="text-gray-500" style={{ fontSize: '14px', fontWeight: 600 }}>
+      <p className="text-muted-foreground" style={{ fontSize: '14px', fontWeight: 600 }}>
         {message}
       </p>
     </div>
@@ -23,10 +23,10 @@ export function ErrorState({ message, onRetry }: { message?: string; onRetry?: (
       <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center">
         <span className="text-3xl">⚠️</span>
       </div>
-      <p className="text-gray-700" style={{ fontSize: '16px', fontWeight: 700 }}>
+      <p className="text-foreground" style={{ fontSize: '16px', fontWeight: 700 }}>
         حدث خطأ
       </p>
-      <p className="text-gray-500" style={{ fontSize: '14px' }}>
+      <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
         {message || 'تعذر تحميل البيانات'}
       </p>
       {onRetry && (
@@ -49,11 +49,11 @@ export function CardSkeleton({ count = 4 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm animate-pulse"
+          className="bg-card rounded-2xl p-5 border border-border shadow-sm animate-pulse"
         >
-          <div className="w-11 h-11 bg-gray-200 rounded-xl mb-4" />
-          <div className="h-8 w-16 bg-gray-200 rounded mb-2" />
-          <div className="h-4 w-24 bg-gray-100 rounded" />
+          <div className="w-11 h-11 bg-muted rounded-xl mb-4" />
+          <div className="h-8 w-16 bg-muted rounded mb-2" />
+          <div className="h-4 w-24 bg-muted/60 rounded" />
         </div>
       ))}
     </div>
@@ -63,28 +63,28 @@ export function CardSkeleton({ count = 4 }: { count?: number }) {
 /** Table shimmer placeholder */
 export function TableSkeleton({ rows = 5, cols = 6 }: { rows?: number; cols?: number }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-pulse">
-      <div className="p-5 border-b border-gray-100">
-        <div className="h-5 w-32 bg-gray-200 rounded" />
+    <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden animate-pulse">
+      <div className="p-5 border-b border-border">
+        <div className="h-5 w-32 bg-muted rounded" />
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
+            <tr className="bg-muted/40 border-b border-border">
               {Array.from({ length: cols }).map((_, i) => (
                 <th key={i} className="px-4 py-3 text-right">
-                  <div className="h-3 w-16 bg-gray-200 rounded" />
+                  <div className="h-3 w-16 bg-muted rounded" />
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {Array.from({ length: rows }).map((_, i) => (
-              <tr key={i} className="border-b border-gray-50">
+              <tr key={i} className="border-b border-border">
                 {Array.from({ length: cols }).map((_, j) => (
                   <td key={j} className="px-4 py-3">
                     <div
-                      className={`h-4 bg-gray-100 rounded`}
+                      className={`h-4 bg-muted/60 rounded`}
                       style={{ width: `${60 + Math.random() * 40}%` }}
                     />
                   </td>

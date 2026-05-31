@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import {
   Plus,
   X,
@@ -40,7 +40,7 @@ function SlotPreviewCard({ slot, index }: { slot: GeneratedSlot; index: number }
     <div
       className={`rounded-xl border ${borderColor} ${bgColor} p-2.5 flex flex-col items-center gap-1.5 min-w-0`}
     >
-      <span className="text-gray-400" style={{ fontSize: '9px', fontWeight: 700 }}>
+      <span className="text-muted-foreground" style={{ fontSize: '9px', fontWeight: 700 }}>
         #{index + 1}
       </span>
       <span
@@ -50,19 +50,19 @@ function SlotPreviewCard({ slot, index }: { slot: GeneratedSlot; index: number }
       >
         {slot.time}
       </span>
-      <span className="text-gray-400" style={{ fontSize: '9px' }} dir="ltr">
+      <span className="text-muted-foreground" style={{ fontSize: '9px' }} dir="ltr">
         ↓ {slot.endTime}
       </span>
       <div className="flex gap-1 flex-wrap justify-center mt-0.5">
         {Array.from({ length: slot.capacity }).map((_, i) => (
           <div
             key={i}
-            className={`w-2 h-2 rounded-full ${i < slot.booked ? 'bg-red-400' : 'bg-gray-200'}`}
+            className={`w-2 h-2 rounded-full ${i < slot.booked ? 'bg-red-400' : 'bg-muted'}`}
           />
         ))}
       </div>
       <div className="flex flex-col items-center gap-0.5">
-        <span className="text-gray-500" style={{ fontSize: '10px', fontWeight: 600 }}>
+        <span className="text-muted-foreground" style={{ fontSize: '10px', fontWeight: 600 }}>
           {slot.booked}/{slot.capacity}
         </span>
         <span
@@ -106,14 +106,14 @@ export default function CreateCampaignModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <h3 className="text-gray-900" style={{ fontSize: '18px', fontWeight: 700 }}>
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-border">
+          <h3 className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
             إنشاء حملة تبرع جديدة
           </h3>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl"
+            className="p-2 text-muted-foreground hover:text-muted-foreground hover:bg-muted rounded-xl"
           >
             <X className="w-5 h-5" />
           </button>
@@ -123,7 +123,7 @@ export default function CreateCampaignModal({
           {/* ── Basic Info ── */}
           <div>
             <label
-              className="block text-gray-700 mb-1.5"
+              className="block text-foreground mb-1.5"
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
               عنوان الحملة *
@@ -132,7 +132,7 @@ export default function CreateCampaignModal({
               value={form.title}
               onChange={(e) => onUpdateForm((p) => ({ ...p, title: e.target.value }))}
               placeholder="مثال: حملة التبرع بالدم - مستشفى بني سويف"
-              className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.title ? 'border-red-300' : 'border-gray-200'}`}
+              className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.title ? 'border-red-300' : 'border-border'}`}
               style={{ fontSize: '13px' }}
             />
             {errors.title && (
@@ -145,7 +145,7 @@ export default function CreateCampaignModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label
-                className="block text-gray-700 mb-1.5"
+                className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 موقع الحملة *
@@ -154,7 +154,7 @@ export default function CreateCampaignModal({
                 value={form.location}
                 onChange={(e) => onUpdateForm((p) => ({ ...p, location: e.target.value }))}
                 placeholder="اسم المستشفى أو المركز"
-                className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.location ? 'border-red-300' : 'border-gray-200'}`}
+                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.location ? 'border-red-300' : 'border-border'}`}
                 style={{ fontSize: '13px' }}
               />
               {errors.location && (
@@ -165,7 +165,7 @@ export default function CreateCampaignModal({
             </div>
             <div>
               <label
-                className="block text-gray-700 mb-1.5"
+                className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 المدينة
@@ -173,7 +173,7 @@ export default function CreateCampaignModal({
               <select
                 value={form.city}
                 onChange={(e) => onUpdateForm((p) => ({ ...p, city: e.target.value }))}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
+                className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400"
                 style={{ fontSize: '13px' }}
               >
                 {CITIES.map((c) => (
@@ -185,7 +185,7 @@ export default function CreateCampaignModal({
             </div>
             <div>
               <label
-                className="block text-gray-700 mb-1.5"
+                className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 تاريخ الحملة *
@@ -194,7 +194,7 @@ export default function CreateCampaignModal({
                 type="date"
                 value={form.date}
                 onChange={(e) => onUpdateForm((p) => ({ ...p, date: e.target.value }))}
-                className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 ${errors.date ? 'border-red-300' : 'border-gray-200'}`}
+                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 ${errors.date ? 'border-red-300' : 'border-border'}`}
                 style={{ fontSize: '13px' }}
               />
               {errors.date && (
@@ -205,7 +205,7 @@ export default function CreateCampaignModal({
             </div>
             <div>
               <label
-                className="block text-gray-700 mb-1.5"
+                className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 العدد المستهدف *
@@ -220,7 +220,7 @@ export default function CreateCampaignModal({
                   }))
                 }
                 placeholder="مثال: 100"
-                className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 ${errors.targetDonors ? 'border-red-300' : 'border-gray-200'}`}
+                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 ${errors.targetDonors ? 'border-red-300' : 'border-border'}`}
                 style={{ fontSize: '13px' }}
               />
               {errors.targetDonors && (
@@ -233,17 +233,17 @@ export default function CreateCampaignModal({
 
           <div>
             <label
-              className="block text-gray-700 mb-1.5"
+              className="block text-foreground mb-1.5"
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
-              وصف الحملة <span className="text-gray-400">(اختياري)</span>
+              وصف الحملة <span className="text-muted-foreground">(اختياري)</span>
             </label>
             <textarea
               value={form.description}
               onChange={(e) => onUpdateForm((p) => ({ ...p, description: e.target.value }))}
               rows={2}
               placeholder="تفاصيل إضافية عن الحملة..."
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 resize-none"
+              className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 resize-none"
               style={{ fontSize: '13px' }}
             />
           </div>
@@ -268,7 +268,7 @@ export default function CreateCampaignModal({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label
-                    className="block text-gray-700 mb-1.5"
+                    className="block text-foreground mb-1.5"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     وقت البداية
@@ -282,13 +282,13 @@ export default function CreateCampaignModal({
                         startTime: e.target.value,
                       }))
                     }
-                    className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 font-mono ${errors.startTime ? 'border-red-300' : 'border-gray-200'}`}
+                    className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 font-mono ${errors.startTime ? 'border-red-300' : 'border-border'}`}
                     style={{ fontSize: '13px' }}
                   />
                 </div>
                 <div>
                   <label
-                    className="block text-gray-700 mb-1.5"
+                    className="block text-foreground mb-1.5"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     وقت الانتهاء
@@ -302,7 +302,7 @@ export default function CreateCampaignModal({
                         endTime: e.target.value,
                       }))
                     }
-                    className={`w-full px-4 py-2.5 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 font-mono ${errors.startTime ? 'border-red-300' : 'border-gray-200'}`}
+                    className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 font-mono ${errors.startTime ? 'border-red-300' : 'border-border'}`}
                     style={{ fontSize: '13px' }}
                   />
                   {errors.startTime && (
@@ -313,7 +313,7 @@ export default function CreateCampaignModal({
                 </div>
                 <div>
                   <label
-                    className="block text-gray-700 mb-1.5"
+                    className="block text-foreground mb-1.5"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     مدة الفترة الواحدة
@@ -326,7 +326,7 @@ export default function CreateCampaignModal({
                         slotDuration: e.target.value,
                       }))
                     }
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                    className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
                     style={{ fontSize: '13px' }}
                   >
                     {DURATION_OPTIONS.map((o) => (
@@ -338,11 +338,11 @@ export default function CreateCampaignModal({
                 </div>
                 <div>
                   <label
-                    className="block text-gray-700 mb-1.5"
+                    className="block text-foreground mb-1.5"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     سعة كل فترة
-                    <span className="text-gray-400 mr-1" style={{ fontWeight: 400 }}>
+                    <span className="text-muted-foreground mr-1" style={{ fontWeight: 400 }}>
                       (متبرع)
                     </span>
                   </label>
@@ -357,7 +357,7 @@ export default function CreateCampaignModal({
                         slotCapacity: e.target.value,
                       }))
                     }
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                    className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
                     style={{ fontSize: '13px' }}
                   />
                 </div>
@@ -376,7 +376,7 @@ export default function CreateCampaignModal({
                         {computedSlots.length} فترة زمنية
                       </span>
                     </div>
-                    <span className="text-gray-400" style={{ fontSize: '12px' }}>
+                    <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                       ×
                     </span>
                     <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 rounded-xl">
@@ -388,7 +388,7 @@ export default function CreateCampaignModal({
                         {form.slotCapacity} متبرع / فترة
                       </span>
                     </div>
-                    <span className="text-gray-400" style={{ fontSize: '12px' }}>
+                    <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                       =
                     </span>
                     <div
@@ -406,10 +406,10 @@ export default function CreateCampaignModal({
                         {totalCapacity} متبرع إجمالاً
                       </span>
                     </div>
-                    <div className="flex items-center gap-1 px-3 py-1.5 bg-gray-100 rounded-xl mr-auto">
-                      <Clock className="w-3.5 h-3.5 text-gray-500" />
+                    <div className="flex items-center gap-1 px-3 py-1.5 bg-muted rounded-xl mr-auto">
+                      <Clock className="w-3.5 h-3.5 text-muted-foreground" />
                       <span
-                        className="text-gray-600 font-mono"
+                        className="text-muted-foreground font-mono"
                         style={{ fontSize: '11px', fontWeight: 600 }}
                         dir="ltr"
                       >
@@ -420,7 +420,7 @@ export default function CreateCampaignModal({
 
                   {/* Legend */}
                   <div className="flex items-center gap-4">
-                    <span className="text-gray-500" style={{ fontSize: '11px' }}>
+                    <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
                       مؤشرات الحالة:
                     </span>
                     {[
@@ -430,7 +430,7 @@ export default function CreateCampaignModal({
                     ].map((l) => (
                       <div key={l.label} className="flex items-center gap-1.5">
                         <div className={`w-2.5 h-2.5 rounded-full ${l.color}`} />
-                        <span className="text-gray-500" style={{ fontSize: '11px' }}>
+                        <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
                           {l.label}
                         </span>
                       </div>
@@ -439,7 +439,7 @@ export default function CreateCampaignModal({
 
                   {/* Slot grid */}
                   <div
-                    className="rounded-xl border border-gray-100 bg-gray-50 p-3 overflow-y-auto"
+                    className="rounded-xl border border-border bg-muted/40 p-3 overflow-y-auto"
                     style={{ maxHeight: '200px' }}
                   >
                     <div
@@ -467,9 +467,9 @@ export default function CreateCampaignModal({
                   </div>
                 </div>
               ) : (
-                <div className="py-8 text-center border border-dashed border-gray-200 rounded-xl bg-gray-50">
-                  <Clock className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                  <p className="text-gray-400" style={{ fontSize: '13px' }}>
+                <div className="py-8 text-center border border-dashed border-border rounded-xl bg-muted/40">
+                  <Clock className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
+                  <p className="text-muted-foreground" style={{ fontSize: '13px' }}>
                     حدد وقت البداية والانتهاء لمعاينة الفترات الزمنية
                   </p>
                 </div>
@@ -478,10 +478,10 @@ export default function CreateCampaignModal({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-100">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-border">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
+            className="px-5 py-2.5 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
             إلغاء

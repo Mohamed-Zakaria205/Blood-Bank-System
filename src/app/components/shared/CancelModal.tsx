@@ -32,25 +32,25 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(2px)' }}
+      style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(2px)' }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-border">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-red-100 rounded-xl flex items-center justify-center">
               <XCircle className="w-5 h-5 text-red-600" />
             </div>
-            <h3 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 800 }}>
+            <h3 className="text-foreground" style={{ fontSize: '16px', fontWeight: 800 }}>
               إلغاء الموعد
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all"
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -67,28 +67,28 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
           </div>
 
           {/* Appointment summary */}
-          <div className="bg-gray-50 rounded-2xl p-4 space-y-3">
+          <div className="bg-muted/40 rounded-2xl p-4 space-y-3">
             <div className="flex items-center gap-2.5">
-              <User className="w-4 h-4 text-gray-400" />
+              <User className="w-4 h-4 text-muted-foreground" />
               <div>
-                <p className="text-gray-400" style={{ fontSize: '11px' }}>
+                <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                   المتبرع
                 </p>
-                <p className="text-gray-900" style={{ fontSize: '14px', fontWeight: 700 }}>
+                <p className="text-foreground" style={{ fontSize: '14px', fontWeight: 700 }}>
                   {slot.donorName}
                 </p>
               </div>
             </div>
-            <div className="h-px bg-gray-200" />
+            <div className="h-px bg-border" />
             <div className="grid grid-cols-2 gap-3">
               <div className="flex items-center gap-2">
-                <CalendarDays className="w-4 h-4 text-gray-400" />
+                <CalendarDays className="w-4 h-4 text-muted-foreground" />
                 <div>
-                  <p className="text-gray-400" style={{ fontSize: '11px' }}>
+                  <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                     التاريخ
                   </p>
                   <p
-                    className="text-gray-700 font-mono"
+                    className="text-foreground font-mono"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     {slot.date}
@@ -96,13 +96,13 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-gray-400" />
+                <Clock className="w-4 h-4 text-muted-foreground" />
                 <div>
-                  <p className="text-gray-400" style={{ fontSize: '11px' }}>
+                  <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                     الوقت
                   </p>
                   <p
-                    className="text-gray-700 font-mono"
+                    className="text-foreground font-mono"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     {slot.time}
@@ -112,11 +112,11 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
             </div>
             {campaign && (
               <>
-                <div className="h-px bg-gray-200" />
+                <div className="h-px bg-border" />
                 <div className="flex items-center gap-2">
                   <Megaphone className="w-4 h-4 text-purple-400" />
                   <div>
-                    <p className="text-gray-400" style={{ fontSize: '11px' }}>
+                    <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                       الحملة
                     </p>
                     <p className="text-purple-700" style={{ fontSize: '13px', fontWeight: 600 }}>
@@ -130,10 +130,10 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
 
           {/* Doctor */}
           <div className="flex items-center justify-between px-1">
-            <span className="text-gray-500" style={{ fontSize: '12px' }}>
+            <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
               يُلغى بواسطة
             </span>
-            <span className="text-gray-800" style={{ fontSize: '13px', fontWeight: 700 }}>
+            <span className="text-foreground" style={{ fontSize: '13px', fontWeight: 700 }}>
               {doctorName}
             </span>
           </div>
@@ -141,11 +141,11 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
           {/* Reason */}
           <div>
             <label
-              className="block text-gray-700 mb-1.5"
+              className="block text-foreground mb-1.5"
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
               سبب الإلغاء{' '}
-              <span className="text-gray-400" style={{ fontWeight: 400 }}>
+              <span className="text-muted-foreground" style={{ fontWeight: 400 }}>
                 (اختياري)
               </span>
             </label>
@@ -154,7 +154,7 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
               onChange={(e) => setReason(e.target.value)}
               placeholder="مثال: ظروف طارئة، تعارض في المواعيد..."
               rows={3}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-red-300 focus:ring-2 focus:ring-red-50 resize-none transition-all"
+              className="w-full px-4 py-3 border border-border rounded-xl bg-input-background text-foreground outline-none focus:border-red-300 focus:ring-2 focus:ring-red-50 resize-none transition-all placeholder:text-muted-foreground"
               style={{ fontSize: '13px' }}
             />
           </div>
@@ -163,7 +163,7 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
           <div className="flex gap-3 pt-1">
             <button
               onClick={onClose}
-              className="flex-1 py-3 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
+              className="flex-1 py-3 border border-border text-muted-foreground rounded-xl hover:bg-accent transition-all"
               style={{ fontSize: '14px', fontWeight: 600 }}
             >
               تراجع

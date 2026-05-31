@@ -1,4 +1,4 @@
-import {
+﻿import {
   User,
   Phone,
   Activity,
@@ -55,7 +55,7 @@ export default function StepOne({
       {/* Source Selection */}
       <div>
         <label
-          className="block text-gray-700 mb-2"
+          className="block text-foreground mb-2"
           style={{ fontSize: '13px', fontWeight: 600 }}
         >
           <Activity className="w-4 h-4 inline ml-1 text-green-600" />
@@ -66,23 +66,23 @@ export default function StepOne({
           <button
             type="button"
             onClick={() => updateField('source', 'walkin')}
-            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${form.source === 'walkin' ? 'border-green-600 bg-green-50' : 'border-gray-200 hover:border-green-200'}`}
+            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${form.source === 'walkin' ? 'border-green-600 bg-green-50' : 'border-border hover:border-green-200'}`}
           >
             <div
-              className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${form.source === 'walkin' ? 'bg-green-600' : 'bg-gray-100'}`}
+              className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${form.source === 'walkin' ? 'bg-green-600' : 'bg-muted'}`}
             >
               <Building2
-                className={`w-4 h-4 ${form.source === 'walkin' ? 'text-white' : 'text-gray-400'}`}
+                className={`w-4 h-4 ${form.source === 'walkin' ? 'text-white' : 'text-muted-foreground'}`}
               />
             </div>
             <div className="text-right">
               <p
-                className={form.source === 'walkin' ? 'text-green-700' : 'text-gray-700'}
+                className={form.source === 'walkin' ? 'text-green-700' : 'text-foreground'}
                 style={{ fontSize: '12px', fontWeight: 700 }}
               >
                 داخل البنك
               </p>
-              <p className="text-gray-400" style={{ fontSize: '10px' }}>
+              <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
                 Walk-in
               </p>
             </div>
@@ -94,23 +94,23 @@ export default function StepOne({
           <button
             type="button"
             onClick={() => updateField('source', 'campaign')}
-            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${form.source === 'campaign' ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-200'}`}
+            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${form.source === 'campaign' ? 'border-purple-500 bg-purple-50' : 'border-border hover:border-purple-200'}`}
           >
             <div
-              className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${form.source === 'campaign' ? 'bg-purple-500' : 'bg-gray-100'}`}
+              className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${form.source === 'campaign' ? 'bg-purple-500' : 'bg-muted'}`}
             >
               <Megaphone
-                className={`w-4 h-4 ${form.source === 'campaign' ? 'text-white' : 'text-gray-400'}`}
+                className={`w-4 h-4 ${form.source === 'campaign' ? 'text-white' : 'text-muted-foreground'}`}
               />
             </div>
             <div className="text-right">
               <p
-                className={form.source === 'campaign' ? 'text-purple-700' : 'text-gray-700'}
+                className={form.source === 'campaign' ? 'text-purple-700' : 'text-foreground'}
                 style={{ fontSize: '12px', fontWeight: 700 }}
               >
                 من حملة
               </p>
-              <p className="text-gray-400" style={{ fontSize: '10px' }}>
+              <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
                 Campaign
               </p>
             </div>
@@ -122,7 +122,7 @@ export default function StepOne({
           <div className="mt-3">
             <select
               {...register('campaignId')}
-              className={`w-full px-4 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all ${errors.campaignId ? 'border-red-300' : 'border-gray-200'}`}
+              className={`w-full px-4 py-3 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all ${errors.campaignId ? 'border-red-300' : 'border-border'}`}
               style={{ fontSize: '13px' }}
             >
               <option value="">— اختر الحملة —</option>
@@ -159,7 +159,7 @@ export default function StepOne({
           <div className="mt-3">
             <select
               {...register('donationCenterId')}
-              className={`w-full px-4 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${errors.donationCenterId ? 'border-red-300' : 'border-gray-200'}`}
+              className={`w-full px-4 py-3 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${errors.donationCenterId ? 'border-red-300' : 'border-border'}`}
               style={{ fontSize: '13px' }}
             >
               <option value="">— اختر مركز التبرع —</option>
@@ -188,12 +188,12 @@ export default function StepOne({
         )}
       </div>
 
-      <div className="border-t border-gray-100" />
+      <div className="border-t border-border" />
 
       {/* Full Name */}
       <div>
         <label
-          className="block text-gray-700 mb-1.5"
+          className="block text-foreground mb-1.5"
           style={{ fontSize: '13px', fontWeight: 600 }}
         >
           <User className="w-4 h-4 inline ml-1 text-green-600" />
@@ -202,7 +202,7 @@ export default function StepOne({
         <input
           {...register('name')}
           placeholder="مثال: أحمد محمد علي"
-          className={`w-full px-4 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${errors.name ? 'border-red-300' : 'border-gray-200'}`}
+          className={`w-full px-4 py-3 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${errors.name ? 'border-red-300' : 'border-border'}`}
           style={{ fontSize: '14px' }}
         />
         {errors.name?.message && (
@@ -216,7 +216,7 @@ export default function StepOne({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label
-            className="block text-gray-700 mb-1.5"
+            className="block text-foreground mb-1.5"
             style={{ fontSize: '13px', fontWeight: 600 }}
           >
             الجنس *
@@ -230,7 +230,7 @@ export default function StepOne({
                 key={v}
                 type="button"
                 onClick={() => updateField('gender', v)}
-                className={`py-3 rounded-xl border-2 transition-all ${form.gender === v ? 'border-green-600 bg-green-50 text-green-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}
+                className={`py-3 rounded-xl border-2 transition-all ${form.gender === v ? 'border-green-600 bg-green-50 text-green-700' : 'border-border text-muted-foreground hover:border-border'}`}
                 style={{
                   fontSize: '13px',
                   fontWeight: form.gender === v ? 700 : 500,
@@ -248,15 +248,15 @@ export default function StepOne({
         </div>
         <div>
           <label
-            className="block text-gray-700 mb-1.5"
+            className="block text-foreground mb-1.5"
             style={{ fontSize: '13px', fontWeight: 600 }}
           >
-            تاريخ الميلاد * <span className="text-gray-400">(العمر 18-65)</span>
+            تاريخ الميلاد * <span className="text-muted-foreground">(العمر 18-65)</span>
           </label>
           <input
             type="date"
             {...register('dateOfBirth')}
-            className={`w-full px-4 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.dateOfBirth ? 'border-red-300' : 'border-gray-200'}`}
+            className={`w-full px-4 py-3 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.dateOfBirth ? 'border-red-300' : 'border-border'}`}
             style={{ fontSize: '14px' }}
           />
           {errors.dateOfBirth?.message && (
@@ -271,7 +271,7 @@ export default function StepOne({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label
-            className="block text-gray-700 mb-1.5"
+            className="block text-foreground mb-1.5"
             style={{ fontSize: '13px', fontWeight: 600 }}
           >
             <Phone className="w-4 h-4 inline ml-1 text-green-600" />
@@ -286,7 +286,7 @@ export default function StepOne({
             maxLength={11}
             inputMode="numeric"
             pattern="[0-9]*"
-            className={`w-full px-4 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.phone ? 'border-red-300' : 'border-gray-200'}`}
+            className={`w-full px-4 py-3 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.phone ? 'border-red-300' : 'border-border'}`}
             style={{ fontSize: '14px' }}
             dir="ltr"
           />
@@ -298,7 +298,7 @@ export default function StepOne({
         </div>
         <div>
           <label
-            className="block text-gray-700 mb-1.5"
+            className="block text-foreground mb-1.5"
             style={{ fontSize: '13px', fontWeight: 600 }}
           >
             <CreditCard className="w-4 h-4 inline ml-1 text-green-600" />
@@ -313,7 +313,7 @@ export default function StepOne({
             maxLength={14}
             inputMode="numeric"
             pattern="[0-9]*"
-            className={`w-full px-4 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.nationalId ? 'border-red-300' : 'border-gray-200'}`}
+            className={`w-full px-4 py-3 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.nationalId ? 'border-red-300' : 'border-border'}`}
             style={{ fontSize: '14px' }}
             dir="ltr"
           />
@@ -328,7 +328,7 @@ export default function StepOne({
       {/* Address → Governorate + District + Area */}
       <div>
         <label
-          className="block text-gray-700 mb-2"
+          className="block text-foreground mb-2"
           style={{ fontSize: '13px', fontWeight: 600 }}
         >
           <MapPin className="w-4 h-4 inline ml-1 text-green-600" />
@@ -338,7 +338,7 @@ export default function StepOne({
           {/* Governorate */}
           <div>
             <label
-              className="block text-gray-500 mb-1.5"
+              className="block text-muted-foreground mb-1.5"
               style={{ fontSize: '11px', fontWeight: 600 }}
             >
               المحافظة *
@@ -350,7 +350,7 @@ export default function StepOne({
                 updateField('district', '');
                 updateField('area', '');
               }}
-              className="w-full px-3 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+              className="w-full px-3 py-3 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
               style={{ fontSize: '13px' }}
             >
               <option value="">— اختر المحافظة —</option>
@@ -364,7 +364,7 @@ export default function StepOne({
           {/* District */}
           <div>
             <label
-              className="block text-gray-500 mb-1.5"
+              className="block text-muted-foreground mb-1.5"
               style={{ fontSize: '11px', fontWeight: 600 }}
             >
               المركز *
@@ -375,7 +375,7 @@ export default function StepOne({
                 updateField('district', e.target.value);
                 updateField('area', '');
               }}
-              className="w-full px-3 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+              className="w-full px-3 py-3 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
               style={{ fontSize: '13px' }}
             >
               <option value="">— اختر المركز —</option>
@@ -389,7 +389,7 @@ export default function StepOne({
           {/* Area */}
           <div>
             <label
-              className="block text-gray-500 mb-1.5"
+              className="block text-muted-foreground mb-1.5"
               style={{ fontSize: '11px', fontWeight: 600 }}
             >
               المنطقة / الشارع *
@@ -398,7 +398,7 @@ export default function StepOne({
               <select
                 value={form.area || ''}
                 onChange={(e) => updateField('area', e.target.value)}
-                className={`w-full px-3 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${errors.area ? 'border-red-300' : 'border-gray-200'}`}
+                className={`w-full px-3 py-3 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${errors.area ? 'border-red-300' : 'border-border'}`}
                 style={{ fontSize: '13px' }}
               >
                 <option value="">— اختر المنطقة —</option>
@@ -412,7 +412,7 @@ export default function StepOne({
               <input
                 {...register('area')}
                 placeholder="أدخل المنطقة / الشارع"
-                className={`w-full px-3 py-3 border rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${errors.area ? 'border-red-300' : 'border-gray-200'}`}
+                className={`w-full px-3 py-3 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${errors.area ? 'border-red-300' : 'border-border'}`}
                 style={{ fontSize: '13px' }}
               />
             )}
@@ -426,7 +426,7 @@ export default function StepOne({
       </div>
 
       {/* Next button */}
-      <div className="border-t border-gray-100 pt-2">
+      <div className="border-t border-border pt-2">
         <button
           type="button"
           onClick={onNext}

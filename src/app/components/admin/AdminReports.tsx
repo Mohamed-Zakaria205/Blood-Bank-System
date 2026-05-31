@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+﻿import { useState, useRef } from 'react';
 import {
   Maximize2,
   Minimize2,
@@ -49,18 +49,18 @@ export default function AdminReports() {
     >
       {/* Loading overlay */}
       {loading && (
-        <div className="absolute inset-0 bg-gray-50 flex flex-col items-center justify-center z-10 rounded-xl">
+        <div className="absolute inset-0 bg-muted/40 flex flex-col items-center justify-center z-10 rounded-xl">
           <div className="text-center">
             <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <BarChart3 className="w-8 h-8 text-green-600" />
             </div>
             <div className="flex items-center gap-2 justify-center mb-2">
               <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
-              <p className="text-gray-700" style={{ fontSize: '16px', fontWeight: 600 }}>
+              <p className="text-foreground" style={{ fontSize: '16px', fontWeight: 600 }}>
                 جاري تحميل لوحة Power BI...
               </p>
             </div>
-            <p className="text-gray-400" style={{ fontSize: '13px' }}>
+            <p className="text-muted-foreground" style={{ fontSize: '13px' }}>
               يرجى الانتظار
             </p>
           </div>
@@ -72,7 +72,7 @@ export default function AdminReports() {
         ref={iframeRef}
         src={url}
         onLoad={handleLoad}
-        className="w-full h-full rounded-xl border border-gray-200"
+        className="w-full h-full rounded-xl border border-border"
         title="Power BI Dashboard - BloodLink"
         allowFullScreen
         style={{ opacity: loading ? 0 : 1, transition: 'opacity 0.3s' }}
@@ -84,17 +84,17 @@ export default function AdminReports() {
     <>
       {/* Fullscreen mode */}
       {fullscreen && (
-        <div className="fixed inset-0 z-50 bg-white p-4" dir="rtl">
+        <div className="fixed inset-0 z-50 bg-card p-4" dir="rtl">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
                 <BarChart3 className="w-4 h-4 text-white" />
               </div>
               <div>
-                <p className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
+                <p className="text-foreground" style={{ fontSize: '16px', fontWeight: 700 }}>
                   التقارير والتحليلات - Power BI
                 </p>
-                <p className="text-gray-400" style={{ fontSize: '12px' }}>
+                <p className="text-muted-foreground" style={{ fontSize: '12px' }}>
                   BloodLink — محافظة بني سويف
                 </p>
               </div>
@@ -102,14 +102,14 @@ export default function AdminReports() {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleRefresh}
-                className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
+                className="flex items-center gap-1.5 px-3 py-2 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
                 style={{ fontSize: '12px' }}
               >
                 <RefreshCw className="w-4 h-4" /> تحديث
               </button>
               <button
                 onClick={() => setFullscreen(false)}
-                className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
+                className="flex items-center gap-1.5 px-3 py-2 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
                 style={{ fontSize: '12px' }}
               >
                 <Minimize2 className="w-4 h-4" /> تصغير
@@ -126,24 +126,24 @@ export default function AdminReports() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+              <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
                 التقارير والتحليلات
               </h1>
-              <p className="text-gray-500" style={{ fontSize: '14px' }}>
+              <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
                 لوحة Power BI المتكاملة لإحصاءات بنك الدم
               </p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowSettings(!showSettings)}
-                className={`flex items-center gap-2 px-4 py-2.5 border rounded-xl transition-all ${showSettings ? 'border-green-400 bg-green-50 text-green-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                className={`flex items-center gap-2 px-4 py-2.5 border rounded-xl transition-all ${showSettings ? 'border-green-400 bg-green-50 text-green-700' : 'border-border text-muted-foreground hover:bg-muted/40'}`}
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 <Settings2 className="w-4 h-4" /> الإعدادات
               </button>
               <button
                 onClick={handleRefresh}
-                className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> تحديث
@@ -160,10 +160,10 @@ export default function AdminReports() {
 
           {/* Settings Panel */}
           {showSettings && (
-            <div className="bg-white rounded-2xl p-5 border border-green-100 shadow-sm">
+            <div className="bg-card rounded-2xl p-5 border border-green-100 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <Settings2 className="w-4 h-4 text-green-600" />
-                <h3 className="text-gray-900" style={{ fontSize: '15px', fontWeight: 700 }}>
+                <h3 className="text-foreground" style={{ fontSize: '15px', fontWeight: 700 }}>
                   إعدادات Power BI
                 </h3>
               </div>
@@ -177,7 +177,7 @@ export default function AdminReports() {
               <div className="flex gap-3">
                 <div className="flex-1">
                   <label
-                    className="block text-gray-700 mb-1.5"
+                    className="block text-foreground mb-1.5"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     رابط التضمين (Embed URL)
@@ -186,7 +186,7 @@ export default function AdminReports() {
                     value={inputUrl}
                     onChange={(e) => setInputUrl(e.target.value)}
                     placeholder="https://app.powerbi.com/view?r=..."
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                    className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
                     style={{ fontSize: '12px' }}
                     dir="ltr"
                   />
@@ -201,7 +201,7 @@ export default function AdminReports() {
                   </button>
                   <button
                     onClick={copyUrl}
-                    className="px-4 py-2.5 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap"
+                    className="px-4 py-2.5 border border-border text-muted-foreground hover:bg-muted/40 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap"
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     {copied ? (
@@ -228,15 +228,15 @@ export default function AdminReports() {
                     ],
                   },
                 ].map((tip, i) => (
-                  <div key={i} className="col-span-3 p-4 bg-gray-50 rounded-xl">
-                    <p className="text-gray-700 mb-2" style={{ fontSize: '13px', fontWeight: 700 }}>
+                  <div key={i} className="col-span-3 p-4 bg-muted/40 rounded-xl">
+                    <p className="text-foreground mb-2" style={{ fontSize: '13px', fontWeight: 700 }}>
                       {tip.title}
                     </p>
                     <ol className="space-y-1">
                       {tip.steps.map((s, j) => (
                         <li
                           key={j}
-                          className="flex items-start gap-2 text-gray-500"
+                          className="flex items-start gap-2 text-muted-foreground"
                           style={{ fontSize: '12px' }}
                         >
                           <span
@@ -256,16 +256,16 @@ export default function AdminReports() {
           )}
 
           {/* Info bar */}
-          <div className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-2xl shadow-sm">
+          <div className="flex items-center justify-between p-4 bg-card border border-border rounded-2xl shadow-sm">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
                 <BarChart3 className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-gray-900" style={{ fontSize: '14px', fontWeight: 700 }}>
+                <p className="text-foreground" style={{ fontSize: '14px', fontWeight: 700 }}>
                   لوحة تحكم Power BI
                 </p>
-                <p className="text-gray-400 truncate max-w-xs" style={{ fontSize: '11px' }}>
+                <p className="text-muted-foreground truncate max-w-xs" style={{ fontSize: '11px' }}>
                   {url}
                 </p>
               </div>
@@ -274,7 +274,7 @@ export default function AdminReports() {
               {loading ? (
                 <div className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 text-green-600 animate-spin" />
-                  <span className="text-gray-500" style={{ fontSize: '12px' }}>
+                  <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
                     جاري التحميل...
                   </span>
                 </div>
@@ -288,7 +288,7 @@ export default function AdminReports() {
               )}
               <button
                 onClick={() => window.open(url, '_blank')}
-                className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 border border-border text-muted-foreground hover:bg-muted/40 rounded-lg transition-all"
                 style={{ fontSize: '12px' }}
               >
                 <ExternalLink className="w-3.5 h-3.5" /> فتح في نافذة جديدة
@@ -297,7 +297,7 @@ export default function AdminReports() {
           </div>
 
           {/* Power BI Embed */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden p-2">
+          <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden p-2">
             <EmbedContainer />
           </div>
 

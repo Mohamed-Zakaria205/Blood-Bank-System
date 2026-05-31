@@ -81,7 +81,7 @@ function testBadge(val: 'negative' | 'positive' | null) {
     );
   return (
     <span
-      className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${val === 'negative' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}
+      className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${val === 'negative' ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400'}`}
       style={{ fontSize: '11px', fontWeight: 800 }}
     >
       {val === 'negative' ? '−' : '+'}
@@ -114,7 +114,7 @@ export default function LabResults() {
   if (isLoading)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={5} cols={6} />
       </div>
@@ -168,10 +168,10 @@ export default function LabResults() {
 
       {/* Page Header */}
       <div>
-        <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 700 }}>
+        <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 700 }}>
           نتائج الفحوصات
         </h1>
-        <p className="text-gray-400 mt-1" style={{ fontSize: '13px' }}>
+        <p className="text-muted-foreground mt-1" style={{ fontSize: '13px' }}>
           سجل شامل لجميع العينات — الفحوصات: HCV · HBV · Syphilis · HIV
         </p>
       </div>
@@ -179,7 +179,7 @@ export default function LabResults() {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: 'إجمالي العينات', value: totals.all, icon: '🔬', btn: 'all', bg: 'bg-white border-gray-100' },
+          { label: 'إجمالي العينات', value: totals.all, icon: '🔬', btn: 'all', bg: 'bg-card border-border' },
           {
             label: 'معلقة', value: totals.pending, icon: '⏳', btn: 'pending', bg: '',
             style: { background: 'rgba(251,191,36,0.08)', borderColor: 'rgba(251,191,36,0.25)' },
@@ -200,10 +200,10 @@ export default function LabResults() {
             style={'style' in s ? s.style : undefined}
           >
             <div className="text-2xl mb-2">{s.icon}</div>
-            <div className="text-gray-900" style={{ fontSize: '24px', fontWeight: 700 }}>
+            <div className="text-foreground" style={{ fontSize: '24px', fontWeight: 700 }}>
               {s.value}
             </div>
-            <div className="text-gray-500" style={{ fontSize: '11px' }}>
+            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>
               {s.label}
             </div>
           </button>
@@ -211,7 +211,7 @@ export default function LabResults() {
       </div>
 
       {/* Tests Reference Strip */}
-      <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 rounded-2xl p-4">
+      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-100 dark:border-green-900/30 rounded-2xl p-4">
         <div className="flex items-center gap-2 mb-3">
           <FlaskConical className="w-4 h-4 text-green-600" />
           <span className="text-green-800" style={{ fontSize: '13px', fontWeight: 700 }}>
@@ -222,7 +222,7 @@ export default function LabResults() {
           {SCREENING_TESTS.map((t, i) => (
             <div
               key={t.key}
-              className="bg-white rounded-xl px-3 py-2.5 border border-green-100 flex items-center gap-2.5"
+              className="bg-card rounded-xl px-3 py-2.5 border border-green-100 dark:border-green-900/30 flex items-center gap-2.5"
             >
               <div className="w-7 h-7 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
                 <span className="text-white" style={{ fontSize: '8px', fontWeight: 900 }}>
@@ -233,7 +233,7 @@ export default function LabResults() {
                 <p className="text-green-700" style={{ fontSize: '12px', fontWeight: 700 }}>
                   {t.abbr}
                 </p>
-                <p className="text-gray-500" style={{ fontSize: '10px' }}>
+                <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
                   {t.label}
                 </p>
               </div>
@@ -274,20 +274,20 @@ export default function LabResults() {
       </div>
 
       {/* Search + Filter */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+      <div className="bg-card rounded-2xl p-4 border border-border shadow-sm">
         <div className="relative">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="بحث بكود العينة (= كود المتبرع) أو رقم الهوية أو اسم المتبرع..."
-            className="w-full bg-gray-50 border border-gray-100 rounded-xl py-3 pr-10 pl-4 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 text-gray-900"
+            className="w-full bg-muted/40 border border-border rounded-xl py-3 pr-10 pl-4 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 text-foreground"
             style={{ fontSize: '13px' }}
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
             >
               <X className="w-4 h-4" />
             </button>
@@ -295,7 +295,7 @@ export default function LabResults() {
         </div>
 
         <div className="flex gap-2 mt-3 flex-wrap items-center">
-          <Filter className="w-4 h-4 text-gray-400" />
+          <Filter className="w-4 h-4 text-muted-foreground" />
           {[
             { key: 'all', label: 'الكل', count: totals.all, activeBg: '#374151' },
             { key: 'pending', label: '⏳ معلق', count: totals.pending, activeBg: '#d97706' },
@@ -305,13 +305,14 @@ export default function LabResults() {
             <button
               key={tab.key}
               onClick={() => setFilter(tab.key)}
-              className="px-3 py-1.5 rounded-xl border-2 transition-all"
+              className={`px-3 py-1.5 rounded-xl border-2 transition-all ${filter === tab.key ? 'text-white' : 'bg-card text-foreground border-border'}`}
               style={{
                 fontSize: '12px',
                 fontWeight: 600,
-                background: filter === tab.key ? tab.activeBg : 'white',
-                color: filter === tab.key ? 'white' : '#374151',
-                borderColor: filter === tab.key ? tab.activeBg : '#e5e7eb',
+                ...(filter === tab.key && {
+                  background: tab.activeBg,
+                  borderColor: tab.activeBg,
+                })
               }}
             >
               {tab.label} ({tab.count})
@@ -321,13 +322,13 @@ export default function LabResults() {
       </div>
 
       {/* Results Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50">
-          <span className="text-gray-600" style={{ fontSize: '13px', fontWeight: 600 }}>
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="px-4 py-3 border-b border-border flex items-center justify-between bg-muted/40">
+          <span className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
             النتائج ({filtered.length})
           </span>
           {search && (
-            <span className="text-gray-400" style={{ fontSize: '12px' }}>
+            <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
               نتائج البحث عن: "<span className="text-green-600">{search}</span>"
             </span>
           )}
@@ -336,28 +337,28 @@ export default function LabResults() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[920px]">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/80">
-                <th className="text-right px-4 py-3.5 text-gray-500 whitespace-nowrap" style={{ fontSize: '11px', fontWeight: 700 }}>
+              <tr className="border-b border-border bg-muted/40/80">
+                <th className="text-right px-4 py-3.5 text-muted-foreground whitespace-nowrap" style={{ fontSize: '11px', fontWeight: 700 }}>
                   <span className="flex items-center gap-1.5">
                     <FlaskConical className="w-3 h-3" />
                     كود العينة
                   </span>
                 </th>
-                <th className="text-right px-3 py-3.5 text-gray-500 whitespace-nowrap" style={{ fontSize: '11px', fontWeight: 600 }}>
+                <th className="text-right px-3 py-3.5 text-muted-foreground whitespace-nowrap" style={{ fontSize: '11px', fontWeight: 600 }}>
                   <span className="flex items-center gap-1">
                     <CreditCard className="w-3 h-3" />
                     رقم الهوية
                   </span>
                 </th>
-                <th className="text-right px-3 py-3.5 text-gray-500" style={{ fontSize: '11px', fontWeight: 600 }}>المتبرع</th>
-                <th className="text-right px-3 py-3.5 text-gray-500" style={{ fontSize: '11px', fontWeight: 600 }}>الفصيلة</th>
+                <th className="text-right px-3 py-3.5 text-muted-foreground" style={{ fontSize: '11px', fontWeight: 600 }}>المتبرع</th>
+                <th className="text-right px-3 py-3.5 text-muted-foreground" style={{ fontSize: '11px', fontWeight: 600 }}>الفصيلة</th>
                 {SCREENING_TESTS.map((t) => (
-                  <th key={t.key} className="text-center px-3 py-3.5 text-gray-500 whitespace-nowrap" style={{ fontSize: '11px', fontWeight: 700 }}>
+                  <th key={t.key} className="text-center px-3 py-3.5 text-muted-foreground whitespace-nowrap" style={{ fontSize: '11px', fontWeight: 700 }}>
                     {t.abbr}
                   </th>
                 ))}
-                <th className="text-right px-3 py-3.5 text-gray-500" style={{ fontSize: '11px', fontWeight: 600 }}>الحالة</th>
-                <th className="text-right px-3 py-3.5 text-gray-500" style={{ fontSize: '11px', fontWeight: 600 }}>التاريخ</th>
+                <th className="text-right px-3 py-3.5 text-muted-foreground" style={{ fontSize: '11px', fontWeight: 600 }}>الحالة</th>
+                <th className="text-right px-3 py-3.5 text-muted-foreground" style={{ fontSize: '11px', fontWeight: 600 }}>التاريخ</th>
                 <th className="px-3 py-3.5" />
               </tr>
             </thead>
@@ -365,14 +366,14 @@ export default function LabResults() {
               {filtered.map((entry) => (
                 <tr
                   key={entry.id}
-                  className="border-b border-gray-50 hover:bg-gray-50/60 transition-colors"
+                  className="border-b border-border hover:bg-muted/40/60 transition-colors"
                   style={{ background: getRowBg(entry) }}
                 >
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-1.5">
                       <FlaskConical className="w-3 h-3 text-green-500 flex-shrink-0" />
                       <span
-                        className="font-mono text-green-700 bg-green-50 px-2 py-0.5 rounded-lg border border-green-100"
+                        className="font-mono text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-2 py-0.5 rounded-lg border border-green-100 dark:border-green-500/20"
                         style={{ fontSize: '11px', fontWeight: 700 }}
                       >
                         {entry.sampleCode}
@@ -381,25 +382,25 @@ export default function LabResults() {
                   </td>
                   <td className="px-3 py-3.5">
                     <div className="flex items-center gap-1">
-                      <CreditCard className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                      <span className="font-mono text-gray-600" style={{ fontSize: '11px' }}>
+                      <CreditCard className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                      <span className="font-mono text-muted-foreground" style={{ fontSize: '11px' }}>
                         {entry.nationalId}
                       </span>
                     </div>
                   </td>
                   <td className="px-3 py-3.5">
                     <div>
-                      <div className="text-gray-900" style={{ fontSize: '12px', fontWeight: 600 }}>
+                      <div className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
                         {entry.donorName}
                       </div>
-                      <div className="font-mono text-gray-400" style={{ fontSize: '10px' }}>
+                      <div className="font-mono text-muted-foreground" style={{ fontSize: '10px' }}>
                         {entry.donorCode}
                       </div>
                     </div>
                   </td>
                   <td className="px-3 py-3.5">
                     <span
-                      className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-lg font-mono"
+                      className="bg-muted text-foreground px-2 py-0.5 rounded-lg font-mono"
                       style={{ fontSize: '12px', fontWeight: 700 }}
                     >
                       {entry.confirmedBloodType || entry.bloodType}
@@ -411,7 +412,7 @@ export default function LabResults() {
                     </td>
                   ))}
                   <td className="px-3 py-3.5">{getStatusBadge(entry)}</td>
-                  <td className="px-3 py-3.5 text-gray-500 whitespace-nowrap" style={{ fontSize: '11px' }}>
+                  <td className="px-3 py-3.5 text-muted-foreground whitespace-nowrap" style={{ fontSize: '11px' }}>
                     {entry.date}
                   </td>
                   <td className="px-3 py-3.5">

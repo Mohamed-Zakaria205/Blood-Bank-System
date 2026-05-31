@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router';
+﻿import { useNavigate } from 'react-router';
 import {
   Package,
   TrendingUp,
@@ -35,7 +35,7 @@ export default function InventoryDashboard() {
   if (isLoadingBags || isLoadingOutflow)
     return (
       <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={5} cols={6} />
       </div>
@@ -74,10 +74,10 @@ export default function InventoryDashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-gray-900" style={{ fontSize: '22px', fontWeight: 800 }}>
+        <h1 className="text-foreground" style={{ fontSize: '22px', fontWeight: 800 }}>
           لوحة مخزون الدم
         </h1>
-        <p className="text-gray-500 mt-0.5" style={{ fontSize: '14px' }}>
+        <p className="text-muted-foreground mt-0.5" style={{ fontSize: '14px' }}>
           مرحباً {user?.name?.split(' ').slice(1, 3).join(' ')} — {format(new Date(), 'EEEE، d MMMM yyyy', { locale: ar })}
         </p>
       </div>
@@ -161,15 +161,15 @@ export default function InventoryDashboard() {
           <button
             key={i}
             onClick={s.action}
-            className={`bg-white rounded-2xl p-5 border ${s.border} shadow-sm hover:shadow-md transition-all text-right`}
+            className={`bg-card rounded-2xl p-5 border ${s.border} shadow-sm hover:shadow-md transition-all text-right`}
           >
             <div className={`w-11 h-11 ${s.bg} rounded-xl flex items-center justify-center mb-4`}>
               <s.icon className={`w-5 h-5 ${s.color}`} />
             </div>
-            <div className="text-gray-900" style={{ fontSize: '30px', fontWeight: 800 }}>
+            <div className="text-foreground" style={{ fontSize: '30px', fontWeight: 800 }}>
               {s.value}
             </div>
-            <div className="text-gray-700 mt-0.5" style={{ fontSize: '13px', fontWeight: 600 }}>
+            <div className="text-foreground mt-0.5" style={{ fontSize: '13px', fontWeight: 600 }}>
               {s.label}
             </div>
           </button>
@@ -178,9 +178,9 @@ export default function InventoryDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Blood type bar */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
+            <h2 className="text-foreground" style={{ fontSize: '16px', fontWeight: 700 }}>
               المتاح حسب الفصيلة
             </h2>
             <button
@@ -211,7 +211,7 @@ export default function InventoryDashboard() {
                     </span>
                   </div>
                   <div className="flex-1">
-                    <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="w-full h-2.5 bg-muted rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full ${color} transition-all`}
                         style={{
@@ -221,7 +221,7 @@ export default function InventoryDashboard() {
                     </div>
                   </div>
                   <span
-                    className="text-gray-700 w-8 text-left"
+                    className="text-foreground w-8 text-left"
                     style={{ fontSize: '13px', fontWeight: 700 }}
                   >
                     {count}
@@ -241,10 +241,10 @@ export default function InventoryDashboard() {
         </div>
 
         {/* Insights panel */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
           <div className="flex items-center gap-2 mb-5">
             <Droplets className="w-5 h-5 text-green-600" />
-            <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
+            <h2 className="text-foreground" style={{ fontSize: '16px', fontWeight: 700 }}>
               مؤشرات المخزون
             </h2>
           </div>
@@ -254,7 +254,7 @@ export default function InventoryDashboard() {
                 label: 'إجمالي الحقائب الفعّالة',
                 value: totalBags,
                 total: null,
-                color: 'text-gray-700',
+                color: 'text-foreground',
               },
               {
                 label: 'المتاحة للاستخدام',
@@ -280,7 +280,7 @@ export default function InventoryDashboard() {
             ].map((item, i) => (
               <div key={i}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-gray-600" style={{ fontSize: '13px' }}>
+                  <span className="text-muted-foreground" style={{ fontSize: '13px' }}>
                     {item.label}
                   </span>
                   <span className={item.color} style={{ fontSize: '14px', fontWeight: 800 }}>
@@ -288,7 +288,7 @@ export default function InventoryDashboard() {
                   </span>
                 </div>
                 {item.total !== null && item.bar && (
-                  <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full ${item.bar}`}
                       style={{
@@ -300,9 +300,9 @@ export default function InventoryDashboard() {
               </div>
             ))}
 
-            <div className="mt-2 p-3 bg-gray-50 rounded-xl">
+            <div className="mt-2 p-3 bg-muted/40 rounded-xl">
               <div className="flex items-center justify-between">
-                <span className="text-gray-600" style={{ fontSize: '13px' }}>
+                <span className="text-muted-foreground" style={{ fontSize: '13px' }}>
                   نسبة الهدر (إتلاف/منتهي)
                 </span>
                 <span
@@ -318,9 +318,9 @@ export default function InventoryDashboard() {
       </div>
 
       {/* Recent outflow */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-border flex items-center justify-between">
+          <h2 className="text-foreground" style={{ fontSize: '16px', fontWeight: 700 }}>
             آخر الحركات
           </h2>
           <button
@@ -334,12 +334,12 @@ export default function InventoryDashboard() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-muted/40">
                 {['رقم السجل', 'الكود', 'الفصيلة', 'النوع', 'المستلم', 'المنفذ', 'التوقيت'].map(
                   (h) => (
                     <th
                       key={h}
-                      className="px-4 py-3 text-right text-gray-500"
+                      className="px-4 py-3 text-right text-muted-foreground"
                       style={{ fontSize: '12px', fontWeight: 600 }}
                     >
                       {h}
@@ -348,9 +348,9 @@ export default function InventoryDashboard() {
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border">
               {outflowRecords.slice(0, 5).map((r) => (
-                <tr key={r.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={r.id} className="hover:bg-muted/40 transition-colors">
                   <td className="px-4 py-3">
                     <span
                       className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded"
@@ -361,7 +361,7 @@ export default function InventoryDashboard() {
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className="font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded"
+                      className="font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded"
                       style={{ fontSize: '11px' }}
                     >
                       {r.bagCode}
@@ -383,13 +383,13 @@ export default function InventoryDashboard() {
                       {r.actionType === 'exported' ? '↑ تصدير' : '✕ إتلاف'}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-600" style={{ fontSize: '12px' }}>
+                  <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '12px' }}>
                     {r.recipientName ?? '—'}
                   </td>
-                  <td className="px-4 py-3 text-gray-600" style={{ fontSize: '12px' }}>
+                  <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '12px' }}>
                     {(r.performedByName || '').split(' ').slice(1, 3).join(' ')}
                   </td>
-                  <td className="px-4 py-3 text-gray-400" style={{ fontSize: '11px' }}>
+                  <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '11px' }}>
                     {r.timestamp}
                   </td>
                 </tr>

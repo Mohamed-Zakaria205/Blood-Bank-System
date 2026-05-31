@@ -1,4 +1,4 @@
-import {
+﻿import {
   CheckCircle2,
   XCircle,
   Clock,
@@ -27,7 +27,7 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+      <div className="bg-card rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="p-5 flex items-center justify-between" style={{ background: headerGradient }}>
           <div>
@@ -40,7 +40,7 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-xl flex items-center justify-center hover:bg-white/20 transition-colors"
+            className="w-8 h-8 rounded-xl flex items-center justify-center hover:bg-card/20 transition-colors"
             style={{ background: 'rgba(255,255,255,0.15)' }}
           >
             <X className="w-4 h-4 text-white" />
@@ -61,14 +61,14 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
                 {entry.sampleCode}
               </div>
             </div>
-            <div className="bg-gray-50 rounded-xl p-3">
+            <div className="bg-muted/40 rounded-xl p-3">
               <div className="flex items-center gap-1.5 mb-1">
-                <CreditCard className="w-3 h-3 text-gray-400" />
-                <div className="text-gray-400" style={{ fontSize: '10px' }}>
+                <CreditCard className="w-3 h-3 text-muted-foreground" />
+                <div className="text-muted-foreground" style={{ fontSize: '10px' }}>
                   رقم الهوية
                 </div>
               </div>
-              <div className="font-mono text-gray-900" style={{ fontSize: '12px', fontWeight: 700 }}>
+              <div className="font-mono text-foreground" style={{ fontSize: '12px', fontWeight: 700 }}>
                 {entry.nationalId}
               </div>
             </div>
@@ -138,7 +138,7 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
           {/* Test Details */}
           {!isPending && (
             <div>
-              <div className="text-gray-700 mb-2.5" style={{ fontSize: '13px', fontWeight: 700 }}>
+              <div className="text-foreground mb-2.5" style={{ fontSize: '13px', fontWeight: 700 }}>
                 تفصيل الفحوصات الأربعة:
               </div>
               <div className="space-y-2">
@@ -148,7 +148,7 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
                   return (
                     <div
                       key={test.key}
-                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl border ${isPositive ? 'bg-red-50 border-red-100' : 'bg-gray-50 border-gray-100'}`}
+                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl border ${isPositive ? 'bg-red-50 border-red-100' : 'bg-muted/40 border-border'}`}
                     >
                       <div className="flex items-center gap-2.5">
                         <div
@@ -162,10 +162,10 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
                           </span>
                         </div>
                         <div>
-                          <p className="text-gray-800" style={{ fontSize: '12px', fontWeight: 600 }}>
+                          <p className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
                             {test.label}
                           </p>
-                          <p className="text-gray-400" style={{ fontSize: '10px' }}>
+                          <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
                             {test.desc}
                           </p>
                         </div>
@@ -203,19 +203,19 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
 
           {/* Footer info */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-gray-50 rounded-xl p-3 text-center">
-              <div className="text-gray-400" style={{ fontSize: '10px' }}>
+            <div className="bg-muted/40 rounded-xl p-3 text-center">
+              <div className="text-muted-foreground" style={{ fontSize: '10px' }}>
                 طبيب المختبر
               </div>
-              <div className="text-gray-800" style={{ fontSize: '12px', fontWeight: 600 }}>
+              <div className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
                 {entry.labDoctor}
               </div>
             </div>
-            <div className="bg-gray-50 rounded-xl p-3 text-center">
-              <div className="text-gray-400" style={{ fontSize: '10px' }}>
+            <div className="bg-muted/40 rounded-xl p-3 text-center">
+              <div className="text-muted-foreground" style={{ fontSize: '10px' }}>
                 التاريخ
               </div>
-              <div className="text-gray-800" style={{ fontSize: '12px', fontWeight: 600 }}>
+              <div className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
                 {entry.date}
               </div>
             </div>
@@ -223,7 +223,7 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
 
           <button
             onClick={onClose}
-            className="w-full py-3 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            className="w-full py-3 rounded-xl bg-muted text-muted-foreground hover:bg-muted transition-colors"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
             إغلاق

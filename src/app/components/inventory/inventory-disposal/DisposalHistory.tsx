@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react';
+﻿import { Search } from 'lucide-react';
 import type { BloodType } from '../../../types';
 import type { OutflowRecord } from '../../../types';
 import { BLOOD_TYPES } from '../../../constants';
@@ -41,34 +41,34 @@ export default function DisposalHistory({
   onClearFilters,
 }: DisposalHistoryProps) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
       {/* History header */}
-      <div className="px-6 py-4 border-b border-gray-100">
-        <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
+      <div className="px-6 py-4 border-b border-border">
+        <h2 className="text-foreground" style={{ fontSize: '16px', fontWeight: 700 }}>
           سجل الإتلاف الكامل
         </h2>
-        <p className="text-gray-500" style={{ fontSize: '12px' }}>
+        <p className="text-muted-foreground" style={{ fontSize: '12px' }}>
           {disposalRecords.length} عملية إتلاف مسجلة
         </p>
       </div>
 
       {/* Filters */}
-      <div className="px-6 py-4 border-b border-gray-50 space-y-3">
+      <div className="px-6 py-4 border-b border-border space-y-3">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               value={histSearch}
               onChange={(e) => onHistSearchChange(e.target.value)}
               placeholder="بحث بكود الحقيبة أو المنفذ..."
-              className="w-full pr-9 pl-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400"
+              className="w-full pr-9 pl-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400"
               style={{ fontSize: '13px' }}
             />
           </div>
           <select
             value={histBloodType}
             onChange={(e) => onHistBloodTypeChange(e.target.value as BloodType | 'all')}
-            className="px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
+            className="px-4 py-2.5 border border-border rounded-xl bg-card text-foreground outline-none"
             style={{ fontSize: '13px' }}
           >
             <option value="all">كل الفصائل</option>
@@ -83,7 +83,7 @@ export default function DisposalHistory({
           <select
             value={histCategory}
             onChange={(e) => onHistCategoryChange(e.target.value)}
-            className="px-3 py-2 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
+            className="px-3 py-2 border border-border rounded-xl bg-card text-foreground outline-none"
             style={{ fontSize: '13px' }}
           >
             <option value="all">كل الأسباب</option>
@@ -97,7 +97,7 @@ export default function DisposalHistory({
             <select
               value={histStaff}
               onChange={(e) => onHistStaffChange(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none"
+              className="px-3 py-2 border border-border rounded-xl bg-card text-foreground outline-none"
               style={{ fontSize: '13px' }}
             >
               <option value="">كل المنفذين</option>
@@ -111,7 +111,7 @@ export default function DisposalHistory({
           {hasHistFilters && (
             <button
               onClick={onClearFilters}
-              className="px-3 py-2 text-gray-400 hover:text-red-500 hover:bg-red-50 border border-gray-200 rounded-xl transition-all"
+              className="px-3 py-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 border border-border rounded-xl transition-all"
               style={{ fontSize: '12px', fontWeight: 600 }}
             >
               × مسح الفلاتر
@@ -124,7 +124,7 @@ export default function DisposalHistory({
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-50">
+            <tr className="bg-muted/40">
               {[
                 'رقم السجل',
                 'كود الحقيبة',
@@ -138,7 +138,7 @@ export default function DisposalHistory({
               ].map((h) => (
                 <th
                   key={h}
-                  className="px-4 py-3 text-right text-gray-500 whitespace-nowrap"
+                  className="px-4 py-3 text-right text-muted-foreground whitespace-nowrap"
                   style={{ fontSize: '11px', fontWeight: 600 }}
                 >
                   {h}
@@ -146,7 +146,7 @@ export default function DisposalHistory({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-border">
             {filteredHistory.map((r) => {
               const catLabel = getCategoryLabel(r.disposalCategory);
               return (
@@ -161,7 +161,7 @@ export default function DisposalHistory({
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
-                      className="font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded"
+                      className="font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded"
                       style={{ fontSize: '11px' }}
                     >
                       {r.bagCode}
@@ -176,7 +176,7 @@ export default function DisposalHistory({
                     </span>
                   </td>
                   <td
-                    className="px-4 py-3 text-gray-500 whitespace-nowrap"
+                    className="px-4 py-3 text-muted-foreground whitespace-nowrap"
                     style={{ fontSize: '11px' }}
                   >
                     {donTypeLabels[r.donationType] ?? r.donationType}
@@ -192,26 +192,26 @@ export default function DisposalHistory({
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
-                      className="px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600"
+                      className="px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground"
                       style={{ fontSize: '11px', fontWeight: 600 }}
                     >
                       مُتلَف
                     </span>
                   </td>
                   <td
-                    className="px-4 py-3 text-gray-400 max-w-xs truncate"
+                    className="px-4 py-3 text-muted-foreground max-w-xs truncate"
                     style={{ fontSize: '11px' }}
                   >
                     {r.notes || '—'}
                   </td>
                   <td
-                    className="px-4 py-3 text-gray-600 whitespace-nowrap"
+                    className="px-4 py-3 text-muted-foreground whitespace-nowrap"
                     style={{ fontSize: '11px' }}
                   >
                     {(r.performedByName || '').split(' ').slice(1, 3).join(' ')}
                   </td>
                   <td
-                    className="px-4 py-3 text-gray-400 whitespace-nowrap"
+                    className="px-4 py-3 text-muted-foreground whitespace-nowrap"
                     style={{ fontSize: '11px' }}
                   >
                     {r.timestamp}

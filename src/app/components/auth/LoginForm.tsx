@@ -60,11 +60,10 @@ export default function LoginForm({
       {/* ── Error Alert ─────────────────────────────────── */}
       {authError && (
         <div
-          className="flex items-start gap-3 p-3.5 rounded-xl mb-5 border"
-          style={{ background: '#fef2f2', borderColor: '#fecaca' }}
+          className="flex items-start gap-3 p-3.5 rounded-xl mb-5 border bg-destructive/10 border-destructive/30"
         >
-          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#ef4444' }} />
-          <p style={{ fontSize: '13px', color: '#dc2626' }}>{authError}</p>
+          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-destructive" />
+          <p className="text-destructive" style={{ fontSize: '13px' }}>{authError}</p>
         </div>
       )}
 
@@ -75,13 +74,13 @@ export default function LoginForm({
           <div>
             <label
               htmlFor="email"
-              className="block mb-1.5"
-              style={{ fontSize: '13px', fontWeight: 600, color: '#374151' }}
+              className="block mb-1.5 text-foreground"
+              style={{ fontSize: '13px', fontWeight: 600 }}
             >
               البريد الإلكتروني
             </label>
             <div className="relative">
-              <Mail className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-gray-400 pointer-events-none" />
+              <Mail className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground pointer-events-none" />
               <input
                 id="email"
                 type="email"
@@ -94,17 +93,12 @@ export default function LoginForm({
                 placeholder="example@bloodlink.benisuef.eg"
                 required
                 dir="ltr"
-                className="w-full pr-10 pl-4 py-3.5 rounded-xl border outline-none transition-all focus:border-green-600 focus:ring-3 focus:ring-green-600/10 focus:bg-white"
-                style={{
-                  fontSize: '13px',
-                  background: '#f9fafb',
-                  borderColor: '#e5e7eb',
-                  color: '#111827',
-                }}
+                className="w-full pr-10 pl-4 py-3.5 rounded-xl border border-border bg-input-background text-foreground outline-none transition-all focus:border-green-600 focus:ring-3 focus:ring-green-600/10 focus:bg-background placeholder:text-muted-foreground"
+                style={{ fontSize: '13px' }}
               />
             </div>
             {errors.email?.message && (
-              <p style={{ fontSize: '12px', color: '#dc2626' }}>{errors.email.message}</p>
+              <p className="text-destructive" style={{ fontSize: '12px' }}>{errors.email.message}</p>
             )}
           </div>
 
@@ -112,13 +106,13 @@ export default function LoginForm({
           <div>
             <label
               htmlFor="password"
-              className="block mb-1.5"
-              style={{ fontSize: '13px', fontWeight: 600, color: '#374151' }}
+              className="block mb-1.5 text-foreground"
+              style={{ fontSize: '13px', fontWeight: 600 }}
             >
               كلمة المرور
             </label>
             <div className="relative">
-              <Lock className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-gray-400 pointer-events-none" />
+              <Lock className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground pointer-events-none" />
               <input
                 id="password"
                 type={showPass ? 'text' : 'password'}
@@ -130,18 +124,13 @@ export default function LoginForm({
                 })}
                 placeholder="••••••••"
                 required
-                className="w-full pr-10 pl-11 py-3.5 rounded-xl border outline-none transition-all focus:border-green-600 focus:ring-3 focus:ring-green-600/10 focus:bg-white"
-                style={{
-                  fontSize: '14px',
-                  background: '#f9fafb',
-                  borderColor: '#e5e7eb',
-                  color: '#111827',
-                }}
+                className="w-full pr-10 pl-11 py-3.5 rounded-xl border border-border bg-input-background text-foreground outline-none transition-all focus:border-green-600 focus:ring-3 focus:ring-green-600/10 focus:bg-background placeholder:text-muted-foreground"
+                style={{ fontSize: '14px' }}
               />
               <button
                 type="button"
                 onClick={() => setShowPass(!showPass)}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 tabIndex={-1}
                 aria-label={showPass ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
               >
@@ -149,7 +138,7 @@ export default function LoginForm({
               </button>
             </div>
             {errors.password?.message && (
-              <p style={{ fontSize: '12px', color: '#dc2626' }}>{errors.password.message}</p>
+              <p className="text-destructive" style={{ fontSize: '12px' }}>{errors.password.message}</p>
             )}
           </div>
 
@@ -157,7 +146,7 @@ export default function LoginForm({
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl text-white flex items-center justify-center gap-2.5 transition-all duration-200 mt-1"
+            className="w-full py-3.5 rounded-xl text-white flex items-center justify-center gap-2.5 transition-all duration-200 mt-1 disabled:cursor-not-allowed"
             style={{
               fontSize: '15px',
               fontWeight: 700,
@@ -165,7 +154,6 @@ export default function LoginForm({
                 ? '#9ca3af'
                 : 'linear-gradient(135deg, #15803d 0%, #22c55e 100%)',
               boxShadow: loading ? 'none' : '0 6px 20px rgba(22,163,74,0.28)',
-              cursor: loading ? 'not-allowed' : 'pointer',
             }}
           >
             {loading ? (

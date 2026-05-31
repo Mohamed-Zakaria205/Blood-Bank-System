@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Toaster } from './components/ui/sonner';
 import { router } from './routes';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { handleApiError } from './api/errors';
 
 import '../styles/fonts.css';
@@ -36,13 +37,15 @@ const queryClient = new QueryClient({
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-      </AuthProvider>
-      {/* Dev-only panel — inspect cache, queries, mutations */}
-      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <RouterProvider router={router} />
+          <Toaster theme="system" />
+        </AuthProvider>
+        {/* Dev-only panel — inspect cache, queries, mutations */}
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

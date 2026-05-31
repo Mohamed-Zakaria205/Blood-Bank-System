@@ -13,8 +13,8 @@ interface SystemAlertsPanelProps {
 
 export default function SystemAlertsPanel({ bloodInventory }: SystemAlertsPanelProps) {
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-      <h2 className="text-gray-900 mb-5" style={{ fontSize: '16px', fontWeight: 700 }}>
+    <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+      <h2 className="text-foreground mb-5" style={{ fontSize: '16px', fontWeight: 700 }}>
         تنبيهات النظام
       </h2>
       <div className="space-y-3">

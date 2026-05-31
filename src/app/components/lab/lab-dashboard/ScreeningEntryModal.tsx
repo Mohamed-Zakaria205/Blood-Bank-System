@@ -1,4 +1,4 @@
-import {
+﻿import {
   CheckCircle2,
   X,
   Check,
@@ -50,7 +50,7 @@ export default function ScreeningEntryModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div
           className={`flex items-center justify-between p-5 rounded-t-2xl ${isUnsafe ? 'bg-gradient-to-r from-red-600 to-red-500' : 'bg-gradient-to-r from-green-700 to-green-600'}`}
@@ -61,13 +61,13 @@ export default function ScreeningEntryModal({
             </h3>
             <div className="flex items-center gap-2 mt-1.5">
               <span
-                className="bg-white/20 text-white px-2.5 py-0.5 rounded-lg font-mono"
+                className="bg-card/20 text-white px-2.5 py-0.5 rounded-lg font-mono"
                 style={{ fontSize: '13px', fontWeight: 800 }}
               >
                 {entryModal.bloodType}
               </span>
               <span
-                className="bg-white/15 text-white/90 px-2.5 py-0.5 rounded-lg"
+                className="bg-card/15 text-white/90 px-2.5 py-0.5 rounded-lg"
                 style={{ fontSize: '11px' }}
               >
                 كود العينة: <span className="font-mono font-bold">{entryModal.donorCode}</span>
@@ -76,7 +76,7 @@ export default function ScreeningEntryModal({
           </div>
           <button
             onClick={onClose}
-            className="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center hover:bg-white/25 transition-colors"
+            className="w-9 h-9 bg-card/15 rounded-xl flex items-center justify-center hover:bg-card/25 transition-colors"
           >
             <X className="w-5 h-5 text-white" />
           </button>
@@ -84,23 +84,23 @@ export default function ScreeningEntryModal({
 
         <div className="p-5 space-y-5">
           {/* Donor / Sample Info */}
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+          <div className="p-4 bg-muted/40 rounded-xl border border-border">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0 border border-green-100">
                 <Droplets className="w-5 h-5 text-green-600" />
               </div>
               <div className="flex-1">
-                <p className="text-gray-900" style={{ fontSize: '14px', fontWeight: 700 }}>
+                <p className="text-foreground" style={{ fontSize: '14px', fontWeight: 700 }}>
                   {entryModal.donorName}
                 </p>
-                <p className="text-gray-500" style={{ fontSize: '12px' }}>
+                <p className="text-muted-foreground" style={{ fontSize: '12px' }}>
                   {donationTypeLabels[entryModal.donationType]}
                 </p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-white rounded-lg px-3 py-2 border border-gray-100">
-                <p className="text-gray-400" style={{ fontSize: '10px' }}>
+              <div className="bg-card rounded-lg px-3 py-2 border border-border">
+                <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
                   كود العينة
                 </p>
                 <p
@@ -110,11 +110,11 @@ export default function ScreeningEntryModal({
                   {entryModal.donorCode}
                 </p>
               </div>
-              <div className="bg-white rounded-lg px-3 py-2 border border-gray-100">
-                <p className="text-gray-400" style={{ fontSize: '10px' }}>
+              <div className="bg-card rounded-lg px-3 py-2 border border-border">
+                <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
                   تاريخ الطلب
                 </p>
-                <p className="text-gray-700" style={{ fontSize: '12px', fontWeight: 600 }}>
+                <p className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
                   {entryModal.requestedAt}
                 </p>
               </div>
@@ -124,11 +124,11 @@ export default function ScreeningEntryModal({
           {/* Blood Type Confirmation */}
           <div>
             <label
-              className="block text-gray-700 mb-2"
+              className="block text-foreground mb-2"
               style={{ fontSize: '13px', fontWeight: 700 }}
             >
               🩸 تأكيد فصيلة الدم *
-              <span className="text-gray-400 mr-2" style={{ fontWeight: 400 }}>
+              <span className="text-muted-foreground mr-2" style={{ fontWeight: 400 }}>
                 (المُعلن: {entryModal.bloodType})
               </span>
             </label>
@@ -141,7 +141,7 @@ export default function ScreeningEntryModal({
                   className={`py-2.5 rounded-xl border-2 transition-all ${
                     form.confirmedBloodType === bt
                       ? 'border-green-600 bg-green-50 text-green-700'
-                      : 'border-gray-200 text-gray-600 hover:border-green-200'
+                      : 'border-border text-muted-foreground hover:border-green-200'
                   }`}
                   style={{
                     fontSize: '14px',
@@ -162,11 +162,11 @@ export default function ScreeningEntryModal({
           {/* Screening Tests */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <AlertCircle className="w-4 h-4 text-gray-500" />
-              <label className="text-gray-700" style={{ fontSize: '13px', fontWeight: 700 }}>
+              <AlertCircle className="w-4 h-4 text-muted-foreground" />
+              <label className="text-foreground" style={{ fontSize: '13px', fontWeight: 700 }}>
                 الفحوصات المخبرية المعيارية
               </label>
-              <span className="mr-auto text-gray-400" style={{ fontSize: '11px' }}>
+              <span className="mr-auto text-muted-foreground" style={{ fontSize: '11px' }}>
                 سالب = طبيعي / موجب = مرضي
               </span>
             </div>
@@ -177,7 +177,7 @@ export default function ScreeningEntryModal({
                   className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all ${
                     form[test.key] === 'positive'
                       ? 'bg-red-50 border-red-200'
-                      : 'bg-white border-gray-100 hover:border-green-200'
+                      : 'bg-card border-border hover:border-green-200'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -195,12 +195,12 @@ export default function ScreeningEntryModal({
                     </div>
                     <div>
                       <p
-                        className="text-gray-800"
+                        className="text-foreground"
                         style={{ fontSize: '13px', fontWeight: 600 }}
                       >
                         {test.label}
                       </p>
-                      <p className="text-gray-400" style={{ fontSize: '10px' }}>
+                      <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
                         {test.desc}
                       </p>
                     </div>
@@ -211,7 +211,7 @@ export default function ScreeningEntryModal({
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
                         form[test.key] === 'negative'
                           ? 'bg-green-600 text-white shadow-sm'
-                          : 'bg-gray-50 border border-gray-200 text-gray-600 hover:bg-green-50 hover:border-green-300'
+                          : 'bg-muted/40 border border-border text-muted-foreground hover:bg-green-50 hover:border-green-300'
                       }`}
                       style={{ fontSize: '12px', fontWeight: 600 }}
                     >
@@ -222,7 +222,7 @@ export default function ScreeningEntryModal({
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
                         form[test.key] === 'positive'
                           ? 'bg-red-500 text-white shadow-sm'
-                          : 'bg-gray-50 border border-gray-200 text-gray-600 hover:bg-red-50 hover:border-red-300'
+                          : 'bg-muted/40 border border-border text-muted-foreground hover:bg-red-50 hover:border-red-300'
                       }`}
                       style={{ fontSize: '12px', fontWeight: 600 }}
                     >
@@ -268,32 +268,32 @@ export default function ScreeningEntryModal({
           {/* Notes */}
           <div>
             <label
-              className="block text-gray-700 mb-1.5"
+              className="block text-foreground mb-1.5"
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
-              ملاحظات إضافية <span className="text-gray-400">(اختياري)</span>
+              ملاحظات إضافية <span className="text-muted-foreground">(اختياري)</span>
             </label>
             <textarea
               rows={2}
               value={form.notes}
               onChange={(e) => onUpdateForm((p) => ({ ...p, notes: e.target.value }))}
               placeholder="أي ملاحظات على الحقيبة أو نتائج الفحص..."
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-green-400 resize-none"
+              className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 focus:outline-none focus:border-green-400 resize-none"
               style={{ fontSize: '13px' }}
             />
           </div>
 
           {/* Lab Doctor */}
-          <div className="bg-gray-50 rounded-xl p-3 flex items-center justify-between">
+          <div className="bg-muted/40 rounded-xl p-3 flex items-center justify-between">
             <div>
-              <span className="text-gray-400" style={{ fontSize: '11px' }}>
+              <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
                 طبيب المختبر:{' '}
               </span>
-              <span className="text-gray-800" style={{ fontSize: '12px', fontWeight: 600 }}>
+              <span className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
                 {userName}
               </span>
             </div>
-            <span className="text-gray-400" style={{ fontSize: '11px' }}>
+            <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
               {formatLocalizedDate(new Date())}
             </span>
           </div>
@@ -301,7 +301,7 @@ export default function ScreeningEntryModal({
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+              className="flex-1 py-3 rounded-xl border border-border text-muted-foreground hover:bg-muted/40 transition-colors"
               style={{ fontSize: '14px', fontWeight: 600 }}
             >
               إلغاء

@@ -1,4 +1,4 @@
-import { X, User, Phone, MapPin, Activity, Calendar, Award, Smartphone } from 'lucide-react';
+﻿import { X, User, Phone, MapPin, Activity, Calendar, Award, Smartphone } from 'lucide-react';
 import { useDonor } from '../../../hooks/useDonors';
 import { statusColors, statusLabels } from './donorsConstants';
 
@@ -17,11 +17,11 @@ export default function ViewDonorModal({ donorId, onClose }: ViewDonorModalProps
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white z-10">
+        <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card z-10">
           <div>
-            <h3 className="text-gray-900" style={{ fontSize: '18px', fontWeight: 700 }}>
+            <h3 className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
               تفاصيل المتبرع
             </h3>
             {donor && (
@@ -32,7 +32,7 @@ export default function ViewDonorModal({ donorId, onClose }: ViewDonorModalProps
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl"
+            className="p-2 text-muted-foreground hover:text-muted-foreground hover:bg-muted rounded-xl"
           >
             <X className="w-5 h-5" />
           </button>
@@ -42,12 +42,12 @@ export default function ViewDonorModal({ donorId, onClose }: ViewDonorModalProps
         <div className="p-6">
           {isLoading && (
             <div className="space-y-4 py-8">
-              <div className="h-6 bg-gray-100 rounded animate-pulse w-1/3 mx-auto" />
+              <div className="h-6 bg-muted rounded animate-pulse w-1/3 mx-auto" />
               <div className="grid grid-cols-2 gap-4">
-                <div className="h-16 bg-gray-50 rounded-xl animate-pulse" />
-                <div className="h-16 bg-gray-50 rounded-xl animate-pulse" />
-                <div className="h-16 bg-gray-50 rounded-xl animate-pulse" />
-                <div className="h-16 bg-gray-50 rounded-xl animate-pulse" />
+                <div className="h-16 bg-muted/40 rounded-xl animate-pulse" />
+                <div className="h-16 bg-muted/40 rounded-xl animate-pulse" />
+                <div className="h-16 bg-muted/40 rounded-xl animate-pulse" />
+                <div className="h-16 bg-muted/40 rounded-xl animate-pulse" />
               </div>
             </div>
           )}
@@ -69,36 +69,36 @@ export default function ViewDonorModal({ donorId, onClose }: ViewDonorModalProps
           {!isLoading && !isError && donor && (
             <div className="space-y-6">
               {/* Section 1: Personal Info */}
-              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-4">
-                <h4 className="text-gray-900 flex items-center gap-2" style={{ fontSize: '15px', fontWeight: 700 }}>
+              <div className="bg-card rounded-2xl p-5 border border-border shadow-sm space-y-4">
+                <h4 className="text-foreground flex items-center gap-2" style={{ fontSize: '15px', fontWeight: 700 }}>
                   <User className="w-4 h-4 text-green-600" /> البيانات الشخصية
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="bg-gray-50 p-3.5 rounded-xl">
-                    <span className="text-gray-500 block mb-1" style={{ fontSize: '12px' }}>الاسم الكامل</span>
-                    <span className="text-gray-900 block" style={{ fontSize: '14px', fontWeight: 600 }}>{donor.name}</span>
+                  <div className="bg-muted/40 p-3.5 rounded-xl">
+                    <span className="text-muted-foreground block mb-1" style={{ fontSize: '12px' }}>الاسم الكامل</span>
+                    <span className="text-foreground block" style={{ fontSize: '14px', fontWeight: 600 }}>{donor.name}</span>
                   </div>
-                  <div className="bg-gray-50 p-3.5 rounded-xl">
-                    <span className="text-gray-500 block mb-1" style={{ fontSize: '12px' }}>الرقم القومي</span>
-                    <span className="text-gray-900 font-mono block" style={{ fontSize: '14px' }}>{donor.nationalId || '—'}</span>
+                  <div className="bg-muted/40 p-3.5 rounded-xl">
+                    <span className="text-muted-foreground block mb-1" style={{ fontSize: '12px' }}>الرقم القومي</span>
+                    <span className="text-foreground font-mono block" style={{ fontSize: '14px' }}>{donor.nationalId || '—'}</span>
                   </div>
-                  <div className="bg-gray-50 p-3.5 rounded-xl">
-                    <span className="text-gray-500 block mb-1" style={{ fontSize: '12px' }}>الجنس</span>
-                    <span className="text-gray-900 block" style={{ fontSize: '14px' }}>
+                  <div className="bg-muted/40 p-3.5 rounded-xl">
+                    <span className="text-muted-foreground block mb-1" style={{ fontSize: '12px' }}>الجنس</span>
+                    <span className="text-foreground block" style={{ fontSize: '14px' }}>
                       {donor.gender === 'male' ? 'ذكر' : donor.gender === 'female' ? 'أنثى' : '—'}
                     </span>
                   </div>
-                  <div className="bg-gray-50 p-3.5 rounded-xl">
-                    <span className="text-gray-500 block mb-1" style={{ fontSize: '12px' }}>تاريخ الميلاد / السن</span>
-                    <span className="text-gray-900 block" style={{ fontSize: '14px' }}>
+                  <div className="bg-muted/40 p-3.5 rounded-xl">
+                    <span className="text-muted-foreground block mb-1" style={{ fontSize: '12px' }}>تاريخ الميلاد / السن</span>
+                    <span className="text-foreground block" style={{ fontSize: '14px' }}>
                       {donor.dateOfBirth ? `${donor.dateOfBirth} (${donor.age} سنة)` : `${donor.age} سنة`}
                     </span>
                   </div>
-                  <div className="bg-gray-50 p-3.5 rounded-xl sm:col-span-2">
-                    <span className="text-gray-500 block mb-1 flex items-center gap-1.5" style={{ fontSize: '12px' }}>
+                  <div className="bg-muted/40 p-3.5 rounded-xl sm:col-span-2">
+                    <span className="text-muted-foreground block mb-1 flex items-center gap-1.5" style={{ fontSize: '12px' }}>
                       <Phone className="w-3.5 h-3.5" /> رقم الهاتف
                     </span>
-                    <span className="text-gray-900 font-mono block text-right" style={{ fontSize: '14px' }} dir="ltr">
+                    <span className="text-foreground font-mono block text-right" style={{ fontSize: '14px' }} dir="ltr">
                       {donor.phone}
                     </span>
                   </div>
@@ -106,71 +106,71 @@ export default function ViewDonorModal({ donorId, onClose }: ViewDonorModalProps
               </div>
 
               {/* Section 2: Address */}
-              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-4">
-                <h4 className="text-gray-900 flex items-center gap-2" style={{ fontSize: '15px', fontWeight: 700 }}>
+              <div className="bg-card rounded-2xl p-5 border border-border shadow-sm space-y-4">
+                <h4 className="text-foreground flex items-center gap-2" style={{ fontSize: '15px', fontWeight: 700 }}>
                   <MapPin className="w-4 h-4 text-green-600" /> العنوان والمنطقة
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="bg-gray-50 p-3.5 rounded-xl">
-                    <span className="text-gray-500 block mb-1" style={{ fontSize: '12px' }}>المحافظة</span>
-                    <span className="text-gray-900 block" style={{ fontSize: '14px', fontWeight: 600 }}>{donor.governorate || '—'}</span>
+                  <div className="bg-muted/40 p-3.5 rounded-xl">
+                    <span className="text-muted-foreground block mb-1" style={{ fontSize: '12px' }}>المحافظة</span>
+                    <span className="text-foreground block" style={{ fontSize: '14px', fontWeight: 600 }}>{donor.governorate || '—'}</span>
                   </div>
-                  <div className="bg-gray-50 p-3.5 rounded-xl">
-                    <span className="text-gray-500 block mb-1" style={{ fontSize: '12px' }}>المركز/المدينة</span>
-                    <span className="text-gray-900 block" style={{ fontSize: '14px', fontWeight: 600 }}>{donor.district || '—'}</span>
+                  <div className="bg-muted/40 p-3.5 rounded-xl">
+                    <span className="text-muted-foreground block mb-1" style={{ fontSize: '12px' }}>المركز/المدينة</span>
+                    <span className="text-foreground block" style={{ fontSize: '14px', fontWeight: 600 }}>{donor.district || '—'}</span>
                   </div>
-                  <div className="bg-gray-50 p-3.5 rounded-xl">
-                    <span className="text-gray-500 block mb-1" style={{ fontSize: '12px' }}>المنطقة/الشارع</span>
-                    <span className="text-gray-900 block" style={{ fontSize: '14px', fontWeight: 600 }}>{donor.area || '—'}</span>
+                  <div className="bg-muted/40 p-3.5 rounded-xl">
+                    <span className="text-muted-foreground block mb-1" style={{ fontSize: '12px' }}>المنطقة/الشارع</span>
+                    <span className="text-foreground block" style={{ fontSize: '14px', fontWeight: 600 }}>{donor.area || '—'}</span>
                   </div>
                   {donor.address && (
-                    <div className="bg-gray-50 p-3.5 rounded-xl sm:col-span-3">
-                      <span className="text-gray-500 block mb-1" style={{ fontSize: '12px' }}>العنوان الكامل المسجل</span>
-                      <span className="text-gray-800 block" style={{ fontSize: '14px' }}>{donor.address}</span>
+                    <div className="bg-muted/40 p-3.5 rounded-xl sm:col-span-3">
+                      <span className="text-muted-foreground block mb-1" style={{ fontSize: '12px' }}>العنوان الكامل المسجل</span>
+                      <span className="text-foreground block" style={{ fontSize: '14px' }}>{donor.address}</span>
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Section 3: Donation & Health Info */}
-              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-4">
-                <h4 className="text-gray-900 flex items-center gap-2" style={{ fontSize: '15px', fontWeight: 700 }}>
+              <div className="bg-card rounded-2xl p-5 border border-border shadow-sm space-y-4">
+                <h4 className="text-foreground flex items-center gap-2" style={{ fontSize: '15px', fontWeight: 700 }}>
                   <Activity className="w-4 h-4 text-green-600" /> السجل وحالة التبرع
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="bg-gray-50 p-3.5 rounded-xl flex items-center justify-between">
-                    <span className="text-gray-500" style={{ fontSize: '13px' }}>فصيلة الدم</span>
+                  <div className="bg-muted/40 p-3.5 rounded-xl flex items-center justify-between">
+                    <span className="text-muted-foreground" style={{ fontSize: '13px' }}>فصيلة الدم</span>
                     <span className="px-3 py-1 bg-red-50 border border-red-100 text-red-700 rounded-lg font-bold" style={{ fontSize: '14px' }}>
                       {donor.bloodType || '—'}
                     </span>
                   </div>
-                  <div className="bg-gray-50 p-3.5 rounded-xl flex items-center justify-between">
-                    <span className="text-gray-500" style={{ fontSize: '13px' }}>حالة الأهلية</span>
+                  <div className="bg-muted/40 p-3.5 rounded-xl flex items-center justify-between">
+                    <span className="text-muted-foreground" style={{ fontSize: '13px' }}>حالة الأهلية</span>
                     <span className={`px-3 py-1 rounded-lg text-sm font-bold ${statusColors[donor.status]}`}>
                       {statusLabels[donor.status] || donor.status}
                     </span>
                   </div>
-                  <div className="bg-gray-50 p-3.5 rounded-xl">
-                    <span className="text-gray-500 flex items-center gap-1.5 mb-1" style={{ fontSize: '12px' }}>
-                      <Calendar className="w-3.5 h-3.5 text-gray-400" /> آخر تبرع
+                  <div className="bg-muted/40 p-3.5 rounded-xl">
+                    <span className="text-muted-foreground flex items-center gap-1.5 mb-1" style={{ fontSize: '12px' }}>
+                      <Calendar className="w-3.5 h-3.5 text-muted-foreground" /> آخر تبرع
                     </span>
-                    <span className="text-gray-900 font-mono block" style={{ fontSize: '14px', fontWeight: 600 }}>{donor.lastDonationDate || '—'}</span>
+                    <span className="text-foreground font-mono block" style={{ fontSize: '14px', fontWeight: 600 }}>{donor.lastDonationDate || '—'}</span>
                   </div>
-                  <div className="bg-gray-50 p-3.5 rounded-xl">
-                    <span className="text-gray-500 block mb-1" style={{ fontSize: '12px' }}>عدد التبرعات</span>
-                    <span className="text-gray-900 block" style={{ fontSize: '14px', fontWeight: 600 }}>{donor.donations !== undefined ? donor.donations : 0}</span>
+                  <div className="bg-muted/40 p-3.5 rounded-xl">
+                    <span className="text-muted-foreground block mb-1" style={{ fontSize: '12px' }}>عدد التبرعات</span>
+                    <span className="text-foreground block" style={{ fontSize: '14px', fontWeight: 600 }}>{donor.donations !== undefined ? donor.donations : 0}</span>
                   </div>
-                  <div className="bg-gray-50 p-3.5 rounded-xl flex items-center justify-between">
-                    <span className="text-gray-500 flex items-center gap-1.5" style={{ fontSize: '13px' }}>
-                      <Award className="w-4 h-4 text-gray-400" /> النقاط المكتسبة
+                  <div className="bg-muted/40 p-3.5 rounded-xl flex items-center justify-between">
+                    <span className="text-muted-foreground flex items-center gap-1.5" style={{ fontSize: '13px' }}>
+                      <Award className="w-4 h-4 text-muted-foreground" /> النقاط المكتسبة
                     </span>
                     <span className="text-amber-600 font-mono font-bold" style={{ fontSize: '15px' }}>{donor.points || 0}</span>
                   </div>
-                  <div className="bg-gray-50 p-3.5 rounded-xl flex items-center justify-between">
-                    <span className="text-gray-500 flex items-center gap-1.5" style={{ fontSize: '13px' }}>
-                      <Smartphone className="w-4 h-4 text-gray-400" /> الحساب على التطبيق
+                  <div className="bg-muted/40 p-3.5 rounded-xl flex items-center justify-between">
+                    <span className="text-muted-foreground flex items-center gap-1.5" style={{ fontSize: '13px' }}>
+                      <Smartphone className="w-4 h-4 text-muted-foreground" /> الحساب على التطبيق
                     </span>
-                    <span className={`font-semibold ${donor.hasAppAccount ? 'text-green-600' : 'text-gray-400'}`} style={{ fontSize: '13px' }}>
+                    <span className={`font-semibold ${donor.hasAppAccount ? 'text-green-600' : 'text-muted-foreground'}`} style={{ fontSize: '13px' }}>
                       {donor.hasAppAccount ? 'نشط' : 'غير متصل'}
                     </span>
                   </div>
@@ -186,7 +186,7 @@ export default function ViewDonorModal({ donorId, onClose }: ViewDonorModalProps
                         <li>{donor.rejectionReason}</li>
                       )}
                       {donor.deferredUntil && (
-                        <li>مؤجل حتى: <span className="font-mono bg-white px-2 py-0.5 rounded text-red-700">{donor.deferredUntil}</span></li>
+                        <li>مؤجل حتى: <span className="font-mono bg-card px-2 py-0.5 rounded text-red-700">{donor.deferredUntil}</span></li>
                       )}
                     </ul>
                   </div>
@@ -197,10 +197,10 @@ export default function ViewDonorModal({ donorId, onClose }: ViewDonorModalProps
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+        <div className="flex items-center justify-end p-6 border-t border-border bg-muted/40 rounded-b-2xl">
           <button
             onClick={onClose}
-            className="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl transition-all font-semibold"
+            className="px-5 py-2 bg-muted hover:bg-gray-300 text-foreground rounded-xl transition-all font-semibold"
             style={{ fontSize: '13px' }}
           >
             إغلاق

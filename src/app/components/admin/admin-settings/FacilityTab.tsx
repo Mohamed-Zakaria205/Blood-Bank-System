@@ -1,4 +1,4 @@
-import { Save, Check } from 'lucide-react';
+﻿import { Save, Check } from 'lucide-react';
 import type { FacilityInfo } from './settingsConstants';
 import { facilityFields } from './settingsConstants';
 
@@ -11,15 +11,15 @@ interface FacilityTabProps {
 
 export default function FacilityTab({ sysInfo, onChange, saved, onSave }: FacilityTabProps) {
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-      <h2 className="text-gray-900 mb-6" style={{ fontSize: '18px', fontWeight: 700 }}>
+    <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+      <h2 className="text-foreground mb-6" style={{ fontSize: '18px', fontWeight: 700 }}>
         بيانات المنشأة الصحية
       </h2>
       <div className="grid grid-cols-2 gap-4">
         {facilityFields.map((f) => (
           <div key={f.key} className={f.key === 'workingHours' ? 'col-span-2' : ''}>
             <label
-              className="block text-gray-700 mb-1.5"
+              className="block text-foreground mb-1.5"
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
               {f.label}
@@ -28,7 +28,7 @@ export default function FacilityTab({ sysInfo, onChange, saved, onSave }: Facili
               type={f.type}
               value={sysInfo[f.key]}
               onChange={(e) => onChange({ ...sysInfo, [f.key]: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+              className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
               style={{ fontSize: '13px' }}
             />
           </div>

@@ -14,9 +14,9 @@ interface BloodInventoryPanelProps {
 
 export default function BloodInventoryPanel({ inventory, onViewAll }: BloodInventoryPanelProps) {
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+    <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-gray-900" style={{ fontSize: '16px', fontWeight: 700 }}>
+        <h2 className="text-foreground" style={{ fontSize: '16px', fontWeight: 700 }}>
           مخزون الدم
         </h2>
         <button
@@ -37,7 +37,7 @@ export default function BloodInventoryPanel({ inventory, onViewAll }: BloodInven
             </div>
             <div className="flex-1">
               <div className="flex justify-between mb-1">
-                <span className="text-gray-700" style={{ fontSize: '12px', fontWeight: 600 }}>
+                <span className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
                   {b.units} وحدة
                 </span>
                 <span
@@ -47,7 +47,7 @@ export default function BloodInventoryPanel({ inventory, onViewAll }: BloodInven
                   {b.status === 'normal' ? 'طبيعي' : b.status === 'low' ? 'منخفض' : 'حرج'}
                 </span>
               </div>
-              <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full ${bloodStatusColor[b.status]}`}
                   style={{ width: `${Math.min((b.units / 50) * 100, 100)}%` }}

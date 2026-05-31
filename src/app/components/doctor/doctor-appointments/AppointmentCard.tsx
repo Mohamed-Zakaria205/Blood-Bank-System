@@ -1,4 +1,4 @@
-import {
+﻿import {
   User,
   XCircle,
   AlertTriangle,
@@ -56,11 +56,11 @@ export default function AppointmentCard({
       <div
         className={`rounded-xl border ${cfg.border} ${cfg.bg} px-4 py-3 flex items-center justify-between`}
       >
-        <span className="text-gray-300" style={{ fontSize: '13px' }}>
+        <span className="text-muted-foreground/50" style={{ fontSize: '13px' }}>
           لا يوجد حجز
         </span>
         <span
-          className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-400"
+          className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground"
           style={{ fontWeight: 600 }}
         >
           متاح
@@ -90,19 +90,19 @@ export default function AppointmentCard({
           </span>
           {slot.campaignId && <CampaignBadge campaignId={slot.campaignId} />}
         </div>
-        <div className="flex items-center gap-1 text-gray-400" style={{ fontSize: '11px' }}>
+        <div className="flex items-center gap-1 text-muted-foreground" style={{ fontSize: '11px' }}>
           <Smartphone className="w-3 h-3" /> تطبيق
         </div>
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <User className="w-4 h-4 text-gray-400 flex-shrink-0" />
-          <span className="text-gray-900" style={{ fontSize: '14px', fontWeight: 700 }}>
+          <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <span className="text-foreground" style={{ fontSize: '14px', fontWeight: 700 }}>
             {slot.donorName}
           </span>
           {slot.donorAge && (
-            <span className="text-gray-400" style={{ fontSize: '12px' }}>
+            <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
               ({slot.donorAge} سنة)
             </span>
           )}
@@ -117,15 +117,15 @@ export default function AppointmentCard({
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div className="flex items-center gap-1.5">
-            <Hash className="w-3.5 h-3.5 text-gray-400" />
-            <span className="text-gray-600 font-mono" style={{ fontSize: '12px' }}>
+            <Hash className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-muted-foreground font-mono" style={{ fontSize: '12px' }}>
               {slot.donorNationalId?.slice(0, 6)}...
               {slot.donorNationalId?.slice(-4)}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Phone className="w-3.5 h-3.5 text-gray-400" />
-            <span className="text-gray-600" style={{ fontSize: '12px' }} dir="ltr">
+            <Phone className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-muted-foreground" style={{ fontSize: '12px' }} dir="ltr">
               {slot.donorPhone}
             </span>
           </div>
