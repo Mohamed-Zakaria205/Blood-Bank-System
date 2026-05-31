@@ -136,11 +136,11 @@ export default function LabResults() {
     const q = search.toLowerCase().trim();
     const matchSearch =
       !q ||
-      r.sampleCode.toLowerCase().includes(q) ||
-      r.donorCode.toLowerCase().includes(q) ||
-      r.donorName.includes(search) ||
-      r.sampleId.toLowerCase().includes(q) ||
-      r.nationalId.includes(search);
+      (r.sampleCode || '').toLowerCase().includes(q) ||
+      (r.donorCode || '').toLowerCase().includes(q) ||
+      (r.donorName || '').includes(search) ||
+      (r.sampleId || '').toLowerCase().includes(q) ||
+      (r.nationalId || '').includes(search);
     const matchFilter =
       filter === 'all' ||
       (filter === 'safe' && r.displayStatus === 'safe') ||

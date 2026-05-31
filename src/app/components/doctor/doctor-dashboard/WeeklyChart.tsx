@@ -17,6 +17,7 @@ function buildWeekData(donations: Donation[]) {
   startOfWeek.setDate(now.getDate() - daysFromSat);
   startOfWeek.setHours(0, 0, 0, 0);
 
+
   // Build Sat→Fri — in RTL flexbox, index 0 (السبت) renders on the right ✓
   return dayNames.map((day, i) => {
     const dayDate = new Date(startOfWeek);

@@ -55,8 +55,8 @@ export default function InventoryHistory() {
     if (filterBloodType !== 'all' && r.bloodType !== filterBloodType) return false;
     if (
       search &&
-      !r.bagCode.includes(search) &&
-      !r.bloodType.includes(search) &&
+      !(r.bagCode || '').includes(search) &&
+      !(r.bloodType || '').includes(search) &&
       !(r.recipientName ?? '').includes(search)
     )
       return false;
@@ -338,7 +338,7 @@ export default function InventoryHistory() {
                     className="px-4 py-3 text-gray-600 whitespace-nowrap"
                     style={{ fontSize: '11px' }}
                   >
-                    {r.performedByName.split(' ').slice(1, 3).join(' ')}
+                    {(r.performedByName || '').split(' ').slice(1, 3).join(' ')}
                   </td>
                   <td
                     className="px-4 py-3 text-gray-400 whitespace-nowrap"

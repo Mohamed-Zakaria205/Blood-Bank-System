@@ -66,8 +66,8 @@ export default function InventoryBags() {
     if (filterType !== 'all' && b.bloodType !== filterType) return false;
 
     return (
-      b.bagCode.toLowerCase().includes(search.toLowerCase()) ||
-      b.bloodType.includes(search) ||
+      (b.bagCode || '').toLowerCase().includes(search.toLowerCase()) ||
+      (b.bloodType || '').includes(search) ||
       (b.donorCode ?? '').includes(search)
     );
   });

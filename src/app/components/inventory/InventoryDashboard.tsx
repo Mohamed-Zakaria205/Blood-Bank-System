@@ -387,7 +387,7 @@ export default function InventoryDashboard() {
                     {r.recipientName ?? '—'}
                   </td>
                   <td className="px-4 py-3 text-gray-600" style={{ fontSize: '12px' }}>
-                    {r.performedByName.split(' ').slice(1, 3).join(' ')}
+                    {(r.performedByName || '').split(' ').slice(1, 3).join(' ')}
                   </td>
                   <td className="px-4 py-3 text-gray-400" style={{ fontSize: '11px' }}>
                     {r.timestamp}
