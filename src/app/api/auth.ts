@@ -2,6 +2,7 @@
 // Auth API service — login / logout / token helpers
 // All endpoints: /Auth/... (relative to VITE_API_URL base)
 // ═══════════════════════════════════════════════════════════
+import axios from 'axios';
 import apiClient from './client';
 import { ApiError } from './errors';
 import type {
@@ -14,17 +15,23 @@ import type {
 } from '../types/auth';
 
 /**
+ * Shared raw Axios instance (bypasses interceptors in client.ts)
+ * Used to avoid infinite redirect loops on auth failures,
+ * thundering herd refresh loops, and improper token retry loops.
+ */
+const rawAxios = axios.create({
+  baseURL: import.meta.env.VITE_API_URL ?? '/api/v1/system',
+  withCredentials: true,
+  headers: {
+    'X-Requested-With': 'XMLHttpRequest',
+  },
+});
+
+/**
  * Authenticate a user.
  * Real mode: POST /Auth/login → { success, message, data: User }
  */
 export async function loginApi(credentials: LoginRequest): Promise<User> {
-
-  // ── Real API call ──
-  // Uses raw axios (NOT apiClient) to bypass the 401 interceptor.
-  // A 401 here means "wrong credentials", not "expired token".
-  const { default: axios } = await import('axios');
-  const baseURL = import.meta.env.VITE_API_URL ?? '/api/v1/system';
-
   // Map common English backend messages → Arabic for the UI
   const ERROR_MAP: Record<string, string> = {
     'Invalid credentials.': 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
@@ -35,14 +42,12 @@ export async function loginApi(credentials: LoginRequest): Promise<User> {
   };
 
   try {
-    const { data: wrapper } = await axios.post<LoginResponse>(
-      `${baseURL}/Auth/login`,
+    const { data: wrapper } = await rawAxios.post<LoginResponse>(
+      '/Auth/login',
       credentials,
       {
-        withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
         },
       },
     );
@@ -71,18 +76,12 @@ export async function loginApi(credentials: LoginRequest): Promise<User> {
 
 /**
  * Fetch the currently authenticated user's profile.
- * Uses a RAW axios instance (not apiClient) intentionally — a 401 here
+ * Uses the RAW axios instance (not apiClient) intentionally — a 401 here
  * means "no session", not "token expired". We must NOT trigger the
  * refresh interceptor or it causes an infinite redirect loop on app load.
  */
 export async function getMeApi(): Promise<User> {
-
-  const { default: axios } = await import('axios');
-  const baseURL = import.meta.env.VITE_API_URL ?? '/api/v1/system';
-  const { data: wrapper } = await axios.get<GetMeResponse>(
-    `${baseURL}/Auth/me`,
-    { withCredentials: true, headers: { 'X-Requested-With': 'XMLHttpRequest' } },
-  );
+  const { data: wrapper } = await rawAxios.get<GetMeResponse>('/Auth/me');
 
   if (!wrapper.success) {
     throw new ApiError(wrapper.message || 'الجلسة غير صالحة', 401);
@@ -95,18 +94,10 @@ export async function getMeApi(): Promise<User> {
  * Silently refresh the access token using the stored refresh token cookie.
  * Real mode: POST /Auth/refresh — browser sends cookie automatically.
  *
- * IMPORTANT: Uses a raw axios call (not apiClient) to avoid triggering
- * the 401 interceptor recursively.
+ * IMPORTANT: Uses rawAxios to avoid triggering the 401 interceptor recursively.
  */
 export async function refreshTokenApi(): Promise<void> {
-
-  const { default: axios } = await import('axios');
-  const baseURL = import.meta.env.VITE_API_URL ?? '/api/v1/system';
-  const { data: wrapper } = await axios.post<RefreshResponse>(
-    `${baseURL}/Auth/refresh`,
-    {},
-    { withCredentials: true, headers: { 'X-Requested-With': 'XMLHttpRequest' } },
-  );
+  const { data: wrapper } = await rawAxios.post<RefreshResponse>('/Auth/refresh', {});
 
   if (!wrapper.success) {
     throw new ApiError(wrapper.message || 'انتهت الجلسة، يرجى تسجيل الدخول مجدداً', 401);
@@ -119,18 +110,7 @@ export async function refreshTokenApi(): Promise<void> {
  */
 export async function logoutApi(): Promise<void> {
   try {
-    const { default: axios } = await import('axios');
-    const baseURL = import.meta.env.VITE_API_URL ?? '/api/v1/system';
-    await axios.post(
-      `${baseURL}/Auth/logout`,
-      {},
-      {
-        withCredentials: true,
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-      }
-    );
+    await rawAxios.post('/Auth/logout', {});
   } catch (err) {
     // Swallow errors — we clear local state regardless
     console.error('Logout API failed', err);

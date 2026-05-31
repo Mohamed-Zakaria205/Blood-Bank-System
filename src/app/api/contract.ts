@@ -23,7 +23,7 @@ export const DonorContractSchema = z.object({
   donorCode: z.string(),
   name: z.string(),
   bloodType: z.string().optional().nullable(),
-  status: z.enum(['eligible', 'deferred', 'rejected']).optional(),
+  status: z.enum(['eligible', 'deferred', 'rejected', 'ineligible']).optional(),
   // Ensure we don't throw hard errors if dates come differently, just log
   lastDonationDate: z.string().optional().nullable(),
 });

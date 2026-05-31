@@ -31,8 +31,9 @@ import NotificationsPanel from './doctor-appointments/NotificationsPanel';
 
 // Compute month range for the month view
 const _d = new Date();
+const _lastDay = new Date(_d.getFullYear(), _d.getMonth() + 1, 0).getDate();
 const MONTH_START = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}-01`;
-const MONTH_END = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}-31`;
+const MONTH_END = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}-${String(_lastDay).padStart(2, '0')}`;
 
 export default function DoctorAppointments() {
   const navigate = useNavigate();
@@ -48,7 +49,13 @@ export default function DoctorAppointments() {
     try {
       const stored = localStorage.getItem('doctor_notifications');
       return stored ? JSON.parse(stored) : [];
-    } catch {
+    } catch (error) {
+      console.error('Failed to parse doctor_notifications from localStorage:', error);
+      try {
+        localStorage.removeItem('doctor_notifications');
+      } catch (e) {
+        // Ignore storage access errors in some environments
+      }
       return [];
     }
   });

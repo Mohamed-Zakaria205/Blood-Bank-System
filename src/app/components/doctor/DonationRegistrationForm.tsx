@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { Check, Smartphone } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -37,7 +37,9 @@ export default function DonationRegistrationForm() {
   const aptId = searchParams.get('apt');
   const { data: appointment = null } = useAppointmentSlotById(aptId);
 
-  const getInitialForm = (): SimpleForm => {
+  const lastResetAptIdRef = useRef<string | undefined>(undefined);
+
+  const getInitialForm = useCallback((): SimpleForm => {
     if (appointment) {
       const birthYear = appointment.donorAge
         ? (appointment.donorAge > 120
@@ -77,7 +79,23 @@ export default function DonationRegistrationForm() {
       };
     }
     return initialForm;
-  };
+  }, [
+    appointment?.id,
+    appointment?.donorAge,
+    appointment?.donorDateOfBirth,
+    appointment?.donorNationalId,
+    appointment?.campaignId,
+    appointment?.centerId,
+    appointment?.donorName,
+    appointment?.donorGender,
+    appointment?.donorPhone,
+    appointment?.donorGovernorate,
+    appointment?.donorDistrict,
+    appointment?.donorArea,
+    appointment?.donorBloodType,
+    appointment?.donationType,
+    appointment?.time,
+  ]);
 
   const [submitting, setSubmitting] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
@@ -97,12 +115,40 @@ export default function DonationRegistrationForm() {
     getValues,
     formState: { errors },
   } = formMethods;
-  const form = watch();
+  const watchedFields = watch([
+    'source',
+    'donationCenterId',
+    'campaignId',
+    'governorate',
+    'district',
+    'bloodType',
+    'donationType',
+    'isAllergic',
+    'diseases',
+    'status',
+  ]);
+
+  const form: SimpleForm = {
+    ...getValues(),
+    source: watchedFields[0],
+    donationCenterId: watchedFields[1],
+    campaignId: watchedFields[2],
+    governorate: watchedFields[3],
+    district: watchedFields[4],
+    bloodType: watchedFields[5],
+    donationType: watchedFields[6],
+    isAllergic: watchedFields[7],
+    diseases: watchedFields[8],
+    status: watchedFields[9],
+  };
 
   useEffect(() => {
-    reset(getInitialForm());
-    setStep(1);
-  }, [appointment, reset]);
+    if (lastResetAptIdRef.current !== appointment?.id) {
+      lastResetAptIdRef.current = appointment?.id;
+      reset(getInitialForm());
+      setStep(1);
+    }
+  }, [appointment?.id, reset, getInitialForm]);
 
   // Explicitly sync address fields AFTER reset settles.
   // The controlled <select> for governorate/district reads form state via watch(),
@@ -115,7 +161,12 @@ export default function DonationRegistrationForm() {
     if (gov) setValue('governorate', gov, { shouldDirty: true });
     if (dist) setValue('district', dist, { shouldDirty: true });
     if (area) setValue('area', area, { shouldDirty: true });
-  }, [appointment, setValue]);
+  }, [
+    appointment?.donorGovernorate,
+    appointment?.donorDistrict,
+    appointment?.donorArea,
+    setValue,
+  ]);
 
   useEffect(() => {
     register('source');

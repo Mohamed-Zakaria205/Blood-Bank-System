@@ -62,32 +62,41 @@ apiClient.interceptors.request.use(
 // to avoid a circular dependency: client.ts → auth.ts → client.ts.
 // ═══════════════════════════════════════════════════════════
 
-/** Tracks whether a refresh is currently in progress */
-let isRefreshing = false;
+/** Tracks refresh state across Hot Module Replacement (HMR) in development */
+interface RefreshState {
+  isRefreshing: boolean;
+  failedQueue: {
+    resolve: () => void;
+    reject: (error: unknown) => void;
+  }[];
+}
 
-/**
- * Queue of requests waiting for the refresh to complete.
- * Each entry stores resolve/reject callbacks that are called
- * once the new token is available (or if refresh fails).
- */
-let failedQueue: {
-  resolve: () => void;
-  reject: (error: unknown) => void;
-}[] = [];
+const _global = globalThis as typeof globalThis & {
+  __bloodlink_refresh_state__?: RefreshState;
+};
+
+if (!_global.__bloodlink_refresh_state__) {
+  _global.__bloodlink_refresh_state__ = {
+    isRefreshing: false,
+    failedQueue: [],
+  };
+}
+
+const refreshState = _global.__bloodlink_refresh_state__;
 
 /**
  * Flush the queue — either retry all with the new token
  * or reject all with the refresh error.
  */
 function processQueue(error: unknown) {
-  failedQueue.forEach((prom) => {
+  refreshState.failedQueue.forEach((prom) => {
     if (!error) {
       prom.resolve();
     } else {
       prom.reject(error);
     }
   });
-  failedQueue = [];
+  refreshState.failedQueue = [];
 }
 
 /**
@@ -140,9 +149,9 @@ apiClient.interceptors.response.use(
     }
 
     // ── If a refresh is already in progress, queue this request ──
-    if (isRefreshing) {
+    if (refreshState.isRefreshing) {
       return new Promise<void>((resolve, reject) => {
-        failedQueue.push({ resolve, reject });
+        refreshState.failedQueue.push({ resolve, reject });
       })
         .then(() => {
           return apiClient(originalRequest);
@@ -152,7 +161,7 @@ apiClient.interceptors.response.use(
 
     // ── Start the refresh ──
     originalRequest._retry = true;
-    isRefreshing = true;
+    refreshState.isRefreshing = true;
 
     try {
       // The API call to /auth/refresh automatically sets the new HttpOnly cookie
@@ -171,7 +180,7 @@ apiClient.interceptors.response.use(
       forceLogout();
       return Promise.reject(handleApiError(refreshError));
     } finally {
-      isRefreshing = false;
+      refreshState.isRefreshing = false;
     }
   },
 );

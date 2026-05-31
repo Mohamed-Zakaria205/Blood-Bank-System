@@ -24,10 +24,6 @@ import axios from 'axios';
 
 /** Fetch all donors (unpaginated — used by components that need the full list) */
 export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
-  // if (USE_MOCK) {
-  //   await new Promise((r) => setTimeout(r, 300));
-  //   return { data: mockDonorStore, total: mockDonorStore.length, page: 1, limit: mockDonorStore.length };
-  // }
   const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
     items?: Donor[];
     data?: Donor[];
@@ -36,12 +32,20 @@ export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
     limit: number;
   }>>('/donors');
   const rawItems = wrapper.data?.items || wrapper.data?.data || [];
-  const total = wrapper.data?.total || rawItems.length;
+  const mappedItems: Donor[] = rawItems.map((item: any) => ({
+    ...item,
+    status: (() => {
+      const rawStatus = item.eligibilityStatus || item.status;
+      return rawStatus === 'rejected' ? 'ineligible' : rawStatus;
+    })(),
+    donations: item.donationsNumber !== undefined ? item.donationsNumber : item.donations,
+  }));
+  const total = wrapper.data?.total || mappedItems.length;
   const result = {
-    data: rawItems,
+    data: mappedItems,
     total,
     page: wrapper.data?.page || 1,
-    limit: wrapper.data?.limit || rawItems.length
+    limit: wrapper.data?.limit || mappedItems.length
   };
   validateContract('Donors List', createPaginatedSchema(DonorContractSchema), result);
   return result;
@@ -110,7 +114,10 @@ export async function fetchPaginatedDonors(
     const rawItems = wrapper.data?.items || wrapper.data?.data || [];
     const mappedItems: Donor[] = rawItems.map((item: any) => ({
       ...item,
-      status: item.eligibilityStatus || item.status,
+      status: (() => {
+        const rawStatus = item.eligibilityStatus || item.status;
+        return rawStatus === 'rejected' ? 'ineligible' : rawStatus;
+      })(),
       donations: item.donationsNumber !== undefined ? item.donationsNumber : item.donations,
     }));
 
@@ -129,13 +136,18 @@ export async function fetchPaginatedDonors(
 }
 
 export async function fetchDonorById(id: string): Promise<ApiResponse<Donor>> {
-  // Always use the real API — the paginated donors list already hits the real
-  // backend (mock was disabled), so the IDs returned are backend UUIDs that
-  // will never be found in the in-memory mockDonorStore.
   try {
     const { data: wrapper } = await apiClient.get<any>(`/Donors/${id}`);
     // Handle both wrapped { success, data: {...} } and bare donor responses
-    const donor: Donor = wrapper?.data ?? wrapper;
+    const rawDonor = wrapper?.data ?? wrapper;
+    const donor: Donor = {
+      ...rawDonor,
+      status: (() => {
+        const rawStatus = rawDonor.eligibilityStatus || rawDonor.status;
+        return rawStatus === 'rejected' ? 'ineligible' : rawStatus;
+      })(),
+      donations: rawDonor.donationsNumber !== undefined ? rawDonor.donationsNumber : rawDonor.donations,
+    };
     return { data: donor };
   } catch (error) {
     console.error('[API] fetchDonorById error:', error);
@@ -144,15 +156,21 @@ export async function fetchDonorById(id: string): Promise<ApiResponse<Donor>> {
 }
 
 export async function searchDonorByNationalId(nationalId: string): Promise<ApiResponse<Donor | null>> {
-  // if (USE_MOCK) {
-  //   await new Promise((r) => setTimeout(r, 300));
-  //   const donor = mockDonorStore.find((d) => d.nationalId === nationalId);
-  //   return { data: donor || null };
-  // }
   try {
     const { data } = await apiClient.get<ApiResponse<Donor | null>>('/Donors/search', {
       params: { nationalId },
     });
+    if (data && data.data) {
+      const rawDonor = data.data as any;
+      data.data = {
+        ...rawDonor,
+        status: (() => {
+          const rawStatus = rawDonor.eligibilityStatus || rawDonor.status;
+          return rawStatus === 'rejected' ? 'ineligible' : rawStatus;
+        })(),
+        donations: rawDonor.donationsNumber !== undefined ? rawDonor.donationsNumber : rawDonor.donations,
+      } as Donor;
+    }
     return data;
   } catch (error: any) {
     if (error.response?.status === 404) {
