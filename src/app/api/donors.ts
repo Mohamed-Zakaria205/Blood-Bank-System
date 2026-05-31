@@ -281,114 +281,21 @@ export async function fetchPaginatedDonations(
 
 /** POST /donations — Step 1: create donation with basic info */
 export async function addDonation(payload: BasicDonationRequest): Promise<ApiResponse<{ id: string } | string>> {
-  // if (USE_MOCK) {
-  //   await new Promise((r) => setTimeout(r, 400));
-  //   const donationId = 'DONATION-' + Date.now();
-  //   const existing = mockDonorStore.find(d => d.nationalId === payload.nationalId);
 
-  //   // Calculate age from dateOfBirth
-  //   let calculatedAge = 25;
-  //   if (payload.dateOfBirth) {
-  //     const dob = new Date(payload.dateOfBirth);
-  //     if (!isNaN(dob.getTime())) {
-  //       const today = new Date();
-  //       let age = today.getFullYear() - dob.getFullYear();
-  //       const monthDiff = today.getMonth() - dob.getMonth();
-  //       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-  //         age--;
-  //       }
-  //       calculatedAge = age;
-  //     }
-  //   }
-  //
-  //   if (!existing) {
-  //     const newDonor = {
-  //       id: 'DON-' + Date.now(),
-  //       donorCode: 'DNR-2025-' + String(Math.floor(Math.random() * 9000) + 1000),
-  //       name: payload.name,
-  //       gender: payload.gender,
-  //       age: calculatedAge,
-  //       nationalId: payload.nationalId,
-  //       phone: payload.phone,
-  //       address: `${payload.area} - ${payload.district}`,
-  //       district: payload.governorate,
-  //       bloodType: 'O+',
-  //       status: 'eligible' as const,
-  //     } satisfies Donor;
-  //     mockDonorStore = [newDonor, ...mockDonorStore];
-  //   }
-  //   // Also add to donations store
-  //   const newDonation: Donation = {
-  //     id: donationId,
-  //     donationCode: 'DTN-2025-' + String(Math.floor(Math.random() * 9000) + 1000),
-  //     donorId: existing?.id || 'DON-' + Date.now(),
-  //     donorCode: existing?.donorCode,
-  //     name: payload.name,
-  //     gender: payload.gender,
-  //     age: calculatedAge,
-  //     nationalId: payload.nationalId,
-  //     phone: payload.phone,
-  //     address: `${payload.area} - ${payload.district}`,
-  //     district: payload.governorate,
-  //     bloodType: 'O+',
-  //     donationType: 'whole',
-  //     source: payload.source,
-  //     campaignId: payload.source === 'campaign' ? payload.donationCenterId : undefined,
-  //     donationDate: new Date().toISOString().split('T')[0],
-  //     diseases: [],
-  //     sentToLab: false,
-  //     status: "",
-  //   };
-  //   mockDonationStore = [newDonation, ...mockDonationStore];
-  //   return { data: donationId, message: 'تم تسجيل التبرع المبدئي بنجاح' };
-  // }
   const { data } = await apiClient.post<ApiResponse<{ id: string } | string>>('/Donations', payload);
   return data;
 }
 
 /** POST /donations/:id/medical-record — Step 2: add medical data */
 export async function addMedicalRecord(donationId: string, payload: MedicalRecordRequest): Promise<ApiResponse<string>> {
-  // if (USE_MOCK) {
-  //   await new Promise((r) => setTimeout(r, 400));
-  //   // Update the donation in mock store with medical data
-  //   const idx = mockDonationStore.findIndex(d => d.id === donationId);
-  //   let donationCode = '';
-  //   if (idx !== -1) {
-  //     mockDonationStore[idx] = {
-  //       ...mockDonationStore[idx],
-  //       diseases: payload.diseases,
-  //       additionalData: payload.additionalData,
-  //       isAllergic: payload.isAllergic,
-  //       bloodType: payload.bloodType || mockDonationStore[idx].bloodType,
-  //       donationType: payload.donationType || mockDonationStore[idx].donationType,
-  //     };
-  //     donationCode = mockDonationStore[idx].donationCode;
-  //
-  //     // Update donor profile bloodType if available
-  //     const donorId = mockDonationStore[idx].donorId;
-  //     const donorIdx = mockDonorStore.findIndex(d => d.id === donorId);
-  //     if (donorIdx !== -1 && payload.bloodType) {
-  //       mockDonorStore[donorIdx] = {
-  //         ...mockDonorStore[donorIdx],
-  //         bloodType: payload.bloodType,
-  //       };
-  //     }
-  //   }
-  //   return { data: donationCode, message: 'تم إضافة السجل الطبي بنجاح' };
-  // }
+
   const { data } = await apiClient.post<ApiResponse<string>>('/Donations/' + donationId + '/medical-record', payload);
   return data;
 }
 
 /** DELETE /donations/:id — remove a donation */
 export async function deleteDonation(donationId: string): Promise<ApiResponse<void>> {
-  // if (USE_MOCK) {
-  //   await new Promise((r) => setTimeout(r, 300));
-  //   const idx = mockDonationStore.findIndex(d => d.id === donationId);
-  //   if (idx === -1) throw new ApiError('التبرع غير موجود', 404);
-  //   mockDonationStore = mockDonationStore.filter(d => d.id !== donationId);
-  //   return { data: undefined as any, message: 'تم حذف التبرع بنجاح' };
-  // }
+
   try {
     const { data } = await apiClient.delete<ApiResponseWrapper<any>>(`/Donations/${donationId}`);
     return {
@@ -403,13 +310,7 @@ export async function deleteDonation(donationId: string): Promise<ApiResponse<vo
 
 /** POST /donations/:id/confirm — mark donation as sent to lab */
 export async function confirmDonation(donationId: string): Promise<ApiResponse<void>> {
-  // if (USE_MOCK) {
-  //   await new Promise((r) => setTimeout(r, 300));
-  //   const idx = mockDonationStore.findIndex(d => d.id === donationId);
-  //   if (idx === -1) throw new ApiError('التبرع غير موجود', 404);
-  //   mockDonationStore[idx] = { ...mockDonationStore[idx], sentToLab: true };
-  //   return { data: undefined as any, message: 'تم إرسال التبرع للمختبر بنجاح' };
-  // }
+
   try {
     const { data } = await apiClient.post<ApiResponseWrapper<any>>(`/Donations/${donationId}/confirm`);
     return {
