@@ -116,7 +116,7 @@ export default function DoctorDashboard() {
       </div>
 
       {/* Source badges summary */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-2xl p-4 border border-green-100 shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0">
             <Building2 className="w-6 h-6 text-green-600" />
