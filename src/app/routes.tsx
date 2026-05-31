@@ -56,6 +56,10 @@ function SuspenseOutlet() {
 
 // ── Root layout — providers live in App.tsx above RouterProvider ──
 function RootLayout() {
+  useEffect(() => {
+    sessionStorage.removeItem('chunk_retry_failed');
+  }, []);
+
   return (
     <div dir="rtl" className="min-h-screen" style={{ fontFamily: "'Tajawal', sans-serif" }}>
       <Suspense fallback={<PageLoader />}>

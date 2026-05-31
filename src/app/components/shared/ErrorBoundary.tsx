@@ -1,9 +1,27 @@
 import { useRouteError, isRouteErrorResponse, useNavigate } from 'react-router';
 import { AlertTriangle, RefreshCcw, Home } from 'lucide-react';
+import { useEffect } from 'react';
 
 export default function ErrorBoundary() {
   const error = useRouteError();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (error instanceof Error) {
+      const isChunkError =
+        error.message.includes('Failed to fetch dynamically imported module') ||
+        error.message.includes('error loading dynamically imported module') ||
+        error.message.includes('ChunkLoadError');
+
+      if (isChunkError) {
+        const hasReloaded = sessionStorage.getItem('chunk_retry_failed');
+        if (!hasReloaded) {
+          sessionStorage.setItem('chunk_retry_failed', 'true');
+          window.location.reload();
+        }
+      }
+    }
+  }, [error]);
 
   return (
     <div
