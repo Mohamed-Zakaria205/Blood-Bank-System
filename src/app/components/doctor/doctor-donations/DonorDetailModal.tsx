@@ -1,4 +1,4 @@
-﻿import {
+import {
   X,
   Building2,
   Smartphone,
@@ -13,6 +13,8 @@ interface DonorDetailModalProps {
 }
 
 export default function DonorDetailModal({ donation, onClose }: DonorDetailModalProps) {
+  const isAppSource = donation.source === 'app' || donation.source === 'mobileapp';
+
   return (
     <div
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
@@ -102,16 +104,16 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
 
               {/* Source */}
               <div
-                className={`p-3 rounded-xl ${donation.source === 'campaign' ? 'bg-purple-50' : donation.source === 'app' ? 'bg-blue-50' : 'bg-green-50'}`}
+                className={`p-3 rounded-xl ${donation.source === 'campaign' ? 'bg-purple-50' : isAppSource ? 'bg-blue-50' : 'bg-green-50'}`}
               >
                 <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                   مصدر التبرع
                 </p>
                 <p
-                  className={`mt-0.5 flex items-center gap-1 ${donation.source === 'campaign' ? 'text-purple-700' : donation.source === 'app' ? 'text-blue-700' : 'text-green-700'}`}
+                  className={`mt-0.5 flex items-center gap-1 ${donation.source === 'campaign' ? 'text-purple-700' : isAppSource ? 'text-blue-700' : 'text-green-700'}`}
                   style={{ fontSize: '13px', fontWeight: 600 }}
                 >
-                  {donation.source === 'app' ? (
+                  {isAppSource ? (
                     <>
                       <Smartphone className="w-3.5 h-3.5" /> من التطبيق
                     </>
