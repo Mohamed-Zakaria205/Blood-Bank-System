@@ -1,13 +1,14 @@
-﻿'use client';
+'use client';
 
 import { Toaster as Sonner, ToasterProps } from 'sonner';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  // NOTE: This project uses Vite (not Next.js), so there is no ThemeProvider.
-  // We default to "system" theme detection instead of reading from next-themes.
+  const { theme } = useTheme();
+
   return (
     <Sonner
-      theme="system"
+      theme={theme}
       position="top-center"
       richColors={true}
       visibleToasts={5}
@@ -20,11 +21,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
           description: 'text-[13px] text-opacity-90',
           actionButton: 'bg-primary text-primary-foreground font-medium rounded-lg px-3 py-1.5',
           cancelButton: 'bg-muted text-muted-foreground font-medium rounded-lg px-3 py-1.5',
-          
+
           // Loading: Default muted palette since richColors doesn't cover loading heavily
-          loading: 
+          loading:
             'bg-card border-border text-foreground dark:bg-gray-900 dark:border-gray-800 dark:text-muted-foreground/50',
-            
+
           // Icon sizing and styling
           icon: 'w-5 h-5 flex-shrink-0',
         },

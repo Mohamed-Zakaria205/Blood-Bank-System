@@ -52,7 +52,7 @@ async function _fetchSlots(
     if (normalizedStatus === 'noshow') {
       normalizedStatus = 'missed';
     }
-    
+
     return {
       ...item,
       status: normalizedStatus as AppointmentSlot['status'],
@@ -61,7 +61,7 @@ async function _fetchSlots(
       centerId: item.centerId,
     };
   });
-  
+
   return {
     data: mappedItems,
     total: wrapper.data?.total || 0,
@@ -142,20 +142,7 @@ export async function fetchAppointmentStats(
 // POST /Appointments/slots/{slotId}/cancel
 // ─────────────────────────────────────────────────────────────
 export async function cancelAppointment(slotId: string, reason: string): Promise<void> {
-  // if (USE_MOCK) {
-  //   await new Promise((r) => setTimeout(r, 400));
-  //   mockSlots = mockSlots.map((s) =>
-  //     s.id === slotId
-  //       ? {
-  //         ...s,
-  //         status: 'cancelled' as const,
-  //         cancelledAt: new Date().toISOString(),
-  //         cancellationReason: reason,
-  //       }
-  //       : s,
-  //   );
-  //   return;
-  // }
+
   await apiClient.post(`/Appointments/slots/${slotId}/cancel`, { reason });
 }
 
@@ -164,18 +151,6 @@ export async function cancelAppointment(slotId: string, reason: string): Promise
 // Marks the appointment as missed (donor didn't show up).
 // ─────────────────────────────────────────────────────────────
 export async function markNoShow(slotId: string): Promise<void> {
-  // if (USE_MOCK) {
-  //   await new Promise((r) => setTimeout(r, 300));
-  //   mockSlots = mockSlots.map((s) =>
-  //     s.id === slotId
-  //       ? {
-  //         ...s,
-  //         status: 'missed' as const,
-  //         notes: s.notes ?? 'لم يحضر',
-  //       }
-  //       : s,
-  //   );
-  //   return;
-  // }
+
   await apiClient.post(`/Appointments/slots/${slotId}/no-show`);
 }

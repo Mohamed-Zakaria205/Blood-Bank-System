@@ -1,4 +1,4 @@
-﻿import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { useNavigate } from 'react-router';
@@ -108,7 +108,7 @@ export default function DoctorAppointments() {
   // ── Server state via React Query ──
   // Server already filters by status, so no client-side filtering needed
   const { data: slots = [], isLoading, isError, refetch } = useAppointmentSlots(slotsFilter);
-  
+
   const { data: stats } = useAppointmentStats(dateRange);
   const cancelMutation = useCancelAppointment();
   const noShowMutation = useMarkNoShow();
@@ -194,18 +194,16 @@ export default function DoctorAppointments() {
           return (
             <div key={slot.id} className="flex gap-3 items-stretch">
               <div
-                className={`flex-shrink-0 w-16 flex flex-col items-center justify-center rounded-xl py-2 ${
-                  slot.status === 'completed' || slot.status === 'missed' || slot.status === 'cancelled'
+                className={`flex-shrink-0 w-16 flex flex-col items-center justify-center rounded-xl py-2 ${slot.status === 'completed' || slot.status === 'missed' || slot.status === 'cancelled'
                     ? 'bg-muted'
                     : 'bg-green-50 border border-green-100'
-                }`}
+                  }`}
               >
                 <span
-                  className={`font-mono ${
-                    slot.status === 'completed' || slot.status === 'missed' || slot.status === 'cancelled'
+                  className={`font-mono ${slot.status === 'completed' || slot.status === 'missed' || slot.status === 'cancelled'
                       ? 'text-muted-foreground'
                       : 'text-green-700'
-                  }`}
+                    }`}
                   style={{ fontSize: '13px', fontWeight: 700 }}
                   dir="ltr"
                 >
