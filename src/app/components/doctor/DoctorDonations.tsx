@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import {
   UserPlus,
@@ -62,6 +62,8 @@ export default function DoctorDonations() {
   const donations = response?.data || [];
   const total = response?.total || 0;
   const totalPages = Math.ceil(total / 10) || 1;
+
+  console.log('Fetched Donations:', donations);
 
   // When filters change, reset to page 1
   const { handleFilterChange } = useFilterChange(setPage);
@@ -243,7 +245,7 @@ export default function DoctorDonations() {
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    {d.source === 'app' ? (
+                    {d.source === 'mobileapp' ? (
                       <span
                         className="flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded-full w-fit"
                         style={{ fontSize: '11px', fontWeight: 700 }}

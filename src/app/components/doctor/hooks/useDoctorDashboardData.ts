@@ -43,7 +43,7 @@ export function useDoctorDashboardData() {
       (d) => isTodayDonation(d.donationDate) && d.source === 'walkin',
     ).length;
     const appToday = donations.filter(
-      (d) => isTodayDonation(d.donationDate) && d.source === 'app',
+      (d) => isTodayDonation(d.donationDate) && (d.source === 'mobileapp'),
     ).length;
     const campaignToday = donations.filter(
       (d) => isTodayDonation(d.donationDate) && d.source === 'campaign',

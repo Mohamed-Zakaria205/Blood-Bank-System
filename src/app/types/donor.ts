@@ -61,7 +61,7 @@ export interface Donation {
   district: string;
   bloodType: BloodType;
   donationType: DonationType;
-  source: 'walkin' | 'app' | 'campaign';
+  source: 'walkin' | 'mobileapp' | 'campaign';
   campaignId?: string;
   campaignName?: string;
   donationDate: string;
