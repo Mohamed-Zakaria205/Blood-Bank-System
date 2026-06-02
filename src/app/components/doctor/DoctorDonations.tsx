@@ -236,7 +236,7 @@ export default function DoctorDonations() {
                       className="px-2 py-0.5 bg-red-50 text-red-600 rounded"
                       style={{ fontSize: '12px', fontWeight: 700 }}
                     >
-                      {d.bloodType}
+                      {d.bloodType || '—'}
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
