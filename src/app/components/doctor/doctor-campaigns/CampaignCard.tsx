@@ -1,4 +1,4 @@
-﻿import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import {
   MapPin,
   Calendar,
@@ -90,7 +90,7 @@ export default function CampaignCard({
         <div className="flex items-center gap-2 text-muted-foreground">
           <MapPin className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
           <span style={{ fontSize: '13px' }}>
-            {c.location} — {c.city}
+            {c.city}
           </span>
         </div>
         <div className="flex items-center gap-2 text-muted-foreground">

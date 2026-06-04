@@ -41,7 +41,7 @@ export async function fetchFilteredCampaigns(
     if (search) {
       const q = search.toLowerCase();
       result = result.filter(
-        (c) => c.title.toLowerCase().includes(q) || c.location.toLowerCase().includes(q),
+        (c) => c.title.toLowerCase().includes(q) || c.city.toLowerCase().includes(q),
       );
     }
     if (status) result = result.filter((c) => c.status === status);

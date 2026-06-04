@@ -1,4 +1,4 @@
-﻿import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import {
   Plus,
   X,
@@ -7,10 +7,59 @@ import {
   Users,
   LayoutGrid,
   Info,
+  MapPin,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { CITIES } from '../../../constants';
 import type { CampaignFormState } from './campaignConstants';
 import { DURATION_OPTIONS, buildSlots } from './campaignConstants';
+
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
+
+// Fix for default leaflet marker icons in React
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+// ── Location Selector Map (internal) ──
+
+function LocationSelectorMap({ lat, lng, onChange }: { lat: number, lng: number, onChange: (lat: number, lng: number) => void }) {
+  const MapEvents = () => {
+    useMapEvents({
+      click(e) {
+        onChange(e.latlng.lat, e.latlng.lng);
+      },
+    });
+    return null;
+  };
+
+  const MapUpdater = ({ lat, lng }: { lat: number; lng: number }) => {
+    const map = useMap();
+    useEffect(() => {
+      map.flyTo([lat, lng], map.getZoom(), { animate: true });
+    }, [lat, lng, map]);
+    return null;
+  };
+
+  return (
+    <div style={{ height: '250px', width: '100%', borderRadius: '0.75rem', overflow: 'hidden', border: '1px solid #e2e8f0', zIndex: 10 }}>
+      <MapContainer center={[lat, lng]} zoom={13} style={{ height: '100%', width: '100%' }}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <Marker position={[lat, lng]} />
+        <MapEvents />
+        <MapUpdater lat={lat} lng={lng} />
+      </MapContainer>
+    </div>
+  );
+}
 
 // ── Slot Preview Card (internal) ──
 
@@ -99,6 +148,31 @@ export default function CreateCampaignModal({
   );
   const totalCapacity = computedSlots.length * (parseInt(form.slotCapacity) || 1);
 
+  const defaultLat = 29.0661;
+  const defaultLng = 31.0994;
+  const currentLat = form.latitude ? parseFloat(form.latitude) : defaultLat;
+  const currentLng = form.longitude ? parseFloat(form.longitude) : defaultLng;
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error('متصفحك لا يدعم تحديد الموقع');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        onUpdateForm((p) => ({
+          ...p,
+          latitude: position.coords.latitude.toString(),
+          longitude: position.coords.longitude.toString(),
+        }));
+        toast.success('تم تحديد الموقع بنجاح');
+      },
+      () => {
+        toast.error('تعذر تحديد موقعك، يرجى التحقق من الصلاحيات');
+      }
+    );
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
@@ -143,20 +217,31 @@ export default function CreateCampaignModal({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
+            <div className="col-span-2">
               <label
                 className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 موقع الحملة *
               </label>
-              <input
-                value={form.location}
-                onChange={(e) => onUpdateForm((p) => ({ ...p, location: e.target.value }))}
-                placeholder="اسم المستشفى أو المركز"
-                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors.location ? 'border-red-300' : 'border-border'}`}
-                style={{ fontSize: '13px' }}
-              />
+              <div className="flex flex-col gap-3 mb-3">
+                <button
+                  type="button"
+                  onClick={handleGetLocation}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-all border border-blue-200"
+                  style={{ fontSize: '13px', fontWeight: 600 }}
+                >
+                  <MapPin className="w-4 h-4" /> تحديد موقعي الحالي
+                </button>
+                <LocationSelectorMap 
+                  lat={currentLat} 
+                  lng={currentLng} 
+                  onChange={(lat, lng) => onUpdateForm(p => ({ ...p, latitude: lat.toString(), longitude: lng.toString() }))} 
+                />
+                <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
+                  يمكنك أيضاً النقر على الخريطة لتحديد موقع الحملة بدقة.
+                </span>
+              </div>
               {errors.location && (
                 <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
                   {errors.location}
@@ -182,26 +267,6 @@ export default function CreateCampaignModal({
                   </option>
                 ))}
               </select>
-            </div>
-            <div>
-              <label
-                className="block text-foreground mb-1.5"
-                style={{ fontSize: '13px', fontWeight: 600 }}
-              >
-                تاريخ الحملة *
-              </label>
-              <input
-                type="date"
-                value={form.date}
-                onChange={(e) => onUpdateForm((p) => ({ ...p, date: e.target.value }))}
-                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 ${errors.date ? 'border-red-300' : 'border-border'}`}
-                style={{ fontSize: '13px' }}
-              />
-              {errors.date && (
-                <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
-                  {errors.date}
-                </p>
-              )}
             </div>
             <div>
               <label
@@ -418,24 +483,7 @@ export default function CreateCampaignModal({
                     </div>
                   </div>
 
-                  {/* Legend */}
-                  <div className="flex items-center gap-4">
-                    <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
-                      مؤشرات الحالة:
-                    </span>
-                    {[
-                      { color: 'bg-green-500', label: 'متاح' },
-                      { color: 'bg-orange-400', label: 'يوشك الامتلاء' },
-                      { color: 'bg-red-500', label: 'ممتلئ' },
-                    ].map((l) => (
-                      <div key={l.label} className="flex items-center gap-1.5">
-                        <div className={`w-2.5 h-2.5 rounded-full ${l.color}`} />
-                        <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
-                          {l.label}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                  {/* Removed Legend */}
 
                   {/* Slot grid */}
                   <div
@@ -472,6 +520,79 @@ export default function CreateCampaignModal({
                   <p className="text-muted-foreground" style={{ fontSize: '13px' }}>
                     حدد وقت البداية والانتهاء لمعاينة الفترات الزمنية
                   </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── Recurrence Settings ── */}
+          <div className="p-5 border border-border rounded-xl bg-muted/20">
+            <h4 className="text-foreground mb-4" style={{ fontSize: '15px', fontWeight: 700 }}>
+              تكرار الحملة
+            </h4>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-foreground mb-1.5" style={{ fontSize: '13px', fontWeight: 600 }}>
+                  معدل التكرار
+                </label>
+                <select
+                  value={form.recurrenceType}
+                  onChange={(e) => onUpdateForm((p) => ({ ...p, recurrenceType: e.target.value as any, recurrenceDays: [] }))}
+                  className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                  style={{ fontSize: '13px' }}
+                >
+                  <option value="none">لا تتكرر (افتراضي)</option>
+                  <option value="daily">يومياً</option>
+                  <option value="weekly">أسبوعياً</option>
+                  <option value="monthly">شهرياً</option>
+                  <option value="custom">مخصص (أيام محددة في الأسبوع)</option>
+                </select>
+              </div>
+
+              {form.recurrenceType === 'custom' && (
+                <div>
+                  <label className="block text-foreground mb-1.5" style={{ fontSize: '13px', fontWeight: 600 }}>
+                    أيام التكرار
+                  </label>
+                  <div className="flex flex-row-reverse flex-wrap gap-2 text-center" dir="ltr">
+                    {['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].map((day, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          const isSelected = form.recurrenceDays.includes(idx);
+                          const newDays = isSelected
+                            ? form.recurrenceDays.filter(d => d !== idx)
+                            : [...form.recurrenceDays, idx];
+                          onUpdateForm((p) => ({ ...p, recurrenceDays: newDays }));
+                        }}
+                        className={`flex-1 min-w-[40px] py-2 px-2 rounded-lg border transition-all ${form.recurrenceDays.includes(idx) ? 'bg-green-600 text-white border-green-600 shadow-sm' : 'bg-muted/40 text-muted-foreground border-border hover:bg-muted'}`}
+                        style={{ fontSize: '12px', fontWeight: 600 }}
+                      >
+                        {day}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.recurrence && (
+                    <p className="text-red-500 mt-1 text-right" style={{ fontSize: '11px' }}>
+                      {errors.recurrence}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {form.recurrenceType !== 'none' && (
+                <div>
+                  <label className="block text-foreground mb-1.5" style={{ fontSize: '13px', fontWeight: 600 }}>
+                    تاريخ انتهاء التكرار (اختياري)
+                  </label>
+                  <input
+                    type="date"
+                    value={form.recurrenceEndDate || ''}
+                    onChange={(e) => onUpdateForm((p) => ({ ...p, recurrenceEndDate: e.target.value }))}
+                    className="w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                    style={{ fontSize: '13px' }}
+                  />
                 </div>
               )}
             </div>

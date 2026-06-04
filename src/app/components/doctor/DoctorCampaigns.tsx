@@ -72,10 +72,13 @@ export default function DoctorCampaigns() {
   const validate = () => {
     const e: Record<string, string> = {};
     if (!form.title.trim()) e.title = 'أدخل عنوان الحملة';
-    if (!form.location.trim()) e.location = 'أدخل موقع الحملة';
-    if (!form.date) e.date = 'اختر تاريخ الحملة';
+    if (!form.latitude || !form.longitude) e.location = 'يرجى تحديد الموقع';
     if (!form.targetDonors || +form.targetDonors < 1) e.targetDonors = 'أدخل العدد المستهدف';
-    if (form.startTime >= form.endTime) e.startTime = 'وقت البداية يجب أن يكون قبل وقت الانتهاء';
+    
+    if (form.recurrenceType === 'custom' && form.recurrenceDays.length === 0) {
+      e.recurrence = 'يرجى اختيار يوم واحد على الأقل';
+    }
+    
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -85,15 +88,25 @@ export default function DoctorCampaigns() {
     const newCampaign: Campaign = {
       id: `CAM-${Date.now()}`,
       title: form.title,
-      location: form.location,
+      latitude: parseFloat(form.latitude) || undefined,
+      longitude: parseFloat(form.longitude) || undefined,
       city: form.city,
-      date: form.date,
       targetDonors: +form.targetDonors,
       registeredDonors: 0,
+      startTime: form.startTime,
+      endTime: form.endTime,
+      slotDuration: +form.slotDuration,
+      slotCapacity: +form.slotCapacity,
       status: 'active',
       createdBy: user?.id || 'USR-002',
       createdByName: user?.name || 'طبيب',
       description: form.description,
+      recurrence: {
+        enabled: form.recurrenceType !== 'none',
+        type: form.recurrenceType,
+        weekDays: form.recurrenceType === 'custom' ? form.recurrenceDays : undefined,
+        endDate: form.recurrenceEndDate || null,
+      }
     };
     createCampaignMutation.mutate(newCampaign, {
       onSuccess: () => {
@@ -121,7 +134,16 @@ export default function DoctorCampaigns() {
           </p>
         </div>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            const now = new Date();
+            const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            const later = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+            const laterTime = `${String(later.getHours()).padStart(2, '0')}:${String(later.getMinutes()).padStart(2, '0')}`;
+
+            setForm({ ...FORM_DEFAULTS, startTime: currentTime, endTime: laterTime });
+            setShowModal(true);
+          }}
           className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl transition-all shadow-sm bg-green-600 hover:bg-green-700"
           style={{ fontSize: '14px', fontWeight: 700 }}
         >

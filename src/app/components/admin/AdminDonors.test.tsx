@@ -212,7 +212,7 @@ describe('AdminDonors Component', () => {
     });
 
     const phoneInput = screen.getByDisplayValue('01011112222');
-    const nameInput = screen.getByDisplayValue('أحمد محمود علي');
+    const _nameInput = screen.getByDisplayValue('أحمد محمود علي');
     const nationalIdInput = screen.getByDisplayValue('29001012409876');
 
     // Test phone validation (empty)

@@ -39,7 +39,7 @@ export const donations: Donation[] = [
     district: 'الواسطى',
     bloodType: 'A+',
     donationType: 'plasma',
-    source: 'app',
+    source: 'mobileapp',
     donationDate: '2026-05-24',
     diseases: [],
     additionalData: {
@@ -63,7 +63,7 @@ export const donations: Donation[] = [
     district: 'ناصر',
     bloodType: 'B-',
     donationType: 'wholeblood',
-    source: 'app',
+    source: 'mobileapp',
     donationDate: '2026-05-25',
     diseases: ['hypertension'],
     additionalData: {
@@ -224,7 +224,7 @@ export const donations: Donation[] = [
     district: 'ببا',
     bloodType: 'A+',
     donationType: 'plasma',
-    source: 'app',
+    source: 'mobileapp',
     donationDate: '2026-05-28',
     diseases: [],
     additionalData: {

@@ -1,4 +1,4 @@
-﻿// ── Shared types and constants for DoctorCampaigns module ──
+// ── Shared types and constants for DoctorCampaigns module ──
 
 export const statusColors: Record<string, string> = {
   active: 'bg-emerald-100 text-emerald-700',
@@ -21,15 +21,18 @@ export const DURATION_OPTIONS = [
 
 export const FORM_DEFAULTS = {
   title: '',
-  location: '',
   city: 'مركز وبندر بني سويف',
-  date: '',
-  targetDonors: '',
+  latitude: '',
+  longitude: '',
+  targetDonors: '30',
   description: '',
   startTime: '08:00',
   endTime: '16:00',
-  slotDuration: '30',
-  slotCapacity: '2',
+  slotDuration: '15',
+  slotCapacity: '5',
+  recurrenceType: 'none' as 'none' | 'daily' | 'weekly' | 'monthly' | 'custom',
+  recurrenceDays: [] as number[],
+  recurrenceEndDate: '',
 };
 
 export type CampaignFormState = typeof FORM_DEFAULTS;
@@ -53,14 +56,23 @@ export function buildSlots(
   const [sh, sm] = startTime.split(':').map(Number);
   const [eh, em] = endTime.split(':').map(Number);
   const startMin = sh * 60 + sm;
-  const endMin = eh * 60 + em;
+  let endMin = eh * 60 + em;
   const dur = parseInt(duration) || 30;
   const cap = Math.max(1, parseInt(capacity) || 1);
-  if (endMin <= startMin || dur <= 0) return [];
+  
+  // Support campaigns crossing midnight
+  if (endMin <= startMin) {
+    endMin += 24 * 60;
+  }
+  
+  if (dur <= 0) return [];
+  
   const result: GeneratedSlot[] = [];
   for (let t = startMin; t + dur <= endMin; t += dur) {
-    const fmt = (min: number) =>
-      `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`;
+    const fmt = (min: number) => {
+      const normalizedMin = min % (24 * 60);
+      return `${String(Math.floor(normalizedMin / 60)).padStart(2, '0')}:${String(normalizedMin % 60).padStart(2, '0')}`;
+    };
     result.push({
       time: fmt(t),
       endTime: fmt(t + dur),

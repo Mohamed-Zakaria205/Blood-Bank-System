@@ -3,21 +3,33 @@
 // ═══════════════════════════════════════════════════════════
 import type { CampaignStatus } from './common';
 
+export interface RecurrenceSettings {
+  enabled: boolean;
+  type: 'none' | 'daily' | 'weekly' | 'monthly' | 'custom';
+  weekDays?: number[]; // [0 = Sunday, 1 = Monday, etc.]
+  endDate?: string | null;
+}
+
 export interface Campaign {
   id: string;
   title: string;
-  location: string;
   city: string;
-  date: string;
-  endDate?: string;
+  latitude?: number;
+  longitude?: number;
+  date?: string;
   targetDonors: number;
   registeredDonors: number;
+  startTime: string;
+  endTime: string;
+  slotDuration: number;
+  slotCapacity: number;
   /** Number of app-booked appointments for this campaign — returned by the backend. */
   appointmentsCount?: number;
   status: CampaignStatus;
   createdBy: string;
   createdByName: string;
   description: string;
+  recurrence?: RecurrenceSettings;
 }
 
 export type CreateCampaignRequest = Omit<Campaign, 'id'>;

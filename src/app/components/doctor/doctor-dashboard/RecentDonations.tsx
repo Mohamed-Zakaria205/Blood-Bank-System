@@ -1,4 +1,4 @@
-﻿import { ArrowUpRight, Building2, Smartphone, Megaphone } from 'lucide-react';
+import { ArrowUpRight, Building2, Smartphone, Megaphone } from 'lucide-react';
 import type { Donation } from '../../../types/donor';
 
 interface RecentDonorsProps {
@@ -7,7 +7,7 @@ interface RecentDonorsProps {
 }
 
 const SOURCE_MAP = {
-  app:      { icon: Smartphone, label: 'تطبيق',   color: 'text-blue-600' },
+  mobileapp:      { icon: Smartphone, label: 'تطبيق',   color: 'text-blue-600' },
   campaign: { icon: Megaphone,  label: 'حملة',     color: 'text-purple-600' },
   walkin:   { icon: Building2,  label: 'البنك',    color: 'text-green-600' },
 };

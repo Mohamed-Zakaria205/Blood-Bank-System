@@ -1,4 +1,4 @@
-﻿import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import {
   UserPlus,
   Megaphone,
@@ -147,7 +147,7 @@ export default function DoctorDashboard() {
           </div>
           <div>
             <div className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
-              {donations.filter((d) => d.source === 'app').length}
+              {donations.filter((d) => d.source === 'mobileapp').length}
             </div>
             <div className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>حجز من التطبيق</div>
             <div className="text-muted-foreground" style={{ fontSize: '11px' }}>{appToday} اليوم</div>

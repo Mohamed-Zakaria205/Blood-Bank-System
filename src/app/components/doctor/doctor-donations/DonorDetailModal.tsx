@@ -13,7 +13,7 @@ interface DonorDetailModalProps {
 }
 
 export default function DonorDetailModal({ donation, onClose }: DonorDetailModalProps) {
-  const isAppSource = donation.source === 'app' || donation.source === 'mobileapp';
+  const isAppSource = donation.source === 'mobileapp';
 
   return (
     <div
@@ -56,7 +56,7 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
                 ['الهاتف', donation.phone],
                 ['المدينة', donation.district],
                 ['العنوان', donation.address],
-                ['فصيلة الدم', donation.bloodType || '—'],
+                ['فصيلة الدم', donation.bloodType],
               ].map(([label, val]) => (
                 <div key={label} className="p-3 bg-muted/40 rounded-xl">
                   <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
