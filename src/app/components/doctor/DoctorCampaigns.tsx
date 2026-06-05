@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { useFilteredCampaigns, useCreateCampaign } from '../../hooks/useCampaigns';
+import { useFilteredCampaigns, useCreateCampaign, useUpdateCampaign, useDeleteCampaign } from '../../hooks/useCampaigns';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'sonner';
 import {
@@ -45,10 +45,13 @@ export default function DoctorCampaigns() {
   const totalPages = Math.ceil(total / 6) || 1;
 
   const createCampaignMutation = useCreateCampaign();
+  const updateCampaignMutation = useUpdateCampaign();
+  const deleteCampaignMutation = useDeleteCampaign();
   const cancelMutation = useCancelAppointment();
   const [showModal, setShowModal] = useState(false);
   const [expandedCampaign, setExpandedCampaign] = useState<string | null>(null);
   const [cancelTarget, setCancelTarget] = useState<AppointmentSlot | null>(null);
+  const [editingCampaignId, setEditingCampaignId] = useState<string | null>(null);
 
   // ── Form state ──
   const [form, setForm] = useState<CampaignFormState>(FORM_DEFAULTS);
@@ -83,23 +86,18 @@ export default function DoctorCampaigns() {
     return Object.keys(e).length === 0;
   };
 
-  const createCampaign = () => {
+  const saveCampaign = () => {
     if (!validate()) return;
-    const newCampaign: Campaign = {
-      id: `CAM-${Date.now()}`,
+    const campaignData = {
       title: form.title,
       latitude: parseFloat(form.latitude) || undefined,
       longitude: parseFloat(form.longitude) || undefined,
       city: form.city,
       targetDonors: +form.targetDonors,
-      registeredDonors: 0,
       startTime: form.startTime,
       endTime: form.endTime,
       slotDuration: +form.slotDuration,
       slotCapacity: +form.slotCapacity,
-      status: 'active',
-      createdBy: user?.id || 'USR-002',
-      createdByName: user?.name || 'طبيب',
       description: form.description,
       recurrence: {
         enabled: form.recurrenceType !== 'none',
@@ -108,17 +106,78 @@ export default function DoctorCampaigns() {
         endDate: form.recurrenceEndDate || null,
       }
     };
-    createCampaignMutation.mutate(newCampaign, {
-      onSuccess: () => {
-        toast.success('تم إنشاء الحملة بنجاح');
-        setShowModal(false);
-        setForm(FORM_DEFAULTS);
-        setErrors({});
-      },
-      onError: () => {
-        toast.error('تعذر إنشاء الحملة، حاول مرة أخرى');
-      },
+
+    if (editingCampaignId) {
+      updateCampaignMutation.mutate(
+        { id: editingCampaignId, payload: campaignData },
+        {
+          onSuccess: () => {
+            toast.success('تم تحديث الحملة بنجاح');
+            setShowModal(false);
+            setForm(FORM_DEFAULTS);
+            setEditingCampaignId(null);
+            setErrors({});
+          },
+          onError: () => {
+            toast.error('تعذر تحديث الحملة، حاول مرة أخرى');
+          },
+        }
+      );
+    } else {
+      const newCampaign: Campaign = {
+        ...campaignData,
+        id: `CAM-${Date.now()}`,
+        registeredDonors: 0,
+        status: 'active',
+        createdBy: user?.id || 'USR-002',
+        createdByName: user?.name || 'طبيب',
+      };
+      createCampaignMutation.mutate(newCampaign, {
+        onSuccess: () => {
+          toast.success('تم إنشاء الحملة بنجاح');
+          setShowModal(false);
+          setForm(FORM_DEFAULTS);
+          setEditingCampaignId(null);
+          setErrors({});
+        },
+        onError: () => {
+          toast.error('تعذر إنشاء الحملة، حاول مرة أخرى');
+        },
+      });
+    }
+  };
+
+  const handleEditCampaign = (campaign: Campaign) => {
+    setForm({
+      title: campaign.title,
+      city: campaign.city,
+      latitude: campaign.latitude?.toString() || '',
+      longitude: campaign.longitude?.toString() || '',
+      targetDonors: campaign.targetDonors.toString(),
+      description: campaign.description,
+      startTime: campaign.startTime,
+      endTime: campaign.endTime,
+      slotDuration: campaign.slotDuration.toString(),
+      slotCapacity: campaign.slotCapacity.toString(),
+      recurrenceType: campaign.recurrence?.type || 'none',
+      recurrenceDays: campaign.recurrence?.weekDays || [],
+      recurrenceEndDate: campaign.recurrence?.endDate || '',
     });
+    setEditingCampaignId(campaign.id);
+    setShowModal(true);
+  };
+
+  const handleDeleteCampaign = (campaign: Campaign) => {
+    if (window.confirm(`هل أنت متأكد من حذف حملة "${campaign.title}"؟`)) {
+      deleteCampaignMutation.mutate(campaign.id, {
+        onSuccess: () => {
+          toast.success('تم حذف الحملة بنجاح');
+        },
+        onError: () => {
+          toast.error('تعذر حذف الحملة، حاول مرة أخرى');
+        },
+      });
+    }
   };
 
   return (
@@ -189,6 +248,8 @@ export default function DoctorCampaigns() {
             expandedCampaign={expandedCampaign}
             onToggleExpand={(id) => setExpandedCampaign(expandedCampaign === id ? null : id)}
             onCancelSlot={(apt) => setCancelTarget(apt)}
+            onEdit={handleEditCampaign}
+            onDelete={handleDeleteCampaign}
           />
         ))}
         {campaigns.length === 0 && (
@@ -242,14 +303,17 @@ export default function DoctorCampaigns() {
         </div>
       )}
 
-      {/* Create Campaign Modal */}
       {showModal && (
         <CreateCampaignModal
           form={form}
           errors={errors}
           onUpdateForm={(updater) => setForm(updater)}
-          onSubmit={createCampaign}
-          onClose={() => setShowModal(false)}
+          onClose={() => {
+            setShowModal(false);
+            setEditingCampaignId(null);
+          }}
+          onSave={saveCampaign}
+          isEditing={!!editingCampaignId}
         />
       )}
 

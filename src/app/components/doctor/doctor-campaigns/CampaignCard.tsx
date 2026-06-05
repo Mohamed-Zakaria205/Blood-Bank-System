@@ -8,6 +8,8 @@ import {
   ChevronDown,
   UserPlus,
   XCircle,
+  Edit,
+  Trash2,
 } from 'lucide-react';
 
 import type { Campaign } from '../../../types/campaign';
@@ -21,6 +23,8 @@ interface CampaignCardProps {
   expandedCampaign: string | null;
   onToggleExpand: (id: string) => void;
   onCancelSlot: (slot: AppointmentSlot) => void;
+  onEdit?: (campaign: Campaign) => void;
+  onDelete?: (campaign: Campaign) => void;
 }
 
 export default function CampaignCard({
@@ -29,6 +33,8 @@ export default function CampaignCard({
   expandedCampaign,
   onToggleExpand,
   onCancelSlot,
+  onEdit,
+  onDelete,
 }: CampaignCardProps) {
   const navigate = useNavigate();
   const isExpanded = expandedCampaign === c.id;
@@ -85,6 +91,28 @@ export default function CampaignCard({
             {c.title}
           </h3>
         </div>
+        {isMyCampaign && c.status !== 'completed' && (
+          <div className="flex items-center gap-1">
+            {onEdit && (
+              <button
+                onClick={() => onEdit(c)}
+                className="p-1.5 text-muted-foreground hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                title="تعديل الحملة"
+              >
+                <Edit className="w-4 h-4" />
+              </button>
+            )}
+            {onDelete && (
+              <button
+                onClick={() => onDelete(c)}
+                className="p-1.5 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                title="حذف الحملة"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        )}
       </div>
       <div className="space-y-2 mb-4">
         <div className="flex items-center gap-2 text-muted-foreground">

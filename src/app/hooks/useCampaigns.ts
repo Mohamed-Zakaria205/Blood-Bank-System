@@ -2,7 +2,7 @@
 // React Query hooks — Campaigns
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchCampaigns, createCampaign, updateCampaign, fetchFilteredCampaigns } from '../api/campaigns';
+import { fetchCampaigns, createCampaign, updateCampaign, deleteCampaign, fetchFilteredCampaigns } from '../api/campaigns';
 import type { CreateCampaignRequest, UpdateCampaignRequest } from '../types/campaign';
 import type { CampaignFilters } from '../types/common';
 
@@ -44,6 +44,17 @@ export function useUpdateCampaign() {
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateCampaignRequest }) =>
       updateCampaign(id, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['campaigns'] });
+    },
+  });
+}
+
+/** Delete an existing campaign */
+export function useDeleteCampaign() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteCampaign(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['campaigns'] });
     },

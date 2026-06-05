@@ -1,6 +1,5 @@
 import { useMemo, useEffect } from 'react';
 import {
-  Plus,
   X,
   Check,
   Clock,
@@ -131,16 +130,18 @@ interface CreateCampaignModalProps {
   form: CampaignFormState;
   errors: Record<string, string>;
   onUpdateForm: (updater: (prev: CampaignFormState) => CampaignFormState) => void;
-  onSubmit: () => void;
+  onSave: () => void;
   onClose: () => void;
+  isEditing?: boolean;
 }
 
 export default function CreateCampaignModal({
   form,
   errors,
   onUpdateForm,
-  onSubmit,
+  onSave,
   onClose,
+  isEditing,
 }: CreateCampaignModalProps) {
   const computedSlots = useMemo(
     () => buildSlots(form.startTime, form.endTime, form.slotDuration, form.slotCapacity),
@@ -182,8 +183,8 @@ export default function CreateCampaignModal({
     >
       <div className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-border">
-          <h3 className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
-            إنشاء حملة تبرع جديدة
+          <h3 className="text-foreground" style={{ fontSize: '18px', fontWeight: 800 }}>
+            {isEditing ? 'تعديل بيانات الحملة' : 'إنشاء حملة جديدة'}
           </h3>
           <button
             onClick={onClose}
@@ -233,10 +234,10 @@ export default function CreateCampaignModal({
                 >
                   <MapPin className="w-4 h-4" /> تحديد موقعي الحالي
                 </button>
-                <LocationSelectorMap 
-                  lat={currentLat} 
-                  lng={currentLng} 
-                  onChange={(lat, lng) => onUpdateForm(p => ({ ...p, latitude: lat.toString(), longitude: lng.toString() }))} 
+                <LocationSelectorMap
+                  lat={currentLat}
+                  lng={currentLng}
+                  onChange={(lat, lng) => onUpdateForm(p => ({ ...p, latitude: lat.toString(), longitude: lng.toString() }))}
                 />
                 <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
                   يمكنك أيضاً النقر على الخريطة لتحديد موقع الحملة بدقة.
@@ -483,8 +484,6 @@ export default function CreateCampaignModal({
                     </div>
                   </div>
 
-                  {/* Removed Legend */}
-
                   {/* Slot grid */}
                   <div
                     className="rounded-xl border border-border bg-muted/40 p-3 overflow-y-auto"
@@ -599,20 +598,21 @@ export default function CreateCampaignModal({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-border">
+        {/* Actions */}
+        <div className="p-4 sm:p-6 border-t border-border bg-muted/30 flex justify-end gap-3 rounded-b-2xl">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
-            style={{ fontSize: '14px', fontWeight: 600 }}
+            className="px-6 py-2.5 rounded-xl border border-border text-foreground hover:bg-muted transition-colors"
+            style={{ fontSize: '14px', fontWeight: 700 }}
           >
             إلغاء
           </button>
           <button
-            onClick={onSubmit}
-            className="flex items-center gap-2 px-6 py-2.5 text-white rounded-xl transition-all bg-green-600 hover:bg-green-700"
+            onClick={onSave}
+            className="px-6 py-2.5 rounded-xl text-white bg-green-600 hover:bg-green-700 transition-colors shadow-sm"
             style={{ fontSize: '14px', fontWeight: 700 }}
           >
-            <Plus className="w-4 h-4" /> إنشاء الحملة
+            {isEditing ? 'حفظ التعديلات' : 'تأكيد وإنشاء'}
           </button>
         </div>
       </div>

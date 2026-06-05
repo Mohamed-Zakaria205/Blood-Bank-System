@@ -88,3 +88,16 @@ export async function updateCampaign(
   const { data } = await apiClient.patch<ApiResponse<Campaign>>(`/campaigns/${id}`, payload);
   return data;
 }
+
+/** DELETE /campaigns/:id — delete campaign */
+export async function deleteCampaign(id: string): Promise<ApiResponse<null>> {
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 400));
+    const idx = mockStore.findIndex((c) => c.id === id);
+    if (idx === -1) throw new ApiError('الحملة غير موجودة', 404);
+    mockStore = mockStore.filter((c) => c.id !== id);
+    return { data: null, message: 'تم حذف الحملة بنجاح' };
+  }
+  const { data } = await apiClient.delete<ApiResponse<null>>(`/campaigns/${id}`);
+  return data;
+}
