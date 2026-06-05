@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
-import { useFilteredCampaigns, useCreateCampaign, useUpdateCampaign, useDeleteCampaign } from '../../hooks/useCampaigns';
+import { Plus, Search } from 'lucide-react';
+import { useFilteredCampaigns, useCreateCampaign, useUpdateCampaign, useDeleteCampaign, useCompleteCampaign } from '../../hooks/useCampaigns';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'sonner';
 import {
@@ -13,6 +13,7 @@ import {
 } from '../ui/pagination';
 import { useCancelAppointment } from '../../hooks/useAppointments';
 import { CancelModal } from '../shared/CancelModal';
+import { ConfirmModal } from '../shared/ConfirmModal';
 import type { Campaign } from '../../types/campaign';
 import type { AppointmentSlot } from '../../types/appointment';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
@@ -28,6 +29,7 @@ export default function DoctorCampaigns() {
 
   const [page, setPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   
   const {
     data: response,
@@ -38,6 +40,7 @@ export default function DoctorCampaigns() {
     page,
     limit: 6,
     status: filterStatus,
+    search: searchQuery,
   });
   
   const campaigns = response?.data || [];
@@ -47,6 +50,7 @@ export default function DoctorCampaigns() {
   const createCampaignMutation = useCreateCampaign();
   const updateCampaignMutation = useUpdateCampaign();
   const deleteCampaignMutation = useDeleteCampaign();
+  const completeCampaignMutation = useCompleteCampaign();
   const cancelMutation = useCancelAppointment();
   const [showModal, setShowModal] = useState(false);
   const [expandedCampaign, setExpandedCampaign] = useState<string | null>(null);
@@ -56,6 +60,19 @@ export default function DoctorCampaigns() {
   // ── Form state ──
   const [form, setForm] = useState<CampaignFormState>(FORM_DEFAULTS);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    variant: 'danger' | 'success';
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    variant: 'danger',
+    onConfirm: () => {},
+  });
 
   const handleFilterStatus = (status: string) => {
     setFilterStatus(filterStatus === status ? '' : status);
@@ -168,16 +185,35 @@ export default function DoctorCampaigns() {
   };
 
   const handleDeleteCampaign = (campaign: Campaign) => {
-    if (window.confirm(`هل أنت متأكد من حذف حملة "${campaign.title}"؟`)) {
-      deleteCampaignMutation.mutate(campaign.id, {
-        onSuccess: () => {
-          toast.success('تم حذف الحملة بنجاح');
-        },
-        onError: () => {
-          toast.error('تعذر حذف الحملة، حاول مرة أخرى');
-        },
-      });
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: 'تأكيد الحذف',
+      message: `هل أنت متأكد من حذف حملة "${campaign.title}" نهائياً؟ لا يمكن التراجع عن هذا الإجراء.`,
+      variant: 'danger',
+      onConfirm: () => {
+        deleteCampaignMutation.mutate(campaign.id, {
+          onSuccess: () => toast.success('تم حذف الحملة بنجاح'),
+          onError: () => toast.error('تعذر حذف الحملة، حاول مرة أخرى'),
+        });
+        setConfirmModal((p) => ({ ...p, isOpen: false }));
+      },
+    });
+  };
+
+  const handleCompleteCampaign = (campaign: Campaign) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'إنهاء الحملة',
+      message: `هل أنت متأكد من إنهاء حملة "${campaign.title}" الآن؟ سيتم إغلاق التسجيل في هذه الحملة ولا يمكن إعادتها للحالة النشطة.`,
+      variant: 'success',
+      onConfirm: () => {
+        completeCampaignMutation.mutate(campaign.id, {
+          onSuccess: () => toast.success('تم إنهاء الحملة بنجاح'),
+          onError: () => toast.error('تعذر إنهاء الحملة، حاول مرة أخرى'),
+        });
+        setConfirmModal((p) => ({ ...p, isOpen: false }));
+      },
+    });
   };
 
   return (
@@ -208,6 +244,24 @@ export default function DoctorCampaigns() {
         >
           <Plus className="w-5 h-5" /> إنشاء حملة جديدة
         </button>
+      </div>
+
+      {/* Search Bar */}
+      <div className="relative">
+        <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+          <Search className="w-5 h-5 text-muted-foreground" />
+        </div>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setPage(1);
+          }}
+          placeholder="ابحث عن حملة بالاسم أو المدينة..."
+          className="w-full pl-4 pr-12 py-3 border border-border rounded-xl bg-card text-foreground focus:ring-2 focus:ring-green-100 focus:border-green-400 outline-none transition-all"
+          style={{ fontSize: '14px' }}
+        />
       </div>
 
       {/* Stats/Filters */}
@@ -250,6 +304,7 @@ export default function DoctorCampaigns() {
             onCancelSlot={(apt) => setCancelTarget(apt)}
             onEdit={handleEditCampaign}
             onDelete={handleDeleteCampaign}
+            onComplete={handleCompleteCampaign}
           />
         ))}
         {campaigns.length === 0 && (
@@ -338,6 +393,16 @@ export default function DoctorCampaigns() {
           onClose={() => setCancelTarget(null)}
         />
       )}
+
+      {/* Confirm Action Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        variant={confirmModal.variant}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal((p) => ({ ...p, isOpen: false }))}
+      />
     </div>
   );
 }

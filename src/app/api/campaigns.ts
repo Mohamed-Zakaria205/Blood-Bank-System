@@ -101,3 +101,17 @@ export async function deleteCampaign(id: string): Promise<ApiResponse<null>> {
   const { data } = await apiClient.delete<ApiResponse<null>>(`/campaigns/${id}`);
   return data;
 }
+
+/** POST /campaigns/:id/complete — mark campaign as completed early */
+export async function completeCampaign(id: string): Promise<ApiResponse<Campaign>> {
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 400));
+    const idx = mockStore.findIndex((c) => c.id === id);
+    if (idx === -1) throw new ApiError('الحملة غير موجودة', 404);
+    const updated: Campaign = { ...mockStore[idx], status: 'completed' };
+    mockStore = mockStore.map((c) => (c.id === id ? updated : c));
+    return { data: updated, message: 'تم إنهاء الحملة بنجاح' };
+  }
+  const { data } = await apiClient.post<ApiResponse<Campaign>>(`/campaigns/${id}/complete`);
+  return data;
+}

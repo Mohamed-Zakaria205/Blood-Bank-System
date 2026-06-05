@@ -10,6 +10,7 @@ import {
   XCircle,
   Edit,
   Trash2,
+  CheckCircle,
 } from 'lucide-react';
 
 import type { Campaign } from '../../../types/campaign';
@@ -25,6 +26,7 @@ interface CampaignCardProps {
   onCancelSlot: (slot: AppointmentSlot) => void;
   onEdit?: (campaign: Campaign) => void;
   onDelete?: (campaign: Campaign) => void;
+  onComplete?: (campaign: Campaign) => void;
 }
 
 export default function CampaignCard({
@@ -35,6 +37,7 @@ export default function CampaignCard({
   onCancelSlot,
   onEdit,
   onDelete,
+  onComplete,
 }: CampaignCardProps) {
   const navigate = useNavigate();
   const isExpanded = expandedCampaign === c.id;
@@ -93,6 +96,15 @@ export default function CampaignCard({
         </div>
         {c.status !== 'completed' && (
           <div className="flex items-center gap-1">
+            {onComplete && (
+              <button
+                onClick={() => onComplete(c)}
+                className="p-1.5 text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                title="إنهاء الحملة"
+              >
+                <CheckCircle className="w-4 h-4" />
+              </button>
+            )}
             {onEdit && (
               <button
                 onClick={() => onEdit(c)}
@@ -102,7 +114,7 @@ export default function CampaignCard({
                 <Edit className="w-4 h-4" />
               </button>
             )}
-            {onDelete && (
+            {onDelete && badgeCount === 0 && (
               <button
                 onClick={() => onDelete(c)}
                 className="p-1.5 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
