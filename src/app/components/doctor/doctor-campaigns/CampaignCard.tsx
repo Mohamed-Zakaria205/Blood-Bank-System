@@ -91,7 +91,7 @@ export default function CampaignCard({
             {c.title}
           </h3>
         </div>
-        {isMyCampaign && c.status !== 'completed' && (
+        {c.status !== 'completed' && (
           <div className="flex items-center gap-1">
             {onEdit && (
               <button
