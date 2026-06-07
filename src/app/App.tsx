@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { RouterProvider } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -21,7 +22,14 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // Data considered fresh for 5 min
-      retry: 2,                  // Retry failed requests twice
+      retry: (failureCount, error: any) => {
+        // Do not retry on client errors (especially 401/403) to prevent DDOS loops
+        const status = error?.response?.status || error?.status;
+        if (status && [400, 401, 403, 404, 422].includes(status)) {
+          return false;
+        }
+        return failureCount < 2;
+      },
       refetchOnWindowFocus: false,
     },
     mutations: {
@@ -36,6 +44,33 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
+  // ── Offline Detection ──
+  useEffect(() => {
+    const handleOffline = () => {
+      toast.error('انقطع الاتصال بالإنترنت. يرجى التحقق من الشبكة.', {
+        id: 'network-status',
+        duration: Infinity,
+      });
+    };
+    const handleOnline = () => {
+      toast.success('تم استعادة الاتصال بالإنترنت.', {
+        id: 'network-status',
+      });
+    };
+
+    window.addEventListener('offline', handleOffline);
+    window.addEventListener('online', handleOnline);
+
+    if (!navigator.onLine) {
+      handleOffline();
+    }
+
+    return () => {
+      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('online', handleOnline);
+    };
+  }, []);
+
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
