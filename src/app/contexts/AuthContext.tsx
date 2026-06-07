@@ -32,7 +32,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     getMeApi()
       .then((currentUser) => {
         setUser(currentUser);
-        localStorage.setItem('bloodlink_user', JSON.stringify(currentUser));
+        localStorage.setItem(
+          'bloodlink_user',
+          JSON.stringify({
+            id: currentUser.id,
+            name: currentUser.name,
+            role: currentUser.role,
+          }),
+        );
       })
       .catch(() => {
         // Session invalid or expired
@@ -51,8 +58,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       const loggedInUser = await loginApi({ email, password });
 
-      // Persist user UI state
-      localStorage.setItem('bloodlink_user', JSON.stringify(loggedInUser));
+      // Persist safe minimal UI state
+      localStorage.setItem(
+        'bloodlink_user',
+        JSON.stringify({
+          id: loggedInUser.id,
+          name: loggedInUser.name,
+          role: loggedInUser.role,
+        }),
+      );
       setUser(loggedInUser);
 
       return { success: true };
