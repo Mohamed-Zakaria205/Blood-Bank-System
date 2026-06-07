@@ -258,6 +258,8 @@ export default function AdminStaff() {
                         <button
                           onClick={() => copyEmail(u.email)}
                           className="p-1 text-muted-foreground hover:text-green-600 hover:bg-green-50 rounded-lg transition-all"
+                          title="نسخ البريد الإلكتروني"
+                          aria-label="نسخ البريد الإلكتروني"
                         >
                           {copied === u.email ? (
                             <Check className="w-3.5 h-3.5 text-green-600" />
@@ -290,6 +292,8 @@ export default function AdminStaff() {
                         <button
                           onClick={() => setDeleteId(u.id)}
                           className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                          title="حذف المستخدم"
+                          aria-label="حذف المستخدم"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

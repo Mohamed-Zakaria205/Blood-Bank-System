@@ -136,6 +136,8 @@ export default function AdminCampaigns() {
                 <button
                   onClick={() => setSelected(c)}
                   className="p-2 text-muted-foreground hover:text-green-600 hover:bg-green-50 rounded-xl transition-all"
+                  title="عرض تفاصيل الحملة"
+                  aria-label="عرض تفاصيل الحملة"
                 >
                   <Eye className="w-4 h-4" />
                 </button>
@@ -251,6 +253,8 @@ export default function AdminCampaigns() {
               <button
                 onClick={() => setSelected(null)}
                 className="p-2 text-muted-foreground hover:text-muted-foreground hover:bg-muted rounded-xl"
+                title="إغلاق النافذة"
+                aria-label="إغلاق النافذة"
               >
                 ×
               </button>
