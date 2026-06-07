@@ -1,4 +1,4 @@
-﻿import { Search, Trash2, Package, Check, X } from 'lucide-react';
+import { Search, Trash2, Package, Check, X } from 'lucide-react';
 import type { BloodBag } from '../../../types';
 import {
   DISPOSAL_REASONS,
@@ -84,7 +84,7 @@ export default function DisposalForm({
 
           {/* Bag table */}
           <div
-            className="border border-border rounded-xl overflow-hidden"
+            className="border border-border rounded-xl overflow-x-auto"
             style={{ maxHeight: '220px', overflowY: 'auto' }}
           >
             {candidateBags.length === 0 ? (
