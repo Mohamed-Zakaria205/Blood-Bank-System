@@ -1,10 +1,10 @@
-﻿import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { Check, Smartphone } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCampaigns } from '../../hooks/useCampaigns';
 import { useAppointmentSlotById } from '../../hooks/useAppointments';
-import { useAddDonation, useAddMedicalRecord, useSearchDonor, useDonationCenters } from '../../hooks/useDonors';
+import { useAddDonation, useAddMedicalRecord, useSearchDonor, useDonationCenters, useDeleteDonation } from '../../hooks/useDonors';
 import { toast } from 'sonner';
 import { useForm, Path, PathValue } from 'react-hook-form';
 import { Form } from '../ui/form';
@@ -30,6 +30,7 @@ export default function DonationRegistrationForm() {
   const addDonation = useAddDonation();
   const addMedicalRecord = useAddMedicalRecord();
   const searchDonor = useSearchDonor();
+  const deleteDonation = useDeleteDonation();
   const [donationId, setDonationId] = useState<string | null>(null);
   const [searchId, setSearchId] = useState('');
 
@@ -280,6 +281,7 @@ export default function DonationRegistrationForm() {
   };
 
   const handleNextStep = async () => {
+    if (addDonation.isPending || submitting) return;
     const step1Fields: (keyof SimpleForm)[] = [
       'name',
       'gender',
@@ -374,6 +376,7 @@ export default function DonationRegistrationForm() {
 
   const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (submitting || addDonation.isPending || addMedicalRecord.isPending) return;
     if (step !== 2) {
       void handleNextStep();
       return;
@@ -520,7 +523,13 @@ export default function DonationRegistrationForm() {
               submitting={submitting}
               updateField={updateField}
               toggleDisease={toggleDisease}
-              onBack={() => setStep(1)}
+              onBack={() => {
+                if (donationId) {
+                  deleteDonation.mutate(donationId);
+                  setDonationId(null);
+                }
+                setStep(1);
+              }}
             />
           )}
         </div>
@@ -528,7 +537,12 @@ export default function DonationRegistrationForm() {
         <div className="flex gap-3">
           <button
             type="button"
-            onClick={() => navigate('/doctor/donations')}
+            onClick={() => {
+              if (donationId && step === 2) {
+                deleteDonation.mutate(donationId);
+              }
+              navigate('/doctor/donations');
+            }}
             className="flex-1 py-3.5 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
