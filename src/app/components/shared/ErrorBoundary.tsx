@@ -43,7 +43,7 @@ export default function ErrorBoundary() {
         <p className="text-muted-foreground mb-8" style={{ fontSize: '15px', lineHeight: 1.6 }}>
           {isRouteErrorResponse(error)
             ? 'الصفحة التي تحاول الوصول إليها غير موجودة أو حدث خطأ في الخادم.'
-            : error instanceof Error
+            : import.meta.env.DEV && error instanceof Error
               ? error.message
               : 'نواجه مشكلة فنية حالياً. يرجى تحديث الصفحة أو العودة للرئيسية.'}
         </p>
