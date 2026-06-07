@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { XCircle, X, CalendarDays, Clock, User, Megaphone, AlertTriangle } from 'lucide-react';
 import type { AppointmentSlot } from '../../types';
 import { useCampaigns } from '../../hooks/useCampaigns';
@@ -13,12 +13,15 @@ interface CancelModalProps {
 export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModalProps) {
   const [reason, setReason] = useState('');
   const [confirming, setConfirming] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   // Resolve the campaign name from React Query cache — zero extra network request
   const { data: campaignsData = [] } = useCampaigns();
   const campaign = slot.campaignId ? campaignsData.find((c) => c.id === slot.campaignId) : null;
 
   const handleConfirm = async () => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     setConfirming(true);
     try {
       await onConfirm(reason);
@@ -26,6 +29,7 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
     } catch (err) {
       console.error(err);
       setConfirming(false);
+      isSubmittingRef.current = false;
     }
   };
 
