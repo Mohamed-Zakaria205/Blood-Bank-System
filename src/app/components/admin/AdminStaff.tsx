@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useAuth } from '../../contexts/AuthContext';
 import {
   UserPlus,
   Search,
@@ -28,6 +29,7 @@ import AddStaffModal from './admin-staff/AddStaffModal';
 import DeleteConfirmModal from './admin-staff/DeleteConfirmModal';
 
 export default function AdminStaff() {
+  const { user } = useAuth();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [filterRole, setFilterRole] = useState('');
@@ -284,12 +286,14 @@ export default function AdminStaff() {
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <button
-                        onClick={() => setDeleteId(u.id)}
-                        className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {u.id !== user?.id && (
+                        <button
+                          onClick={() => setDeleteId(u.id)}
+                          className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 );

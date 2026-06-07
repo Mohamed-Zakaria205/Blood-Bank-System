@@ -86,7 +86,7 @@ export default function AdminDonors() {
     }
   };
 
-  const saveEdit = () => {
+  const saveEdit = async () => {
     if (!editingDonor) return;
 
     const phone = editForm.phone || '';
@@ -109,6 +109,23 @@ export default function AdminDonors() {
     if (!nationalIdRegex.test(nationalId)) {
       toast.error('الرقم القومي غير صحيح، يجب أن يتكون من 14 رقماً');
       return;
+    }
+
+    // ── Optimistic Locking Check ──
+    try {
+      const freshRes = await fetchDonorById(editingDonor.id);
+      // Compare the serialized objects to detect concurrent background changes
+      if (JSON.stringify(freshRes.data) !== JSON.stringify(editingDonor)) {
+        toast.error(
+          'تحذير: تم تعديل بيانات هذا المتبرع بواسطة مستخدم آخر منذ فتحك للنافذة. تم تحديث النافذة بالإصدار الأخير، يرجى المراجعة والمحاولة مجدداً.'
+        );
+        setEditingDonor(freshRes.data);
+        setEditForm({ ...freshRes.data });
+        return; // Prevent overwrite
+      }
+    } catch (err) {
+      // If we fail to verify, we log it and proceed gracefully
+      console.warn('Optimistic lock verification failed', err);
     }
 
     // Close modal immediately for snappy UX
