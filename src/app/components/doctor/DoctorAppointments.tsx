@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { useNavigate } from 'react-router';
@@ -19,8 +19,6 @@ import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkelet
 
 // ── Sub-components ──
 import {
-  TODAY,
-  WEEK_DATES,
   WEEK_DAY_NAMES,
   STATUS_CONFIG,
 } from './doctor-appointments/appointmentConstants';
@@ -29,11 +27,7 @@ import AppointmentCard from './doctor-appointments/AppointmentCard';
 import AppointmentRow from './doctor-appointments/AppointmentRow';
 import NotificationsPanel from './doctor-appointments/NotificationsPanel';
 
-// Compute month range for the month view
-const _d = new Date();
-const _lastDay = new Date(_d.getFullYear(), _d.getMonth() + 1, 0).getDate();
-const MONTH_START = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}-01`;
-const MONTH_END = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}-${String(_lastDay).padStart(2, '0')}`;
+// (Global month variables removed in favor of dynamic evaluation)
 
 export default function DoctorAppointments() {
   const navigate = useNavigate();
@@ -44,11 +38,23 @@ export default function DoctorAppointments() {
   const [cancelTarget, setCancelTarget] = useState<AppointmentSlot | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
 
+  // ── Force reactivity on date boundaries ──
+  const [currentTime, setCurrentTime] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000); // Check every minute
+    return () => clearInterval(timer);
+  }, []);
+
   // ── In-session cancellation notifications (real-time via SignalR + local optimistic) ──
   const [notifications, setNotifications] = useState<CancellationNotification[]>(() => {
     try {
       const stored = localStorage.getItem('doctor_notifications');
-      return stored ? JSON.parse(stored) : [];
+      let parsed = stored ? JSON.parse(stored) : [];
+      // Clean up old notifications (e.g. older than 7 days)
+      const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      parsed = parsed.filter((n: CancellationNotification) => new Date(n.cancelledAt || Date.now()).getTime() > sevenDaysAgo);
+      // Limit to 50 items
+      return parsed.slice(0, 50);
     } catch (error) {
       console.error('Failed to parse doctor_notifications from localStorage:', error);
       try {
@@ -75,7 +81,7 @@ export default function DoctorAppointments() {
     setNotifications((prev) => {
       // Deduplicate by id in case the push fires more than once
       if (prev.some((n) => n.id === notification.id)) return prev;
-      return [{ ...notification, read: false }, ...prev];
+      return [{ ...notification, read: false }, ...prev].slice(0, 50);
     });
     // Refresh the slots + stats so the cancelled slot disappears from the list
     qc.invalidateQueries({ queryKey: ['appointment-slots'] });
@@ -90,13 +96,41 @@ export default function DoctorAppointments() {
     enabled: !!user,
   });
 
-  // ── Determine date range based on view (shared by stats & slots) ──
-  const dateRange =
-    view === 'today'
-      ? { date: TODAY }
-      : view === 'week'
-        ? { dateFrom: WEEK_DATES[0], dateTo: WEEK_DATES[6] }
-        : { dateFrom: MONTH_START, dateTo: MONTH_END };
+  // ── Determine date range dynamically ──
+  const { TODAY, WEEK_DATES, dateRange } = useMemo(() => {
+    const formatLocalDate = (d: Date) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    };
+
+    const tStr = formatLocalDate(currentTime);
+
+    // Week
+    const startOfWeek = new Date(currentTime);
+    const offset = (currentTime.getDay() + 1) % 7;
+    startOfWeek.setDate(currentTime.getDate() - offset);
+    const wDates = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(startOfWeek);
+      d.setDate(startOfWeek.getDate() + i);
+      return formatLocalDate(d);
+    });
+
+    // Month
+    const lastDay = new Date(currentTime.getFullYear(), currentTime.getMonth() + 1, 0).getDate();
+    const mStart = `${currentTime.getFullYear()}-${String(currentTime.getMonth() + 1).padStart(2, '0')}-01`;
+    const mEnd = `${currentTime.getFullYear()}-${String(currentTime.getMonth() + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+
+    const range =
+      view === 'today'
+        ? { date: tStr }
+        : view === 'week'
+          ? { dateFrom: wDates[0], dateTo: wDates[6] }
+          : { dateFrom: mStart, dateTo: mEnd };
+
+    return { TODAY: tStr, WEEK_DATES: wDates, dateRange: range };
+  }, [view, currentTime]);
 
   // ── Slots filter: date range + server-side status filter ──
   // 'all' = no status param → backend returns all non-available slots
