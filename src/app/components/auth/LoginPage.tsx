@@ -17,6 +17,40 @@ export default function LoginPage() {
 
   const [authError, setAuthError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [lockoutTime, setLockoutTime] = useState(0);
+
+  // Load lockout state on mount
+  useEffect(() => {
+    const lockedUntil = localStorage.getItem('bloodlink_login_lockout');
+    if (lockedUntil) {
+      const remaining = parseInt(lockedUntil, 10) - Date.now();
+      if (remaining > 0) {
+        setLockoutTime(remaining);
+      } else {
+        localStorage.removeItem('bloodlink_login_lockout');
+        localStorage.removeItem('bloodlink_login_attempts');
+      }
+    }
+  }, []);
+
+  // Countdown timer for lockout
+  useEffect(() => {
+    let timer: ReturnType<typeof setInterval>;
+    if (lockoutTime > 0) {
+      timer = setInterval(() => {
+        setLockoutTime((prev) => {
+          if (prev <= 1000) {
+            localStorage.removeItem('bloodlink_login_lockout');
+            localStorage.removeItem('bloodlink_login_attempts');
+            setAuthError('');
+            return 0;
+          }
+          return prev - 1000;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [lockoutTime]);
 
   /* Redirect if already logged in */
   useEffect(() => {
@@ -26,13 +60,39 @@ export default function LoginPage() {
 
   /* Handle login form submission */
   const handleSubmit = async (values: LoginFormValues) => {
+    if (lockoutTime > 0) return;
+
     setAuthError('');
     setLoading(true);
+
+    const attempts = parseInt(localStorage.getItem('bloodlink_login_attempts') || '0', 10);
+    if (attempts >= 5) {
+      const lockUntil = Date.now() + 60 * 1000;
+      localStorage.setItem('bloodlink_login_lockout', lockUntil.toString());
+      setLockoutTime(60 * 1000);
+      setLoading(false);
+      setAuthError('تم تجاوز الحد الأقصى للمحاولات. يرجى الانتظار دقيقة.');
+      return;
+    }
+
     const result = await login(values.email.trim(), values.password);
     setLoading(false);
 
     if (!result.success) {
-      setAuthError(result.error || 'بيانات الدخول غير صحيحة، يرجى المحاولة مجدداً');
+      const newAttempts = attempts + 1;
+      localStorage.setItem('bloodlink_login_attempts', newAttempts.toString());
+      
+      if (newAttempts >= 5) {
+        const lockUntil = Date.now() + 60 * 1000;
+        localStorage.setItem('bloodlink_login_lockout', lockUntil.toString());
+        setLockoutTime(60 * 1000);
+        setAuthError('تم تجاوز الحد الأقصى للمحاولات. يرجى الانتظار دقيقة.');
+      } else {
+        setAuthError(result.error || 'بيانات الدخول غير صحيحة، يرجى المحاولة مجدداً');
+      }
+    } else {
+      localStorage.removeItem('bloodlink_login_attempts');
+      localStorage.removeItem('bloodlink_login_lockout');
     }
   };
 
@@ -116,8 +176,12 @@ export default function LoginPage() {
 
           {/* Login form */}
           <LoginForm
-            authError={authError}
-            loading={loading}
+            authError={
+              lockoutTime > 0
+                ? `تم قفل الدخول مؤقتاً. يرجى الانتظار ${Math.ceil(lockoutTime / 1000)} ثانية.`
+                : authError
+            }
+            loading={loading || lockoutTime > 0}
             onSubmit={handleSubmit}
             onInputChange={handleInputChange}
           />

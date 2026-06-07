@@ -51,6 +51,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
   }, []);
 
+  // ── Cross-tab logout synchronization ──
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'bloodlink_user' && e.newValue === null) {
+        setUser(null);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const login = useCallback(async (email: string, password: string) => {
