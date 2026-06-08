@@ -1,4 +1,4 @@
-﻿import {
+import {
   Droplets,
   Activity,
   FlaskConical,
@@ -48,7 +48,7 @@ export default function StepTwo({
             (اختياري)
           </span>
         </label>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
           {BLOOD_TYPES.map((t) => (
             <button
               key={t}
@@ -74,7 +74,7 @@ export default function StepTwo({
         >
           نوع التبرع
         </label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
             ['wholeblood', 'دم كامل', '🩸'],
             ['plasma', 'بلازما', '💧'],
@@ -117,7 +117,7 @@ export default function StepTwo({
         </p>
 
         {/* Weight + Blood Pressure + Hemoglobin */}
-        <div className="grid grid-cols-3 gap-3 mb-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
           <div>
             <label
               className="text-muted-foreground mb-1.5 flex items-center gap-1"
@@ -261,7 +261,7 @@ export default function StepTwo({
         >
           حالة المتبرع *
         </label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             type="button"
             onClick={() => updateField('status', 'eligible')}

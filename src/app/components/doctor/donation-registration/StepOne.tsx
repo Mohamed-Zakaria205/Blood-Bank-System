@@ -1,4 +1,4 @@
-﻿import {
+import {
   User,
   Phone,
   Activity,
@@ -61,7 +61,7 @@ export default function StepOne({
           <Activity className="w-4 h-4 inline ml-1 text-green-600" />
           مصدر المتبرع
         </label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {/* Walk-in */}
           <button
             type="button"
@@ -213,7 +213,7 @@ export default function StepOne({
       </div>
 
       {/* Gender + Age */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label
             className="block text-foreground mb-1.5"
@@ -268,7 +268,7 @@ export default function StepOne({
       </div>
 
       {/* Phone + National ID */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label
             className="block text-foreground mb-1.5"
@@ -334,7 +334,7 @@ export default function StepOne({
           <MapPin className="w-4 h-4 inline ml-1 text-green-600" />
           العنوان التفصيلي
         </label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Governorate */}
           <div>
             <label
