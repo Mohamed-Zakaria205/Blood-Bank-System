@@ -1,6 +1,7 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
+import { PageLoader } from '../shared/LoadingSkeleton';
 
 interface RoleGuardProps {
   allowedRole: string;
@@ -30,12 +31,18 @@ const UnauthorizedPage = () => (
 );
 
 export default function RoleGuard({ allowedRole }: RoleGuardProps) {
-  const { user } = useAuth();
+  const { user, isVerifying } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) navigate('/login', { replace: true });
-  }, [user, navigate]);
+    // Only redirect to login if verification is complete and no user was found
+    if (!isVerifying && !user) navigate('/login', { replace: true });
+  }, [user, isVerifying, navigate]);
+
+  // Block rendering until backend verifies the cached localStorage user
+  if (isVerifying) {
+    return <PageLoader message="جاري التحقق من الصلاحيات..." />;
+  }
 
   if (!user) return null;
   if (user.role !== allowedRole) return <UnauthorizedPage />;
