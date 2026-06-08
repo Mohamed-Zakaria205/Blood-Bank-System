@@ -74,6 +74,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('bloodlink:session-expired', handleSessionExpired);
   }, []);
 
+  // ── Periodic session re-validation ──
+  useEffect(() => {
+    if (!user?.id) return; // Only poll if logged in
+
+    const validateSession = async () => {
+      try {
+        const currentUser = await getMeApi();
+        setUser((prev) => {
+          // If role or name changed server-side, update client
+          if (prev && (prev.role !== currentUser.role || prev.name !== currentUser.name)) {
+            const newUser = { id: currentUser.id, name: currentUser.name, role: currentUser.role };
+            localStorage.setItem('bloodlink_user', JSON.stringify(newUser));
+            
+            if (prev.role !== currentUser.role) {
+              toast.info('تم تحديث صلاحيات حسابك. قد يتم إعادة توجيهك.');
+            }
+            return currentUser;
+          }
+          return prev;
+        });
+      } catch (err) {
+        // Ignored. Axios interceptors handle 401s and token refreshes or forced logouts.
+      }
+    };
+
+    // Re-validate every 5 minutes
+    const interval = setInterval(validateSession, 5 * 60 * 1000);
+    
+    // Also re-validate on window focus
+    const onFocus = () => validateSession();
+    window.addEventListener('focus', onFocus);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [user?.id]);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const login = useCallback(async (email: string, password: string) => {
