@@ -144,12 +144,14 @@ export default function DonationRegistrationForm() {
   };
 
   useEffect(() => {
+    if (submitting) return; // Prevent reset race condition if a mutation is pending
+
     if (lastResetAptIdRef.current !== appointment?.id) {
       lastResetAptIdRef.current = appointment?.id;
       reset(getInitialForm());
       setStep(1);
     }
-  }, [appointment?.id, reset, getInitialForm]);
+  }, [appointment?.id, reset, getInitialForm, submitting]);
 
   // Explicitly sync address fields AFTER reset settles.
   // The controlled <select> for governorate/district reads form state via watch(),
