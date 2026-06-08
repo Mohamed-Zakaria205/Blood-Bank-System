@@ -81,9 +81,22 @@ export async function loginApi(credentials: LoginRequest): Promise<User> {
       typeof responseData === 'string'
         ? responseData
         : responseData?.message || responseData?.Message || '';
-    const arabicMsg = ERROR_MAP[backendMsg] || 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
-    const status = (err as any)?.response?.status || 401;
-    throw new ApiError(arabicMsg, status);
+        
+    const status = (err as any)?.response?.status || 0;
+    
+    let arabicMsg = ERROR_MAP[backendMsg];
+    
+    if (!arabicMsg) {
+      if (status >= 500) {
+        arabicMsg = 'حدث خطأ داخلي في الخادم. يرجى المحاولة لاحقاً.';
+      } else if (status === 0) {
+        arabicMsg = 'تعذر الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت.';
+      } else {
+        arabicMsg = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+      }
+    }
+    
+    throw new ApiError(arabicMsg, status === 0 ? 503 : status);
   }
 }
 
