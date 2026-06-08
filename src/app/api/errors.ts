@@ -23,8 +23,20 @@ export function handleApiError(error: unknown): ApiError {
     const status = error.response?.status;
     const data = error.response?.data;
     
-    // Extract message
-    let message = data?.message || data?.title || error.message || 'حدث خطأ في الاتصال بالخادم';
+    // Extract message safely to avoid [object Object] or raw HTML
+    let message = error.message || 'حدث خطأ في الاتصال بالخادم';
+    if (typeof data === 'string') {
+      // Use string data as message only if it doesn't look like HTML
+      if (!data.trim().startsWith('<')) {
+        message = data;
+      }
+    } else if (data && typeof data === 'object') {
+      if (typeof data.message === 'string' && data.message.trim()) {
+        message = data.message;
+      } else if (typeof data.title === 'string' && data.title.trim()) {
+        message = data.title;
+      }
+    }
     
     // Extract validation errors if they exist (ASP.NET Core format or custom wrapper)
     const validationErrors = data?.errors;
@@ -49,6 +61,8 @@ export function handleApiError(error: unknown): ApiError {
   const fallback = error as any;
   const status = fallback?.response?.status;
   const data = fallback?.response?.data;
-  const message = data?.message || fallback?.message || 'حدث خطأ غير متوقع';
+  const message = (data && typeof data === 'object' && typeof data.message === 'string') 
+    ? data.message 
+    : (typeof fallback?.message === 'string' ? fallback.message : 'حدث خطأ غير متوقع');
   return new ApiError(message, status, data);
 }
