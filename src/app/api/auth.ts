@@ -28,6 +28,15 @@ const rawAxios = axios.create({
 });
 
 /**
+ * Basic sanitization to prevent reflecting raw input tags from the backend
+ * (Defense-in-depth, as React already escapes JSX)
+ */
+const sanitizeMsg = (msg?: string) => {
+  if (typeof msg !== 'string') return '';
+  return msg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+};
+
+/**
  * Authenticate a user.
  * Real mode: POST /Auth/login → { success, message, data: User }
  */
@@ -53,7 +62,7 @@ export async function loginApi(credentials: LoginRequest): Promise<User> {
     );
 
     if (!wrapper.success) {
-      const msg = ERROR_MAP[wrapper.message] || wrapper.message || 'فشل تسجيل الدخول';
+      const msg = ERROR_MAP[wrapper.message] || sanitizeMsg(wrapper.message) || 'فشل تسجيل الدخول';
       throw new ApiError(msg, 401);
     }
 
@@ -87,7 +96,7 @@ export async function getMeApi(): Promise<User> {
   const { data: wrapper } = await apiClient.get<GetMeResponse>('/Auth/me');
 
   if (!wrapper.success) {
-    throw new ApiError(wrapper.message || 'الجلسة غير صالحة', 401);
+    throw new ApiError(sanitizeMsg(wrapper.message) || 'الجلسة غير صالحة', 401);
   }
 
   if (!wrapper.data) {
@@ -107,7 +116,7 @@ export async function refreshTokenApi(): Promise<void> {
   const { data: wrapper } = await rawAxios.post<RefreshResponse>('/Auth/refresh', {});
 
   if (!wrapper.success) {
-    throw new ApiError(wrapper.message || 'انتهت الجلسة، يرجى تسجيل الدخول مجدداً', 401);
+    throw new ApiError(sanitizeMsg(wrapper.message) || 'انتهت الجلسة، يرجى تسجيل الدخول مجدداً', 401);
   }
 }
 
