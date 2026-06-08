@@ -111,7 +111,7 @@ async function forceLogout() {
     console.error('forceLogout API call failed', err);
   } finally {
     localStorage.removeItem('bloodlink_user');
-    window.location.href = '/login';
+    window.dispatchEvent(new CustomEvent('bloodlink:session-expired'));
   }
 }
 

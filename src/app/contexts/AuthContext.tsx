@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback, useEffect, ReactNode 
 import { loginApi, logoutApi, getMeApi } from '../api/auth';
 import type { User, UserRole } from '../types/auth';
 import { PageLoader } from '../components/shared/LoadingSkeleton';
+import { toast } from 'sonner';
 
 // ── Context shape ──────────────────────────────────────────
 interface AuthContextType {
@@ -45,6 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Session invalid or expired
         setUser(null);
         localStorage.removeItem('bloodlink_user');
+        window.dispatchEvent(new CustomEvent('bloodlink:session-expired'));
       })
       .finally(() => {
         setIsVerifying(false);
@@ -60,6 +62,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  // ── Handle forced logout (token expired) ──
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      setUser(null);
+      toast.error('انتهت جلسة الدخول، يرجى تسجيل الدخول مجدداً');
+    };
+    window.addEventListener('bloodlink:session-expired', handleSessionExpired);
+    return () => window.removeEventListener('bloodlink:session-expired', handleSessionExpired);
   }, []);
 
   const [isLoading, setIsLoading] = useState(false);
