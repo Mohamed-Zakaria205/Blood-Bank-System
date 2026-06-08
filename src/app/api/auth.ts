@@ -57,6 +57,10 @@ export async function loginApi(credentials: LoginRequest): Promise<User> {
       throw new ApiError(msg, 401);
     }
 
+    if (!wrapper.data) {
+      throw new ApiError('تعذر استرداد بيانات المستخدم من الخادم', 500);
+    }
+
     return wrapper.data;
   } catch (err) {
     // If it's already our ApiError (from the block above), rethrow
@@ -84,6 +88,10 @@ export async function getMeApi(): Promise<User> {
 
   if (!wrapper.success) {
     throw new ApiError(wrapper.message || 'الجلسة غير صالحة', 401);
+  }
+
+  if (!wrapper.data) {
+    throw new ApiError('تعذر استرداد بيانات المستخدم من الخادم', 500);
   }
 
   return wrapper.data;
