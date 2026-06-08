@@ -16,7 +16,7 @@ import {
 import type { Campaign } from '../../../types/campaign';
 import type { AppointmentSlot } from '../../../types/appointment';
 import { statusColors, statusLabels } from './campaignConstants';
-import { useAppointmentSlots } from '../../../hooks/useAppointments';
+import { useCampaignAppointments } from '../../../hooks/useCampaigns';
 
 interface CampaignCardProps {
   campaign: Campaign;
@@ -43,8 +43,8 @@ export default function CampaignCard({
   const isExpanded = expandedCampaign === c.id;
 
   // ── Lazy fetch: only fires when the card is expanded ──
-  const { data: campApts = [], isLoading: isSlotsLoading } = useAppointmentSlots(
-    isExpanded ? { campaignId: c.id } : undefined,
+  const { data: campApts = [], isLoading: isSlotsLoading } = useCampaignAppointments(
+    isExpanded ? c.id : null
   );
 
   // Use server-provided count for the badge; fall back to fetched length after load

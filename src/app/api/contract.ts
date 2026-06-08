@@ -42,7 +42,7 @@ export const LabTestContractSchema = z.object({
 export const CampaignContractSchema = z.object({
   id: z.string(),
   title: z.string(),
-  status: z.enum(['active', 'completed', 'cancelled']),
+  status: z.enum(['active', 'completed', 'cancelled', 'notactive']),
   targetDonors: z.number(),
   registeredDonors: z.number(),
 });

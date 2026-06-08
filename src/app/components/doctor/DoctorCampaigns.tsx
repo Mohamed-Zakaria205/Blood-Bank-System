@@ -10,6 +10,8 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationEllipsis,
+  generatePaginationNumbers,
 } from '../ui/pagination';
 import { useCancelAppointment } from '../../hooks/useAppointments';
 import { CancelModal } from '../shared/CancelModal';
@@ -30,7 +32,7 @@ export default function DoctorCampaigns() {
   const [page, setPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const {
     data: response,
     isLoading,
@@ -42,7 +44,7 @@ export default function DoctorCampaigns() {
     status: filterStatus,
     search: searchQuery,
   });
-  
+
   const campaigns = response?.data || [];
   const total = response?.total || 0;
   const totalPages = Math.ceil(total / 6) || 1;
@@ -71,7 +73,7 @@ export default function DoctorCampaigns() {
     title: '',
     message: '',
     variant: 'danger',
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
 
   const handleFilterStatus = (status: string) => {
@@ -94,11 +96,11 @@ export default function DoctorCampaigns() {
     if (!form.title.trim()) e.title = 'أدخل عنوان الحملة';
     if (!form.latitude || !form.longitude) e.location = 'يرجى تحديد الموقع';
     if (!form.targetDonors || +form.targetDonors < 1) e.targetDonors = 'أدخل العدد المستهدف';
-    
+
     if (form.recurrenceType === 'custom' && form.recurrenceDays.length === 0) {
       e.recurrence = 'يرجى اختيار يوم واحد على الأقل';
     }
-    
+
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -141,15 +143,7 @@ export default function DoctorCampaigns() {
         }
       );
     } else {
-      const newCampaign: Campaign = {
-        ...campaignData,
-        id: `CAM-${Date.now()}`,
-        registeredDonors: 0,
-        status: 'active',
-        createdBy: user?.id || 'USR-002',
-        createdByName: user?.name || 'طبيب',
-      };
-      createCampaignMutation.mutate(newCampaign, {
+      createCampaignMutation.mutate(campaignData, {
         onSuccess: () => {
           toast.success('تم إنشاء الحملة بنجاح');
           setShowModal(false);
@@ -232,7 +226,7 @@ export default function DoctorCampaigns() {
           onClick={() => {
             const now = new Date();
             const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            
+
             const later = new Date(now.getTime() + 3 * 60 * 60 * 1000);
             const laterTime = `${String(later.getHours()).padStart(2, '0')}:${String(later.getMinutes()).padStart(2, '0')}`;
 
@@ -265,13 +259,19 @@ export default function DoctorCampaigns() {
       </div>
 
       {/* Stats/Filters */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         {[
           {
             label: 'حملات نشطة',
             color: 'text-emerald-700 dark:text-emerald-400',
             bg: 'bg-emerald-50 dark:bg-emerald-500/10',
             val: 'active',
+          },
+          {
+            label: 'حملات غير نشطة',
+            color: 'text-amber-700 dark:text-amber-400',
+            bg: 'bg-amber-50 dark:bg-amber-500/10',
+            val: 'notactive',
           },
           {
             label: 'حملات منتهية',
@@ -329,18 +329,22 @@ export default function DoctorCampaigns() {
                   className={page <= 1 ? 'pointer-events-none opacity-50' : ''}
                 />
               </PaginationItem>
-              {[...Array(totalPages)].map((_, i) => (
-                <PaginationItem key={i + 1}>
-                  <PaginationLink
-                    href="#"
-                    isActive={page === i + 1}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setPage(i + 1);
-                    }}
-                  >
-                    {i + 1}
-                  </PaginationLink>
+              {generatePaginationNumbers(page, totalPages).map((item, i) => (
+                <PaginationItem key={item === 'ellipsis' ? `ellipsis-${i}` : item}>
+                  {item === 'ellipsis' ? (
+                    <PaginationEllipsis />
+                  ) : (
+                    <PaginationLink
+                      href="#"
+                      isActive={page === item}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(item as number);
+                      }}
+                    >
+                      {item}
+                    </PaginationLink>
+                  )}
                 </PaginationItem>
               ))}
               <PaginationItem>

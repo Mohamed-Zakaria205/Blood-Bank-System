@@ -2,26 +2,19 @@
 // Campaigns API service
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
-import { ApiError } from './errors';
 import type { Campaign, CreateCampaignRequest, UpdateCampaignRequest } from '../types/campaign';
 import type { PaginatedResponse, ApiResponse, CampaignFilters } from '../types/common';
-import { campaigns as MOCK_CAMPAIGNS } from '../data/campaigns.mock';
+import type { AppointmentSlot } from '../types/appointment';
 import { validateContract, createPaginatedSchema, CampaignContractSchema } from './contract';
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
-/** In-memory store that mirrors the mock array so mutations persist across refetches */
-let mockStore: Campaign[] = [...MOCK_CAMPAIGNS];
 
 /** Fetch all campaigns (unpaginated — for dropdowns and small lists) */
 export async function fetchCampaigns(): Promise<PaginatedResponse<Campaign>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return { data: mockStore, total: mockStore.length, page: 1, limit: mockStore.length };
-  }
-  const { data } = await apiClient.get<PaginatedResponse<Campaign>>('/campaigns');
-  validateContract('Campaigns List', createPaginatedSchema(CampaignContractSchema), data);
-  return data;
+
+  const { data } = await apiClient.get<ApiResponse<PaginatedResponse<Campaign>>>('/Campaigns');
+  validateContract('Campaigns List', createPaginatedSchema(CampaignContractSchema), data.data);
+  return data.data;
 }
 
 /**
@@ -34,84 +27,67 @@ export async function fetchFilteredCampaigns(
 ): Promise<PaginatedResponse<Campaign>> {
   const { page = 1, limit = 10, search = '', status = '', city = '' } = filters;
 
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
 
-    let result = mockStore;
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        (c) => c.title.toLowerCase().includes(q) || c.city.toLowerCase().includes(q),
-      );
-    }
-    if (status) result = result.filter((c) => c.status === status);
-    if (city)   result = result.filter((c) => c.city === city);
 
-    const total = result.length;
-    const data  = result.slice((page - 1) * limit, page * limit);
-    return { data, total, page, limit };
-  }
-
-  const { data } = await apiClient.get<PaginatedResponse<Campaign>>('/campaigns', {
-    params: { page, limit, search, status, city },
+  const { data } = await apiClient.get<ApiResponse<PaginatedResponse<Campaign>>>('/Campaigns', {
+    params: {
+      Page: page,
+      Limit: limit,
+      Search: search || undefined,
+      Status: status || undefined,
+      City: city || undefined
+    },
     signal: options?.signal,
   });
-  validateContract('Paginated Campaigns', createPaginatedSchema(CampaignContractSchema), data);
-  return data;
+  validateContract('Paginated Campaigns', createPaginatedSchema(CampaignContractSchema), data.data);
+  return data.data;
 }
 
 export async function createCampaign(payload: CreateCampaignRequest): Promise<ApiResponse<Campaign>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 400));
-    const newCampaign: Campaign = { ...payload, id: `CAM-${Date.now()}` };
-    // ✅ Push into the in-memory array so refetch returns the new campaign
-    mockStore = [newCampaign, ...mockStore];
-    return { data: newCampaign, message: 'تم إنشاء الحملة بنجاح' };
-  }
-  const { data } = await apiClient.post<ApiResponse<Campaign>>('/campaigns', payload);
+
+  const { data } = await apiClient.post<ApiResponse<Campaign>>('/Campaigns', payload);
   return data;
 }
 
-/** PATCH /campaigns/:id — partial update */
+/** PATCH /Campaigns/:id — partial update */
 export async function updateCampaign(
   id: string,
   payload: UpdateCampaignRequest,
 ): Promise<ApiResponse<Campaign>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 400));
-    const idx = mockStore.findIndex((c) => c.id === id);
-    if (idx === -1) throw new ApiError('الحملة غير موجودة', 404);
-    const updated = { ...mockStore[idx], ...payload };
-    mockStore = mockStore.map((c) => (c.id === id ? updated : c));
-    return { data: updated, message: 'تم تحديث بيانات الحملة بنجاح' };
-  }
-  const { data } = await apiClient.patch<ApiResponse<Campaign>>(`/campaigns/${id}`, payload);
+
+  const fullPayload = { ...payload, id };
+  const { data } = await apiClient.patch<ApiResponse<Campaign>>(`/Campaigns/${id}`, fullPayload);
   return data;
 }
 
-/** DELETE /campaigns/:id — delete campaign */
-export async function deleteCampaign(id: string): Promise<ApiResponse<null>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 400));
-    const idx = mockStore.findIndex((c) => c.id === id);
-    if (idx === -1) throw new ApiError('الحملة غير موجودة', 404);
-    mockStore = mockStore.filter((c) => c.id !== id);
-    return { data: null, message: 'تم حذف الحملة بنجاح' };
-  }
-  const { data } = await apiClient.delete<ApiResponse<null>>(`/campaigns/${id}`);
+/** DELETE /Campaigns/:id — delete campaign */
+export async function deleteCampaign(id: string): Promise<ApiResponse<string>> {
+
+  const { data } = await apiClient.delete<ApiResponse<string>>(`/Campaigns/${id}`);
   return data;
 }
 
-/** POST /campaigns/:id/complete — mark campaign as completed early */
+/** POST /Campaigns/:id/complete — mark campaign as completed early */
 export async function completeCampaign(id: string): Promise<ApiResponse<Campaign>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 400));
-    const idx = mockStore.findIndex((c) => c.id === id);
-    if (idx === -1) throw new ApiError('الحملة غير موجودة', 404);
-    const updated: Campaign = { ...mockStore[idx], status: 'completed' };
-    mockStore = mockStore.map((c) => (c.id === id ? updated : c));
-    return { data: updated, message: 'تم إنهاء الحملة بنجاح' };
-  }
-  const { data } = await apiClient.post<ApiResponse<Campaign>>(`/campaigns/${id}/complete`);
+
+  const { data } = await apiClient.post<ApiResponse<Campaign>>(`/Campaigns/${id}/complete`);
   return data;
+}
+
+/** GET /Campaigns/:id/appointments — get appointments for a campaign */
+export async function fetchCampaignAppointments(id: string): Promise<ApiResponse<AppointmentSlot[]>> {
+
+  const { data } = await apiClient.get<ApiResponse<AppointmentSlot[]>>(`/Campaigns/${id}/appointments`);
+
+  const mappedData = (data.data || []).map((item: any) => {
+    let normalizedStatus = (item.status || '').toLowerCase();
+    if (normalizedStatus === 'noshow') normalizedStatus = 'missed';
+    return {
+      ...item,
+      status: normalizedStatus as AppointmentSlot['status'],
+      date: item.date ? item.date.split('T')[0] : item.date,
+      donorGender: item.donorGender ? (item.donorGender as string).toLowerCase() as 'male' | 'female' : undefined,
+    };
+  });
+  return { ...data, data: mappedData };
 }

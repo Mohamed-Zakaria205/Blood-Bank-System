@@ -73,7 +73,7 @@ export interface TransactionFilters extends PaginationParams {
 export type BloodType = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
 export type DonationType = 'wholeblood' | 'plasma' | 'platelets';
 export type DonorStatus = 'eligible' | 'ineligible' | 'deferred';
-export type CampaignStatus = 'active' | 'completed';
+export type CampaignStatus = 'active' | 'notactive' | 'completed';
 export type InventoryStatus = 'normal' | 'low' | 'critical';
 export type BloodBagStatus =
   | 'available'

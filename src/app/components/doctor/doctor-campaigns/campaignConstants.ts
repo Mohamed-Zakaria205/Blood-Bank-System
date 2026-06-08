@@ -2,11 +2,13 @@
 
 export const statusColors: Record<string, string> = {
   active: 'bg-emerald-100 text-emerald-700',
+  notactive: 'bg-amber-100 text-amber-700',
   completed: 'bg-muted text-muted-foreground',
 };
 
 export const statusLabels: Record<string, string> = {
   active: 'نشطة',
+  notactive: 'غير نشطة',
   completed: 'منتهية',
 };
 

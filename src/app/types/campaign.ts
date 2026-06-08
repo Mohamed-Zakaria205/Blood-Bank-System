@@ -32,7 +32,19 @@ export interface Campaign {
   recurrence?: RecurrenceSettings;
 }
 
-export type CreateCampaignRequest = Omit<Campaign, 'id'>;
+export interface CreateCampaignRequest {
+  title: string;
+  city: string;
+  latitude?: number;
+  longitude?: number;
+  startTime: string;
+  endTime: string;
+  slotDuration: number;
+  slotCapacity: number;
+  targetDonors: number;
+  description: string;
+  recurrence?: RecurrenceSettings;
+}
 
 /**
  * PATCH /campaigns/:id — request body.

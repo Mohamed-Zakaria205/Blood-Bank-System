@@ -2,7 +2,7 @@
 // React Query hooks — Campaigns
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchCampaigns, createCampaign, updateCampaign, deleteCampaign, completeCampaign, fetchFilteredCampaigns } from '../api/campaigns';
+import { fetchCampaigns, createCampaign, updateCampaign, deleteCampaign, completeCampaign, fetchFilteredCampaigns, fetchCampaignAppointments } from '../api/campaigns';
 import type { CreateCampaignRequest, UpdateCampaignRequest } from '../types/campaign';
 import type { CampaignFilters } from '../types/common';
 
@@ -69,5 +69,15 @@ export function useCompleteCampaign() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['campaigns'] });
     },
+  });
+}
+
+/** Fetch appointments for a specific campaign */
+export function useCampaignAppointments(campaignId: string | null) {
+  return useQuery({
+    queryKey: ['campaign-appointments', campaignId],
+    queryFn: () => fetchCampaignAppointments(campaignId!),
+    enabled: !!campaignId,
+    select: (res) => res.data,
   });
 }

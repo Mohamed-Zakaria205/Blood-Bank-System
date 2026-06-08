@@ -20,6 +20,8 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationEllipsis,
+  generatePaginationNumbers,
 } from '../ui/pagination';
 
 // ── Sub-components ──
@@ -322,18 +324,22 @@ export default function AdminStaff() {
                     className={page <= 1 ? 'pointer-events-none opacity-50' : ''}
                   />
                 </PaginationItem>
-                {[...Array(totalPages)].map((_, i) => (
-                  <PaginationItem key={i + 1}>
-                    <PaginationLink
-                      href="#"
-                      isActive={page === i + 1}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(i + 1);
-                      }}
-                    >
-                      {i + 1}
-                    </PaginationLink>
+                {generatePaginationNumbers(page, totalPages).map((item, i) => (
+                  <PaginationItem key={item === 'ellipsis' ? `ellipsis-${i}` : item}>
+                    {item === 'ellipsis' ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        href="#"
+                        isActive={page === item}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setPage(item as number);
+                        }}
+                      >
+                        {item}
+                      </PaginationLink>
+                    )}
                   </PaginationItem>
                 ))}
                 <PaginationItem>
