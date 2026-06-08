@@ -29,7 +29,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
-    // Verify session with the backend on mount
+    // Verify session with the backend on mount.
+    // If the access token is expired, the Axios interceptor in client.ts
+    // will silently refresh it before this promise resolves.
+    // We must NOT dispatch 'session-expired' here — that event is only
+    // for when forceLogout() confirms the refresh token is truly dead.
     getMeApi()
       .then((currentUser) => {
         setUser(currentUser);
@@ -43,10 +47,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         );
       })
       .catch(() => {
-        // Session invalid or expired
+        // Session truly invalid (interceptor already tried refreshing).
+        // Just clear local state — forceLogout() already handled the event
+        // if a refresh was attempted and failed.
         setUser(null);
         localStorage.removeItem('bloodlink_user');
-        window.dispatchEvent(new CustomEvent('bloodlink:session-expired'));
       })
       .finally(() => {
         setIsVerifying(false);
