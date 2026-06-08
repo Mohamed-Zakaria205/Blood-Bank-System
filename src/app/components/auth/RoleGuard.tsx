@@ -7,28 +7,48 @@ interface RoleGuardProps {
   allowedRole: string;
 }
 
-const UnauthorizedPage = () => (
-  <div className="min-h-screen flex items-center justify-center bg-muted/40" dir="rtl">
-    <div className="text-center p-8 bg-card rounded-2xl shadow-sm border border-border max-w-md">
-      <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z"
-          />
-        </svg>
+const UnauthorizedPage = () => {
+  const navigate = useNavigate();
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-muted/40" dir="rtl">
+      <div className="text-center p-8 bg-card rounded-2xl shadow-sm border border-border max-w-md w-full mx-4">
+        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z"
+            />
+          </svg>
+        </div>
+        <h2 className="text-foreground mb-2" style={{ fontSize: '20px', fontWeight: 700 }}>
+          غير مصرح بالدخول
+        </h2>
+        <p className="text-muted-foreground mb-6" style={{ fontSize: '14px' }}>
+          ليس لديك صلاحية للوصول إلى هذه الصفحة
+        </p>
+        
+        <div className="flex gap-3 justify-center">
+          <button
+            onClick={() => navigate(-1)}
+            className="px-5 py-2.5 bg-muted text-foreground rounded-xl hover:bg-muted/80 transition-colors"
+            style={{ fontSize: '13px', fontWeight: 600 }}
+          >
+            العودة للسابق
+          </button>
+          <button
+            onClick={() => window.location.href = 'mailto:admin@bloodlink.eg'}
+            className="px-5 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"
+            style={{ fontSize: '13px', fontWeight: 600 }}
+          >
+            مراسلة الإدارة
+          </button>
+        </div>
       </div>
-      <h2 className="text-foreground mb-2" style={{ fontSize: '20px', fontWeight: 700 }}>
-        غير مصرح بالدخول
-      </h2>
-      <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
-        ليس لديك صلاحية للوصول إلى هذه الصفحة
-      </p>
     </div>
-  </div>
-);
+  );
+};
 
 export default function RoleGuard({ allowedRole }: RoleGuardProps) {
   const { user, isVerifying } = useAuth();
