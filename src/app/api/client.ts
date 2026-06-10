@@ -100,19 +100,17 @@ function processQueue(error: unknown) {
 }
 
 /**
- * Force-logout: clear all stored credentials and redirect.
+ * Force-logout: clear all stored credentials and notify the UI.
  * Called when the refresh token itself is invalid/expired.
+ *
+ * IMPORTANT: We do NOT call logoutApi() here. If the refresh token
+ * is truly expired, the server already knows. If the failure was
+ * transient (network hiccup, 500), calling logout would permanently
+ * destroy the cookies and make the session unrecoverable.
  */
-async function forceLogout() {
-  try {
-    const { logoutApi } = await import('./auth');
-    await logoutApi();
-  } catch (err) {
-    console.error('forceLogout API call failed', err);
-  } finally {
-    localStorage.removeItem('bloodlink_user');
-    window.dispatchEvent(new CustomEvent('bloodlink:session-expired'));
-  }
+function forceLogout() {
+  localStorage.removeItem('bloodlink_user');
+  window.dispatchEvent(new CustomEvent('bloodlink:session-expired'));
 }
 
 apiClient.interceptors.response.use(
