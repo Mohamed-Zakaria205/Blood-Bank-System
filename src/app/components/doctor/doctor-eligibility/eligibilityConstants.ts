@@ -1,21 +1,12 @@
-﻿import { CheckCircle2, Clock, XCircle, AlertTriangle } from 'lucide-react';
-import type { Donor } from '../../../types/donor';
+import { CheckCircle2, Clock, XCircle, AlertTriangle } from 'lucide-react';
+import type { Donor, EligibilityResult } from '../../../types/donor';
 
 // ──────────────────────────────────────────
 // Eligibility engine
 // ──────────────────────────────────────────
-export const TODAY = new Date('2025-04-29');
+export const TODAY = new Date();
 export const MALE_WAIT = 90; // days
 export const FEMALE_WAIT = 120; // days
-
-export type EligibilityStatus = 'eligible' | 'soon' | 'not_yet' | 'deferred' | 'ineligible';
-
-export type EligibilityResult = {
-  status: EligibilityStatus;
-  daysLeft: number;
-  daysAgo: number;
-  eligibleDate: string;
-};
 
 export type EnrichedDonor = Donor & { elig: EligibilityResult };
 

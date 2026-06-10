@@ -1,18 +1,70 @@
-﻿import { Bell, Zap, Send, Smartphone } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { Bell, Zap, Send, Smartphone } from 'lucide-react';
 import type { NotifModal } from './eligibilityConstants';
 
 interface NotifyDonorModalProps {
   modal: NotifModal;
   onSend: () => void;
   onCancel: () => void;
+  isPending?: boolean;
 }
 
-export default function NotifyDonorModal({ modal, onSend, onCancel }: NotifyDonorModalProps) {
+export default function NotifyDonorModal({ modal, onSend, onCancel, isPending = false }: NotifyDonorModalProps) {
   const isEmergency = modal.type === 'emergency';
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Escape key handler and focus trap
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onCancel();
+      }
+
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length > 0) {
+          const firstElement = focusableElements[0] as HTMLElement;
+          const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+          if (e.shiftKey) {
+            if (document.activeElement === firstElement) {
+              lastElement.focus();
+              e.preventDefault();
+            }
+          } else {
+            if (document.activeElement === lastElement) {
+              firstElement.focus();
+              e.preventDefault();
+            }
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Auto-focus the first button inside the modal on mount
+    const firstBtn = modalRef.current?.querySelector('button');
+    if (firstBtn) {
+      firstBtn.focus();
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onCancel]);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+      >
         {/* Header */}
         <div
           className={`p-5 border-b ${isEmergency ? 'bg-red-50 border-red-100' : 'bg-green-50 border-green-100'}`}
@@ -28,7 +80,7 @@ export default function NotifyDonorModal({ modal, onSend, onCancel }: NotifyDono
               )}
             </div>
             <div>
-              <h3 className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
+              <h3 id="modal-title" className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
                 {isEmergency ? 'إشعار طارئ' : 'إشعار جاهزية للتبرع'}
               </h3>
               <p className="text-muted-foreground" style={{ fontSize: '12px' }}>
@@ -73,13 +125,14 @@ export default function NotifyDonorModal({ modal, onSend, onCancel }: NotifyDono
           {/* Message preview */}
           <div>
             <label
+              htmlFor="message-preview"
               className="block text-foreground mb-2"
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
               محتوى الإشعار
             </label>
-            <div className="p-3 bg-muted/40 border border-border rounded-xl">
-              <p className="text-foreground" style={{ fontSize: '13px', lineHeight: '1.6' }}>
+            <div id="message-preview" className="p-3 bg-muted/40 border border-border rounded-xl">
+              <p className="text-foreground" style={{ fontSize: '13px', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
                 {isEmergency
                   ? `🚨 طلب دم طارئ — بنك دم بني سويف\nفصيلة الدم: ${modal.donor.bloodType}\nيرجى التواصل فوراً على: 082-XXXXXXX`
                   : `💚 أنت الآن مؤهل للتبرع بالدم مجدداً!\nآخر تبرع: ${modal.donor.lastDonationDate ?? 'لم يتبرع'}\nاحجز موعدك عبر التطبيق أو تواصل معنا.`}
@@ -98,14 +151,16 @@ export default function NotifyDonorModal({ modal, onSend, onCancel }: NotifyDono
         <div className="flex gap-3 px-5 pb-5">
           <button
             onClick={onSend}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-white rounded-xl transition-all ${isEmergency ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
+            disabled={isPending}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-white rounded-xl transition-all ${isEmergency ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} ${isPending ? 'opacity-70 cursor-not-allowed' : ''}`}
             style={{ fontSize: '14px', fontWeight: 700 }}
           >
-            <Send className="w-4 h-4" /> إرسال الإشعار
+            <Send className="w-4 h-4" /> {isPending ? 'جاري الإرسال...' : 'إرسال الإشعار'}
           </button>
           <button
             onClick={onCancel}
-            className="flex-1 py-2.5 bg-muted text-foreground rounded-xl hover:bg-muted"
+            disabled={isPending}
+            className="flex-1 py-2.5 bg-muted text-foreground rounded-xl hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
             إلغاء

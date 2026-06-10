@@ -17,15 +17,46 @@ export const createPaginatedSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
     totalPages: z.number().optional(),
   });
 
+export const EligibilityResultSchema = z.object({
+  status: z.enum(['eligible', 'soon', 'not_yet', 'deferred', 'ineligible']),
+  daysLeft: z.number(),
+  daysAgo: z.number(),
+  eligibleDate: z.string(),
+});
+
 // 1. Donor Contract
 export const DonorContractSchema = z.object({
   id: z.string(),
   donorCode: z.string(),
   name: z.string(),
+  gender: z.enum(['male', 'female']).optional(),
+  phone: z.string().optional(),
+  age: z.number().optional(),
   bloodType: z.string().optional().nullable(),
   status: z.enum(['eligible', 'deferred', 'rejected', 'ineligible']).optional(),
   // Ensure we don't throw hard errors if dates come differently, just log
   lastDonationDate: z.string().optional().nullable(),
+  eligibility: EligibilityResultSchema.optional().nullable(),
+});
+
+export const EligibilityStatsContractSchema = z.object({
+  statusCounts: z.object({
+    all: z.number(),
+    eligible: z.number(),
+    soon: z.number(),
+    not_yet: z.number(),
+    deferred: z.number(),
+    ineligible: z.number(),
+  }),
+  bloodTypeCounts: z.record(z.string(), z.object({
+    eligible: z.number(),
+    total: z.number(),
+  })),
+});
+
+export const EligibilitySettingsContractSchema = z.object({
+  donorMaleWaitDays: z.number(),
+  donorFemaleWaitDays: z.number(),
 });
 
 // 2. Lab Test Contract
@@ -47,7 +78,65 @@ export const CampaignContractSchema = z.object({
   registeredDonors: z.number(),
 });
 
+// 4. Doctor Dashboard Contract
+export const DoctorDashboardContractSchema = z.object({
+  statistics: z.object({
+    todayDonationsCount: z.number(),
+    totalDonationsCount: z.number(),
+    totalDonorsCount: z.number(),
+    eligibleDonorsCount: z.number(),
+    myActiveCampaignsCount: z.number(),
+    myTotalCampaignsCount: z.number(),
+    myDonorsCount: z.number(),
+    myEligibleDonorsCount: z.number(),
+  }),
+  sources: z.object({
+    walkinTotal: z.number(),
+    walkinToday: z.number(),
+    campaignTotal: z.number(),
+    campaignToday: z.number(),
+    appTotal: z.number(),
+    appToday: z.number(),
+  }),
+  weeklyChart: z.array(
+    z.object({
+      dayName: z.string(),
+      date: z.string(),
+      donationsCount: z.number(),
+    })
+  ),
+  activeCampaigns: z.array(
+    z.object({
+      id: z.string(),
+      title: z.string(),
+      status: z.string(),
+      registeredDonors: z.number(),
+      targetDonors: z.number(),
+    })
+  ),
+  upcomingAppointments: z.array(
+    z.object({
+      id: z.string(),
+      time: z.string(),
+      donorName: z.string().optional().nullable(),
+      donorNationalId: z.string().optional().nullable(),
+      donorBloodType: z.string().optional().nullable(),
+      status: z.string(),
+    })
+  ),
+  recentDonations: z.array(
+    z.object({
+      id: z.string(),
+      bloodType: z.string(),
+      name: z.string(),
+      source: z.enum(['walkin', 'campaign', 'mobileapp']),
+      donationDate: z.string(),
+    })
+  ),
+});
+
 /**
+
  * Helper to validate API responses without throwing errors that break the UI.
  * It logs a vivid warning in the console if the contract is violated.
  */

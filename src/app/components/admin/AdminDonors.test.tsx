@@ -98,7 +98,7 @@ describe('AdminDonors Component', () => {
     });
 
     mockUseUpdateDonor.mockReturnValue({
-      mutate: vi.fn().mockImplementation((payload, options) => {
+      mutate: vi.fn().mockImplementation((_payload, options) => {
         if (options && options.onSuccess) {
           options.onSuccess({ message: 'تم تحديث بيانات المتبرع بنجاح' });
         }
@@ -191,7 +191,7 @@ describe('AdminDonors Component', () => {
   });
 
   it('opens and updates the Edit Donor modal with validations', async () => {
-    const mutateSpy = vi.fn().mockImplementation((args, options) => {
+    const mutateSpy = vi.fn().mockImplementation((_args, options) => {
       options.onSuccess({ message: 'Success' });
     });
     mockUseUpdateDonor.mockReturnValue({
@@ -212,7 +212,6 @@ describe('AdminDonors Component', () => {
     });
 
     const phoneInput = screen.getByDisplayValue('01011112222');
-    const _nameInput = screen.getByDisplayValue('أحمد محمود علي');
     const nationalIdInput = screen.getByDisplayValue('29001012409876');
 
     // Test phone validation (empty)

@@ -1,18 +1,18 @@
 import { ArrowUpRight, Building2, Smartphone, Megaphone } from 'lucide-react';
-import type { Donation } from '../../../types/donor';
+import type { RecentDonation } from '../../../types/doctorDashboard';
 
-interface RecentDonorsProps {
-  donors: Donation[];
+interface RecentDonationsProps {
+  donations: RecentDonation[];
   onViewAll: () => void;
 }
 
 const SOURCE_MAP = {
-  mobileapp:      { icon: Smartphone, label: 'تطبيق',   color: 'text-blue-600' },
-  campaign: { icon: Megaphone,  label: 'حملة',     color: 'text-purple-600' },
-  walkin:   { icon: Building2,  label: 'البنك',    color: 'text-green-600' },
+  mobileapp: { icon: Smartphone, label: 'تطبيق', color: 'text-blue-600' },
+  campaign: { icon: Megaphone, label: 'حملة', color: 'text-purple-600' },
+  walkin: { icon: Building2, label: 'البنك', color: 'text-green-600' },
 };
 
-export default function RecentDonors({ donors, onViewAll }: RecentDonorsProps) {
+export default function RecentDonors({ donations, onViewAll }: RecentDonationsProps) {
   return (
     <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
       <div className="flex items-center justify-between mb-5">
@@ -28,7 +28,7 @@ export default function RecentDonors({ donors, onViewAll }: RecentDonorsProps) {
         </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {donors.slice(0, 6).map((d) => {
+        {donations.map((d) => {
           const src = SOURCE_MAP[d.source] ?? SOURCE_MAP.walkin;
           const SrcIcon = src.icon;
           return (

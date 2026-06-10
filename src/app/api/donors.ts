@@ -2,11 +2,11 @@
 // Donors & Donations API service
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
-import type { Donor, Donation, BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest } from '../types/donor';
+import type { Donor, Donation, BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest, EligibilityStats, SendNotificationRequest, EligibilitySettings } from '../types/donor';
 import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/common';
 import type { DonationCenter } from '../types/donationCenter';
 import type { ApiResponseWrapper } from '../types/auth';
-import { validateContract, createPaginatedSchema, DonorContractSchema } from './contract';
+import { validateContract, createPaginatedSchema, DonorContractSchema, EligibilityStatsContractSchema, EligibilitySettingsContractSchema } from './contract';
 // import { donors as MOCK_DONORS } from '../data/donors.mock';
 // import { donations as MOCK_DONATIONS } from '../data/donations.mock';
 import axios from 'axios';
@@ -22,6 +22,20 @@ import axios from 'axios';
 //  DONORS  — profile-level endpoints
 // ═══════════════════════════════════════════════════════════
 
+export function mapRawDonor(item: any): Donor {
+  if (!item) return item;
+  return {
+    ...item,
+    status: (() => {
+      const rawStatus = item.eligibilityStatus || item.status;
+      return rawStatus === 'rejected' ? 'ineligible' : rawStatus;
+    })(),
+    donations: item.donationsNumber !== undefined ? item.donationsNumber : item.donations,
+    eligibility: item.eligibility,
+    elig: item.eligibility,
+  };
+}
+
 /** Fetch all donors (unpaginated — used by components that need the full list) */
 export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
   const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
@@ -32,14 +46,7 @@ export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
     limit: number;
   }>>('/donors');
   const rawItems = wrapper.data?.items || wrapper.data?.data || [];
-  const mappedItems: Donor[] = rawItems.map((item: any) => ({
-    ...item,
-    status: (() => {
-      const rawStatus = item.eligibilityStatus || item.status;
-      return rawStatus === 'rejected' ? 'ineligible' : rawStatus;
-    })(),
-    donations: item.donationsNumber !== undefined ? item.donationsNumber : item.donations,
-  }));
+  const mappedItems: Donor[] = rawItems.map(mapRawDonor);
   const total = wrapper.data?.total || mappedItems.length;
   const result = {
     data: mappedItems,
@@ -112,14 +119,7 @@ export async function fetchPaginatedDonors(
     });
 
     const rawItems = wrapper.data?.items || wrapper.data?.data || [];
-    const mappedItems: Donor[] = rawItems.map((item: any) => ({
-      ...item,
-      status: (() => {
-        const rawStatus = item.eligibilityStatus || item.status;
-        return rawStatus === 'rejected' ? 'ineligible' : rawStatus;
-      })(),
-      donations: item.donationsNumber !== undefined ? item.donationsNumber : item.donations,
-    }));
+    const mappedItems: Donor[] = rawItems.map(mapRawDonor);
 
     return {
       data: mappedItems,
@@ -135,19 +135,57 @@ export async function fetchPaginatedDonors(
   }
 }
 
+/**
+ * Fetch donors with calculated eligibility, pagination, search and filtering.
+ * Uses the new backend endpoint designed specifically for the Donor Eligibility feature.
+ */
+export async function fetchPaginatedEligibleDonors(
+  filters: DonorFilters = {}, options?: { signal?: AbortSignal }
+): Promise<PaginatedResponse<Donor>> {
+  const { page = 1, limit = 10, search = '', bloodType = '', status = '' } = filters;
+
+  const params: Record<string, any> = { page, limit };
+  if (search) params.search = search;
+  if (bloodType) params.bloodType = bloodType;
+  if (status && status !== 'all') params.status = status;
+
+  try {
+    const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
+      items?: Donor[];
+      data?: Donor[];
+      total: number;
+      page: number;
+      limit: number;
+    }>>('/Donors/eligibility', {
+      params,
+      signal: options?.signal,
+    });
+
+    const rawItems = wrapper.data?.items || wrapper.data?.data || [];
+    const mappedItems: Donor[] = rawItems.map(mapRawDonor);
+
+    const result = {
+      data: mappedItems,
+      total: wrapper.data?.total || 0,
+      page: wrapper.data?.page || 1,
+      limit: wrapper.data?.limit || 10,
+    };
+    validateContract('Eligible Donors List', createPaginatedSchema(DonorContractSchema), result);
+    return result;
+  } catch (error) {
+    if (!axios.isCancel(error) && (error as any)?.message !== 'canceled') {
+      console.error('Error in fetchPaginatedEligibleDonors:', error);
+    }
+    throw error;
+  }
+}
+
 export async function fetchDonorById(id: string): Promise<ApiResponse<Donor>> {
   try {
     const { data: wrapper } = await apiClient.get<any>(`/Donors/${id}`);
     // Handle both wrapped { success, data: {...} } and bare donor responses
     const rawDonor = wrapper?.data ?? wrapper;
-    const donor: Donor = {
-      ...rawDonor,
-      status: (() => {
-        const rawStatus = rawDonor.eligibilityStatus || rawDonor.status;
-        return rawStatus === 'rejected' ? 'ineligible' : rawStatus;
-      })(),
-      donations: rawDonor.donationsNumber !== undefined ? rawDonor.donationsNumber : rawDonor.donations,
-    };
+    const donor: Donor = mapRawDonor(rawDonor);
     return { data: donor };
   } catch (error) {
     console.error('[API] fetchDonorById error:', error);
@@ -161,15 +199,7 @@ export async function searchDonorByNationalId(nationalId: string): Promise<ApiRe
       params: { nationalId },
     });
     if (data && data.data) {
-      const rawDonor = data.data as any;
-      data.data = {
-        ...rawDonor,
-        status: (() => {
-          const rawStatus = rawDonor.eligibilityStatus || rawDonor.status;
-          return rawStatus === 'rejected' ? 'ineligible' : rawStatus;
-        })(),
-        donations: rawDonor.donationsNumber !== undefined ? rawDonor.donationsNumber : rawDonor.donations,
-      } as Donor;
+      data.data = mapRawDonor(data.data);
     }
     return data;
   } catch (error: any) {
@@ -203,6 +233,55 @@ export async function updateDonor(
     return data;
   } catch (error) {
     console.error('Error in updateDonor:', error);
+    throw error;
+  }
+}
+
+/** Fetch eligibility statistics for status cards and blood type bar */
+export async function fetchDonorEligibilityStats(): Promise<ApiResponse<EligibilityStats>> {
+  try {
+    const { data } = await apiClient.get<ApiResponseWrapper<EligibilityStats>>('/Donors/eligibility/stats');
+    validateContract('Eligibility Stats', EligibilityStatsContractSchema, data.data);
+    return { data: data.data };
+  } catch (error) {
+    console.error('[API] fetchDonorEligibilityStats error:', error);
+    throw error;
+  }
+}
+
+/** Fetch eligibility settings (wait periods) for admin */
+export async function fetchEligibilitySettings(): Promise<ApiResponse<EligibilitySettings>> {
+  try {
+    const { data } = await apiClient.get<ApiResponseWrapper<EligibilitySettings>>('/Settings/eligibility');
+    validateContract('Eligibility Settings', EligibilitySettingsContractSchema, data.data);
+    return { data: data.data };
+  } catch (error) {
+    console.error('[API] fetchEligibilitySettings error:', error);
+    throw error;
+  }
+}
+
+/** Update eligibility settings (wait periods) for admin */
+export async function updateEligibilitySettings(settings: EligibilitySettings): Promise<ApiResponse<void>> {
+  try {
+    const { data } = await apiClient.put<ApiResponseWrapper<void>>('/Settings/eligibility', settings);
+    return { data: undefined, message: data.message };
+  } catch (error) {
+    console.error('[API] updateEligibilitySettings error:', error);
+    throw error;
+  }
+}
+
+/** Send SMS / App notification to a donor */
+export async function sendDonorNotification(
+  donorId: string,
+  payload: SendNotificationRequest
+): Promise<ApiResponse<string>> {
+  try {
+    const { data } = await apiClient.post<ApiResponseWrapper<string>>(`/Donors/${donorId}/notifications`, payload);
+    return { data: data.data, message: data.message };
+  } catch (error) {
+    console.error('[API] sendDonorNotification error:', error);
     throw error;
   }
 }

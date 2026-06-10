@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -15,8 +15,8 @@ import {
 import FacilityTab from './admin-settings/FacilityTab';
 import SecurityTab from './admin-settings/SecurityTab';
 import NotificationsTab from './admin-settings/NotificationsTab';
-
 import PermissionsTab from './admin-settings/PermissionsTab';
+import EligibilityTab from './admin-settings/EligibilityTab';
 
 export default function AdminSettings() {
   useAuth();
@@ -92,6 +92,7 @@ export default function AdminSettings() {
           )}
 
           {activeTab === 'permissions' && <PermissionsTab />}
+          {activeTab === 'eligibility' && <EligibilityTab />}
         </div>
       </div>
     </div>

@@ -1,14 +1,16 @@
-﻿import { BLOOD_TYPES } from '../../../constants';
+import { BLOOD_TYPES } from '../../../constants';
 import type { BloodType } from '../../../types/common';
 import type { EnrichedDonor } from './eligibilityConstants';
+import type { EligibilityStats } from '../../../types/donor';
 
 interface BloodTypeBarProps {
-  enriched: EnrichedDonor[];
+  enriched?: EnrichedDonor[];
+  stats?: EligibilityStats;
   filterBlood: BloodType | 'all';
   onToggle: (type: BloodType | 'all') => void;
 }
 
-export default function BloodTypeBar({ enriched, filterBlood, onToggle }: BloodTypeBarProps) {
+export default function BloodTypeBar({ enriched = [], stats, filterBlood, onToggle }: BloodTypeBarProps) {
   return (
     <div className="bg-card rounded-2xl p-5 border border-border shadow-sm">
       <h3 className="text-foreground mb-4" style={{ fontSize: '14px', fontWeight: 700 }}>
@@ -16,10 +18,19 @@ export default function BloodTypeBar({ enriched, filterBlood, onToggle }: BloodT
       </h3>
       <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
         {BLOOD_TYPES.map((type) => {
-          const typeElig = enriched.filter(
-            (d) => d.bloodType === type && d.elig.status === 'eligible',
-          ).length;
-          const typeTotal = enriched.filter((d) => d.bloodType === type).length;
+          let typeElig = 0;
+          let typeTotal = 0;
+
+          if (stats?.bloodTypeCounts?.[type]) {
+            typeElig = stats.bloodTypeCounts[type].eligible;
+            typeTotal = stats.bloodTypeCounts[type].total;
+          } else {
+            typeElig = enriched.filter(
+              (d) => d.bloodType === type && d.elig?.status === 'eligible',
+            ).length;
+            typeTotal = enriched.filter((d) => d.bloodType === type).length;
+          }
+
           return (
             <button
               key={type}

@@ -20,19 +20,10 @@ export default function DoctorDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const {
-    donors,
-    donations,
+    data,
     isLoading,
     isError,
     refetch,
-    myDonors,
-    activeCampaigns,
-    myCampaigns,
-    walkinToday,
-    appToday,
-    campaignToday,
-    campaignDonors,
-    upcomingToday,
   } = useDoctorDashboardData();
 
   if (isLoading)
@@ -50,11 +41,20 @@ export default function DoctorDashboard() {
         </div>
       </div>
     );
-  if (isError) return <ErrorState message="تعذر تحميل البيانات" onRetry={() => refetch()} />;
 
+  if (isError || !data)
+    return <ErrorState message="تعذر تحميل البيانات" onRetry={() => refetch()} />;
 
+  const {
+    statistics,
+    sources,
+    weeklyChart,
+    activeCampaigns,
+    upcomingAppointments,
+    recentDonations,
+  } = data;
 
-  const stats = buildStats(donors, donations, myCampaigns, myDonors, navigate);
+  const stats = buildStats(statistics, navigate);
   const quickActions = buildQuickActions(navigate);
 
   return (
@@ -123,10 +123,10 @@ export default function DoctorDashboard() {
           </div>
           <div>
             <div className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
-              {donations.filter((d) => d.source === 'walkin').length}
+              {sources.walkinTotal}
             </div>
             <div className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>تبرع داخل البنك</div>
-            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>{walkinToday} اليوم</div>
+            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>{sources.walkinToday} اليوم</div>
           </div>
         </div>
         <div className="bg-card rounded-2xl p-4 border border-purple-100 shadow-sm flex items-center gap-4">
@@ -135,10 +135,10 @@ export default function DoctorDashboard() {
           </div>
           <div>
             <div className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
-              {campaignDonors.length}
+              {sources.campaignTotal}
             </div>
             <div className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>عن طريق حملة</div>
-            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>{campaignToday} اليوم</div>
+            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>{sources.campaignToday} اليوم</div>
           </div>
         </div>
         <div className="bg-card rounded-2xl p-4 border border-blue-100 shadow-sm flex items-center gap-4">
@@ -147,17 +147,17 @@ export default function DoctorDashboard() {
           </div>
           <div>
             <div className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
-              {donations.filter((d) => d.source === 'mobileapp').length}
+              {sources.appTotal}
             </div>
             <div className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>حجز من التطبيق</div>
-            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>{appToday} اليوم</div>
+            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>{sources.appToday} اليوم</div>
           </div>
         </div>
       </div>
 
       {/* Chart + Campaigns Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <WeeklyChart donations={donations} />
+        <WeeklyChart data={weeklyChart} />
         <ActiveCampaignsPanel
           campaigns={activeCampaigns}
           onViewAll={() => navigate('/doctor/campaigns')}
@@ -166,15 +166,15 @@ export default function DoctorDashboard() {
 
       {/* Today's Appointments */}
       <UpcomingAppointments
-        appointments={upcomingToday}
+        appointments={upcomingAppointments}
         onViewAll={() => navigate('/doctor/appointments')}
         onRegister={(aptId) => navigate(`/doctor/register?apt=${aptId}`)}
       />
 
       {/* Recent Donations */}
       <RecentDonations
-        donors={donations}
-        onViewAll={() => navigate('/doctor/donors')}
+        donations={recentDonations}
+        onViewAll={() => navigate('/doctor/donations')}
       />
 
       {/* Quick Actions */}

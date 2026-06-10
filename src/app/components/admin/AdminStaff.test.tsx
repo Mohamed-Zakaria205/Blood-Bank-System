@@ -244,7 +244,7 @@ describe('AdminStaff Component', () => {
     render(<AdminStaff />);
 
     // Click delete icon for the first staff member
-    const _trashButtons = screen.getAllByRole('button');
+    // screen.getAllByRole('button');
     // The trash button is the one with Trash2 icon. In our component, copy email has buttons,
     // and delete action is a button with className containing "text-red-400".
     // Let's find buttons with Trash class/icon or filter by role/icon.

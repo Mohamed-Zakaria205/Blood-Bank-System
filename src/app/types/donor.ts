@@ -11,6 +11,32 @@ export interface AdditionalData {
   bloodPressure: string;
 }
 
+export type EligibilityStatus = 'eligible' | 'soon' | 'not_yet' | 'deferred' | 'ineligible';
+
+export interface EligibilityResult {
+  status: EligibilityStatus;
+  daysLeft: number;
+  daysAgo: number;
+  eligibleDate: string;
+}
+
+export interface EligibilityStats {
+  statusCounts: {
+    all: number;
+    eligible: number;
+    soon: number;
+    not_yet: number;
+    deferred: number;
+    ineligible: number;
+  };
+  bloodTypeCounts: Record<BloodType, { eligible: number; total: number }>;
+}
+
+export interface SendNotificationRequest {
+  type: 'emergency' | 'ready';
+  message: string;
+}
+
 /**
  * Persistent donor profile (returned by GET /donors).
  * Contains only basic identity and long-term eligibility status.
@@ -42,6 +68,10 @@ export interface Donor {
   campaignId?: string;
   campaignName?: string;
   hasAppAccount?: boolean;
+
+  // ── Calculated Eligibility fields ────────────────────────
+  eligibility?: EligibilityResult;
+  elig?: EligibilityResult;
 }
 
 /**
@@ -109,3 +139,8 @@ export interface MedicalRecordRequest {
  * Partial update: only the fields that changed need to be sent.
  */
 export type UpdateDonorRequest = Partial<BasicDonationRequest & MedicalRecordRequest & { address?: string }>;
+
+export interface EligibilitySettings {
+  donorMaleWaitDays: number;
+  donorFemaleWaitDays: number;
+}

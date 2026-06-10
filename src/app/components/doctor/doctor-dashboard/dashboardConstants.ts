@@ -6,7 +6,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { formatLocalizedDate, toISODate } from '../../../utils/date';
-
+import type { DashboardStatistics } from '../../../types/doctorDashboard';
 
 /** Today's date constant (dynamic) */
 export const TODAY = toISODate(new Date());
@@ -14,46 +14,34 @@ export const TODAY_DATE_DISPLAY = formatLocalizedDate(new Date(), { weekday: 'lo
 
 /** Stat card configuration builder */
 export function buildStats(
-  donors: { registeredAt?: string; status?: string }[],
-  donations: { donationDate?: string }[],
-  myCampaigns: { status?: string }[],
-  myDonors: { status?: string }[],
+  stats: DashboardStatistics,
   navigate: (path: string) => void,
 ) {
   return [
     {
       label: 'تبرعات اليوم',
-      value: donations.filter((d) => {
-        if (!d.donationDate) return false;
-        if (d.donationDate.includes('T')) {
-          const dObj = new Date(d.donationDate);
-          if (isNaN(dObj.getTime())) return false;
-          const localStr = `${dObj.getFullYear()}-${String(dObj.getMonth() + 1).padStart(2, '0')}-${String(dObj.getDate()).padStart(2, '0')}`;
-          return localStr === TODAY;
-        }
-        return d.donationDate === TODAY;
-      }).length,
-      sub: `${donations.length} إجمالي التبرعات`,
+      value: stats.todayDonationsCount,
+      sub: `${stats.totalDonationsCount} إجمالي التبرعات`,
       icon: Heart,
       color: 'text-green-600',
       bg: 'bg-green-50',
       border: 'border-green-100',
-      action: () => navigate('/doctor/donors'),
+      action: () => navigate('/doctor/donations'),
     },
     {
       label: 'إجمالي المتبرعين',
-      value: donors.length,
-      sub: `${donors.filter((d) => d.status === 'eligible').length} مؤهل`,
+      value: stats.totalDonorsCount,
+      sub: `${stats.eligibleDonorsCount} مؤهل`,
       icon: Users,
       color: 'text-blue-600',
       bg: 'bg-blue-50',
       border: 'border-blue-100',
-      action: () => navigate('/doctor/donors'),
+      action: () => navigate('/doctor/eligibility'),
     },
     {
       label: 'حملاتي النشطة',
-      value: myCampaigns.filter((c) => c.status === 'active').length,
-      sub: `${myCampaigns.length} إجمالي`,
+      value: stats.myActiveCampaignsCount,
+      sub: `${stats.myTotalCampaignsCount} إجمالي`,
       icon: Megaphone,
       color: 'text-purple-600',
       bg: 'bg-purple-50',
@@ -62,13 +50,13 @@ export function buildStats(
     },
     {
       label: 'متبرعوني',
-      value: myDonors.length,
-      sub: `${myDonors.filter((d) => d.status === 'eligible').length} مؤهل`,
+      value: stats.myDonorsCount,
+      sub: `${stats.myEligibleDonorsCount} مؤهل`,
       icon: TrendingUp,
       color: 'text-orange-600',
       bg: 'bg-orange-50',
       border: 'border-orange-100',
-      action: () => navigate('/doctor/donors'),
+      action: () => navigate('/doctor/eligibility'),
     },
   ];
 }
@@ -92,7 +80,7 @@ export function buildQuickActions(navigate: (path: string) => void) {
       label: 'عرض المتبرعين',
       icon: Users,
       color: 'bg-orange-50 text-orange-600 border-orange-100',
-      action: () => navigate('/doctor/donors'),
+      action: () => navigate('/doctor/eligibility'),
     },
     {
       label: 'مؤهلية المتبرعين',

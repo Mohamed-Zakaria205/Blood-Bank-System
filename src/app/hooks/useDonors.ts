@@ -2,8 +2,8 @@
 // React Query hooks — Donors & Donations
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchDonors, fetchDonorById, updateDonor, fetchPaginatedDonors, fetchPaginatedDonations, fetchAllDonations, searchDonorByNationalId, addDonation, addMedicalRecord, deleteDonation, confirmDonation, fetchDonationCenters } from '../api/donors';
-import type { BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest } from '../types/donor';
+import { fetchDonors, fetchDonorById, updateDonor, fetchPaginatedDonors, fetchPaginatedEligibleDonors, fetchPaginatedDonations, fetchAllDonations, searchDonorByNationalId, addDonation, addMedicalRecord, deleteDonation, confirmDonation, fetchDonationCenters, fetchDonorEligibilityStats, sendDonorNotification, fetchEligibilitySettings, updateEligibilitySettings } from '../api/donors';
+import type { BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest, SendNotificationRequest, EligibilitySettings } from '../types/donor';
 import type { DonorFilters } from '../types/common';
 
 // ═══════════════════════════════════════════════════════════
@@ -30,6 +30,17 @@ export function usePaginatedDonors(filters: DonorFilters = {}) {
   });
 }
 
+/**
+ * Fetch eligible donors with server-side pagination, search, and filtering.
+ */
+export function usePaginatedEligibleDonors(filters: DonorFilters = {}) {
+  return useQuery({
+    queryKey: ['donors', 'eligibility', 'paginated', filters],
+    queryFn: ({ signal }) => fetchPaginatedEligibleDonors(filters, { signal }),
+    placeholderData: (previousData) => previousData,
+  });
+}
+
 /** Fetch a single donor by ID */
 export function useDonor(id: string) {
   return useQuery({
@@ -49,6 +60,53 @@ export function useUpdateDonor() {
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: ['donors'] });
       qc.invalidateQueries({ queryKey: ['donors', variables.id] });
+    },
+  });
+}
+
+/** Fetch eligibility statistics (for donor eligibility dashboards) */
+export function useDonorEligibilityStats() {
+  return useQuery({
+    queryKey: ['donors', 'eligibility-stats'],
+    queryFn: fetchDonorEligibilityStats,
+    select: (res) => res.data,
+    staleTime: 30000,
+  });
+}
+
+/** Send standard readiness or emergency notification to a donor */
+export function useSendDonorNotification() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ donorId, payload }: { donorId: string; payload: SendNotificationRequest }) =>
+      sendDonorNotification(donorId, payload),
+    onSuccess: (_data, variables) => {
+      qc.invalidateQueries({ queryKey: ['donors', 'eligibility'] });
+      qc.invalidateQueries({ queryKey: ['donors', 'eligibility-stats'] });
+      qc.invalidateQueries({ queryKey: ['donors', variables.donorId] });
+    },
+  });
+}
+
+/** Fetch eligibility settings (wait periods) for admin */
+export function useEligibilitySettings() {
+  return useQuery({
+    queryKey: ['settings', 'eligibility'],
+    queryFn: fetchEligibilitySettings,
+    select: (res) => res.data,
+  });
+}
+
+/** Update eligibility settings (wait periods) for admin */
+export function useUpdateEligibilitySettings() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: EligibilitySettings) => updateEligibilitySettings(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['settings', 'eligibility'] });
+      // Invalidate donor eligibility stats/list because wait days changed
+      qc.invalidateQueries({ queryKey: ['donors', 'eligibility'] });
+      qc.invalidateQueries({ queryKey: ['donors', 'eligibility-stats'] });
     },
   });
 }

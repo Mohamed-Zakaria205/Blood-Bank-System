@@ -1,47 +1,16 @@
 import { TrendingUp, Users } from 'lucide-react';
-import type { Donation } from '../../../types/donor';
+import type { WeeklyDonationChart } from '../../../types/doctorDashboard';
 
 interface WeeklyChartProps {
-  donations: Donation[];
+  data: WeeklyDonationChart[];
 }
 
-/** Build current-week donation counts — Egyptian week: السبت → الجمعة */
-function buildWeekData(donations: Donation[]) {
-  // Egyptian week starts on Saturday (JS getDay: 6=Sat, 0=Sun, ..., 5=Fri)
-  const dayNames = ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+export default function WeeklyChart({ data }: WeeklyChartProps) {
+  const weekData = data.map((w) => ({
+    day: w.dayName,
+    donors: w.donationsCount,
+  }));
 
-  const now = new Date();
-  // Days elapsed since last Saturday: Sun=1, Mon=2, ..., Sat=0
-  const daysFromSat = (now.getDay() + 1) % 7;
-  const startOfWeek = new Date(now);
-  startOfWeek.setDate(now.getDate() - daysFromSat);
-  startOfWeek.setHours(0, 0, 0, 0);
-
-
-  // Build Sat→Fri — in RTL flexbox, index 0 (السبت) renders on the right ✓
-  return dayNames.map((day, i) => {
-    const dayDate = new Date(startOfWeek);
-    dayDate.setDate(startOfWeek.getDate() + i);
-    // Use local date (not toISOString) to avoid UTC offset shifting the date
-    const dateStr = `${dayDate.getFullYear()}-${String(dayDate.getMonth() + 1).padStart(2, '0')}-${String(dayDate.getDate()).padStart(2, '0')}`;
-    const count = donations.filter((d) => {
-      if (!d.donationDate) return false;
-      // If the backend returned an ISO string (e.g. 2026-05-30T23:00:00Z),
-      // we must parse it to a local Date object first, then format to local YYYY-MM-DD
-      if (d.donationDate.includes('T')) {
-        const dObj = new Date(d.donationDate);
-        if (isNaN(dObj.getTime())) return false;
-        const localStr = `${dObj.getFullYear()}-${String(dObj.getMonth() + 1).padStart(2, '0')}-${String(dObj.getDate()).padStart(2, '0')}`;
-        return localStr === dateStr;
-      }
-      return d.donationDate === dateStr;
-    }).length;
-    return { day, donors: count };
-  });
-}
-
-export default function WeeklyChart({ donations }: WeeklyChartProps) {
-  const weekData = buildWeekData(donations);
   const total = weekData.reduce((a, b) => a + b.donors, 0);
   const maxVal = Math.max(...weekData.map((w) => w.donors), 1); // avoid division by zero
   const avgPerDay = Math.round(total / weekData.length);

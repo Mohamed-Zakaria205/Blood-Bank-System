@@ -1,8 +1,8 @@
-﻿import { Megaphone, ArrowUpRight } from 'lucide-react';
-import type { Campaign } from '../../../types/campaign';
+import { Megaphone, ArrowUpRight } from 'lucide-react';
+import type { ActiveCampaign } from '../../../types/doctorDashboard';
 
 interface ActiveCampaignsPanelProps {
-  campaigns: Campaign[];
+  campaigns: ActiveCampaign[];
   onViewAll: () => void;
 }
 
