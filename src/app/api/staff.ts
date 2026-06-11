@@ -4,7 +4,7 @@
 import apiClient from './client';
 import { ApiError } from './errors';
 import type { User, CreateStaffRequest, UpdateStaffRequest, ApiResponseWrapper } from '../types/auth';
-import type { PaginatedResponse, ApiResponse, StaffFilters } from '../types/common';
+import type { PaginatedResponse, StaffFilters } from '../types/common';
 
 /** Fetch all staff members (excludes admins) */
 export async function fetchStaff(): Promise<PaginatedResponse<User>> {

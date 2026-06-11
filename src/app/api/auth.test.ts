@@ -20,11 +20,10 @@ vi.mock('axios', () => {
   };
   class AxiosError extends Error {
     response?: any;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    constructor(message?: string, code?: string, config?: any, request?: any, response?: any) {
+    constructor(message?: string, ...args: any[]) {
       super(message);
       this.name = 'AxiosError';
-      this.response = response;
+      this.response = args[3];
     }
   }
   return {

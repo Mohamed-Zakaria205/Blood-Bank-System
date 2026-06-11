@@ -27,6 +27,7 @@ export function usePaginatedDonors(filters: DonorFilters = {}) {
     queryKey: ['donors', 'paginated', filters],
     queryFn: ({ signal }) => fetchPaginatedDonors(filters, { signal }),
     placeholderData: (previousData) => previousData,
+    staleTime: 0, // Enforce fresh list & counts from the server
   });
 }
 
@@ -38,6 +39,7 @@ export function usePaginatedEligibleDonors(filters: DonorFilters = {}) {
     queryKey: ['donors', 'eligibility', 'paginated', filters],
     queryFn: ({ signal }) => fetchPaginatedEligibleDonors(filters, { signal }),
     placeholderData: (previousData) => previousData,
+    staleTime: 0, // Enforce fresh eligibility counts
   });
 }
 
