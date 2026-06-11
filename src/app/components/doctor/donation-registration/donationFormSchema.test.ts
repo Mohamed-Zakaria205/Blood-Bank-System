@@ -112,7 +112,7 @@ describe('donorSchema Zod validation', () => {
       const result = donorSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('رقم هاتف غير صحيح');
+        expect(result.error.issues[0].message).toBe('رقم الهاتف غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015');
       }
     });
   });

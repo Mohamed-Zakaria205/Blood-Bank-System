@@ -18,6 +18,15 @@ vi.mock('axios', () => {
       response: { use: vi.fn(), eject: vi.fn() },
     },
   };
+  class AxiosError extends Error {
+    response?: any;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    constructor(message?: string, code?: string, config?: any, request?: any, response?: any) {
+      super(message);
+      this.name = 'AxiosError';
+      this.response = response;
+    }
+  }
   return {
     default: {
       create: vi.fn(() => instance),
@@ -25,6 +34,7 @@ vi.mock('axios', () => {
       get: mockGet,
       isCancel: vi.fn(),
     },
+    AxiosError,
   };
 });
 

@@ -11,6 +11,7 @@ const {
   mockUseSearchDonor,
   mockUseAddDonation,
   mockUseAddMedicalRecord,
+  mockUseDeleteDonation,
   mockUseNavigate,
   mockUseSearchParams,
 } = vi.hoisted(() => {
@@ -21,6 +22,7 @@ const {
     mockUseSearchDonor: vi.fn(),
     mockUseAddDonation: vi.fn(),
     mockUseAddMedicalRecord: vi.fn(),
+    mockUseDeleteDonation: vi.fn(),
     mockUseNavigate: vi.fn(),
     mockUseSearchParams: vi.fn(),
   };
@@ -40,6 +42,7 @@ vi.mock('../../hooks/useDonors', () => ({
   useAddDonation: mockUseAddDonation,
   useAddMedicalRecord: mockUseAddMedicalRecord,
   useDonationCenters: mockUseDonationCenters,
+  useDeleteDonation: mockUseDeleteDonation,
 }));
 
 // Mock react-router
@@ -114,6 +117,12 @@ describe('DonationRegistrationForm Component', () => {
       isPending: false,
     });
 
+    // Mock delete donation mutation
+    mockUseDeleteDonation.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+    });
+
     // Default empty search params
     mockUseSearchParams.mockReturnValue([
       new URLSearchParams(),
@@ -159,8 +168,8 @@ describe('DonationRegistrationForm Component', () => {
 
       await waitFor(() => {
         expect(screen.getByText('أدخل الاسم الثنائي على الأقل')).toBeInTheDocument();
-        expect(screen.getByText('رقم هاتف غير صحيح')).toBeInTheDocument();
-        expect(screen.getByText('رقم الهوية يجب أن يكون 14 رقماً')).toBeInTheDocument();
+        expect(screen.getByText('رقم الهاتف غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015')).toBeInTheDocument();
+        expect(screen.getByText('الرقم القومي غير صحيح أو غير متطابق مع تاريخ الميلاد')).toBeInTheDocument();
       });
     });
 

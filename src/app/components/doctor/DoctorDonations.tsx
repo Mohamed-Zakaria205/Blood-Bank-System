@@ -65,8 +65,6 @@ export default function DoctorDonations() {
   const total = response?.total || 0;
   const totalPages = Math.ceil(total / 10) || 1;
 
-  console.log('Fetched Donations:', donations);
-
   // When filters change, reset to page 1
   const { handleFilterChange } = useFilterChange(setPage);
 

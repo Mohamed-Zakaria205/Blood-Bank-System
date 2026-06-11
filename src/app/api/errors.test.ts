@@ -88,7 +88,7 @@ describe('handleApiError function', () => {
     const axiosError = new AxiosError('Connection Timeout', 'ECONNABORTED', config);
 
     const result = handleApiError(axiosError);
-    expect(result.message).toBe('Connection Timeout');
+    expect(result.message).toBe('تعذر الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت.');
   });
 
   it('should use default Arabic network error message when no error message or data title is present', () => {

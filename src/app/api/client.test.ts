@@ -100,7 +100,7 @@ describe('Axios Client & Token Refresh Interceptor', () => {
 
     const { refreshTokenApi } = await import('./auth');
 
-    await expect(apiClient.get('/some-endpoint')).rejects.toThrow('Unauthorized');
+    await expect(apiClient.get('/some-endpoint')).rejects.toThrow('غير مصرح بالدخول. يرجى تسجيل الدخول مجدداً');
     expect(refreshTokenApi).not.toHaveBeenCalled();
   });
 
@@ -145,6 +145,7 @@ describe('Axios Client & Token Refresh Interceptor', () => {
 
   it('should handle refresh failure by rejecting queued requests, clearing storage, and redirecting', async () => {
     localStorage.setItem('bloodlink_user', JSON.stringify({ id: '1', role: 'doctor' }));
+    const dispatchSpy = vi.spyOn(window, 'dispatchEvent');
 
     const { refreshTokenApi, logoutApi } = await import('./auth');
     (refreshTokenApi as any).mockRejectedValueOnce(new Error('Refresh Token Expired'));
@@ -168,9 +169,14 @@ describe('Axios Client & Token Refresh Interceptor', () => {
       expect(secondPromise).rejects.toThrow(),
     ]);
 
-    expect(logoutApi).toHaveBeenCalledTimes(1);
+    expect(logoutApi).not.toHaveBeenCalled();
     expect(localStorage.getItem('bloodlink_user')).toBeNull();
-    expect(mockHref).toHaveBeenCalledWith('/login');
+    
+    expect(dispatchSpy).toHaveBeenCalled();
+    const event = dispatchSpy.mock.calls.find(call => call[0] instanceof CustomEvent && call[0].type === 'bloodlink:session-expired')?.[0] as CustomEvent;
+    expect(event).toBeDefined();
+    
+    dispatchSpy.mockRestore();
   });
 
   it('should bypass cancelled requests without triggering refresh', async () => {

@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 import axios from 'axios';
 import apiClient from './client';
-import { ApiError } from './errors';
+import { ApiError, handleApiError, translateErrorMessage } from './errors';
 import type {
   LoginRequest,
   LoginResponse,
@@ -41,15 +41,6 @@ const sanitizeMsg = (msg?: string) => {
  * Real mode: POST /Auth/login → { success, message, data: User }
  */
 export async function loginApi(credentials: LoginRequest): Promise<User> {
-  // Map common English backend messages → Arabic for the UI
-  const ERROR_MAP: Record<string, string> = {
-    'Invalid credentials.': 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
-    'Invalid credentials': 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
-    'Account is disabled.': 'هذا الحساب معطل. يرجى التواصل مع المدير',
-    'Account is locked.': 'الحساب مقفل مؤقتاً. حاول مرة أخرى لاحقاً',
-    'User not found.': 'المستخدم غير موجود',
-  };
-
   try {
     const { data: wrapper } = await rawAxios.post<LoginResponse>(
       '/Auth/login',
@@ -62,7 +53,7 @@ export async function loginApi(credentials: LoginRequest): Promise<User> {
     );
 
     if (!wrapper.success) {
-      const msg = ERROR_MAP[wrapper.message] || sanitizeMsg(wrapper.message) || 'فشل تسجيل الدخول';
+      const msg = translateErrorMessage(wrapper.message || 'فشل تسجيل الدخول');
       throw new ApiError(msg, 401);
     }
 
@@ -72,31 +63,8 @@ export async function loginApi(credentials: LoginRequest): Promise<User> {
 
     return wrapper.data;
   } catch (err) {
-    // If it's already our ApiError (from the block above), rethrow
     if (err instanceof ApiError) throw err;
-
-    // Extract message from AxiosError response body
-    const responseData = (err as any)?.response?.data;
-    const backendMsg =
-      typeof responseData === 'string'
-        ? responseData
-        : responseData?.message || responseData?.Message || '';
-        
-    const status = (err as any)?.response?.status || 0;
-    
-    let arabicMsg = ERROR_MAP[backendMsg];
-    
-    if (!arabicMsg) {
-      if (status >= 500) {
-        arabicMsg = 'حدث خطأ داخلي في الخادم. يرجى المحاولة لاحقاً.';
-      } else if (status === 0) {
-        arabicMsg = 'تعذر الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت.';
-      } else {
-        arabicMsg = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
-      }
-    }
-    
-    throw new ApiError(arabicMsg, status === 0 ? 503 : status);
+    throw handleApiError(err);
   }
 }
 

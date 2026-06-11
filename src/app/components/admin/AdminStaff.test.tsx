@@ -31,6 +31,13 @@ vi.mock('sonner', () => ({
   },
 }));
 
+// Mock auth context
+vi.mock('../../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 'admin-current', role: 'admin', name: 'Current Admin' },
+  }),
+}));
+
 describe('AdminStaff Component', () => {
   const sampleStaffResponse = {
     data: [
