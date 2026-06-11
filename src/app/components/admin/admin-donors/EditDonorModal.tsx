@@ -1,4 +1,4 @@
-﻿import { X, Save } from 'lucide-react';
+import { X, Save } from 'lucide-react';
 import { BLOOD_TYPES } from '../../../constants';
 import type { Donor } from '../../../types';
 import { EGYPT_DATA } from '../../../data/egypt';
@@ -11,6 +11,7 @@ interface EditDonorModalProps {
   onCancel: () => void;
   loading: boolean;
   saved: boolean;
+  errors?: Record<string, string>;
 }
 
 export default function EditDonorModal({
@@ -21,6 +22,7 @@ export default function EditDonorModal({
   onCancel,
   loading,
   saved,
+  errors,
 }: EditDonorModalProps) {
   const currentGovernorateObj = EGYPT_DATA.find((g) => g.name_ar === form.governorate);
   const currentCities = currentGovernorateObj?.cities || [];
@@ -58,36 +60,50 @@ export default function EditDonorModal({
                 className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
-                الاسم الكامل
+                الاسم الكامل *
               </label>
               <input
                 value={form.name || ''}
                 onChange={(e) => onFormChange({ ...form, name: e.target.value })}
-                className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors?.name ? 'border-red-500 focus:ring-red-100' : 'border-border'}`}
                 style={{ fontSize: '13px' }}
               />
+              {errors?.name && (
+                <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
+                  {errors.name}
+                </p>
+              )}
             </div>
             <div>
               <label
                 className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
-                رقم الهاتف
+                رقم الهاتف *
               </label>
               <input
                 value={form.phone || ''}
-                onChange={(e) => onFormChange({ ...form, phone: e.target.value })}
-                className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 11);
+                  onFormChange({ ...form, phone: val });
+                }}
+                maxLength={11}
+                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors?.phone ? 'border-red-500 focus:ring-red-100' : 'border-border'}`}
                 style={{ fontSize: '13px' }}
                 dir="ltr"
               />
+              {errors?.phone && (
+                <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
+                  {errors.phone}
+                </p>
+              )}
             </div>
             <div>
               <label
                 className="block text-foreground mb-1.5"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
-                الرقم القومي
+                الرقم القومي *
               </label>
               <input
                 value={form.nationalId || ''}
@@ -96,10 +112,15 @@ export default function EditDonorModal({
                   onFormChange({ ...form, nationalId: val });
                 }}
                 maxLength={14}
-                className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 ${errors?.nationalId ? 'border-red-500 focus:ring-red-100' : 'border-border'}`}
                 style={{ fontSize: '13px' }}
                 dir="ltr"
               />
+              {errors?.nationalId && (
+                <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
+                  {errors.nationalId}
+                </p>
+              )}
             </div>
             <div>
               <label

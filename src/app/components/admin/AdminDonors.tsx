@@ -56,6 +56,7 @@ export default function AdminDonors() {
 
   const [editingDonor, setEditingDonor] = useState<Donor | null>(null);
   const [editForm, setEditForm] = useState<Partial<Donor>>({});
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [viewingDonorId, setViewingDonorId] = useState<string | null>(null);
   const [loadingDetailsId, setLoadingDetailsId] = useState<string | null>(null);
 
@@ -77,6 +78,7 @@ export default function AdminDonors() {
     return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetch()} />;
   const openEdit = async (d: Donor) => {
     setLoadingDetailsId(d.id);
+    setFormErrors({});
     try {
       const res = await fetchDonorById(d.id);
       setEditingDonor(res.data);
@@ -91,13 +93,24 @@ export default function AdminDonors() {
   const saveEdit = async () => {
     if (!editingDonor) return;
 
+    setFormErrors({});
+
+    const name = editForm.name || '';
+    if (!name.trim()) {
+      setFormErrors({ name: 'يرجى إدخال الاسم الكامل' });
+      toast.error('يرجى إدخال الاسم الكامل');
+      return;
+    }
+
     const phone = editForm.phone || '';
     const egPhoneRegex = /^01[0125]\d{8}$/;
     if (!phone) {
+      setFormErrors({ phone: 'يرجى إدخال رقم الهاتف' });
       toast.error('يرجى إدخال رقم الهاتف');
       return;
     }
     if (!egPhoneRegex.test(phone)) {
+      setFormErrors({ phone: 'رقم الهاتف المحمول غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015' });
       toast.error('رقم الهاتف المحمول غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015');
       return;
     }
@@ -105,13 +118,17 @@ export default function AdminDonors() {
     const nationalId = editForm.nationalId || '';
     const nationalIdRegex = /^\d{14}$/;
     if (!nationalId) {
+      setFormErrors({ nationalId: 'يرجى إدخال الرقم القومي' });
       toast.error('يرجى إدخال الرقم القومي');
       return;
     }
     if (!nationalIdRegex.test(nationalId)) {
+      setFormErrors({ nationalId: 'الرقم القومي غير صحيح، يجب أن يتكون من 14 رقماً' });
       toast.error('الرقم القومي غير صحيح، يجب أن يتكون من 14 رقماً');
       return;
     }
+
+    setFormErrors({});
 
     // ── Optimistic Locking Check ──
     try {
@@ -130,9 +147,6 @@ export default function AdminDonors() {
       console.warn('Optimistic lock verification failed', err);
     }
 
-    // Close modal immediately for snappy UX
-    setEditingDonor(null);
-
     updateMutation.mutate(
       { id: editingDonor.id, payload: editForm },
       {
@@ -142,18 +156,24 @@ export default function AdminDonors() {
             msg = 'تم تحديث بيانات المتبرع بنجاح';
           }
           toast.success(msg);
+          setEditingDonor(null);
         },
         onError: (err) => {
           const apiErr = handleApiError(err);
           const rawMsg = (apiErr.message || '').toLowerCase();
           let userFriendlyMsg = apiErr.message || 'حدث خطأ أثناء التحديث';
+          const backendErrors: Record<string, string> = {};
 
           // English to Arabic error mapping
           if (rawMsg.includes('phone') || rawMsg.includes('رقم الهاتف')) {
+            backendErrors.phone = 'رقم الهاتف هذا مسجل بالفعل لمتبرع آخر';
             userFriendlyMsg = 'رقم الهاتف هذا مسجل بالفعل لمتبرع آخر';
-          } else if (rawMsg.includes('nationalid') || rawMsg.includes('national id') || rawMsg.includes('الرقم القومي')) {
+          } 
+          if (rawMsg.includes('nationalid') || rawMsg.includes('national id') || rawMsg.includes('الرقم القومي')) {
+            backendErrors.nationalId = 'الرقم القومي هذا مسجل بالفعل لمتبرع آخر';
             userFriendlyMsg = 'الرقم القومي هذا مسجل بالفعل لمتبرع آخر';
-          } else if (rawMsg.includes('not found')) {
+          } 
+          if (rawMsg.includes('not found')) {
             userFriendlyMsg = 'المتبرع غير موجود في النظام';
           } else if (rawMsg.includes('blood') || rawMsg.includes('bloodtype')) {
             userFriendlyMsg = 'فصيلة الدم غير صالحة';
@@ -167,6 +187,20 @@ export default function AdminDonors() {
             userFriendlyMsg = 'حدث خطأ في الخادم، يرجى المحاولة لاحقاً';
           }
 
+          const validationErrors = apiErr.data?.errors;
+          if (validationErrors && typeof validationErrors === 'object') {
+            Object.keys(validationErrors).forEach(key => {
+              const fieldName = key.charAt(0).toLowerCase() + key.slice(1);
+              const msgs = validationErrors[key];
+              if (Array.isArray(msgs) && msgs.length > 0) {
+                backendErrors[fieldName] = msgs[0];
+              } else if (typeof msgs === 'string') {
+                backendErrors[fieldName] = msgs;
+              }
+            });
+          }
+
+          setFormErrors(backendErrors);
           toast.error(userFriendlyMsg);
         },
       },
@@ -419,9 +453,10 @@ export default function AdminDonors() {
           form={editForm}
           onFormChange={setEditForm}
           onSave={saveEdit}
-          onCancel={() => { setEditingDonor(null); updateMutation.reset(); }}
+          onCancel={() => { setEditingDonor(null); setFormErrors({}); updateMutation.reset(); }}
           loading={updateMutation.isPending}
           saved={updateMutation.isSuccess}
+          errors={formErrors}
         />
       )}
 
