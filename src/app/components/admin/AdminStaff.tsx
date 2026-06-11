@@ -8,8 +8,9 @@ import {
   Copy,
   Check,
   ChevronDown,
+  Edit2,
 } from 'lucide-react';
-import { useFilteredStaff, useCreateStaff, useDeleteStaff } from '../../hooks/useStaff';
+import { useFilteredStaff, useCreateStaff, useDeleteStaff, useUpdateStaff } from '../../hooks/useStaff';
 import { useFilterChange } from '../../hooks/useFilterChange';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
@@ -23,12 +24,14 @@ import {
   PaginationEllipsis,
   generatePaginationNumbers,
 } from '../ui/pagination';
+import type { User } from '../../types/auth';
 
 // ── Sub-components ──
-import type { StaffRole, StaffForm } from './admin-staff/staffConstants';
+import type { StaffRole, StaffForm, EditStaffForm } from './admin-staff/staffConstants';
 import { roleConfig } from './admin-staff/staffConstants';
 import AddStaffModal from './admin-staff/AddStaffModal';
 import DeleteConfirmModal from './admin-staff/DeleteConfirmModal';
+import EditStaffModal from './admin-staff/EditStaffModal';
 
 export default function AdminStaff() {
   const { user } = useAuth();
@@ -37,6 +40,7 @@ export default function AdminStaff() {
   const [filterRole, setFilterRole] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [editingStaff, setEditingStaff] = useState<User | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
@@ -58,6 +62,7 @@ export default function AdminStaff() {
   const totalPages = Math.ceil(total / 5) || 1;
 
   const createStaff = useCreateStaff();
+  const updateStaff = useUpdateStaff();
   const deleteStaff = useDeleteStaff();
 
   const { handleFilterChange } = useFilterChange(setPage);
@@ -75,6 +80,24 @@ export default function AdminStaff() {
     });
     setShowModal(false);
     toast.success('تم إضافة الكادر الطبي بنجاح');
+  };
+
+  const handleEditStaff = async (values: EditStaffForm) => {
+    if (!editingStaff) return;
+    await updateStaff.mutateAsync({
+      id: editingStaff.id,
+      payload: {
+        name: values.fullName.trim(),
+        email: values.email,
+        role: values.role as StaffRole,
+        nationalId: values.nationalId,
+        phone: values.phone,
+        address: values.address,
+        city: values.city,
+      },
+    });
+    setEditingStaff(null);
+    toast.success('تم تعديل بيانات الكادر الطبي بنجاح');
   };
 
   const handleDelete = async (id: string) => {
@@ -290,16 +313,26 @@ export default function AdminStaff() {
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      {u.id !== user?.id && (
+                      <div className="flex items-center gap-1.5">
                         <button
-                          onClick={() => setDeleteId(u.id)}
-                          className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                          title="حذف المستخدم"
-                          aria-label="حذف المستخدم"
+                          onClick={() => setEditingStaff(u)}
+                          className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-all"
+                          title="تعديل المستخدم"
+                          aria-label="تعديل المستخدم"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Edit2 className="w-4 h-4" />
                         </button>
-                      )}
+                        {u.id !== user?.id && (
+                          <button
+                            onClick={() => setDeleteId(u.id)}
+                            className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                            title="حذف المستخدم"
+                            aria-label="حذف المستخدم"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
@@ -371,6 +404,15 @@ export default function AdminStaff() {
         <DeleteConfirmModal
           onConfirm={() => handleDelete(deleteId)}
           onCancel={() => setDeleteId(null)}
+        />
+      )}
+
+      {/* Edit Staff Modal */}
+      {editingStaff && (
+        <EditStaffModal
+          user={editingStaff}
+          onClose={() => setEditingStaff(null)}
+          onSubmit={handleEditStaff}
         />
       )}
     </div>

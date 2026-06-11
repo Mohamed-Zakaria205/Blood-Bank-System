@@ -82,13 +82,27 @@ export async function createStaff(payload: CreateStaffRequest): Promise<string> 
   return wrapper.data;
 }
 
-/** PATCH /staff/:id — partial update (no password change via this endpoint) */
 export async function updateStaff(
   id: string,
   payload: UpdateStaffRequest,
-): Promise<ApiResponse<User>> {
-  const { data } = await apiClient.patch<ApiResponse<User>>(`/staff/${id}`, payload);
-  return data;
+): Promise<string> {
+  const roleMap: Record<string, string> = {
+    admin: 'Admin',
+    doctor: 'Doctor',
+    lab: 'LabDoctor',
+    inventory: 'InventoryManager',
+  };
+
+  const backendPayload = {
+    ...payload,
+    role: payload.role ? roleMap[payload.role] || payload.role : undefined,
+  };
+
+  const { data: wrapper } = await apiClient.patch<ApiResponseWrapper<string>>(`/Staff/${id}`, backendPayload);
+  if (!wrapper.success) {
+    throw new ApiError(wrapper.message || 'حدث خطأ أثناء تعديل بيانات الكادر الطبي');
+  }
+  return wrapper.data;
 }
 
 export async function deleteStaff(id: string): Promise<void> {

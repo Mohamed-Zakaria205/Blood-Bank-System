@@ -7,11 +7,13 @@ import { toast } from 'sonner';
 const {
   mockUseFilteredStaff,
   mockUseCreateStaff,
+  mockUseUpdateStaff,
   mockUseDeleteStaff,
 } = vi.hoisted(() => {
   return {
     mockUseFilteredStaff: vi.fn(),
     mockUseCreateStaff: vi.fn(),
+    mockUseUpdateStaff: vi.fn(),
     mockUseDeleteStaff: vi.fn(),
   };
 });
@@ -20,6 +22,7 @@ const {
 vi.mock('../../hooks/useStaff', () => ({
   useFilteredStaff: mockUseFilteredStaff,
   useCreateStaff: mockUseCreateStaff,
+  useUpdateStaff: mockUseUpdateStaff,
   useDeleteStaff: mockUseDeleteStaff,
 }));
 
@@ -78,6 +81,11 @@ describe('AdminStaff Component', () => {
     });
 
     mockUseCreateStaff.mockReturnValue({
+      mutateAsync: vi.fn().mockResolvedValue({}),
+      isPending: false,
+    });
+
+    mockUseUpdateStaff.mockReturnValue({
       mutateAsync: vi.fn().mockResolvedValue({}),
       isPending: false,
     });
@@ -285,5 +293,48 @@ describe('AdminStaff Component', () => {
     });
 
     expect(toast.success).toHaveBeenCalledWith('تم حذف الحساب بنجاح');
+  });
+
+  it('shows edit staff modal and submits updated staff successfully', async () => {
+    const mutateAsyncSpy = vi.fn().mockResolvedValue({});
+    mockUseUpdateStaff.mockReturnValue({
+      mutateAsync: mutateAsyncSpy,
+      isPending: false,
+    });
+
+    render(<AdminStaff />);
+
+    // Click edit icon for the first staff member (د. أحمد محمد)
+    const editButton = screen.getAllByLabelText('تعديل المستخدم')[0];
+    fireEvent.click(editButton);
+
+    // Modal should render
+    expect(screen.getByRole('heading', { name: 'تعديل بيانات الكادر الطبي' })).toBeInTheDocument();
+
+    // Verify fields are pre-filled
+    const nameInput = screen.getByPlaceholderText('مثال: د. أحمد محمد عبد الله');
+    expect(nameInput).toHaveValue('د. أحمد محمد');
+
+    // Change some field
+    fireEvent.change(nameInput, { target: { value: 'د. أحمد محمد المعدل' } });
+
+    // Click save button
+    const submitButton = screen.getByText('حفظ التعديلات');
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(mutateAsyncSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'staff-1',
+          payload: expect.objectContaining({
+            name: 'د. أحمد محمد المعدل',
+            email: 'doctor@bloodlink.gov.eg',
+            role: 'doctor',
+          }),
+        })
+      );
+    });
+
+    expect(toast.success).toHaveBeenCalledWith('تم تعديل بيانات الكادر الطبي بنجاح');
   });
 });

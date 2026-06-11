@@ -74,6 +74,9 @@ export const staffSchema = z.object({
 
 export type StaffForm = z.infer<typeof staffSchema>;
 
+export const editStaffSchema = staffSchema.omit({ password: true });
+export type EditStaffForm = z.infer<typeof editStaffSchema>;
+
 export const initialForm: StaffForm = {
   fullName: '',
   nationalId: '',
