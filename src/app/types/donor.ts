@@ -117,7 +117,17 @@ export interface BasicDonationRequest {
   district: string;
   area: string;
   source: 'walkin' | 'app' | 'campaign';
+  /**
+   * UUID of the donation center (required by backend).
+   * - walkin: the selected center's Guid
+   * - campaign: the main branch center's Guid (backend still needs a valid center)
+   */
   donationCenterId?: string;
+  /**
+   * UUID of the campaign — sent only when source is 'campaign'.
+   * The backend associates the donation with this campaign.
+   */
+  campaignId?: string;
 }
 
 /**

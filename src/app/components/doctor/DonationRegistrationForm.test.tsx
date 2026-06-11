@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 // Define hoisted mocks
 const {
-  mockUseCampaigns,
+  mockUseFilteredCampaigns,
   mockUseDonationCenters,
   mockUseAppointmentSlotById,
   mockUseSearchDonor,
@@ -16,7 +16,7 @@ const {
   mockUseSearchParams,
 } = vi.hoisted(() => {
   return {
-    mockUseCampaigns: vi.fn(),
+    mockUseFilteredCampaigns: vi.fn(),
     mockUseDonationCenters: vi.fn(),
     mockUseAppointmentSlotById: vi.fn(),
     mockUseSearchDonor: vi.fn(),
@@ -30,7 +30,7 @@ const {
 
 // Mock hooks
 vi.mock('../../hooks/useCampaigns', () => ({
-  useCampaigns: mockUseCampaigns,
+  useFilteredCampaigns: mockUseFilteredCampaigns,
 }));
 
 vi.mock('../../hooks/useAppointments', () => ({
@@ -70,11 +70,13 @@ describe('DonationRegistrationForm Component', () => {
     vi.clearAllMocks();
 
     // Default mock campaigns
-    mockUseCampaigns.mockReturnValue({
-      data: [
-        { id: 'camp-1', title: 'حملة جامعة بني سويف', status: 'active', targetDonors: 100, registeredDonors: 10 },
-        { id: 'camp-2', title: 'حملة النادي الرياضي', status: 'completed', targetDonors: 100, registeredDonors: 95 },
-      ],
+    mockUseFilteredCampaigns.mockReturnValue({
+      data: {
+        data: [
+          { id: 'camp-1', title: 'حملة جامعة بني سويف', status: 'active', targetDonors: 100, registeredDonors: 10 },
+          { id: 'camp-2', title: 'حملة النادي الرياضي', status: 'completed', targetDonors: 100, registeredDonors: 95 },
+        ],
+      }
     });
 
     // Default mock donation centers

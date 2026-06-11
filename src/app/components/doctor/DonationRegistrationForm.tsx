@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router';
 import { Check, Smartphone } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useCampaigns } from '../../hooks/useCampaigns';
+import { useFilteredCampaigns } from '../../hooks/useCampaigns';
 import { useAppointmentSlotById } from '../../hooks/useAppointments';
 import { useAddDonation, useAddMedicalRecord, useSearchDonor, useDonationCenters, useDeleteDonation } from '../../hooks/useDonors';
 import { toast } from 'sonner';
@@ -25,7 +25,7 @@ export default function DonationRegistrationForm() {
   const navigate = useNavigate();
   useAuth();
   const [searchParams] = useSearchParams();
-  const { data: campaignsData = [] } = useCampaigns();
+  const { data: filteredCampaigns } = useFilteredCampaigns({ status: 'active', limit: 100 });
   const { data: donationCenters = [] } = useDonationCenters();
   const addDonation = useAddDonation();
   const addMedicalRecord = useAddMedicalRecord();
@@ -193,7 +193,7 @@ export default function DonationRegistrationForm() {
     }
   }, [donationCenters, form.source, form.donationCenterId, setValue]);
 
-  const activeCampaigns = campaignsData.filter((c) => c.status === 'active');
+  const activeCampaigns = filteredCampaigns?.data || [];
 
   const updateField = <K extends keyof SimpleForm>(key: K, value: SimpleForm[K]) => {
     setValue(key as Path<SimpleForm>, value as PathValue<SimpleForm, Path<SimpleForm>>, {
@@ -313,11 +313,16 @@ export default function DonationRegistrationForm() {
           district: values.district,
           area: values.area,
           source: values.source,
-          // Backend uses a single `donationCenterId` field for both campaign and walkin center IDs
+          // The backend requires a valid DonationCenter GUID in donationCenterId always.
+          // For campaigns: use the main branch center's ID + also send campaignId separately.
+          // For walkin: use the selected center's ID.
           donationCenterId:
             values.source === 'campaign'
-              ? values.campaignId || undefined
+              ? (donationCenters[0]?.id || values.donationCenterId || undefined)
               : values.donationCenterId || undefined,
+          // campaignId is an additional field — only sent when source is 'campaign'
+          campaignId:
+            values.source === 'campaign' ? values.campaignId || undefined : undefined,
         },
         {
           onSuccess: (res) => {
