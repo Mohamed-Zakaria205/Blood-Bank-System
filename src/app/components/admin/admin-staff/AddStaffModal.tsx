@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   UserPlus,
   X,
@@ -9,7 +9,10 @@ import {
   CreditCard,
   User as UserIcon,
   Mail,
+  Copy,
+  Check,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { CITIES } from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { Form } from '../../ui/form';
@@ -24,6 +27,52 @@ interface AddStaffModalProps {
 
 export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps) {
   const [showPass, setShowPass] = useState(false);
+  const [copiedPass, setCopiedPass] = useState(false);
+
+  const generateStrongPassword = () => {
+    const length = 12;
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
+    const symbols = '!@#$%^&*()_+~}{[]:;?><,./-';
+    
+    // Ensure we have at least one of each to satisfy complexity rules
+    let password = '';
+    password += uppercase[Math.floor(Math.random() * uppercase.length)];
+    password += lowercase[Math.floor(Math.random() * lowercase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += symbols[Math.floor(Math.random() * symbols.length)];
+    
+    const allChars = uppercase + lowercase + numbers + symbols;
+    for (let i = 4; i < length; i++) {
+      password += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+    
+    // Shuffle the password characters
+    return password.split('').sort(() => 0.5 - Math.random()).join('');
+  };
+
+  const handleGeneratePassword = () => {
+    const pass = generateStrongPassword();
+    setValue('password', pass, { shouldValidate: true, shouldDirty: true });
+    setShowPass(true);
+    toast.success('تم توليد كلمة مرور قوية');
+  };
+
+  const handleCopyPassword = () => {
+    const password = watch('password');
+    if (!password) {
+      toast.error('لا يوجد كلمة مرور لنسخها');
+      return;
+    }
+    navigator.clipboard.writeText(password).then(() => {
+      setCopiedPass(true);
+      toast.success('تم نسخ كلمة المرور بنجاح');
+      setTimeout(() => setCopiedPass(false), 2000);
+    }).catch(() => {
+      toast.error('فشل نسخ كلمة المرور');
+    });
+  };
 
   const formMethods = useForm<StaffForm>({
     defaultValues: initialForm,
@@ -300,27 +349,49 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
 
                 {/* Password */}
                 <div>
-                  <label
-                    className="block text-foreground mb-1.5"
-                    style={{ fontSize: '13px', fontWeight: 600 }}
-                  >
-                    كلمة المرور *
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label
+                      className="block text-foreground"
+                      style={{ fontSize: '13px', fontWeight: 600 }}
+                    >
+                      كلمة المرور *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleGeneratePassword}
+                      className="text-xs text-green-600 hover:text-green-700 hover:underline focus:outline-none"
+                    >
+                      توليد كلمة مرور قوية
+                    </button>
+                  </div>
                   <div className="relative">
                     <input
                       type={showPass ? 'text' : 'password'}
                       {...register('password')}
-                      placeholder="6 أحرف على الأقل"
-                      className={`w-full px-4 pl-10 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 ${errors.password ? 'border-red-300' : 'border-border'}`}
+                      placeholder="8 أحرف، حرف كبير، رقم، رمز خاص"
+                      className={`w-full px-4 pl-16 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 ${errors.password ? 'border-red-300' : 'border-border'}`}
                       style={{ fontSize: '13px' }}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPass(!showPass)}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                    >
-                      {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleCopyPassword}
+                        className="text-muted-foreground hover:text-green-600 transition-colors p-1"
+                        title="نسخ كلمة المرور"
+                        aria-label="نسخ كلمة المرور"
+                      >
+                        {copiedPass ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowPass(!showPass)}
+                        className="text-muted-foreground hover:text-foreground transition-colors p-1"
+                        title={showPass ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                        aria-label={showPass ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                      >
+                        {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
                   {errors.password?.message && (
                     <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>

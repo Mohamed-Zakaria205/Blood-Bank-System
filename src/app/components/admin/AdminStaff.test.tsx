@@ -208,14 +208,14 @@ describe('AdminStaff Component', () => {
     // Fill form fields
     const nameInput = screen.getByPlaceholderText('مثال: د. أحمد محمد عبد الله');
     const emailInput = screen.getByPlaceholderText('example@bloodlink.benisuef.eg');
-    const passInput = screen.getByPlaceholderText('6 أحرف على الأقل');
+    const passInput = screen.getByPlaceholderText('8 أحرف، حرف كبير، رقم، رمز خاص');
     const phoneInput = screen.getByPlaceholderText('01xxxxxxxxx');
     const addressInput = screen.getByPlaceholderText('شارع، حي، رقم...');
     const nationalIdInput = screen.getByPlaceholderText('14 رقماً');
 
     fireEvent.change(nameInput, { target: { value: 'دكتور أحمد محمود' } });
     fireEvent.change(emailInput, { target: { value: 'ahmed@bloodlink.gov.eg' } });
-    fireEvent.change(passInput, { target: { value: 'password123' } });
+    fireEvent.change(passInput, { target: { value: 'Password123!' } });
     fireEvent.change(phoneInput, { target: { value: '01011223344' } });
     fireEvent.change(addressInput, { target: { value: 'وسط البلد، بني سويف' } });
     fireEvent.change(nationalIdInput, { target: { value: '29012345678901' } });
@@ -229,7 +229,7 @@ describe('AdminStaff Component', () => {
         expect.objectContaining({
           name: 'دكتور أحمد محمود',
           email: 'ahmed@bloodlink.gov.eg',
-          password: 'password123',
+          password: 'Password123!',
           phone: '01011223344',
           address: 'وسط البلد، بني سويف',
           nationalId: '29012345678901',
