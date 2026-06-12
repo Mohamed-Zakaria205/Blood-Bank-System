@@ -2,6 +2,7 @@ import { X, Save } from 'lucide-react';
 import { BLOOD_TYPES } from '../../../constants';
 import type { Donor } from '../../../types';
 import { EGYPT_DATA } from '../../../data/egypt';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface EditDonorModalProps {
   donor: Donor;
@@ -28,6 +29,7 @@ export default function EditDonorModal({
   const currentCities = currentGovernorateObj?.cities || [];
   const currentDistrictObj = currentCities.find((c) => c.city_name_ar === form.district);
   const currentAreas = currentDistrictObj?.areas || [];
+  const modalRef = useModalFocusTrap(onCancel);
 
   return (
     <div
@@ -36,10 +38,16 @@ export default function EditDonorModal({
         if (e.target === e.currentTarget) onCancel();
       }}
     >
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto outline-none"
+      >
         <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card">
           <div>
-            <h3 className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
+            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
               تعديل بيانات المتبرع
             </h3>
             <p className="text-green-600 font-mono" style={{ fontSize: '12px' }}>

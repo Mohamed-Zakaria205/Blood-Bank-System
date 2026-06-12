@@ -1,6 +1,7 @@
-﻿import { X, User, Phone, MapPin, Activity, Calendar, Award, Smartphone } from 'lucide-react';
+import { X, User, Phone, MapPin, Activity, Calendar, Award, Smartphone } from 'lucide-react';
 import { useDonor } from '../../../hooks/useDonors';
 import { statusColors, statusLabels } from './donorsConstants';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface ViewDonorModalProps {
   donorId: string;
@@ -9,6 +10,7 @@ interface ViewDonorModalProps {
 
 export default function ViewDonorModal({ donorId, onClose }: ViewDonorModalProps) {
   const { data: donor, isLoading, isError, refetch } = useDonor(donorId);
+  const modalRef = useModalFocusTrap(onClose);
 
   return (
     <div
@@ -17,11 +19,17 @@ export default function ViewDonorModal({ donorId, onClose }: ViewDonorModalProps
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto outline-none"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card z-10">
           <div>
-            <h3 className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
+            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
               تفاصيل المتبرع
             </h3>
             {donor && (

@@ -1,4 +1,5 @@
-﻿import { Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface DeleteConfirmModalProps {
   onConfirm: () => void;
@@ -6,13 +7,21 @@ interface DeleteConfirmModalProps {
 }
 
 export default function DeleteConfirmModal({ onConfirm, onCancel }: DeleteConfirmModalProps) {
+  const modalRef = useModalFocusTrap(onCancel);
+
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-card rounded-2xl shadow-2xl p-6 max-w-sm w-full text-center">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl p-6 max-w-sm w-full text-center outline-none"
+      >
         <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Trash2 className="w-7 h-7 text-red-600" />
         </div>
-        <h3 className="text-foreground mb-2" style={{ fontSize: '18px', fontWeight: 700 }}>
+        <h3 id="modal-title" className="text-foreground mb-2" style={{ fontSize: '18px', fontWeight: 700 }}>
           حذف الحساب
         </h3>
         <p className="text-muted-foreground mb-6" style={{ fontSize: '14px' }}>

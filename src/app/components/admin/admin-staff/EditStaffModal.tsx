@@ -9,6 +9,7 @@ import {
   Edit2,
 } from 'lucide-react';
 import { CITIES } from '../../../constants';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 import { useForm } from 'react-hook-form';
 import { Form } from '../../ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -54,6 +55,8 @@ export default function EditStaffModal({ user, onClose, onSubmit }: EditStaffMod
     await onSubmit(values);
   });
 
+  const modalRef = useModalFocusTrap(onClose);
+
   return (
     <div
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
@@ -61,11 +64,17 @@ export default function EditStaffModal({ user, onClose, onSubmit }: EditStaffMod
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto outline-none"
+      >
         {/* Modal Header */}
         <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card z-10">
           <div>
-            <h3 className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
+            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
               تعديل بيانات الكادر الطبي
             </h3>
             <p className="text-muted-foreground mt-0.5" style={{ fontSize: '13px' }}>

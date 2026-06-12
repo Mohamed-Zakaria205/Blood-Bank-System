@@ -1,4 +1,4 @@
-﻿import { Trash2, AlertTriangle, AlertOctagon } from 'lucide-react';
+import { Trash2, AlertTriangle, AlertOctagon } from 'lucide-react';
 import type { BloodBag } from '../../../types';
 import {
   DISPOSAL_REASONS,
@@ -6,6 +6,7 @@ import {
   BagStatusChip,
   getCurrentUserName,
 } from './disposalConstants';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface ConfirmDisposalModalProps {
   selectedBagsData: BloodBag[];
@@ -26,16 +27,24 @@ export default function ConfirmDisposalModal({
   onConfirm,
   onClose,
 }: ConfirmDisposalModalProps) {
+  const modalRef = useModalFocusTrap(onClose);
+
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden outline-none"
+      >
         {/* Modal header */}
         <div className="flex items-center gap-3 px-6 py-5 bg-red-50 border-b border-red-100">
           <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
             <AlertTriangle className="w-6 h-6 text-red-600" />
           </div>
           <div>
-            <h3 className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
+            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
               تأكيد الإتلاف النهائي
             </h3>
             <p className="text-red-600" style={{ fontSize: '12px' }}>
