@@ -175,7 +175,7 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
           <div className="flex gap-3 pt-1">
             <button
               onClick={onClose}
-              className="flex-1 py-3 border border-border text-muted-foreground rounded-xl hover:bg-accent transition-all"
+              className="flex-1 py-3 border border-border text-muted-foreground rounded-xl hover:bg-accent transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600"
               style={{ fontSize: '14px', fontWeight: 600 }}
             >
               تراجع
@@ -183,7 +183,7 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
             <button
               onClick={handleConfirm}
               disabled={confirming}
-              className="flex-1 py-3 text-white rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+              className="flex-1 py-3 text-white rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600"
               style={{
                 background: confirming ? '#dc2626aa' : 'linear-gradient(135deg,#b91c1c,#dc2626)',
                 fontSize: '14px',
