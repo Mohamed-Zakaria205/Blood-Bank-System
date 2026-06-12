@@ -13,7 +13,7 @@ import {
   PaginationEllipsis,
   generatePaginationNumbers,
 } from '../ui/pagination';
-import { useCancelAppointment } from '../../hooks/useAppointments';
+import { useCancelAppointment, useMarkNoShow } from '../../hooks/useAppointments';
 import { CancelModal } from '../shared/CancelModal';
 import { ConfirmModal } from '../shared/ConfirmModal';
 import type { Campaign } from '../../types/campaign';
@@ -54,6 +54,7 @@ export default function DoctorCampaigns() {
   const deleteCampaignMutation = useDeleteCampaign();
   const completeCampaignMutation = useCompleteCampaign();
   const cancelMutation = useCancelAppointment();
+  const noShowMutation = useMarkNoShow();
   const [showModal, setShowModal] = useState(false);
   const [expandedCampaign, setExpandedCampaign] = useState<string | null>(null);
   const [cancelTarget, setCancelTarget] = useState<AppointmentSlot | null>(null);
@@ -218,6 +219,15 @@ export default function DoctorCampaigns() {
     });
   };
 
+  const handleNoShow = async (slot: AppointmentSlot) => {
+    try {
+      await noShowMutation.mutateAsync(slot.id);
+      toast.warning(`تم تسجيل غياب ${slot.donorName || 'المتبرع'}`);
+    } catch {
+      toast.error('تعذر تسجيل الغياب');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -310,6 +320,7 @@ export default function DoctorCampaigns() {
             expandedCampaign={expandedCampaign}
             onToggleExpand={(id) => setExpandedCampaign(expandedCampaign === id ? null : id)}
             onCancelSlot={(apt) => setCancelTarget(apt)}
+            onNoShowSlot={handleNoShow}
             onEdit={handleEditCampaign}
             onDelete={handleDeleteCampaign}
             onComplete={handleCompleteCampaign}

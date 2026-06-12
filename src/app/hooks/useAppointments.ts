@@ -59,6 +59,8 @@ export function useCancelAppointment() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['appointment-slots'] });
       qc.invalidateQueries({ queryKey: ['appointment-stats'] });
+      qc.invalidateQueries({ queryKey: ['campaign-appointments'] });
+      qc.invalidateQueries({ queryKey: ['campaigns'] });
     },
   });
 }
@@ -74,6 +76,8 @@ export function useMarkNoShow() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['appointment-slots'] });
       qc.invalidateQueries({ queryKey: ['appointment-stats'] });
+      qc.invalidateQueries({ queryKey: ['campaign-appointments'] });
+      qc.invalidateQueries({ queryKey: ['campaigns'] });
     },
   });
 }

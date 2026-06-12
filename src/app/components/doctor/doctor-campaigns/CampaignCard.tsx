@@ -8,6 +8,7 @@ import {
   ChevronDown,
   UserPlus,
   XCircle,
+  AlertTriangle,
   Edit,
   Trash2,
   CheckCircle,
@@ -24,6 +25,7 @@ interface CampaignCardProps {
   expandedCampaign: string | null;
   onToggleExpand: (id: string) => void;
   onCancelSlot: (slot: AppointmentSlot) => void;
+  onNoShowSlot: (slot: AppointmentSlot) => void;
   onEdit?: (campaign: Campaign) => void;
   onDelete?: (campaign: Campaign) => void;
   onComplete?: (campaign: Campaign) => void;
@@ -35,6 +37,7 @@ export default function CampaignCard({
   expandedCampaign,
   onToggleExpand,
   onCancelSlot,
+  onNoShowSlot,
   onEdit,
   onDelete,
   onComplete,
@@ -308,13 +311,23 @@ export default function CampaignCard({
                         </span>
                         {isBooked && (
                           <>
-                            <UserPlus className="w-4 h-4 text-green-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <UserPlus className="w-4 h-4 text-green-600 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity" />
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onNoShowSlot(apt);
+                              }}
+                              className="p-1 rounded-lg border border-orange-200 text-orange-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:bg-orange-50 transition-all"
+                              title="تسجيل غياب"
+                            >
+                              <AlertTriangle className="w-3.5 h-3.5" />
+                            </button>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onCancelSlot(apt);
                               }}
-                              className="p-1 rounded-lg border border-red-200 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-red-50 transition-all"
+                              className="p-1 rounded-lg border border-red-200 text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:bg-red-50 transition-all"
                               title="إلغاء الموعد"
                             >
                               <XCircle className="w-3.5 h-3.5" />
