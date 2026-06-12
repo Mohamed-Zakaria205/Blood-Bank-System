@@ -13,6 +13,12 @@ import { useEffect, useRef, RefObject } from 'react';
  */
 export function useModalFocusTrap(onClose: () => void, enabled = true): RefObject<HTMLDivElement | null> {
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const onCloseRef = useRef(onClose);
+
+  // Keep the callback ref updated without triggering the effect
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -22,7 +28,7 @@ export function useModalFocusTrap(onClose: () => void, enabled = true): RefObjec
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -94,7 +100,7 @@ export function useModalFocusTrap(onClose: () => void, enabled = true): RefObjec
         previousActiveElement.focus();
       }
     };
-  }, [onClose, enabled]);
+  }, [enabled]);
 
   return modalRef;
 }
