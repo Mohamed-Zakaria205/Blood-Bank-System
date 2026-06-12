@@ -1,4 +1,4 @@
-﻿import { useState, ReactNode } from 'react';
+import { useState, ReactNode } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router';
 import {
   LogOut,
@@ -10,6 +10,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import NotificationDropdown, { Notification } from './NotificationDropdown';
 import { ThemeToggle } from '../shared/ThemeToggle';
 import { formatLocalizedDate } from '../../utils/date';
+import { useModalFocusTrap } from '../../hooks/useModalFocusTrap';
 
 export interface NavItem {
   path: string;
@@ -47,6 +48,7 @@ export default function DashboardLayout({
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const mobileSidebarRef = useModalFocusTrap(() => setSidebarOpen(false), sidebarOpen);
 
   const handleLogout = () => {
     logout();
@@ -65,7 +67,7 @@ export default function DashboardLayout({
             <Droplet className="w-5 h-5 text-white" />
           </div>
           <div>
-            <p className="text-foreground" style={{ fontSize: '18px', fontWeight: 800 }}>
+            <p id="sidebar-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 800 }}>
               BloodLink
             </p>
             <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
@@ -170,7 +172,11 @@ export default function DashboardLayout({
 
       {/* Sidebar - Mobile */}
       <aside
-        className={`fixed top-0 right-0 h-screen w-72 bg-card border-l border-border z-40 lg:hidden shadow-xl transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        ref={mobileSidebarRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="sidebar-title"
+        className={`fixed top-0 right-0 h-screen w-72 bg-card border-l border-border z-40 lg:hidden shadow-xl transition-transform duration-300 outline-none ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <button
           onClick={() => setSidebarOpen(false)}

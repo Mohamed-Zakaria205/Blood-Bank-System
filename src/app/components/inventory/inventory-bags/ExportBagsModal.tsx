@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import {
   Check,
   X,
@@ -9,6 +9,7 @@ import {
 import type { BloodBag } from '../../../types';
 import type { ExportFormState } from './bagsConstants';
 import { getCurrentUserName } from './bagsConstants';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface ExportBagsModalProps {
   selectedBagsData: BloodBag[];
@@ -70,9 +71,17 @@ export default function ExportBagsModal({
     if (validate()) setStep(2);
   };
 
+  const modalRef = useModalFocusTrap(onClose);
+
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden outline-none"
+      >
         {/* Modal header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-border bg-green-50">
           <div className="flex items-center gap-3">
@@ -80,7 +89,7 @@ export default function ExportBagsModal({
               <Upload className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <h3 className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
+              <h3 id="modal-title" className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
                 تصدير{' '}
                 {selectedBagsData.length > 1 ? `${selectedBagsData.length} حقائب` : 'حقيبة دم'}
               </h3>

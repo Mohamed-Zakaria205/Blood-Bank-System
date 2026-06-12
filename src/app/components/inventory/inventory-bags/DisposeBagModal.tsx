@@ -1,5 +1,6 @@
-﻿import { Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import type { BloodBag } from '../../../types';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface DisposeBagModalProps {
   bag: BloodBag;
@@ -18,15 +19,23 @@ export default function DisposeBagModal({
   onConfirm,
   onClose,
 }: DisposeBagModalProps) {
+  const modalRef = useModalFocusTrap(onClose);
+
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md p-6">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-md p-6 outline-none"
+      >
         <div className="flex items-center gap-3 mb-5">
           <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
             <Trash2 className="w-6 h-6 text-red-600" />
           </div>
           <div>
-            <h3 className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
+            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
               تأكيد الإتلاف
             </h3>
             <p className="text-muted-foreground" style={{ fontSize: '12px' }}>

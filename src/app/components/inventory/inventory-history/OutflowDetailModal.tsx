@@ -1,4 +1,4 @@
-﻿import {
+import {
   X,
   Upload,
   Trash2,
@@ -11,6 +11,7 @@
 } from 'lucide-react';
 import type { OutflowRecord } from '../../../types';
 import { donTypeLabels } from './historyConstants';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface OutflowDetailModalProps {
   record: OutflowRecord;
@@ -19,6 +20,7 @@ interface OutflowDetailModalProps {
 
 export default function OutflowDetailModal({ record, onClose }: OutflowDetailModalProps) {
   const isExport = record.actionType === 'exported';
+  const modalRef = useModalFocusTrap(onClose);
 
   return (
     <div
@@ -26,7 +28,11 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
       style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
     >
       <div
-        className="bg-card rounded-2xl shadow-2xl w-full max-w-md"
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-md outline-none"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -45,6 +51,7 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
             </div>
             <div>
               <p
+                id="modal-title"
                 className={`${isExport ? 'text-blue-700' : 'text-red-700'}`}
                 style={{ fontSize: '15px', fontWeight: 700 }}
               >

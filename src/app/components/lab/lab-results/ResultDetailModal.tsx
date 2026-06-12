@@ -1,4 +1,4 @@
-﻿import {
+import {
   CheckCircle2,
   XCircle,
   Clock,
@@ -9,6 +9,7 @@
 } from 'lucide-react';
 import type { CombinedEntry } from './labResultsConstants';
 import { SCREENING_TESTS } from './labResultsConstants';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface ResultDetailModalProps {
   entry: CombinedEntry;
@@ -18,6 +19,7 @@ interface ResultDetailModalProps {
 export default function ResultDetailModal({ entry, onClose }: ResultDetailModalProps) {
   const isPending = entry.displayStatus === 'pending';
   const isSafe = entry.result === 'safe';
+  const modalRef = useModalFocusTrap(onClose);
 
   const headerGradient = isPending
     ? 'linear-gradient(135deg, #d97706, #f59e0b)'
@@ -27,11 +29,17 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-card rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl w-full max-w-md shadow-2xl overflow-hidden outline-none"
+      >
         {/* Header */}
         <div className="p-5 flex items-center justify-between" style={{ background: headerGradient }}>
           <div>
-            <h3 className="text-white" style={{ fontSize: '17px', fontWeight: 700 }}>
+            <h3 id="modal-title" className="text-white" style={{ fontSize: '17px', fontWeight: 700 }}>
               تفاصيل نتائج الفحص
             </h3>
             <p className="text-white/80" style={{ fontSize: '12px' }}>

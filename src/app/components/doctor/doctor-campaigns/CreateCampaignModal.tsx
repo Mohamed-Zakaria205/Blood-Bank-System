@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { CITIES } from '../../../constants';
 import type { CampaignFormState } from './campaignConstants';
 import { DURATION_OPTIONS, buildSlots } from './campaignConstants';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -153,6 +154,7 @@ export default function CreateCampaignModal({
   const defaultLng = 31.0994;
   const currentLat = form.latitude ? parseFloat(form.latitude) : defaultLat;
   const currentLng = form.longitude ? parseFloat(form.longitude) : defaultLng;
+  const modalRef = useModalFocusTrap(onClose);
 
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
@@ -181,9 +183,15 @@ export default function CreateCampaignModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto outline-none"
+      >
         <div className="flex items-center justify-between p-6 border-b border-border">
-          <h3 className="text-foreground" style={{ fontSize: '18px', fontWeight: 800 }}>
+          <h3 id="modal-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 800 }}>
             {isEditing ? 'تعديل بيانات الحملة' : 'إنشاء حملة جديدة'}
           </h3>
           <button

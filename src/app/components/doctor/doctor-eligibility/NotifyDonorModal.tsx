@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
 import { Bell, Zap, Send, Smartphone } from 'lucide-react';
 import type { NotifModal } from './eligibilityConstants';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface NotifyDonorModalProps {
   modal: NotifModal;
@@ -11,50 +11,7 @@ interface NotifyDonorModalProps {
 
 export default function NotifyDonorModal({ modal, onSend, onCancel, isPending = false }: NotifyDonorModalProps) {
   const isEmergency = modal.type === 'emergency';
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Escape key handler and focus trap
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onCancel();
-      }
-
-      if (e.key === 'Tab' && modalRef.current) {
-        const focusableElements = modalRef.current.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusableElements.length > 0) {
-          const firstElement = focusableElements[0] as HTMLElement;
-          const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-          if (e.shiftKey) {
-            if (document.activeElement === firstElement) {
-              lastElement.focus();
-              e.preventDefault();
-            }
-          } else {
-            if (document.activeElement === lastElement) {
-              firstElement.focus();
-              e.preventDefault();
-            }
-          }
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    // Auto-focus the first button inside the modal on mount
-    const firstBtn = modalRef.current?.querySelector('button');
-    if (firstBtn) {
-      firstBtn.focus();
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [onCancel]);
+  const modalRef = useModalFocusTrap(onCancel);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -63,7 +20,7 @@ export default function NotifyDonorModal({ modal, onSend, onCancel, isPending = 
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
-        className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden outline-none"
       >
         {/* Header */}
         <div

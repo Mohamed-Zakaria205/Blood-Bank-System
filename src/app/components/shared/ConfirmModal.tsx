@@ -1,4 +1,5 @@
 import { AlertTriangle, Info, CheckCircle, Trash2 } from 'lucide-react';
+import { useModalFocusTrap } from '../../hooks/useModalFocusTrap';
 
 export type ConfirmModalVariant = 'danger' | 'warning' | 'info' | 'success';
 
@@ -23,6 +24,8 @@ export function ConfirmModal({
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
+  const modalRef = useModalFocusTrap(onCancel, isOpen);
+
   if (!isOpen) return null;
 
   const getVariantStyles = () => {
@@ -64,14 +67,20 @@ export function ConfirmModal({
         if (e.target === e.currentTarget) onCancel();
       }}
     >
-      <div className="bg-card rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-xl w-full max-w-sm overflow-hidden outline-none animate-in zoom-in-95 duration-200"
+      >
         <div className="p-6">
           <div className="flex items-start gap-4">
             <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${styles.bgIcon}`}>
               {styles.icon}
             </div>
             <div className="flex-1 pt-1">
-              <h3 className="text-foreground" style={{ fontSize: '18px', fontWeight: 800 }}>
+              <h3 id="modal-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 800 }}>
                 {title}
               </h3>
               <p className="text-muted-foreground mt-2 leading-relaxed" style={{ fontSize: '14px' }}>

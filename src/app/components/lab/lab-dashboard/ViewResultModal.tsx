@@ -1,6 +1,7 @@
-﻿import { CheckCircle2, XCircle, X, Check } from 'lucide-react';
+import { CheckCircle2, XCircle, X, Check } from 'lucide-react';
 import type { LabTest } from '../../../types';
 import { screeningTests, donationTypeLabels } from './labConstants';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface ViewResultModalProps {
   viewModal: LabTest;
@@ -8,6 +9,8 @@ interface ViewResultModalProps {
 }
 
 export default function ViewResultModal({ viewModal, onClose }: ViewResultModalProps) {
+  const modalRef = useModalFocusTrap(onClose);
+
   return (
     <div
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
@@ -15,12 +18,18 @@ export default function ViewResultModal({ viewModal, onClose }: ViewResultModalP
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto outline-none"
+      >
         <div
           className={`flex items-center justify-between p-5 rounded-t-2xl ${viewModal.result?.suitable ? 'bg-gradient-to-r from-green-700 to-green-600' : 'bg-gradient-to-r from-red-600 to-red-500'}`}
         >
           <div>
-            <h3 className="text-white" style={{ fontSize: '17px', fontWeight: 700 }}>
+            <h3 id="modal-title" className="text-white" style={{ fontSize: '17px', fontWeight: 700 }}>
               نتائج فحص الحقيبة
             </h3>
             <p className="text-white/80" style={{ fontSize: '12px' }}>

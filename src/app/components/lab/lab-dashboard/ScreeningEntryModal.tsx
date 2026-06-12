@@ -1,4 +1,4 @@
-﻿import {
+import {
   CheckCircle2,
   X,
   Check,
@@ -11,6 +11,7 @@ import { formatLocalizedDate } from '../../../utils/date';
 import { BLOOD_TYPES } from '../../../constants';
 import type { ScreeningForm, TestKey } from './labConstants';
 import { screeningTests, donationTypeLabels } from './labConstants';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface ScreeningEntryModalProps {
   entryModal: LabTest;
@@ -43,6 +44,8 @@ export default function ScreeningEntryModal({
     onUpdateForm((p) => ({ ...p, [key]: value }));
   };
 
+  const modalRef = useModalFocusTrap(onClose);
+
   return (
     <div
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
@@ -50,13 +53,19 @@ export default function ScreeningEntryModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto outline-none"
+      >
         {/* Header */}
         <div
           className={`flex items-center justify-between p-5 rounded-t-2xl ${isUnsafe ? 'bg-gradient-to-r from-red-600 to-red-500' : 'bg-gradient-to-r from-green-700 to-green-600'}`}
         >
           <div>
-            <h3 className="text-white" style={{ fontSize: '17px', fontWeight: 700 }}>
+            <h3 id="modal-title" className="text-white" style={{ fontSize: '17px', fontWeight: 700 }}>
               فحص حقيبة الدم — الفحوصات المعيارية
             </h3>
             <div className="flex items-center gap-2 mt-1.5">

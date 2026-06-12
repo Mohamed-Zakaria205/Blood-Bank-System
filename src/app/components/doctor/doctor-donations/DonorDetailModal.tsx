@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import type { Donation } from '../../../types';
 import { donationTypeLabels, genderLabels } from './donorsConstants';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface DonorDetailModalProps {
   donation: Donation;
@@ -14,6 +15,7 @@ interface DonorDetailModalProps {
 
 export default function DonorDetailModal({ donation, onClose }: DonorDetailModalProps) {
   const isAppSource = donation.source === 'mobileapp';
+  const modalRef = useModalFocusTrap(onClose);
 
   return (
     <div
@@ -22,11 +24,17 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto outline-none"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card">
           <div>
-            <h3 className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
+            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
               تفاصيل التبرع
             </h3>
             <p className="text-green-600 font-mono" style={{ fontSize: '12px' }}>

@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { XCircle, X, CalendarDays, Clock, User, Megaphone, AlertTriangle } from 'lucide-react';
 import type { AppointmentSlot } from '../../types';
 import { useCampaigns } from '../../hooks/useCampaigns';
+import { useModalFocusTrap } from '../../hooks/useModalFocusTrap';
 
 interface CancelModalProps {
   slot: AppointmentSlot;
@@ -14,6 +15,7 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
   const [reason, setReason] = useState('');
   const [confirming, setConfirming] = useState(false);
   const isSubmittingRef = useRef(false);
+  const modalRef = useModalFocusTrap(onClose);
 
   // Resolve the campaign name from React Query cache — zero extra network request
   const { data: campaignsData = [] } = useCampaigns();
@@ -41,14 +43,20 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-border">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-border outline-none"
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-red-100 rounded-xl flex items-center justify-center">
               <XCircle className="w-5 h-5 text-red-600" />
             </div>
-            <h3 className="text-foreground" style={{ fontSize: '16px', fontWeight: 800 }}>
+            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '16px', fontWeight: 800 }}>
               إلغاء الموعد
             </h3>
           </div>

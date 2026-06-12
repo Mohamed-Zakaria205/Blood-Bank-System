@@ -8,12 +8,15 @@ import { useEffect, useRef, RefObject } from 'react';
  * - Automatically focuses the first focusable element inside the modal.
  * 
  * @param onClose Callback function to invoke when the Escape key is pressed.
+ * @param enabled Whether the focus trap is currently active.
  * @returns A ref object to be attached to the modal wrapper element.
  */
-export function useModalFocusTrap(onClose: () => void): RefObject<HTMLDivElement | null> {
+export function useModalFocusTrap(onClose: () => void, enabled = true): RefObject<HTMLDivElement | null> {
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (!enabled) return;
+
     // Save the element that was focused before the modal was opened
     const previousActiveElement = document.activeElement as HTMLElement | null;
 
@@ -91,7 +94,7 @@ export function useModalFocusTrap(onClose: () => void): RefObject<HTMLDivElement
         previousActiveElement.focus();
       }
     };
-  }, [onClose]);
+  }, [onClose, enabled]);
 
   return modalRef;
 }

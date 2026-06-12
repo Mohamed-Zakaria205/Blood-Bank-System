@@ -13,6 +13,7 @@ import {
 import type { Donation } from '../../../types';
 import { donationTypeLabels } from './donorsConstants';
 import { formatLocalizedDate } from '../../../utils/date';
+import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface DonationActionModalProps {
   donation: Donation;
@@ -32,6 +33,7 @@ export default function DonationActionModal({
   isDeleting,
 }: DonationActionModalProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const modalRef = useModalFocusTrap(onClose);
 
   const today = formatLocalizedDate(new Date(donation.donationDate || Date.now()), {
     weekday: 'long',
@@ -46,7 +48,13 @@ export default function DonationActionModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto outline-none"
+      >
         {/* Close Button */}
         <div className="flex items-center justify-between p-5 pb-0">
           <div />
@@ -70,7 +78,7 @@ export default function DonationActionModal({
                 <FlaskConical className="w-8 h-8 text-amber-600 dark:text-amber-500" />
               )}
             </div>
-            <h2 className="text-foreground mb-1" style={{ fontSize: '20px', fontWeight: 800 }}>
+            <h2 id="modal-title" className="text-foreground mb-1" style={{ fontSize: '20px', fontWeight: 800 }}>
               {alreadySent ? 'تم الإرسال للمختبر ✅' : 'مراجعة بيانات التبرع'}
             </h2>
             <p className="text-muted-foreground" style={{ fontSize: '13px' }}>

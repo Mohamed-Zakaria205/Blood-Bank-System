@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Bell, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useModalFocusTrap } from '../../hooks/useModalFocusTrap';
 
 export interface Notification {
   id: string;
@@ -34,6 +35,7 @@ const darkColorMap = {
 
 export default function NotificationDropdown({ notifications, open, onToggle, onClose, onMarkAllRead }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  const dropdownRef = useModalFocusTrap(onClose, open);
   const { isDark } = useTheme();
   const colorMap = isDark ? darkColorMap : lightColorMap;
 
@@ -68,7 +70,10 @@ export default function NotificationDropdown({ notifications, open, onToggle, on
       {/* Dropdown */}
       {open && (
         <div
-          className="absolute top-full mt-2 w-80 rounded-2xl border border-border z-50 overflow-hidden bg-popover shadow-xl"
+          ref={dropdownRef}
+          role="dialog"
+          aria-modal="true"
+          className="absolute top-full mt-2 w-80 rounded-2xl border border-border z-50 overflow-hidden bg-popover shadow-xl outline-none"
           style={{ right: 'auto', left: 0 }}
         >
           {/* Header */}
