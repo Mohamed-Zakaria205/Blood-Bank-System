@@ -76,6 +76,7 @@ export const CampaignContractSchema = z.object({
   status: z.enum(['active', 'completed', 'cancelled', 'notactive']),
   targetDonors: z.number(),
   registeredDonors: z.number(),
+  availableDonationTypes: z.array(z.string()).optional(),
 });
 
 // 4. Doctor Dashboard Contract

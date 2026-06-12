@@ -35,9 +35,16 @@ export const FORM_DEFAULTS = {
   recurrenceType: 'none' as 'none' | 'daily' | 'weekly' | 'monthly' | 'custom',
   recurrenceDays: [] as number[],
   recurrenceEndDate: '',
+  availableDonationTypes: ['wholeblood'] as string[],
 };
 
 export type CampaignFormState = typeof FORM_DEFAULTS;
+
+export const DONATION_TYPE_LABELS: Record<string, string> = {
+  wholeblood: 'دم كامل',
+  plasma: 'بلازما',
+  platelets: 'صفائح دموية',
+};
 
 // ── Helper: compute generated slots ──
 

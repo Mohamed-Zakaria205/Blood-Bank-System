@@ -30,6 +30,7 @@ export interface Campaign {
   createdByName: string;
   description: string;
   recurrence?: RecurrenceSettings;
+  availableDonationTypes?: string[];
 }
 
 export interface CreateCampaignRequest {
@@ -44,6 +45,7 @@ export interface CreateCampaignRequest {
   targetDonors: number;
   description: string;
   recurrence?: RecurrenceSettings;
+  availableDonationTypes?: string[];
 }
 
 /**

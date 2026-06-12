@@ -305,6 +305,58 @@ export default function CreateCampaignModal({
             </div>
           </div>
 
+          {/* ── Available Donation Types ── */}
+          <div>
+            <label
+              className="block text-foreground mb-1.5"
+              style={{ fontSize: '13px', fontWeight: 600 }}
+            >
+              أنواع التبرع المتاحة *
+            </label>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { value: 'wholeblood', label: 'دم كامل' },
+                { value: 'plasma', label: 'بلازما' },
+                { value: 'platelets', label: 'صفائح دموية' },
+              ].map((opt) => {
+                const isSelected = form.availableDonationTypes?.includes(opt.value);
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => {
+                      const currentTypes = form.availableDonationTypes || [];
+                      const newTypes = isSelected
+                        ? currentTypes.filter((t) => t !== opt.value)
+                        : [...currentTypes, opt.value];
+                      onUpdateForm((p) => ({ ...p, availableDonationTypes: newTypes }));
+                    }}
+                    className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border transition-all ${
+                      isSelected
+                        ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800'
+                        : 'bg-muted/40 text-muted-foreground border-border hover:bg-muted'
+                    }`}
+                    style={{ fontSize: '13px', fontWeight: 600 }}
+                  >
+                    <div
+                      className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
+                        isSelected ? 'border-blue-600 bg-blue-600 dark:border-blue-500 dark:bg-blue-500' : 'border-muted-foreground'
+                      }`}
+                    >
+                      {isSelected && <Check className="w-3 h-3 text-white" />}
+                    </div>
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+            {errors.availableDonationTypes && (
+              <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
+                {errors.availableDonationTypes}
+              </p>
+            )}
+          </div>
+
           <div>
             <label
               className="block text-foreground mb-1.5"

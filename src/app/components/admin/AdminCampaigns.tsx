@@ -2,6 +2,7 @@ import { MapPin, Calendar, Users, TrendingUp, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useFilteredCampaigns } from '../../hooks/useCampaigns';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
+import { DONATION_TYPE_LABELS } from '../doctor/doctor-campaigns/campaignConstants';
 import {
   Pagination,
   PaginationContent,
@@ -160,6 +161,21 @@ export default function AdminCampaigns() {
                   <span style={{ fontSize: '13px' }}>منظم بواسطة: {c.createdByName}</span>
                 </div>
               </div>
+              {c.availableDonationTypes && c.availableDonationTypes.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {c.availableDonationTypes.map((type) => {
+                    const lowerType = type.toLowerCase();
+                    return (
+                      <span
+                        key={type}
+                        className="px-2 py-0.5 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-100 dark:border-blue-900/30 rounded-lg text-[11px] font-semibold"
+                      >
+                        {DONATION_TYPE_LABELS[lowerType] || type}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
               {/* Progress */}
               <div>
                 <div className="flex justify-between mb-1.5">
@@ -272,6 +288,26 @@ export default function AdminCampaigns() {
               <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
                 {selected.description}
               </p>
+              {selected.availableDonationTypes && selected.availableDonationTypes.length > 0 && (
+                <div className="space-y-1.5 p-3 bg-muted/40 rounded-xl">
+                  <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
+                    أنواع التبرع المتاحة
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selected.availableDonationTypes.map((type: string) => {
+                      const lowerType = type.toLowerCase();
+                      return (
+                        <span
+                          key={type}
+                          className="px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 rounded-lg text-[11px] font-semibold"
+                        >
+                          {DONATION_TYPE_LABELS[lowerType] || type}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { label: 'الموقع (إحداثيات)', value: `${selected.latitude || ''}, ${selected.longitude || ''}` },

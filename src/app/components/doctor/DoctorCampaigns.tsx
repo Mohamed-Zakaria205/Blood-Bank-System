@@ -101,6 +101,10 @@ export default function DoctorCampaigns() {
       e.recurrence = 'يرجى اختيار يوم واحد على الأقل';
     }
 
+    if (!form.availableDonationTypes || form.availableDonationTypes.length === 0) {
+      e.availableDonationTypes = 'يرجى اختيار نوع تبرع واحد على الأقل';
+    }
+
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -123,7 +127,8 @@ export default function DoctorCampaigns() {
         type: form.recurrenceType,
         weekDays: form.recurrenceType === 'custom' ? form.recurrenceDays : undefined,
         endDate: form.recurrenceEndDate || null,
-      }
+      },
+      availableDonationTypes: form.availableDonationTypes,
     };
 
     if (editingCampaignId) {
@@ -173,6 +178,9 @@ export default function DoctorCampaigns() {
       recurrenceType: campaign.recurrence?.type || 'none',
       recurrenceDays: campaign.recurrence?.weekDays || [],
       recurrenceEndDate: campaign.recurrence?.endDate || '',
+      availableDonationTypes: (campaign.availableDonationTypes && campaign.availableDonationTypes.length > 0)
+        ? campaign.availableDonationTypes.map(t => t.toLowerCase())
+        : ['wholeblood'],
     });
     setEditingCampaignId(campaign.id);
     setShowModal(true);

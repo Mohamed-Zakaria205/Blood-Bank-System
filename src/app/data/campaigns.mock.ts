@@ -20,6 +20,7 @@ export const campaigns: Campaign[] = [
     createdBy: 'USR-002',
     createdByName: 'د. أحمد حسن علي',
     description: 'حملة تبرع بالدم لدعم مخزون مستشفى بني سويف العام في شهر مايو',
+    availableDonationTypes: ['wholeblood', 'plasma'],
   },
   {
     id: 'CAM-002',
@@ -38,6 +39,7 @@ export const campaigns: Campaign[] = [
     createdBy: 'USR-002',
     createdByName: 'د. أحمد حسن علي',
     description: 'اليوم الشهري للتبرع بالدم في مركز الواسطى الصحي',
+    availableDonationTypes: ['wholeblood'],
   },
   {
     id: 'CAM-003',
@@ -56,6 +58,7 @@ export const campaigns: Campaign[] = [
     createdBy: 'USR-003',
     createdByName: 'د. سارة محمود رضا',
     description: 'حملة طارئة لتعويض نقص مخزون الدم في مستشفى ناصر',
+    availableDonationTypes: ['wholeblood', 'platelets'],
   },
   {
     id: 'CAM-004',
@@ -74,6 +77,7 @@ export const campaigns: Campaign[] = [
     createdBy: 'USR-003',
     createdByName: 'د. سارة محمود رضا',
     description: 'حملة تبرع بالدم للطلاب وأعضاء هيئة التدريس',
+    availableDonationTypes: ['wholeblood', 'plasma', 'platelets'],
   },
   {
     id: 'CAM-005',
@@ -92,5 +96,6 @@ export const campaigns: Campaign[] = [
     createdBy: 'USR-004',
     createdByName: 'د. خالد عبد الرحمن',
     description: 'يوم التبرع الشهري في مستشفى ببا المركزي',
+    availableDonationTypes: ['wholeblood'],
   },
 ];

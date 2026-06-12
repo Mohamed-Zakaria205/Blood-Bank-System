@@ -15,7 +15,7 @@ import {
 
 import type { Campaign } from '../../../types/campaign';
 import type { AppointmentSlot } from '../../../types/appointment';
-import { statusColors, statusLabels } from './campaignConstants';
+import { statusColors, statusLabels, DONATION_TYPE_LABELS } from './campaignConstants';
 import { useCampaignAppointments } from '../../../hooks/useCampaigns';
 
 interface CampaignCardProps {
@@ -146,6 +146,22 @@ export default function CampaignCard({
         <p className="text-muted-foreground mb-4" style={{ fontSize: '12px' }}>
           {c.description}
         </p>
+      )}
+
+      {c.availableDonationTypes && c.availableDonationTypes.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {c.availableDonationTypes.map((type) => {
+            const lowerType = type.toLowerCase();
+            return (
+              <span
+                key={type}
+                className="px-2.5 py-0.5 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-100 dark:border-blue-900/30 rounded-lg text-[11px] font-semibold"
+              >
+                {DONATION_TYPE_LABELS[lowerType] || type}
+              </span>
+            );
+          })}
+        </div>
       )}
 
       {/* Progress */}
