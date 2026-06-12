@@ -245,7 +245,7 @@ export default function CampaignCard({
                             ? 'bg-muted/40 border-border'
                             : 'bg-muted/40 border-border hover:border-green-200 hover:bg-green-50 cursor-pointer'
                       }`}
-                      onClick={() => isBooked && navigate(`/doctor/register?apt=${apt.id}`)}
+                      onClick={() => isBooked && navigate(`/doctor/register?apt=${apt.id}&campaignId=${c.id}`)}
                     >
                       <div className="flex-shrink-0 text-center w-14">
                         <span

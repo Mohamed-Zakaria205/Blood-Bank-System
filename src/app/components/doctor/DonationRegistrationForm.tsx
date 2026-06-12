@@ -36,6 +36,8 @@ export default function DonationRegistrationForm() {
 
   // Pre-fill from appointment — fetch the specific slot by ID
   const aptId = searchParams.get('apt');
+  // campaignId passed in URL as a fallback (e.g. when navigating from CampaignCard)
+  const urlCampaignId = searchParams.get('campaignId') || '';
   const { data: appointment = null } = useAppointmentSlotById(aptId);
 
   const lastResetAptIdRef = useRef<string | undefined>(undefined);
@@ -54,8 +56,10 @@ export default function DonationRegistrationForm() {
             ? extractDobFromNationalId(appointment.donorNationalId) 
             : approxDob);
       // Determine the donation source based on appointment metadata
+      // Use campaignId from the appointment slot, or fall back to the URL param
+      const resolvedCampaignId = appointment.campaignId || urlCampaignId;
       let source: SimpleForm['source'] = 'app';
-      if (appointment.campaignId) {
+      if (resolvedCampaignId) {
         source = 'campaign';
       } else if (appointment.centerId) {
         source = 'walkin';
@@ -74,7 +78,7 @@ export default function DonationRegistrationForm() {
         bloodType: appointment.donorBloodType || '',
         donationType: appointment.donationType || 'wholeblood',
         source: source,
-        campaignId: appointment.campaignId || '',
+        campaignId: resolvedCampaignId,
         donationCenterId: appointment.centerId || '',
         donationTime: appointment.time || new Date().toTimeString().slice(0, 5),
       };
@@ -96,6 +100,7 @@ export default function DonationRegistrationForm() {
     appointment?.donorBloodType,
     appointment?.donationType,
     appointment?.time,
+    urlCampaignId,
   ]);
 
   const [submitting, setSubmitting] = useState(false);
