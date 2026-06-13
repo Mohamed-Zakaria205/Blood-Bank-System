@@ -12,7 +12,15 @@ import type {
   RefreshResponse,
   ChangePasswordRequest,
   User,
+  UserRole,
 } from '../types/auth';
+
+const reverseRoleMap: Record<string, UserRole> = {
+  Admin: 'admin',
+  Doctor: 'doctor',
+  LabDoctor: 'lab',
+  InventoryManager: 'inventory',
+};
 
 /**
  * Shared raw Axios instance (bypasses interceptors in client.ts)
@@ -61,7 +69,11 @@ export async function loginApi(credentials: LoginRequest): Promise<User> {
       throw new ApiError('تعذر استرداد بيانات المستخدم من الخادم', 500);
     }
 
-    return wrapper.data;
+    const user = wrapper.data;
+    return {
+      ...user,
+      role: reverseRoleMap[user.role] || (user.role.toLowerCase() as UserRole),
+    };
   } catch (err) {
     if (err instanceof ApiError) throw err;
     throw handleApiError(err);
@@ -84,7 +96,11 @@ export async function getMeApi(): Promise<User> {
     throw new ApiError('تعذر استرداد بيانات المستخدم من الخادم', 500);
   }
 
-  return wrapper.data;
+  const user = wrapper.data;
+  return {
+    ...user,
+    role: reverseRoleMap[user.role] || (user.role.toLowerCase() as UserRole),
+  };
 }
 
 /**
