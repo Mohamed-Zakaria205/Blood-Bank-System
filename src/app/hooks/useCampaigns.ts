@@ -79,5 +79,8 @@ export function useCampaignAppointments(campaignId: string | null) {
     queryFn: () => fetchCampaignAppointments(campaignId!),
     enabled: !!campaignId,
     select: (res) => res.data,
+    staleTime: 0,
+    gcTime: 0, // Disable caching so it doesn't show stale data when reopened
+    refetchInterval: 5000, // Update continuously while the card is expanded
   });
 }
