@@ -22,6 +22,7 @@ export function useAppointmentSlots(filters?: AppointmentFilters) {
     queryKey: ['appointment-slots', filters],
     queryFn: () => fetchAppointmentSlots(filters),
     select: (res) => res.data,
+    staleTime: 0, // Force refetch on mount
   });
 }
 
@@ -34,6 +35,7 @@ export function useAppointmentStats(params?: AppointmentStatsParams) {
     queryKey: ['appointment-stats', params],
     queryFn: () => fetchAppointmentStats(params),
     select: (res) => res.data,
+    staleTime: 0, // Force refetch on mount
   });
 }
 
