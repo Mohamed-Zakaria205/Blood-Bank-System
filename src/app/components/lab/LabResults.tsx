@@ -137,21 +137,21 @@ export default function LabResults() {
     const matchSearch =
       !q ||
       (r.sampleCode || '').toLowerCase().includes(q) ||
-      (r.donorCode || '').toLowerCase().includes(q) ||
+      (r.donationCode || '').toLowerCase().includes(q) ||
       (r.donorName || '').includes(search) ||
       (r.sampleId || '').toLowerCase().includes(q) ||
       (r.nationalId || '').includes(search);
     const matchFilter =
       filter === 'all' ||
       (filter === 'safe' && r.displayStatus === 'safe') ||
-      (filter === 'unsafe' && r.displayStatus === 'unsafe') ||
+      (filter === 'rejected' && r.displayStatus === 'rejected') ||
       (filter === 'pending' && r.displayStatus === 'pending');
     return matchSearch && matchFilter;
   });
 
   const getRowBg = (entry: CombinedEntry) => {
     if (entry.displayStatus === 'pending') return 'rgba(251,191,36,0.06)';
-    if (entry.displayStatus === 'unsafe') return 'rgba(248,113,113,0.05)';
+    if (entry.displayStatus === 'rejected') return 'rgba(248,113,113,0.05)';
     return '';
   };
 
@@ -159,7 +159,7 @@ export default function LabResults() {
     all: allEntries.length,
     pending: allEntries.filter((r) => r.displayStatus === 'pending').length,
     safe: allEntries.filter((r) => r.displayStatus === 'safe').length,
-    unsafe: allEntries.filter((r) => r.displayStatus === 'unsafe').length,
+    rejected: allEntries.filter((r) => r.displayStatus === 'rejected').length,
   };
 
   return (
@@ -189,7 +189,7 @@ export default function LabResults() {
             style: { background: 'rgba(74,222,128,0.08)', borderColor: 'rgba(74,222,128,0.25)' },
           },
           {
-            label: 'مرفوضة', value: totals.unsafe, icon: '❌', btn: 'unsafe', bg: '',
+            label: 'مرفوضة', value: totals.rejected, icon: '❌', btn: 'rejected', bg: '',
             style: { background: 'rgba(248,113,113,0.08)', borderColor: 'rgba(248,113,113,0.25)' },
           },
         ].map((s, i) => (
@@ -300,7 +300,7 @@ export default function LabResults() {
             { key: 'all', label: 'الكل', count: totals.all, activeBg: '#374151' },
             { key: 'pending', label: '⏳ معلق', count: totals.pending, activeBg: '#d97706' },
             { key: 'safe', label: '✅ آمن', count: totals.safe, activeBg: '#16a34a' },
-            { key: 'unsafe', label: '❌ مرفوض', count: totals.unsafe, activeBg: '#dc2626' },
+            { key: 'rejected', label: '❌ مرفوض', count: totals.rejected, activeBg: '#dc2626' },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -394,7 +394,7 @@ export default function LabResults() {
                         {entry.donorName}
                       </div>
                       <div className="font-mono text-muted-foreground" style={{ fontSize: '10px' }}>
-                        {entry.donorCode}
+                        {entry.donationCode}
                       </div>
                     </div>
                   </td>

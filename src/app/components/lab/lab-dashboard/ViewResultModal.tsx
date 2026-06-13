@@ -26,14 +26,14 @@ export default function ViewResultModal({ viewModal, onClose }: ViewResultModalP
         className="bg-card rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto outline-none"
       >
         <div
-          className={`flex items-center justify-between p-5 rounded-t-2xl ${viewModal.result?.suitable ? 'bg-gradient-to-r from-green-700 to-green-600' : 'bg-gradient-to-r from-red-600 to-red-500'}`}
+          className={`flex items-center justify-between p-5 rounded-t-2xl ${viewModal.result?.outcome === 'safe' ? 'bg-gradient-to-r from-green-700 to-green-600' : 'bg-gradient-to-r from-red-600 to-red-500'}`}
         >
           <div>
             <h3 id="modal-title" className="text-white" style={{ fontSize: '17px', fontWeight: 700 }}>
               نتائج فحص الحقيبة
             </h3>
             <p className="text-white/80" style={{ fontSize: '12px' }}>
-              كود العينة: <span className="font-mono font-bold">{viewModal.donorCode}</span>
+              كود العينة: <span className="font-mono font-bold">{viewModal.donationCode}</span>
             </p>
           </div>
           <button
@@ -46,19 +46,19 @@ export default function ViewResultModal({ viewModal, onClose }: ViewResultModalP
         <div className="p-5 space-y-4">
           {/* Result Summary */}
           <div
-            className={`flex items-center gap-3 p-4 rounded-xl ${viewModal.result?.suitable ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}`}
+            className={`flex items-center gap-3 p-4 rounded-xl ${viewModal.result?.outcome === 'safe' ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}`}
           >
-            {viewModal.result?.suitable ? (
+            {viewModal.result?.outcome === 'safe' ? (
               <CheckCircle2 className="w-8 h-8 text-green-600 flex-shrink-0" />
             ) : (
               <XCircle className="w-8 h-8 text-red-500 flex-shrink-0" />
             )}
             <div>
               <p
-                className={`${viewModal.result?.suitable ? 'text-green-700' : 'text-red-700'}`}
+                className={`${viewModal.result?.outcome === 'safe' ? 'text-green-700' : 'text-red-700'}`}
                 style={{ fontSize: '16px', fontWeight: 800 }}
               >
-                {viewModal.result?.suitable ? '✅ الدم آمن ومقبول' : '❌ الدم مرفوض'}
+                {viewModal.result?.outcome === 'safe' ? '✅ الدم آمن ومقبول' : '❌ الدم مرفوض'}
               </p>
               <p className="text-muted-foreground" style={{ fontSize: '13px' }}>
                 فصيلة مؤكدة: <strong>{viewModal.result?.confirmedBloodType}</strong> •{' '}

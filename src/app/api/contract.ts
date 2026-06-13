@@ -59,14 +59,27 @@ export const EligibilitySettingsContractSchema = z.object({
   donorFemaleWaitDays: z.number(),
 });
 
+export const LabTestResultContractSchema = z.object({
+  outcome: z.enum(['safe', 'rejected']),
+  confirmedBloodType: z.string(),
+  hcv: z.enum(['negative', 'positive']),
+  hbv: z.enum(['negative', 'positive']),
+  syphilis: z.enum(['negative', 'positive']),
+  hiv: z.enum(['negative', 'positive']),
+  notes: z.string().optional().nullable(),
+  completedAt: z.string(),
+  completedById: z.string(),
+  completedByName: z.string(),
+});
+
 // 2. Lab Test Contract
 export const LabTestContractSchema = z.object({
   id: z.string(),
-  donorCode: z.string(),
+  donationCode: z.string(),
   donorName: z.string().optional(),
   bloodType: z.string(),
-  status: z.enum(['pending', 'completed', 'rejected']),
-  result: z.enum(['safe', 'unsafe']).optional().nullable(),
+  status: z.enum(['pending', 'completed']),
+  result: LabTestResultContractSchema.optional().nullable(),
 });
 
 // 3. Campaign Contract

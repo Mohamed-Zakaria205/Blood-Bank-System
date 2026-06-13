@@ -34,7 +34,7 @@ export default function ScreeningEntryModal({
   onUpdateForm,
   onSubmit,
 }: ScreeningEntryModalProps) {
-  const isUnsafe =
+  const isRejected =
     form.hcv === 'positive' ||
     form.hbv === 'positive' ||
     form.syphilis === 'positive' ||
@@ -62,7 +62,7 @@ export default function ScreeningEntryModal({
       >
         {/* Header */}
         <div
-          className={`flex items-center justify-between p-5 rounded-t-2xl ${isUnsafe ? 'bg-gradient-to-r from-red-600 to-red-500' : 'bg-gradient-to-r from-green-700 to-green-600'}`}
+          className={`flex items-center justify-between p-5 rounded-t-2xl ${isRejected ? 'bg-gradient-to-r from-red-600 to-red-500' : 'bg-gradient-to-r from-green-700 to-green-600'}`}
         >
           <div>
             <h3 id="modal-title" className="text-white" style={{ fontSize: '17px', fontWeight: 700 }}>
@@ -79,7 +79,7 @@ export default function ScreeningEntryModal({
                 className="bg-card/15 text-white/90 px-2.5 py-0.5 rounded-lg"
                 style={{ fontSize: '11px' }}
               >
-                كود العينة: <span className="font-mono font-bold">{entryModal.donorCode}</span>
+                كود العينة: <span className="font-mono font-bold">{entryModal.donationCode}</span>
               </span>
             </div>
           </div>
@@ -116,7 +116,7 @@ export default function ScreeningEntryModal({
                   className="text-green-700 font-mono"
                   style={{ fontSize: '12px', fontWeight: 700 }}
                 >
-                  {entryModal.donorCode}
+                  {entryModal.donationCode}
                 </p>
               </div>
               <div className="bg-card rounded-lg px-3 py-2 border border-border">
@@ -245,9 +245,9 @@ export default function ScreeningEntryModal({
 
           {/* Auto Result */}
           <div
-            className={`flex items-center gap-3 p-4 rounded-xl ${isUnsafe ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}
+            className={`flex items-center gap-3 p-4 rounded-xl ${isRejected ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}
           >
-            {isUnsafe ? (
+            {isRejected ? (
               <>
                 <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
                 <div>
@@ -319,7 +319,7 @@ export default function ScreeningEntryModal({
               onClick={onSubmit}
               disabled={submitting}
               className={`flex-1 py-3 rounded-xl text-white shadow-md hover:shadow-lg transition-all disabled:opacity-60 ${
-                isUnsafe
+                isRejected
                   ? 'bg-gradient-to-r from-red-600 to-red-500'
                   : 'bg-gradient-to-r from-green-700 to-green-600'
               }`}
@@ -344,7 +344,7 @@ export default function ScreeningEntryModal({
                   </svg>
                   جاري الحفظ...
                 </span>
-              ) : isUnsafe ? (
+              ) : isRejected ? (
                 '⚠️ حفظ — دم غير آمن'
               ) : (
                 <span className="flex items-center justify-center gap-2">

@@ -41,24 +41,22 @@ const mockDonors: Donor[] = [
 const mockSamples: Sample[] = [
   {
     id: 'sample1',
-    donorCode: 'DN-123',
+    donationCode: 'DN-123',
     donorName: 'John Doe',
     bloodType: 'A+',
     donationType: 'wholeblood',
     collectedDate: '2024-05-30',
     status: 'pending',
-    priority: 'normal',
     labDoctor: 'Dr. Lab',
   },
   {
     id: 'sample2',
-    donorCode: 'DN-456',
+    donationCode: 'DN-456',
     donorName: 'Jane Smith',
     bloodType: 'O-',
     donationType: 'plasma',
     collectedDate: '2024-05-31',
     status: 'pending',
-    priority: 'urgent',
   }
 ];
 
@@ -66,7 +64,7 @@ const mockTestResults: TestResult[] = [
   {
     id: 'tr1',
     sampleId: 'sample1',
-    donorCode: 'DN-123',
+    donationCode: 'DN-123',
     donorName: 'John Doe',
     bloodType: 'A+',
     confirmedBloodType: 'A+',
@@ -74,7 +72,7 @@ const mockTestResults: TestResult[] = [
     hbv: 'negative',
     syphilis: 'negative',
     hiv: 'negative',
-    result: 'safe',
+    outcome: 'safe',
     date: '2024-05-30',
     labDoctor: 'Dr. Lab',
   }

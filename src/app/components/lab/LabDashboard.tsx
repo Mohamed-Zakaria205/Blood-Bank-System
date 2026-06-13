@@ -250,7 +250,7 @@ export default function LabDashboard() {
                               className="text-green-700 dark:text-green-400 font-mono"
                               style={{ fontSize: '11px', fontWeight: 700 }}
                             >
-                              كود العينة: {t.donorCode}
+                              كود العينة: {t.donationCode}
                             </span>
                           </div>
                           <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
@@ -298,15 +298,15 @@ export default function LabDashboard() {
                 {labTests.map((t) => (
                   <div
                     key={t.id}
-                    className={`flex items-center justify-between px-5 py-4 transition-colors border-b border-border last:border-0 ${t.result === undefined ? 'hover:bg-muted/40' : t.result?.suitable ? 'hover:bg-green-50/20 dark:hover:bg-green-500/10' : 'hover:bg-red-50/20 dark:hover:bg-red-500/10'}`}
+                    className={`flex items-center justify-between px-5 py-4 transition-colors border-b border-border last:border-0 ${t.result === undefined ? 'hover:bg-muted/40' : t.result?.outcome === 'safe' ? 'hover:bg-green-50/20 dark:hover:bg-green-500/10' : 'hover:bg-red-50/20 dark:hover:bg-red-500/10'}`}
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${t.result === undefined ? 'bg-muted/40 border border-border' : t.result?.suitable ? 'bg-green-50 dark:bg-green-500/10 border border-green-100 dark:border-green-500/20' : 'bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20'}`}
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${t.result === undefined ? 'bg-muted/40 border border-border' : t.result?.outcome === 'safe' ? 'bg-green-50 dark:bg-green-500/10 border border-green-100 dark:border-green-500/20' : 'bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20'}`}
                       >
                         {t.result === undefined ? (
                           <Clock className="w-5 h-5 text-muted-foreground" />
-                        ) : t.result?.suitable ? (
+                        ) : t.result?.outcome === 'safe' ? (
                           <CheckCircle2 className="w-5 h-5 text-green-600" />
                         ) : (
                           <XCircle className="w-5 h-5 text-red-500" />
@@ -327,10 +327,10 @@ export default function LabDashboard() {
                             {t.result?.confirmedBloodType || t.bloodType}
                           </span>
                           <span
-                            className={`px-2 py-0.5 rounded-full ${t.result === undefined ? 'bg-muted text-muted-foreground' : t.result?.suitable ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'}`}
+                            className={`px-2 py-0.5 rounded-full ${t.result === undefined ? 'bg-muted text-muted-foreground' : t.result?.outcome === 'safe' ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'}`}
                             style={{ fontSize: '11px', fontWeight: 700 }}
                           >
-                            {t.result === undefined ? '⏳ جاري الفحص' : t.result?.suitable ? '✅ آمنة' : '❌ مرفوضة'}
+                            {t.result === undefined ? '⏳ جاري الفحص' : t.result?.outcome === 'safe' ? '✅ آمنة' : '❌ مرفوضة'}
                           </span>
                         </div>
                         <div className="flex items-center gap-3 flex-wrap">
@@ -340,7 +340,7 @@ export default function LabDashboard() {
                               className="text-green-700 dark:text-green-400 font-mono"
                               style={{ fontSize: '11px', fontWeight: 700 }}
                             >
-                              كود العينة: {t.donorCode}
+                              كود العينة: {t.donationCode}
                             </span>
                           </div>
                           <span className="text-muted-foreground" style={{ fontSize: '11px' }}>

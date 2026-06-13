@@ -3,8 +3,8 @@
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchLabTests, submitLabTestResult, fetchSamples, fetchTestResults, fetchFilteredLabTests } from '../api/lab';
-import type { LabResultData } from '../types/lab';
-import type { LabTestFilters } from '../types/common';
+import type { LabResultData, Sample, TestResult } from '../types/lab';
+import type { LabTestFilters, PaginatedResponse } from '../types/common';
 
 /** Fetch all lab tests (pending + completed) */
 export function useLabTests() {
@@ -37,7 +37,6 @@ export function useSubmitLabResult() {
       testId: string;
       result: LabResultData & {
         notes: string;
-        suitable: boolean;
       };
     }) => submitLabTestResult(testId, result),
     onSuccess: () => {
@@ -53,8 +52,8 @@ export function useSubmitLabResult() {
 export function useSamples() {
   return useQuery({
     queryKey: ['samples'],
-    queryFn: fetchSamples,
-    select: (res) => res.data,
+    queryFn: () => fetchSamples(),
+    select: (res: PaginatedResponse<Sample>) => res.data,
   });
 }
 
@@ -62,7 +61,7 @@ export function useSamples() {
 export function useTestResults() {
   return useQuery({
     queryKey: ['test-results'],
-    queryFn: fetchTestResults,
-    select: (res) => res.data,
+    queryFn: () => fetchTestResults(),
+    select: (res: PaginatedResponse<TestResult>) => res.data,
   });
 }

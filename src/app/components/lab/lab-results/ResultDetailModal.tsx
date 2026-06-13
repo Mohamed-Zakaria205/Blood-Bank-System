@@ -18,7 +18,7 @@ interface ResultDetailModalProps {
 
 export default function ResultDetailModal({ entry, onClose }: ResultDetailModalProps) {
   const isPending = entry.displayStatus === 'pending';
-  const isSafe = entry.result === 'safe';
+  const isSafe = entry.outcome === 'safe';
   const modalRef = useModalFocusTrap(onClose);
 
   const headerGradient = isPending

@@ -36,29 +36,30 @@ export function buildCombinedList(
   samplesData: Sample[],
   donorsData: Donor[],
 ) {
-  function getDonorNationalId(donorCode: string): string {
-    const donor = donorsData.find((d) => d.donorCode === donorCode);
+  function getDonorNationalId(donationCode: string): string {
+    const donor = donorsData.find((d) => d.donorCode === donationCode);
     return donor?.nationalId || '—';
   }
 
   const completed = testResults.map((r) => ({
     id: r.id,
     sampleId: r.sampleId,
-    sampleCode: r.donorCode,
-    donorCode: r.donorCode,
+    sampleCode: r.donationCode,
+    donorCode: r.donationCode,
+    donationCode: r.donationCode,
     donorName: r.donorName,
-    nationalId: getDonorNationalId(r.donorCode),
+    nationalId: getDonorNationalId(r.donationCode),
     bloodType: r.bloodType,
     confirmedBloodType: r.confirmedBloodType,
     hcv: r.hcv,
     hbv: r.hbv,
     syphilis: r.syphilis,
     hiv: r.hiv,
-    result: r.result as 'safe' | 'unsafe',
+    outcome: r.outcome as 'safe' | 'rejected',
     labDoctor: r.labDoctor,
     date: r.date,
     notes: r.notes,
-    displayStatus: r.result === 'safe' ? 'safe' : 'unsafe',
+    displayStatus: r.outcome === 'safe' ? 'safe' : 'rejected',
   }));
 
   const completedSampleIds = new Set(completed.map((r) => r.sampleId));
@@ -67,17 +68,18 @@ export function buildCombinedList(
     .map((s) => ({
       id: `PENDING-${s.id}`,
       sampleId: s.id,
-      sampleCode: s.donorCode,
-      donorCode: s.donorCode,
+      sampleCode: s.donationCode,
+      donorCode: s.donationCode,
+      donationCode: s.donationCode,
       donorName: s.donorName,
-      nationalId: getDonorNationalId(s.donorCode),
+      nationalId: getDonorNationalId(s.donationCode),
       bloodType: s.bloodType,
       confirmedBloodType: null,
       hcv: null,
       hbv: null,
       syphilis: null,
       hiv: null,
-      result: 'pending',
+      outcome: 'pending',
       labDoctor: s.labDoctor || '—',
       date: s.collectedDate,
       notes: undefined as string | undefined,

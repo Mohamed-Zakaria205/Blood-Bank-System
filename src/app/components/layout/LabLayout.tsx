@@ -15,7 +15,7 @@ export default function LabLayout() {
 
   const notifications = pendingTests.map((t) => ({
     id: `lab-${t.id}`,
-    title: `عينة ${t.donorCode} — فصيلة ${t.bloodType}`,
+    title: `عينة ${t.donationCode} — فصيلة ${t.bloodType}`,
     subtitle: 'في انتظار إدخال نتائج الفحص',
     icon: <FlaskConical className="w-4 h-4" />,
     color: 'yellow' as const,
