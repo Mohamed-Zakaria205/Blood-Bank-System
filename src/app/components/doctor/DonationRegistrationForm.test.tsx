@@ -243,14 +243,14 @@ describe('DonationRegistrationForm Component', () => {
 
       // Fill valid values
       fireEvent.change(container.querySelector('input[name="name"]')!, { target: { value: 'حسن حسني' } });
-      
+
       const maleButton = screen.getByRole('button', { name: 'ذكر' });
       fireEvent.click(maleButton);
 
       fireEvent.change(container.querySelector('input[name="dateOfBirth"]')!, { target: { value: '1995-10-10' } });
       fireEvent.change(container.querySelector('input[name="phone"]')!, { target: { value: '01234567890' } });
       fireEvent.change(container.querySelector('input[name="nationalId"]')!, { target: { value: '29510102409876' } });
-      
+
       // Governorate select
       const govSelect = screen.getByText('— اختر المحافظة —').closest('select')!;
       fireEvent.change(govSelect, { target: { value: 'بني سويف' } });
@@ -295,7 +295,7 @@ describe('DonationRegistrationForm Component', () => {
       fireEvent.change(container.querySelector('input[name="dateOfBirth"]')!, { target: { value: '1995-10-10' } });
       fireEvent.change(container.querySelector('input[name="phone"]')!, { target: { value: '01234567890' } });
       fireEvent.change(container.querySelector('input[name="nationalId"]')!, { target: { value: '29510102409876' } });
-      
+
       const govSelect = screen.getByText('— اختر المحافظة —').closest('select')!;
       fireEvent.change(govSelect, { target: { value: 'بني سويف' } });
 
@@ -446,13 +446,77 @@ describe('DonationRegistrationForm Component', () => {
       await waitFor(() => {
         // Pre-fill banner assertion
         expect(screen.getByText(/موعد محجوز من التطبيق — 14:30/i)).toBeInTheDocument();
-        
+
         // Assert pre-filled form fields
         expect(container.querySelector('input[name="name"]')).toHaveValue('أسامة حسني');
         expect(container.querySelector('input[name="phone"]')).toHaveValue('01011112222');
         expect(container.querySelector('input[name="nationalId"]')).toHaveValue('29812152409876');
         expect(screen.getByDisplayValue('بني سويف')).toBeInTheDocument();
         expect(screen.getByDisplayValue('مركز ببا')).toBeInTheDocument();
+      });
+    });
+
+    it('sends appointment.centerId (not campaignId) as donationCenterId for campaign appointments', async () => {
+      // The appointment returned by GET /Appointments/slots/{id} has:
+      //   centerId  → a DonationCenter GUID  (e.g. the campaign's donation center)
+      //   campaignId → a Campaign GUID        (a different identifier)
+      // Only centerId must be sent as donationCenterId in POST /Donations.
+      const mockAppointment = {
+        id: 'apt-888',
+        donorName: 'أسامة حسني',
+        donorGender: 'male',
+        donorPhone: '01011112222',
+        donorNationalId: '29812152409876',
+        donorGovernorate: 'بني سويف',
+        donorDistrict: 'مركز ببا',
+        donorArea: 'الجزيرة',
+        donorBloodType: 'O+',
+        donationType: 'plasma',
+        time: '14:30',
+        campaignId: 'camp-guid-111',          // Campaign GUID — must NOT be used as donationCenterId
+        centerId: 'donation-center-guid-999',  // DonationCenter GUID — must be sent as donationCenterId
+      };
+
+      mockUseSearchParams.mockReturnValue([
+        new URLSearchParams('?apt=apt-888'),
+        vi.fn(),
+      ]);
+
+      mockUseAppointmentSlotById.mockReturnValue({
+        data: mockAppointment,
+      });
+
+      const addDonationMock = vi.fn((_payload, options) => {
+        options?.onSuccess?.({ data: 'donation-456' });
+        options?.onSettled?.();
+      });
+      mockUseAddDonation.mockReturnValue({
+        mutate: addDonationMock,
+        isPending: false,
+      });
+
+      render(<DonationRegistrationForm />);
+
+      // Wait for the form to pre-fill
+      await screen.findByDisplayValue('أسامة حسني');
+
+      // Click Next to submit Step 1
+      const nextButton = screen.getByRole('button', { name: /التالي/i });
+      fireEvent.click(nextButton);
+
+      await waitFor(() => {
+        expect(addDonationMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            source: 'campaign',
+            campaignId: 'camp-guid-111',
+            // centerId from the appointment must be the donationCenterId value
+            donationCenterId: 'donation-center-guid-999',
+          }),
+          expect.any(Object)
+        );
+        // Crucially, campaignId must NOT be passed as donationCenterId
+        const calledWith = addDonationMock.mock.calls[0][0];
+        expect(calledWith.donationCenterId).not.toBe('camp-guid-111');
       });
     });
   });

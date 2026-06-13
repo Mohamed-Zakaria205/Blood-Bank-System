@@ -46,15 +46,15 @@ export default function DonationRegistrationForm() {
     if (appointment) {
       const birthYear = appointment.donorAge
         ? (appointment.donorAge > 120
-            ? appointment.donorAge
-            : new Date().getFullYear() - appointment.donorAge)
+          ? appointment.donorAge
+          : new Date().getFullYear() - appointment.donorAge)
         : null;
       const approxDob = birthYear ? `${String(birthYear).padStart(4, '0')}-01-01` : '';
       const finalDob = appointment.donorDateOfBirth
         ? normalizeDateToISO(appointment.donorDateOfBirth)
-        : (appointment.donorNationalId 
-            ? extractDobFromNationalId(appointment.donorNationalId) 
-            : approxDob);
+        : (appointment.donorNationalId
+          ? extractDobFromNationalId(appointment.donorNationalId)
+          : approxDob);
       // Determine the donation source based on appointment metadata
       // Use campaignId from the appointment slot, or fall back to the URL param
       const resolvedCampaignId = appointment.campaignId || urlCampaignId;
@@ -79,6 +79,10 @@ export default function DonationRegistrationForm() {
         donationType: appointment.donationType || 'wholeblood',
         source: source,
         campaignId: resolvedCampaignId,
+        // donationCenterId is ALWAYS a DonationCenter GUID — never a campaignId.
+        // For campaign appointments: the backend returns centerId on the appointment slot
+        //   which is the GUID of the DonationCenter associated with the campaign.
+        // For walk-in appointments: centerId is the main branch GUID.
         donationCenterId: appointment.centerId || '',
         donationTime: appointment.time || new Date().toTimeString().slice(0, 5),
       };
@@ -258,7 +262,7 @@ export default function DonationRegistrationForm() {
           updateField('bloodType', d.bloodType || '');
           const gov = d.governorate || 'بني سويف';
           let dist = d.district || 'مركز وبندر بني سويف';
-          
+
           const govObj = EGYPT_DATA.find((g) => g.name_ar === gov);
           if (govObj) {
             const exactDist = govObj.cities.find((c) => c.city_name_ar === dist);
@@ -318,14 +322,13 @@ export default function DonationRegistrationForm() {
           district: values.district,
           area: values.area,
           source: values.source,
-          // The backend requires a valid DonationCenter GUID in donationCenterId always.
-          // For campaigns: use the main branch center's ID + also send campaignId separately.
-          // For walkin: use the selected center's ID.
-          donationCenterId:
-            values.source === 'campaign'
-              ? (donationCenters[0]?.id || values.donationCenterId || undefined)
-              : values.donationCenterId || undefined,
-          // campaignId is an additional field — only sent when source is 'campaign'
+          // donationCenterId is ALWAYS a valid DonationCenter GUID.
+          // For campaign appointments: values.donationCenterId holds appointment.centerId
+          //   (the campaign's DonationCenter GUID, set in getInitialForm).
+          // For walk-in: values.donationCenterId holds the selected branch center GUID.
+          // NEVER use campaignId as donationCenterId — they are different identifiers.
+          donationCenterId: values.donationCenterId || undefined,
+          // campaignId is a separate field — only sent when source is 'campaign'
           campaignId:
             values.source === 'campaign' ? values.campaignId || undefined : undefined,
         },
