@@ -4,18 +4,21 @@ import type { Donor, EligibilityResult } from '../../../types/donor';
 // ──────────────────────────────────────────
 // Eligibility engine
 // ──────────────────────────────────────────
-export const TODAY = new Date();
 export const MALE_WAIT = 90; // days
 export const FEMALE_WAIT = 120; // days
 
-export type EnrichedDonor = Donor & { elig: EligibilityResult };
+/** Always returns the current date so eligibility is never stale. */
+export const getToday = () => new Date();
+
+export type EnrichedDonor = Donor & { eligibility: EligibilityResult };
 
 export function calcEligibility(donor: Donor): EligibilityResult {
-  if (donor.status === 'ineligible')
+  const today = getToday();
+  if (donor.status === 'rejected')
     return { status: 'ineligible', daysLeft: 0, daysAgo: 0, eligibleDate: '—' };
   if (donor.status === 'deferred' && donor.deferredUntil) {
     const def = new Date(donor.deferredUntil);
-    const daysLeft = Math.ceil((def.getTime() - TODAY.getTime()) / 86400000);
+    const daysLeft = Math.ceil((def.getTime() - today.getTime()) / 86400000);
     if (daysLeft > 0)
       return {
         status: 'deferred',
@@ -33,7 +36,7 @@ export function calcEligibility(donor: Donor): EligibilityResult {
     };
 
   const last = new Date(donor.lastDonationDate);
-  const daysAgo = Math.floor((TODAY.getTime() - last.getTime()) / 86400000);
+  const daysAgo = Math.floor((today.getTime() - last.getTime()) / 86400000);
   const wait = donor.gender === 'male' ? MALE_WAIT : FEMALE_WAIT;
   const daysLeft = wait - daysAgo;
   const eligibleDate = new Date(last.getTime() + wait * 86400000).toISOString().split('T')[0];
@@ -85,6 +88,6 @@ export const statusCfg = {
 } as const;
 
 export interface NotifModal {
-  donor: Donor;
+  donors: Donor[];
   type: 'emergency' | 'ready';
 }

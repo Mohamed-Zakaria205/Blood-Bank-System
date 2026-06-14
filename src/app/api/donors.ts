@@ -2,18 +2,18 @@
 // Donors & Donations API service
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
-import type { Donor, Donation, BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest, EligibilityStats, SendNotificationRequest, EligibilitySettings } from '../types/donor';
+import type { Donor, Donation, BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest, EligibilityStats, SendNotificationRequest, SendNotificationResponse, EligibilitySettings } from '../types/donor';
 import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/common';
 import type { DonationCenter } from '../types/donationCenter';
 import type { ApiResponseWrapper } from '../types/auth';
 import { validateContract, createPaginatedSchema, DonorContractSchema, EligibilityStatsContractSchema, EligibilitySettingsContractSchema } from './contract';
-// import { donors as MOCK_DONORS } from '../data/donors.mock';
-// import { donations as MOCK_DONATIONS } from '../data/donations.mock';
+import { donors as MOCK_DONORS } from '../data/donors.mock';
 import axios from 'axios';
 
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 /** In-memory store — donors (profiles) */
-// let mockDonorStore: Donor[] = [...MOCK_DONORS];
+let mockDonorStore: Donor[] = [...MOCK_DONORS];
 
 /** In-memory store — donations (events) */
 // let mockDonationStore: Donation[] = [...MOCK_DONATIONS];
@@ -24,15 +24,23 @@ import axios from 'axios';
 
 export function mapRawDonor(item: any): Donor {
   if (!item) return item;
+  const normalizeStatus = (s: string) => (s || '').toLowerCase();
+
+  const normalizedEligibility = item.eligibility ? {
+    status: normalizeStatus(item.eligibility.status) as any,
+    daysLeft: Number(item.eligibility.daysLeft ?? 0),
+    daysAgo: Number(item.eligibility.daysAgo ?? 0),
+    eligibleDate: item.eligibility.eligibleDate ? item.eligibility.eligibleDate.split('T')[0] : '',
+  } : undefined;
+
+  const rawStatus = normalizeStatus(item.eligibilityStatus || item.status);
+  const status = rawStatus === 'ineligible' ? 'rejected' : rawStatus;
+
   return {
     ...item,
-    status: (() => {
-      const rawStatus = item.eligibilityStatus || item.status;
-      return rawStatus === 'rejected' ? 'ineligible' : rawStatus;
-    })(),
+    status: status as any,
     donations: item.donationsNumber !== undefined ? item.donationsNumber : item.donations,
-    eligibility: item.eligibility,
-    elig: item.eligibility,
+    eligibility: normalizedEligibility,
   };
 }
 
@@ -103,7 +111,7 @@ export async function fetchPaginatedDonors(
   const params: Record<string, any> = { page, limit };
   if (search) params.search = search;
   if (bloodType) params.bloodType = bloodType;
-  if (status) params.status = status;
+  if (status) params.status = status === 'rejected' ? 'ineligible' : status;
   if (district) params.district = district;
 
   try {
@@ -142,12 +150,36 @@ export async function fetchPaginatedDonors(
 export async function fetchPaginatedEligibleDonors(
   filters: DonorFilters = {}, options?: { signal?: AbortSignal }
 ): Promise<PaginatedResponse<Donor>> {
-  const { page = 1, limit = 10, search = '', bloodType = '', status = '' } = filters;
+  const { page = 1, limit = 10, search = '', bloodType = '', status = '', district = '', gender = '' } = filters;
 
   const params: Record<string, any> = { page, limit };
   if (search) params.search = search;
   if (bloodType) params.bloodType = bloodType;
   if (status && status !== 'all') params.status = status;
+  if (district && district !== 'all') params.district = district;
+  if (gender && gender !== 'all') params.gender = gender;
+
+  if (USE_MOCK) {
+    let result = mockDonorStore.map(mapRawDonor);
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(d => d.name.toLowerCase().includes(q) || d.nationalId.includes(q) || d.phone.includes(q));
+    }
+    if (bloodType) {
+      result = result.filter(d => d.bloodType === bloodType);
+    }
+    if (district && district !== 'all') {
+      result = result.filter(d => d.district === district);
+    }
+    if (gender && gender !== 'all') {
+      result = result.filter(d => d.gender === gender);
+    }
+    // We do not filter by eligibility status here for mock, as DoctorEligibility calculates it
+    // if it's missing, but we can do a naive filter if needed.
+    const total = result.length;
+    result = result.slice((page - 1) * limit, page * limit);
+    return new Promise(resolve => setTimeout(() => resolve({ data: result, total, page, limit }), 500));
+  }
 
   try {
     const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
@@ -156,7 +188,8 @@ export async function fetchPaginatedEligibleDonors(
       total: number;
       page: number;
       limit: number;
-    }>>('/Donors/eligibility', {
+      totalPages?: number;
+    }>>('/donors/eligibility', {
       params,
       signal: options?.signal,
     });
@@ -169,6 +202,7 @@ export async function fetchPaginatedEligibleDonors(
       total: wrapper.data?.total || 0,
       page: wrapper.data?.page || 1,
       limit: wrapper.data?.limit || 10,
+      totalPages: wrapper.data?.totalPages || 0,
     };
     validateContract('Eligible Donors List', createPaginatedSchema(DonorContractSchema), result);
     return result;
@@ -239,10 +273,47 @@ export async function updateDonor(
 
 /** Fetch eligibility statistics for status cards and blood type bar */
 export async function fetchDonorEligibilityStats(): Promise<ApiResponse<EligibilityStats>> {
+  if (USE_MOCK) {
+    return new Promise(resolve => setTimeout(() => resolve({
+      data: {
+        statusCounts: {
+          all: mockDonorStore.length,
+          eligible: mockDonorStore.filter(d => d.status === 'eligible').length,
+          soon: mockDonorStore.filter(d => d.eligibility?.status === 'soon').length || 0,
+          not_yet: mockDonorStore.filter(d => d.eligibility?.status === 'not_yet').length || 0,
+          deferred: mockDonorStore.filter(d => d.status === 'deferred').length,
+          ineligible: mockDonorStore.filter(d => d.status === 'rejected').length,
+        },
+        bloodTypeCounts: {
+          'A+': { eligible: 10, total: 20 },
+          'A-': { eligible: 5, total: 10 },
+          'B+': { eligible: 15, total: 30 },
+          'B-': { eligible: 2, total: 5 },
+          'O+': { eligible: 30, total: 50 },
+          'O-': { eligible: 8, total: 15 },
+          'AB+': { eligible: 5, total: 10 },
+          'AB-': { eligible: 1, total: 3 },
+        }
+      }
+    }), 500));
+  }
+
   try {
-    const { data } = await apiClient.get<ApiResponseWrapper<EligibilityStats>>('/Donors/eligibility/stats');
-    validateContract('Eligibility Stats', EligibilityStatsContractSchema, data.data);
-    return { data: data.data };
+    const { data } = await apiClient.get<ApiResponseWrapper<any>>('/donors/eligibility/stats');
+    const rawCounts = data.data?.statusCounts || {};
+    const normalizedStats: EligibilityStats = {
+      statusCounts: {
+        all: Number(rawCounts.all ?? 0),
+        eligible: Number(rawCounts.eligible ?? 0),
+        soon: Number(rawCounts.soon ?? 0),
+        not_yet: Number(rawCounts.not_yet ?? rawCounts.notYet ?? 0),
+        deferred: Number(rawCounts.deferred ?? 0),
+        ineligible: Number(rawCounts.ineligible ?? 0),
+      },
+      bloodTypeCounts: data.data?.bloodTypeCounts || {},
+    };
+    validateContract('Eligibility Stats', EligibilityStatsContractSchema, normalizedStats);
+    return { data: normalizedStats };
   } catch (error) {
     console.error('[API] fetchDonorEligibilityStats error:', error);
     throw error;
@@ -252,7 +323,7 @@ export async function fetchDonorEligibilityStats(): Promise<ApiResponse<Eligibil
 /** Fetch eligibility settings (wait periods) for admin */
 export async function fetchEligibilitySettings(): Promise<ApiResponse<EligibilitySettings>> {
   try {
-    const { data } = await apiClient.get<ApiResponseWrapper<EligibilitySettings>>('/Settings/eligibility');
+    const { data } = await apiClient.get<ApiResponseWrapper<EligibilitySettings>>('/settings/eligibility');
     validateContract('Eligibility Settings', EligibilitySettingsContractSchema, data.data);
     return { data: data.data };
   } catch (error) {
@@ -264,7 +335,7 @@ export async function fetchEligibilitySettings(): Promise<ApiResponse<Eligibilit
 /** Update eligibility settings (wait periods) for admin */
 export async function updateEligibilitySettings(settings: EligibilitySettings): Promise<ApiResponse<void>> {
   try {
-    const { data } = await apiClient.put<ApiResponseWrapper<void>>('/Settings/eligibility', settings);
+    const { data } = await apiClient.put<ApiResponseWrapper<void>>('/settings/eligibility', settings);
     return { data: undefined, message: data.message };
   } catch (error) {
     console.error('[API] updateEligibilitySettings error:', error);
@@ -272,16 +343,27 @@ export async function updateEligibilitySettings(settings: EligibilitySettings): 
   }
 }
 
-/** Send SMS / App notification to a donor */
-export async function sendDonorNotification(
-  donorId: string,
+/** Send SMS / App notification to one or more donors */
+export async function sendDonorNotifications(
   payload: SendNotificationRequest
-): Promise<ApiResponse<string>> {
+): Promise<ApiResponse<SendNotificationResponse>> {
+  if (USE_MOCK) {
+    return new Promise(resolve => setTimeout(() => resolve({
+      data: {
+        requested: payload.donorIds.length,
+        sent: payload.donorIds.length,
+        failed: 0,
+        failedDonorIds: [],
+      },
+      message: 'Mock: Notifications sent successfully'
+    }), 800));
+  }
+
   try {
-    const { data } = await apiClient.post<ApiResponseWrapper<string>>(`/Donors/${donorId}/notifications`, payload);
+    const { data } = await apiClient.post<ApiResponseWrapper<SendNotificationResponse>>(`/donors/eligibility/notifications`, payload);
     return { data: data.data, message: data.message };
   } catch (error) {
-    console.error('[API] sendDonorNotification error:', error);
+    console.error('[API] sendDonorNotifications error:', error);
     throw error;
   }
 }

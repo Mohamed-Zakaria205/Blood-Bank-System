@@ -97,7 +97,7 @@ export default function DoctorDashboard() {
           <button
             key={i}
             onClick={s.action}
-            className={`bg-card rounded-2xl p-5 border ${s.border} shadow-sm hover:shadow-md transition-all text-right`}
+            className={`bg-card rounded-2xl p-5 border ${s.border} shadow-sm hover:shadow-md transition-all text-right cursor-pointer`}
           >
             <div className={`w-11 h-11 ${s.bg} rounded-xl flex items-center justify-center mb-4`}>
               <s.icon className={`w-5 h-5 ${s.color}`} />
@@ -187,7 +187,7 @@ export default function DoctorDashboard() {
             <button
               key={i}
               onClick={a.action}
-              className={`flex flex-col items-center gap-3 p-5 rounded-2xl border hover:shadow-md transition-all group ${a.color}`}
+              className={`flex flex-col items-center gap-3 p-5 rounded-2xl border hover:shadow-md transition-all group cursor-pointer ${a.color}`}
             >
               <a.icon className="w-6 h-6 group-hover:scale-110 transition-transform" />
               <span style={{ fontSize: '13px', fontWeight: 600, textAlign: 'center' }}>

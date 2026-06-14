@@ -312,19 +312,19 @@ export default function StepTwo({
           </button>
           <button
             type="button"
-            onClick={() => updateField('status', 'ineligible')}
-            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${form.status === 'ineligible' ? 'border-red-500 bg-red-50' : 'border-border hover:border-red-200'}`}
+            onClick={() => updateField('status', 'rejected')}
+            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${form.status === 'rejected' ? 'border-red-500 bg-red-50' : 'border-border hover:border-red-200'}`}
           >
             <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${form.status === 'ineligible' ? 'bg-red-500' : 'bg-muted'}`}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${form.status === 'rejected' ? 'bg-red-500' : 'bg-muted'}`}
             >
               <UserX
-                className={`w-4 h-4 ${form.status === 'ineligible' ? 'text-white' : 'text-muted-foreground'}`}
+                className={`w-4 h-4 ${form.status === 'rejected' ? 'text-white' : 'text-muted-foreground'}`}
               />
             </div>
             <div className="text-right">
               <p
-                className={form.status === 'ineligible' ? 'text-red-700' : 'text-foreground'}
+                className={form.status === 'rejected' ? 'text-red-700' : 'text-foreground'}
                 style={{ fontSize: '12px', fontWeight: 700 }}
               >
                 غير مؤهل ❌
@@ -374,8 +374,8 @@ export default function StepTwo({
           </div>
         )}
 
-        {/* Rejection details — shows when ineligible */}
-        {form.status === 'ineligible' && (
+        {/* Rejection details — shows when rejected */}
+        {form.status === 'rejected' && (
           <div className="mt-3 space-y-3 p-4 bg-red-50 border border-red-100 rounded-xl">
             <div>
               <label

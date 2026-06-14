@@ -47,6 +47,7 @@ describe('validateContract', () => {
       donorCode: 'D-001',
       name: 'John Doe',
       status: 'eligible',
+      hasAppAccount: true,
     };
 
     validateContract('Donor', DonorContractSchema, validData);

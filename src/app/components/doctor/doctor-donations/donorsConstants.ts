@@ -1,14 +1,14 @@
 /** Status badge colors */
 export const statusColors: Record<string, string> = {
   eligible: 'bg-green-100 text-green-700',
-  ineligible: 'bg-red-100 text-red-700',
+  rejected: 'bg-red-100 text-red-700',
   deferred: 'bg-orange-100 text-orange-700',
 };
 
 /** Status Arabic labels */
 export const statusLabels: Record<string, string> = {
   eligible: 'مؤهل',
-  ineligible: 'غير مؤهل',
+  rejected: 'غير مؤهل',
   deferred: 'موجل',
 };
 

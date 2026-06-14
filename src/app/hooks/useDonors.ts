@@ -2,7 +2,7 @@
 // React Query hooks — Donors & Donations
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchDonors, fetchDonorById, updateDonor, fetchPaginatedDonors, fetchPaginatedEligibleDonors, fetchPaginatedDonations, fetchAllDonations, searchDonorByNationalId, addDonation, addMedicalRecord, deleteDonation, confirmDonation, fetchDonationCenters, fetchDonorEligibilityStats, sendDonorNotification, fetchEligibilitySettings, updateEligibilitySettings } from '../api/donors';
+import { fetchDonors, fetchDonorById, updateDonor, fetchPaginatedDonors, fetchPaginatedEligibleDonors, fetchPaginatedDonations, fetchAllDonations, searchDonorByNationalId, addDonation, addMedicalRecord, deleteDonation, confirmDonation, fetchDonationCenters, fetchDonorEligibilityStats, sendDonorNotifications, fetchEligibilitySettings, updateEligibilitySettings } from '../api/donors';
 import type { BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest, SendNotificationRequest, EligibilitySettings } from '../types/donor';
 import type { DonorFilters } from '../types/common';
 
@@ -76,16 +76,16 @@ export function useDonorEligibilityStats() {
   });
 }
 
-/** Send standard readiness or emergency notification to a donor */
-export function useSendDonorNotification() {
+/** Send standard readiness or emergency notification to one or more donors */
+export function useSendDonorNotifications() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ donorId, payload }: { donorId: string; payload: SendNotificationRequest }) =>
-      sendDonorNotification(donorId, payload),
+    mutationFn: (payload: SendNotificationRequest) =>
+      sendDonorNotifications(payload),
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: ['donors', 'eligibility'] });
       qc.invalidateQueries({ queryKey: ['donors', 'eligibility-stats'] });
-      qc.invalidateQueries({ queryKey: ['donors', variables.donorId] });
+      variables.donorIds.forEach((id) => qc.invalidateQueries({ queryKey: ['donors', id] }));
     },
   });
 }

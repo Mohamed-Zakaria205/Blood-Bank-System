@@ -14,7 +14,7 @@ export const donors: (Donor & { source?: string })[] = [
     bloodType: 'O+',
     lastDonationDate: '2024-10-15',
     status: 'eligible',
-
+    hasAppAccount: true,
     registeredAt: '2025-04-20',
     source: 'walkin',
   },
@@ -30,7 +30,7 @@ export const donors: (Donor & { source?: string })[] = [
     district: 'الواسطى',
     bloodType: 'A+',
     status: 'eligible',
-
+    hasAppAccount: false,
     registeredAt: '2025-04-21',
     source: 'app',
   },
@@ -47,7 +47,7 @@ export const donors: (Donor & { source?: string })[] = [
     bloodType: 'B-',
     lastDonationDate: '2024-08-20',
     status: 'eligible',
-
+    hasAppAccount: true,
     registeredAt: '2025-04-22',
     source: 'app',
   },
@@ -62,8 +62,8 @@ export const donors: (Donor & { source?: string })[] = [
     address: 'شارع السكة الحديد، ببا',
     district: 'ببا',
     bloodType: 'AB+',
-    status: 'ineligible',
-
+    status: 'rejected',
+    hasAppAccount: false,
     registeredAt: '2025-04-23',
     source: 'walkin',
   },
@@ -79,8 +79,8 @@ export const donors: (Donor & { source?: string })[] = [
     district: 'الفشن',
     bloodType: 'O-',
     lastDonationDate: '2025-01-10',
-    status: 'ineligible',
-
+    status: 'rejected',
+    hasAppAccount: false,
     registeredAt: '2025-04-23',
     source: 'walkin',
   },
@@ -96,7 +96,7 @@ export const donors: (Donor & { source?: string })[] = [
     district: 'سمسطا',
     bloodType: 'A-',
     status: 'eligible',
-
+    hasAppAccount: true,
     registeredAt: '2025-04-24',
     source: 'campaign',
     campaignId: 'CAM-003',
@@ -115,7 +115,7 @@ export const donors: (Donor & { source?: string })[] = [
     bloodType: 'B+',
     lastDonationDate: '2024-12-05',
     status: 'eligible',
-
+    hasAppAccount: true,
     registeredAt: '2025-04-25',
     source: 'walkin',
   },
@@ -131,8 +131,8 @@ export const donors: (Donor & { source?: string })[] = [
     district: 'بني سويف',
     bloodType: 'AB-',
     status: 'deferred',
+    hasAppAccount: false,
     deferredUntil: '2025-06-15',
-
     registeredAt: '2025-04-26',
     source: 'campaign',
     campaignId: 'CAM-001',
@@ -151,7 +151,7 @@ export const donors: (Donor & { source?: string })[] = [
     bloodType: 'O+',
     lastDonationDate: '2024-09-30',
     status: 'eligible',
-
+    hasAppAccount: false,
     registeredAt: '2025-04-26',
     source: 'walkin',
   },
@@ -167,8 +167,8 @@ export const donors: (Donor & { source?: string })[] = [
     district: 'ببا',
     bloodType: 'A+',
     status: 'deferred',
+    hasAppAccount: true,
     deferredUntil: '2025-07-01',
-
     registeredAt: '2025-04-26',
     source: 'app',
   },

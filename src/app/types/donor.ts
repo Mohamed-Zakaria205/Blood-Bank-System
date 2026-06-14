@@ -33,8 +33,16 @@ export interface EligibilityStats {
 }
 
 export interface SendNotificationRequest {
+  donorIds: string[];
   type: 'emergency' | 'ready';
   message: string;
+}
+
+export interface SendNotificationResponse {
+  requested: number;
+  sent: number;
+  failed: number;
+  failedDonorIds: string[];
 }
 
 /**
@@ -71,7 +79,6 @@ export interface Donor {
 
   // ── Calculated Eligibility fields ────────────────────────
   eligibility?: EligibilityResult;
-  elig?: EligibilityResult;
 }
 
 /**

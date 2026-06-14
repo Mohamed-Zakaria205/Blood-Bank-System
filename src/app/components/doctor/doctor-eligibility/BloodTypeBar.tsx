@@ -26,7 +26,7 @@ export default function BloodTypeBar({ enriched = [], stats, filterBlood, onTogg
             typeTotal = stats.bloodTypeCounts[type].total;
           } else {
             typeElig = enriched.filter(
-              (d) => d.bloodType === type && d.elig?.status === 'eligible',
+              (d) => d.bloodType === type && d.eligibility?.status === 'eligible',
             ).length;
             typeTotal = enriched.filter((d) => d.bloodType === type).length;
           }
@@ -35,7 +35,11 @@ export default function BloodTypeBar({ enriched = [], stats, filterBlood, onTogg
             <button
               key={type}
               onClick={() => onToggle(filterBlood === type ? 'all' : type)}
-              className={`p-3 rounded-xl border-2 text-center transition-all ${filterBlood === type ? 'border-green-400 bg-green-50' : 'border-border bg-muted/40 hover:border-green-200'}`}
+              className={`p-3 rounded-xl border-2 text-center transition-all duration-300 ease-in-out cursor-pointer ${
+                filterBlood === type
+                  ? 'border-green-400 bg-green-50 dark:border-green-500 dark:bg-green-950/25 ring-2 ring-green-400/20'
+                  : 'border-border bg-muted/40 dark:bg-muted/5 hover:border-green-400 dark:hover:border-green-400 hover:bg-green-50/20 dark:hover:bg-green-950/20 hover:shadow-md dark:hover:shadow-[0_0_12px_rgba(77,158,120,0.25)] hover:scale-102'
+              }`}
             >
               <span
                 className="block px-1.5 py-0.5 bg-red-50 text-red-600 rounded mb-1 mx-auto w-fit"

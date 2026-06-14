@@ -1,4 +1,4 @@
-import { Bell, Zap, Send, Smartphone } from 'lucide-react';
+import { Bell, Zap, Send, Smartphone, Users } from 'lucide-react';
 import type { NotifModal } from './eligibilityConstants';
 import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
@@ -12,6 +12,12 @@ interface NotifyDonorModalProps {
 export default function NotifyDonorModal({ modal, onSend, onCancel, isPending = false }: NotifyDonorModalProps) {
   const isEmergency = modal.type === 'emergency';
   const modalRef = useModalFocusTrap(onCancel);
+  const isBulk = modal.donors.length > 1;
+  const singleDonor = isBulk ? null : modal.donors[0];
+
+  const previewMessage = isEmergency
+    ? `🚨 طلب دم طارئ — بنك دم بني سويف\nفصيلة الدم: ${isBulk ? 'حسب احتياجنا الطارئ' : singleDonor!.bloodType}\nيرجى التواصل فوراً على: 082-XXXXXXX`
+    : `💚 أنت الآن مؤهل للتبرع بالدم مجدداً!\nآخر تبرع: ${isBulk ? 'موضح في سجلك لدينا' : (singleDonor!.lastDonationDate ?? 'لم يتبرع')}\nاحجز موعدك عبر التطبيق أو تواصل معنا.`;
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -41,7 +47,7 @@ export default function NotifyDonorModal({ modal, onSend, onCancel, isPending = 
                 {isEmergency ? 'إشعار طارئ' : 'إشعار جاهزية للتبرع'}
               </h3>
               <p className="text-muted-foreground" style={{ fontSize: '12px' }}>
-                {modal.donor.name}
+                {isBulk ? `إرسال إلى ${modal.donors.length} متبرع` : singleDonor!.name}
               </p>
             </div>
           </div>
@@ -50,33 +56,36 @@ export default function NotifyDonorModal({ modal, onSend, onCancel, isPending = 
         <div className="p-5 space-y-4">
           {/* Recipient info */}
           <div className="p-3 bg-muted/40 rounded-xl space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
-                المتبرع
-              </span>
-              <span className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
-                {modal.donor.name}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
-                الفصيلة
-              </span>
-              <span
-                className="px-2 py-0.5 bg-red-50 text-red-600 rounded"
-                style={{ fontSize: '12px', fontWeight: 800 }}
-              >
-                {modal.donor.bloodType}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
-                الهاتف
-              </span>
-              <span className="text-foreground font-mono" style={{ fontSize: '13px' }}>
-                {modal.donor.phone}
-              </span>
-            </div>
+            {isBulk ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
+                    عدد المتبرعين المستهدفين
+                  </span>
+                </div>
+                <span className="text-foreground" style={{ fontSize: '14px', fontWeight: 700 }}>
+                  {modal.donors.length}
+                </span>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground" style={{ fontSize: '12px' }}>المتبرع</span>
+                  <span className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>{singleDonor!.name}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground" style={{ fontSize: '12px' }}>الفصيلة</span>
+                  <span className="px-2 py-0.5 bg-red-50 text-red-600 rounded" style={{ fontSize: '12px', fontWeight: 800 }}>
+                    {singleDonor!.bloodType}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground" style={{ fontSize: '12px' }}>الهاتف</span>
+                  <span className="text-foreground font-mono" style={{ fontSize: '13px' }}>{singleDonor!.phone}</span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Message preview */}
@@ -90,9 +99,7 @@ export default function NotifyDonorModal({ modal, onSend, onCancel, isPending = 
             </label>
             <div id="message-preview" className="p-3 bg-muted/40 border border-border rounded-xl">
               <p className="text-foreground" style={{ fontSize: '13px', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
-                {isEmergency
-                  ? `🚨 طلب دم طارئ — بنك دم بني سويف\nفصيلة الدم: ${modal.donor.bloodType}\nيرجى التواصل فوراً على: 082-XXXXXXX`
-                  : `💚 أنت الآن مؤهل للتبرع بالدم مجدداً!\nآخر تبرع: ${modal.donor.lastDonationDate ?? 'لم يتبرع'}\nاحجز موعدك عبر التطبيق أو تواصل معنا.`}
+                {previewMessage}
               </p>
             </div>
           </div>

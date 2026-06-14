@@ -28,6 +28,7 @@ export interface DonorFilters extends PaginationParams {
   bloodType?: string;
   status?: string;
   district?: string;
+  gender?: string;
 }
 
 /** Blood bag filter params */
@@ -72,7 +73,7 @@ export interface TransactionFilters extends PaginationParams {
 /** Re-usable literal unions */
 export type BloodType = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
 export type DonationType = 'wholeblood' | 'plasma' | 'platelets';
-export type DonorStatus = 'eligible' | 'ineligible' | 'deferred';
+export type DonorStatus = 'eligible' | 'rejected' | 'deferred';
 export type CampaignStatus = 'active' | 'notactive' | 'completed';
 export type InventoryStatus = 'normal' | 'low' | 'critical';
 export type BloodBagStatus =

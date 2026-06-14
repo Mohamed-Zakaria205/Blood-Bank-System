@@ -21,7 +21,7 @@ export const EligibilityResultSchema = z.object({
   status: z.enum(['eligible', 'soon', 'not_yet', 'deferred', 'ineligible']),
   daysLeft: z.number(),
   daysAgo: z.number(),
-  eligibleDate: z.string(),
+  eligibleDate: z.string().optional().nullable(),
 });
 
 // 1. Donor Contract
@@ -33,7 +33,8 @@ export const DonorContractSchema = z.object({
   phone: z.string().optional(),
   age: z.number().optional(),
   bloodType: z.string().optional().nullable(),
-  status: z.enum(['eligible', 'deferred', 'rejected', 'ineligible']).optional(),
+  status: z.enum(['eligible', 'deferred', 'rejected']).optional(),
+  hasAppAccount: z.boolean(),
   // Ensure we don't throw hard errors if dates come differently, just log
   lastDonationDate: z.string().optional().nullable(),
   eligibility: EligibilityResultSchema.optional().nullable(),
