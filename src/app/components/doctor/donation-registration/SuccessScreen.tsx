@@ -1,4 +1,4 @@
-﻿import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import {
   CheckCircle2,
   User,
@@ -305,7 +305,7 @@ export default function SuccessScreen({
               <Megaphone className="w-4 h-4 text-purple-600" />
               <span className="text-purple-700" style={{ fontSize: '13px', fontWeight: 600 }}>
                 تبرع من حملة
-                {selectedCampaign ? ` — ${selectedCampaign.title}` : ''}
+                {selectedCampaign ? ` — ${selectedCampaign.title} (${selectedCampaign.campaignCode})` : ''}
               </span>
             </>
           ) : (

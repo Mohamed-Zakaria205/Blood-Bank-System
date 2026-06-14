@@ -70,7 +70,7 @@ vi.mock('@tanstack/react-query', async (importOriginal) => {
 vi.mock('../../hooks/useCampaigns', () => ({
   useCampaigns: () => ({
     data: [
-      { id: 'camp-1', title: 'حملة جامعة بني سويف' },
+      { id: 'camp-1', campaignCode: 'CAM-1', title: 'حملة جامعة بني سويف' },
     ],
   }),
 }));

@@ -4,7 +4,8 @@ import type {
 
 export const campaigns: Campaign[] = [
   {
-    id: 'CAM-001',
+    id: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
+    campaignCode: 'CAM-001',
     title: 'حملة التبرع - مستشفى بني سويف العام',
     latitude: 29.0661, longitude: 31.0994,
     city: 'بني سويف',
@@ -23,7 +24,8 @@ export const campaigns: Campaign[] = [
     availableDonationTypes: ['wholeblood', 'plasma'],
   },
   {
-    id: 'CAM-002',
+    id: '3a2d5e3c-83b2-4d1a-96e5-21d7b3f9b2d3',
+    campaignCode: 'CAM-002',
     title: 'يوم التبرع الشهري - مركز الواسطى',
     latitude: 29.0661, longitude: 31.0994,
     city: 'الواسطى',
@@ -42,7 +44,8 @@ export const campaigns: Campaign[] = [
     availableDonationTypes: ['wholeblood'],
   },
   {
-    id: 'CAM-003',
+    id: '4f7d2e1b-92c4-4b5a-87d9-32e6c8f4a1b5',
+    campaignCode: 'CAM-003',
     title: 'حملة الدم الطارئة - مستشفى ناصر',
     latitude: 29.0661, longitude: 31.0994,
     city: 'ناصر',
@@ -61,7 +64,8 @@ export const campaigns: Campaign[] = [
     availableDonationTypes: ['wholeblood', 'platelets'],
   },
   {
-    id: 'CAM-004',
+    id: '5e8c1d9a-03b5-4c6d-98e7-43f5b2a6c7d8',
+    campaignCode: 'CAM-004',
     title: 'حملة التبرع - جامعة بني سويف',
     latitude: 29.0661, longitude: 31.0994,
     city: 'بني سويف',
@@ -80,7 +84,8 @@ export const campaigns: Campaign[] = [
     availableDonationTypes: ['wholeblood', 'plasma', 'platelets'],
   },
   {
-    id: 'CAM-005',
+    id: '6f9d2e0b-14c6-4d7e-89f8-54a6b3c7d8e9',
+    campaignCode: 'CAM-005',
     title: 'يوم التبرع - ببا',
     latitude: 29.0661, longitude: 31.0994,
     city: 'ببا',

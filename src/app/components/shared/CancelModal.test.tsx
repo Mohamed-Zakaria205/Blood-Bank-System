@@ -6,7 +6,7 @@ import { CancelModal } from './CancelModal';
 vi.mock('../../hooks/useCampaigns', () => ({
   useCampaigns: () => ({
     data: [
-      { id: 'camp1', title: 'Test Campaign' }
+      { id: 'camp1', campaignCode: 'CAMP-CODE', title: 'Test Campaign' }
     ]
   })
 }));
@@ -36,7 +36,7 @@ describe('CancelModal', () => {
     expect(screen.getByText('2024-05-30')).toBeInTheDocument();
     expect(screen.getByText('10:00')).toBeInTheDocument();
     // Verify campaign is loaded from mock
-    expect(screen.getByText('Test Campaign')).toBeInTheDocument();
+    expect(screen.getByText('Test Campaign (CAMP-CODE)')).toBeInTheDocument();
     // Verify doctor name
     expect(screen.getByText('Dr. Smith')).toBeInTheDocument();
   });

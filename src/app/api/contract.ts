@@ -73,6 +73,7 @@ export const LabTestContractSchema = z.object({
 // 3. Campaign Contract
 export const CampaignContractSchema = z.object({
   id: z.string(),
+  campaignCode: z.string(),
   title: z.string(),
   status: z.enum(['active', 'completed', 'cancelled', 'notactive']),
   targetDonors: z.number(),
@@ -110,6 +111,7 @@ export const DoctorDashboardContractSchema = z.object({
   activeCampaigns: z.array(
     z.object({
       id: z.string(),
+      campaignCode: z.string(),
       title: z.string(),
       status: z.string(),
       registeredDonors: z.number(),

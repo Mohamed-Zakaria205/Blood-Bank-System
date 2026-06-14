@@ -128,7 +128,7 @@ export default function StepOne({
               <option value="">— اختر الحملة —</option>
               {activeCampaigns.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.title}
+                  {c.title} ({c.campaignCode})
                 </option>
               ))}
             </select>
@@ -143,7 +143,7 @@ export default function StepOne({
                   className="text-purple-700"
                   style={{ fontSize: '12px', fontWeight: 600 }}
                 >
-                  {selectedCampaign.title}
+                  {selectedCampaign.title} ({selectedCampaign.campaignCode})
                 </span>
                 <span className="text-purple-500" style={{ fontSize: '11px' }}>
                   {selectedCampaign.registeredDonors} / {selectedCampaign.targetDonors}{' '}

@@ -130,11 +130,6 @@ export interface BasicDonationRequest {
    * - campaign: the campaign's own GUID (backend links the donation to the campaign)
    */
   donationCenterId?: string;
-  /**
-   * UUID of the campaign — sent only when source is 'campaign'.
-   * The backend associates the donation with this campaign.
-   */
-  campaignId?: string;
 }
 
 /**

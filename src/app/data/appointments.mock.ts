@@ -194,7 +194,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donorArea: 'صلاح سالم',
     donationType: 'plasma',
     status: 'booked',
-    campaignId: 'CAM-001',
+    campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
 {
     id: 'S15-011',
@@ -229,7 +229,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donorArea: 'مدينة ببا',
     donationType: 'platelets',
     status: 'booked',
-    campaignId: 'CAM-003',
+    campaignId: '4f7d2e1b-92c4-4b5a-87d9-32e6c8f4a1b5',
   },
 {
     id: 'S15-013',
@@ -265,7 +265,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'wholeblood',
     status: 'completed',
     completedAt: '08:14',
-    campaignId: 'CAM-001',
+    campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
 {
     id: 'S15-015',
@@ -284,7 +284,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'plasma',
     status: 'completed',
     completedAt: '08:45',
-    campaignId: 'CAM-001',
+    campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
 {
     id: 'S15-016',
@@ -303,7 +303,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'wholeblood',
     status: 'missed',
     notes: 'لم يحضر',
-    campaignId: 'CAM-001',
+    campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
 {
     id: 'S15-017',
@@ -322,7 +322,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'wholeblood',
     status: 'completed',
     completedAt: '09:42',
-    campaignId: 'CAM-001',
+    campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
 {
     id: 'S15-018',
@@ -341,7 +341,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'wholeblood',
     status: 'completed',
     completedAt: '10:15',
-    campaignId: 'CAM-001',
+    campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
 {
     id: 'S15-019',
@@ -361,7 +361,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'platelets',
     status: 'completed',
     completedAt: '13:12',
-    campaignId: 'CAM-001',
+    campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
 {
     id: 'S15-020',
@@ -380,7 +380,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'wholeblood',
     status: 'completed',
     completedAt: '08:11',
-    campaignId: 'CAM-003',
+    campaignId: '4f7d2e1b-92c4-4b5a-87d9-32e6c8f4a1b5',
   },
 {
     id: 'S15-021',
@@ -399,7 +399,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'plasma',
     status: 'completed',
     completedAt: '08:43',
-    campaignId: 'CAM-003',
+    campaignId: '4f7d2e1b-92c4-4b5a-87d9-32e6c8f4a1b5',
   },
 {
     id: 'S15-022',
@@ -504,7 +504,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donorArea: 'كورنيش النيل',
     donationType: 'wholeblood',
     status: 'booked',
-    campaignId: 'CAM-004',
+    campaignId: '5e8c1d9a-03b5-4c6d-98e7-43f5b2a6c7d8',
   },
 {
     id: 'S15-028',
@@ -522,7 +522,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donorArea: 'مدينة الواسطى',
     donationType: 'plasma',
     status: 'booked',
-    campaignId: 'CAM-004',
+    campaignId: '5e8c1d9a-03b5-4c6d-98e7-43f5b2a6c7d8',
   },
 {
     id: 'S15-029',
@@ -540,7 +540,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donorArea: 'حي الرمد',
     donationType: 'wholeblood',
     status: 'booked',
-    campaignId: 'CAM-004',
+    campaignId: '5e8c1d9a-03b5-4c6d-98e7-43f5b2a6c7d8',
   },
 {
     id: 'S15-030',

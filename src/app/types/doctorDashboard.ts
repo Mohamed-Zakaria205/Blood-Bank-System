@@ -29,6 +29,7 @@ export interface WeeklyDonationChart {
 
 export interface ActiveCampaign {
   id: string;
+  campaignCode: string;
   title: string;
   status: CampaignStatus;
   registeredDonors: number;

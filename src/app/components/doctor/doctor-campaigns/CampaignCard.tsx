@@ -93,8 +93,9 @@ export default function CampaignCard({
               </span>
             )}
           </div>
-          <h3 className="text-foreground" style={{ fontSize: '15px', fontWeight: 700 }}>
-            {c.title}
+          <h3 className="text-foreground flex items-center gap-2 flex-wrap" style={{ fontSize: '15px', fontWeight: 700 }}>
+            <span>{c.title}</span>
+            <span className="text-muted-foreground text-xs font-mono">({c.campaignCode})</span>
           </h3>
         </div>
         {c.status !== 'completed' && (

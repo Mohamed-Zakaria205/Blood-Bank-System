@@ -12,6 +12,7 @@ export interface RecurrenceSettings {
 
 export interface Campaign {
   id: string;
+  campaignCode: string;
   title: string;
   city: string;
   latitude?: number;

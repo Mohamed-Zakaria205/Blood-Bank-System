@@ -40,7 +40,10 @@ export default function ActiveCampaignsPanel({ campaigns, onViewAll }: ActiveCam
                   className="text-foreground text-right"
                   style={{ fontSize: '12px', fontWeight: 700 }}
                 >
-                  {c.title}
+                  {c.title}{' '}
+                  <span className="text-muted-foreground text-[10px] font-mono">
+                    ({c.campaignCode})
+                  </span>
                 </p>
                 <span
                   className={`px-1.5 py-0.5 rounded-full flex-shrink-0 mr-2 ${statusCfg.cls}`}

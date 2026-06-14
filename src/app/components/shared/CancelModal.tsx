@@ -132,7 +132,7 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
                       الحملة
                     </p>
                     <p className="text-purple-700" style={{ fontSize: '13px', fontWeight: 600 }}>
-                      {campaign.title}
+                      {campaign.title} ({campaign.campaignCode})
                     </p>
                   </div>
                 </div>

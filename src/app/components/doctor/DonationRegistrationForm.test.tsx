@@ -73,8 +73,8 @@ describe('DonationRegistrationForm Component', () => {
     mockUseFilteredCampaigns.mockReturnValue({
       data: {
         data: [
-          { id: 'camp-1', title: 'حملة جامعة بني سويف', status: 'active', targetDonors: 100, registeredDonors: 10 },
-          { id: 'camp-2', title: 'حملة النادي الرياضي', status: 'completed', targetDonors: 100, registeredDonors: 95 },
+          { id: 'camp-1', campaignCode: 'CAM-1', title: 'حملة جامعة بني سويف', status: 'active', targetDonors: 100, registeredDonors: 10 },
+          { id: 'camp-2', campaignCode: 'CAM-2', title: 'حملة النادي الرياضي', status: 'completed', targetDonors: 100, registeredDonors: 95 },
         ],
       }
     });
@@ -508,15 +508,14 @@ describe('DonationRegistrationForm Component', () => {
         expect(addDonationMock).toHaveBeenCalledWith(
           expect.objectContaining({
             source: 'campaign',
-            campaignId: 'camp-guid-111',
-            // centerId from the appointment must be the donationCenterId value
-            donationCenterId: 'donation-center-guid-999',
+            // campaign GUID must be the donationCenterId value
+            donationCenterId: 'camp-guid-111',
           }),
           expect.any(Object)
         );
-        // Crucially, campaignId must NOT be passed as donationCenterId
+        // Crucially, campaignId must NOT be passed separately in the payload
         const calledWith = addDonationMock.mock.calls[0][0];
-        expect(calledWith.donationCenterId).not.toBe('camp-guid-111');
+        expect(calledWith.campaignId).toBeUndefined();
       });
     });
   });

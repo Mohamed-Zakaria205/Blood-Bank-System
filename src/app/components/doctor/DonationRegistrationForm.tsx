@@ -322,15 +322,13 @@ export default function DonationRegistrationForm() {
           district: values.district,
           area: values.area,
           source: values.source,
-          // donationCenterId is ALWAYS a valid DonationCenter GUID.
-          // For campaign appointments: values.donationCenterId holds appointment.centerId
-          //   (the campaign's DonationCenter GUID, set in getInitialForm).
-          // For walk-in: values.donationCenterId holds the selected branch center GUID.
-          // NEVER use campaignId as donationCenterId — they are different identifiers.
-          donationCenterId: values.donationCenterId || undefined,
-          // campaignId is a separate field — only sent when source is 'campaign'
-          campaignId:
-            values.source === 'campaign' ? values.campaignId || undefined : undefined,
+          // donationCenterId identifies the donation location (semantics differ by source):
+          // - walkin: the selected branch center GUID
+          // - campaign: the campaign's own GUID (pre-filled from appointment or manually selected)
+          donationCenterId:
+            values.source === 'campaign'
+              ? (values.campaignId || undefined)
+              : (values.donationCenterId || undefined),
         },
         {
           onSuccess: (res) => {

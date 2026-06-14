@@ -99,7 +99,7 @@ export const donors: (Donor & { source?: string })[] = [
     hasAppAccount: true,
     registeredAt: '2025-04-24',
     source: 'campaign',
-    campaignId: 'CAM-003',
+    campaignId: '4f7d2e1b-92c4-4b5a-87d9-32e6c8f4a1b5',
     campaignName: 'حملة الدم الطارئة - مستشفى ناصر',
   },
   {
@@ -135,7 +135,7 @@ export const donors: (Donor & { source?: string })[] = [
     deferredUntil: '2025-06-15',
     registeredAt: '2025-04-26',
     source: 'campaign',
-    campaignId: 'CAM-001',
+    campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
     campaignName: 'حملة التبرع - مستشفى بني سويف العام',
   },
   {

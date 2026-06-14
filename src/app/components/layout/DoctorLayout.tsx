@@ -24,7 +24,7 @@ export default function DoctorLayout() {
   const notifications = [
     ...activeCampaigns.map((c) => ({
       id: `camp-${c.id}`,
-      title: c.title,
+      title: `${c.title} (${c.campaignCode})`,
       subtitle: `${c.registeredDonors} / ${c.targetDonors} متبرع مسجّل`,
       icon: <Megaphone className="w-4 h-4" />,
       color: 'green' as const,
