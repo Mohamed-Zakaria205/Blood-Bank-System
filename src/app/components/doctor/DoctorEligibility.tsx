@@ -550,17 +550,26 @@ export default function DoctorEligibility() {
 
                 {/* Action buttons */}
                 <div className="flex flex-col gap-2 flex-shrink-0">
-                  {(eligibility.status === 'eligible' || eligibility.status === 'soon') && donor.hasAppAccount && (
-                    <button
-                      onClick={() =>
-                        !hasSentEmergency && setNotifModal({ donors: [donor], type: 'emergency' })
-                      }
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all shadow-sm ${hasSentEmergency ? 'bg-muted text-muted-foreground border-border cursor-not-allowed' : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:scale-105 active:scale-95 dark:bg-red-950/80 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-700 dark:hover:border-red-600 dark:hover:text-white cursor-pointer'}`}
-                      style={{ fontSize: '11px', fontWeight: 700 }}
+                  {donor.hasAppAccount ? (
+                    (eligibility.status === 'eligible' || eligibility.status === 'soon') && (
+                      <button
+                        onClick={() =>
+                          !hasSentEmergency && setNotifModal({ donors: [donor], type: 'emergency' })
+                        }
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all shadow-sm ${hasSentEmergency ? 'bg-muted text-muted-foreground border-border cursor-not-allowed' : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:scale-105 active:scale-95 dark:bg-red-950/80 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-700 dark:hover:border-red-600 dark:hover:text-white cursor-pointer'}`}
+                        style={{ fontSize: '11px', fontWeight: 700 }}
+                      >
+                        <Zap className="w-3.5 h-3.5" />
+                        {hasSentEmergency ? 'أُرسل' : 'طارئ'}
+                      </button>
+                    )
+                  ) : (
+                    <div
+                      className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-muted/30 text-muted-foreground shadow-sm"
+                      style={{ fontSize: '11px', fontWeight: 600 }}
                     >
-                      <Zap className="w-3.5 h-3.5" />
-                      {hasSentEmergency ? 'أُرسل' : 'طارئ'}
-                    </button>
+                      ليس لديه حساب على التطبيق
+                    </div>
                   )}
                 </div>
               </div>
