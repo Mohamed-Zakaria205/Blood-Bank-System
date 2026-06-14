@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
 import type { Donor, Donation, BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest, EligibilityStats, SendNotificationRequest, SendNotificationResponse, EligibilitySettings } from '../types/donor';
-import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/common';
+import type { PaginatedResponse, ApiResponse, DonorFilters, DonationFilters } from '../types/common';
 import type { DonationCenter } from '../types/donationCenter';
 import type { ApiResponseWrapper } from '../types/auth';
 import { validateContract, createPaginatedSchema, DonorContractSchema, EligibilityStatsContractSchema, EligibilitySettingsContractSchema } from './contract';
@@ -306,15 +306,33 @@ export async function fetchAllDonations(): Promise<PaginatedResponse<Donation>> 
  * Fetch donations with pagination, search and filtering.
  */
 export async function fetchPaginatedDonations(
-  filters: DonorFilters = {}, options?: { signal?: AbortSignal }
+  filters: DonationFilters = {}, options?: { signal?: AbortSignal }
 ): Promise<PaginatedResponse<Donation>> {
-  const { page = 1, limit = 10, search = '', bloodType = '', district = '' } = filters;
+  const {
+    page = 1,
+    limit = 10,
+    search = '',
+    bloodType = '',
+    donationSource = '',
+    donationStatus = '',
+    datePreset = '',
+    fromDate = '',
+    toDate = '',
+  } = filters;
 
 
   const params: Record<string, any> = { page, limit };
   if (search) params.search = search;
   if (bloodType) params.bloodType = bloodType;
-  if (district) params.district = district;
+  if (donationSource) params.donationSource = donationSource;
+  if (donationStatus) params.donationStatus = donationStatus;
+  
+  if (fromDate && toDate) {
+    params.fromDate = fromDate;
+    params.toDate = toDate;
+  } else if (datePreset) {
+    params.datePreset = datePreset;
+  }
 
   try {
     const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{

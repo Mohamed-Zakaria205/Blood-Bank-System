@@ -31,6 +31,17 @@ export interface DonorFilters extends PaginationParams {
   gender?: string;
 }
 
+/** Donation-specific filter params */
+export interface DonationFilters extends PaginationParams {
+  search?: string;
+  bloodType?: string;
+  donationSource?: string;
+  donationStatus?: string;
+  datePreset?: string;
+  fromDate?: string;
+  toDate?: string;
+}
+
 /** Blood bag filter params */
 export interface BagFilters extends PaginationParams {
   search?: string;

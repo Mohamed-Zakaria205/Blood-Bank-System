@@ -4,7 +4,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchDonors, fetchDonorById, updateDonor, fetchPaginatedDonors, fetchPaginatedEligibleDonors, fetchPaginatedDonations, fetchAllDonations, searchDonorByNationalId, addDonation, addMedicalRecord, deleteDonation, confirmDonation, fetchDonationCenters, fetchDonorEligibilityStats, sendDonorNotifications, fetchEligibilitySettings, updateEligibilitySettings } from '../api/donors';
 import type { BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest, SendNotificationRequest, EligibilitySettings } from '../types/donor';
-import type { DonorFilters } from '../types/common';
+import type { DonorFilters, DonationFilters } from '../types/common';
 
 // ═══════════════════════════════════════════════════════════
 //  DONORS  — profile-level hooks
@@ -126,7 +126,7 @@ export function useDonations() {
   });
 }
 
-export function usePaginatedDonations(filters: DonorFilters = {}) {
+export function usePaginatedDonations(filters: DonationFilters = {}) {
   return useQuery({
     queryKey: ['donations', 'paginated', filters],
     queryFn: ({ signal }) => fetchPaginatedDonations(filters, { signal }),

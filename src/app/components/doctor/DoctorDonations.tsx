@@ -10,8 +10,10 @@ import {
   Megaphone,
   CheckCircle2,
   ClipboardList,
+  RotateCcw,
 } from 'lucide-react';
-import { BLOOD_TYPES, CITIES } from '../../constants';
+import { BLOOD_TYPES } from '../../constants';
+import CustomDateModal from './doctor-donations/CustomDateModal';
 import { usePaginatedDonations, useDeleteDonation, useConfirmDonation } from '../../hooks/useDonors';
 import { useFilterChange } from '../../hooks/useFilterChange';
 import { toast } from 'sonner';
@@ -39,12 +41,29 @@ import {
 import DonorDetailModal from './doctor-donations/DonorDetailModal';
 import DonationActionModal from './doctor-donations/DonationActionModal';
 
+// Central mapping for tentative backend values
+export const BACKEND_SOURCE_MAP = {
+  mobileapp: 'Application',
+  campaign: 'Campaign',
+  walkin: 'WalkIn',
+};
+
+export const BACKEND_STATUS_MAP = {
+  pending: 'Pending',
+  sentToLab: 'SentToLab',
+};
+
 export default function DoctorDonations() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [filterBlood, setFilterBlood] = useState('');
-  const [filterCity, setFilterCity] = useState('');
+  const [filterSource, setFilterSource] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [filterDatePreset, setFilterDatePreset] = useState('');
+  const [customFromDate, setCustomFromDate] = useState('');
+  const [customToDate, setCustomToDate] = useState('');
+  const [isCustomDateModalOpen, setIsCustomDateModalOpen] = useState(false);
   const [viewing, setViewing] = useState<Donation | null>(null);
   const [actionDonation, setActionDonation] = useState<Donation | null>(null);
 
@@ -58,7 +77,11 @@ export default function DoctorDonations() {
     limit: 10,
     search,
     bloodType: filterBlood,
-    district: filterCity,
+    donationSource: filterSource ? (BACKEND_SOURCE_MAP[filterSource as keyof typeof BACKEND_SOURCE_MAP] || filterSource) : '',
+    donationStatus: filterStatus ? (BACKEND_STATUS_MAP[filterStatus as keyof typeof BACKEND_STATUS_MAP] || filterStatus) : '',
+    datePreset: filterDatePreset === 'custom' ? '' : filterDatePreset,
+    fromDate: filterDatePreset === 'custom' ? customFromDate : '',
+    toDate: filterDatePreset === 'custom' ? customToDate : '',
   });
 
   const donations = response?.data || [];
@@ -95,6 +118,63 @@ export default function DoctorDonations() {
         toast.error(apiErr.message || 'تعذر إرسال التبرع للمختبر');
       },
     });
+  };
+
+  const getSelectDateValue = () => {
+    if (filterDatePreset === 'custom') {
+      return 'custom';
+    }
+    return filterDatePreset;
+  };
+
+  const formatCustomDateLabel = () => {
+    if (customFromDate && customToDate) {
+      const formatPart = (dStr: string) => {
+        const parts = dStr.split('-');
+        if (parts.length === 3) {
+          return `${parts[1]}/${parts[2]}`; // MM/DD
+        }
+        return dStr;
+      };
+      return `مخصص (${formatPart(customFromDate)} - ${formatPart(customToDate)})`;
+    }
+    return 'تاريخ مخصص';
+  };
+
+  const handleDatePresetChange = (value: string) => {
+    if (value === 'custom' || value === 'edit-custom') {
+      setIsCustomDateModalOpen(true);
+    } else {
+      handleFilterChange(setFilterDatePreset, value);
+      setCustomFromDate('');
+      setCustomToDate('');
+    }
+  };
+
+  const handleApplyCustomDate = (fromDate: string, toDate: string) => {
+    setIsCustomDateModalOpen(false);
+    setCustomFromDate(fromDate);
+    setCustomToDate(toDate);
+    handleFilterChange<string>(setFilterDatePreset, 'custom');
+  };
+
+  const isAnyFilterActive =
+    search !== '' ||
+    filterBlood !== '' ||
+    filterSource !== '' ||
+    filterStatus !== '' ||
+    filterDatePreset !== '';
+
+  const handleResetFilters = () => {
+    setSearch('');
+    setFilterBlood('');
+    setFilterSource('');
+    setFilterStatus('');
+    setFilterDatePreset('');
+    setCustomFromDate('');
+    setCustomToDate('');
+    setIsCustomDateModalOpen(false);
+    setPage(1);
   };
 
   if (isLoading)
@@ -147,6 +227,8 @@ export default function DoctorDonations() {
             style={{ fontSize: '13px' }}
           />
         </div>
+
+        {/* Blood Type Dropdown */}
         <div className="relative">
           <select
             value={filterBlood}
@@ -163,22 +245,72 @@ export default function DoctorDonations() {
           </select>
           <ChevronDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
         </div>
+
+        {/* Donation Source Dropdown */}
         <div className="relative">
           <select
-            value={filterCity}
-            onChange={(e) => handleFilterChange(setFilterCity, e.target.value)}
+            value={filterSource}
+            onChange={(e) => handleFilterChange(setFilterSource, e.target.value)}
             className="appearance-none px-4 py-2.5 pr-3 pl-8 border border-border rounded-xl bg-card text-foreground outline-none focus:border-green-400"
             style={{ fontSize: '13px' }}
           >
-            <option value="">كل المدن</option>
-            {CITIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
+            <option value="">كل المصادر</option>
+            <option value="mobileapp">من التطبيق</option>
+            <option value="campaign">من حملة</option>
+            <option value="walkin">داخل البنك</option>
           </select>
           <ChevronDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
         </div>
+
+        {/* Donation Status Dropdown */}
+        <div className="relative">
+          <select
+            value={filterStatus}
+            onChange={(e) => handleFilterChange(setFilterStatus, e.target.value)}
+            className="appearance-none px-4 py-2.5 pr-3 pl-8 border border-border rounded-xl bg-card text-foreground outline-none focus:border-green-400"
+            style={{ fontSize: '13px' }}
+          >
+            <option value="">كل الحالات</option>
+            <option value="pending">قيد المراجعة</option>
+            <option value="sentToLab">تم الإرسال للمختبر</option>
+          </select>
+          <ChevronDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+        </div>
+
+        {/* Donation Date Dropdown */}
+        <div className="relative">
+          <select
+            value={getSelectDateValue()}
+            onChange={(e) => handleDatePresetChange(e.target.value)}
+            className="appearance-none px-4 py-2.5 pr-3 pl-8 border border-border rounded-xl bg-card text-foreground outline-none focus:border-green-400"
+            style={{ fontSize: '13px' }}
+          >
+            <option value="">كل الأوقات</option>
+            <option value="today">اليوم</option>
+            <option value="thisWeek">هذا الأسبوع</option>
+            <option value="thisMonth">هذا الشهر</option>
+            <option value="custom" hidden={filterDatePreset === 'custom'}>تاريخ مخصص</option>
+            {filterDatePreset === 'custom' && (
+              <>
+                <option value="custom">{formatCustomDateLabel()}</option>
+                <option value="edit-custom" className="text-green-600 font-semibold">تعديل التاريخ المخصص...</option>
+              </>
+            )}
+          </select>
+          <ChevronDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+        </div>
+
+        {/* Reset Filters Button */}
+        {isAnyFilterActive && (
+          <button
+            onClick={handleResetFilters}
+            className="flex items-center gap-1.5 px-4 py-2.5 border border-border rounded-xl bg-card text-muted-foreground hover:bg-muted transition-all cursor-pointer"
+            style={{ fontSize: '13px', fontWeight: 600 }}
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            إعادة تعيين الفلاتر
+          </button>
+        )}
       </div>
 
       {/* Table */}
@@ -363,6 +495,16 @@ export default function DoctorDonations() {
           onDelete={handleDelete}
           isConfirming={confirmMutation.isPending}
           isDeleting={deleteMutation.isPending}
+        />
+      )}
+
+      {/* Custom Date Modal */}
+      {isCustomDateModalOpen && (
+        <CustomDateModal
+          initialFromDate={customFromDate}
+          initialToDate={customToDate}
+          onClose={() => setIsCustomDateModalOpen(false)}
+          onApply={handleApplyCustomDate}
         />
       )}
     </div>
