@@ -7,16 +7,7 @@ import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/comm
 import type { DonationCenter } from '../types/donationCenter';
 import type { ApiResponseWrapper } from '../types/auth';
 import { validateContract, createPaginatedSchema, DonorContractSchema, EligibilityStatsContractSchema, EligibilitySettingsContractSchema } from './contract';
-import { donors as MOCK_DONORS } from '../data/donors.mock';
 import axios from 'axios';
-
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
-
-/** In-memory store — donors (profiles) */
-let mockDonorStore: Donor[] = [...MOCK_DONORS];
-
-/** In-memory store — donations (events) */
-// let mockDonationStore: Donation[] = [...MOCK_DONATIONS];
 
 // ═══════════════════════════════════════════════════════════
 //  DONORS  — profile-level endpoints
@@ -79,34 +70,6 @@ export async function fetchPaginatedDonors(
 ): Promise<PaginatedResponse<Donor>> {
   const { page = 1, limit = 10, search = '', bloodType = '', status = '', district = '' } = filters;
 
-  // if (USE_MOCK) {
-  //   await new Promise((r) => setTimeout(r, 300));
-  // 
-  //   // ── Client-side filtering ──────────────────────────────
-  //   let result = mockDonorStore;
-  // 
-  //   if (search) {
-  //     const q = search.toLowerCase();
-  //     result = result.filter(
-  //       (d) =>
-  //         d.name.toLowerCase().includes(q) ||
-  //         d.nationalId.includes(q) ||
-  //         d.donorCode.toLowerCase().includes(q) ||
-  //         d.phone.includes(q),
-  //     );
-  //   }
-  //   if (bloodType) result = result.filter((d) => d.bloodType === bloodType);
-  //   if (status) result = result.filter((d) => d.status === status);
-  //   if (district) result = result.filter((d) => d.district === district);
-  // 
-  //   // ── Client-side pagination ─────────────────────────────
-  //   const total = result.length;
-  //   const start = (page - 1) * limit;
-  //   const data = result.slice(start, start + limit);
-  // 
-  //   return { data, total, page, limit };
-  // }
-
   // ── Real API: forward all params as query-string ─────────
   const params: Record<string, any> = { page, limit };
   if (search) params.search = search;
@@ -158,28 +121,6 @@ export async function fetchPaginatedEligibleDonors(
   if (status && status !== 'all') params.status = status;
   if (district && district !== 'all') params.district = district;
   if (gender && gender !== 'all') params.gender = gender;
-
-  if (USE_MOCK) {
-    let result = mockDonorStore.map(mapRawDonor);
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(d => d.name.toLowerCase().includes(q) || d.nationalId.includes(q) || d.phone.includes(q));
-    }
-    if (bloodType) {
-      result = result.filter(d => d.bloodType === bloodType);
-    }
-    if (district && district !== 'all') {
-      result = result.filter(d => d.district === district);
-    }
-    if (gender && gender !== 'all') {
-      result = result.filter(d => d.gender === gender);
-    }
-    // We do not filter by eligibility status here for mock, as DoctorEligibility calculates it
-    // if it's missing, but we can do a naive filter if needed.
-    const total = result.length;
-    result = result.slice((page - 1) * limit, page * limit);
-    return new Promise(resolve => setTimeout(() => resolve({ data: result, total, page, limit }), 500));
-  }
 
   try {
     const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
@@ -273,31 +214,6 @@ export async function updateDonor(
 
 /** Fetch eligibility statistics for status cards and blood type bar */
 export async function fetchDonorEligibilityStats(): Promise<ApiResponse<EligibilityStats>> {
-  if (USE_MOCK) {
-    return new Promise(resolve => setTimeout(() => resolve({
-      data: {
-        statusCounts: {
-          all: mockDonorStore.length,
-          eligible: mockDonorStore.filter(d => d.status === 'eligible').length,
-          soon: mockDonorStore.filter(d => d.eligibility?.status === 'soon').length || 0,
-          not_yet: mockDonorStore.filter(d => d.eligibility?.status === 'not_yet').length || 0,
-          deferred: mockDonorStore.filter(d => d.status === 'deferred').length,
-          ineligible: mockDonorStore.filter(d => d.status === 'rejected').length,
-        },
-        bloodTypeCounts: {
-          'A+': { eligible: 10, total: 20 },
-          'A-': { eligible: 5, total: 10 },
-          'B+': { eligible: 15, total: 30 },
-          'B-': { eligible: 2, total: 5 },
-          'O+': { eligible: 30, total: 50 },
-          'O-': { eligible: 8, total: 15 },
-          'AB+': { eligible: 5, total: 10 },
-          'AB-': { eligible: 1, total: 3 },
-        }
-      }
-    }), 500));
-  }
-
   try {
     const { data } = await apiClient.get<ApiResponseWrapper<any>>('/donors/eligibility/stats');
     const rawCounts = data.data?.statusCounts || {};
@@ -347,18 +263,6 @@ export async function updateEligibilitySettings(settings: EligibilitySettings): 
 export async function sendDonorNotifications(
   payload: SendNotificationRequest
 ): Promise<ApiResponse<SendNotificationResponse>> {
-  if (USE_MOCK) {
-    return new Promise(resolve => setTimeout(() => resolve({
-      data: {
-        requested: payload.donorIds.length,
-        sent: payload.donorIds.length,
-        failed: 0,
-        failedDonorIds: [],
-      },
-      message: 'Mock: Notifications sent successfully'
-    }), 800));
-  }
-
   try {
     const { data } = await apiClient.post<ApiResponseWrapper<SendNotificationResponse>>(`/donors/eligibility/notifications`, payload);
     return { data: data.data, message: data.message };
