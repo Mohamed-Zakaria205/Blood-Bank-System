@@ -239,15 +239,21 @@ export default function CampaignCard({
                   const isCompleted = apt.status === 'completed';
                   const isMissed = apt.status === 'missed';
                   const isBooked = apt.status === 'booked';
+                  const isInProgress = apt.status === 'inprogress';
+                  const isApproved = apt.status === 'approved';
                   return (
                     <div
                       key={apt.id}
                       className={`flex items-center gap-3 p-3 rounded-xl border transition-all group ${
                         isCancelled
-                          ? 'bg-red-50 border-red-100'
+                          ? 'bg-red-50 dark:bg-red-500/10 border-red-100 dark:border-red-500/20'
                           : isCompleted
                             ? 'bg-muted/40 border-border'
-                            : 'bg-muted/40 border-border hover:border-green-200 hover:bg-green-50 cursor-pointer'
+                            : isInProgress
+                              ? 'bg-amber-50/50 dark:bg-amber-500/10 border-amber-100 dark:border-amber-500/20'
+                              : isApproved
+                                ? 'bg-blue-50/50 dark:bg-blue-500/10 border-blue-100 dark:border-blue-500/20'
+                                : 'bg-muted/40 border-border hover:border-green-200 hover:bg-green-50 dark:hover:bg-green-950/10 dark:hover:border-green-800 cursor-pointer'
                       }`}
                       onClick={() => isBooked && navigate(`/doctor/register?apt=${apt.id}&campaignId=${c.id}`)}
                     >
@@ -298,7 +304,11 @@ export default function CampaignCard({
                                 ? 'bg-orange-500'
                                 : isCancelled
                                   ? 'bg-red-500'
-                                  : 'bg-green-600'
+                                  : isInProgress
+                                    ? 'bg-amber-500'
+                                    : isApproved
+                                      ? 'bg-blue-500'
+                                      : 'bg-green-600'
                           }`}
                           style={{ fontSize: '10px', fontWeight: 700 }}
                         >
@@ -308,7 +318,11 @@ export default function CampaignCard({
                               ? 'لم يحضر'
                               : isCancelled
                                 ? 'ملغى'
-                                : 'محجوز'}
+                                : isInProgress
+                                  ? 'قيد التنفيذ'
+                                  : isApproved
+                                    ? 'قيد المراجعة'
+                                    : 'محجوز'}
                         </span>
                         {isBooked && (
                           <>

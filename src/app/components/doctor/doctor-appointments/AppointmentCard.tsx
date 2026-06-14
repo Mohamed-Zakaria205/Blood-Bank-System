@@ -1,4 +1,4 @@
-﻿import {
+import {
   User,
   XCircle,
   AlertTriangle,
@@ -82,7 +82,11 @@ export default function AppointmentCard({
                   ? 'bg-gray-400'
                   : status === 'missed'
                     ? 'bg-orange-500'
-                    : 'bg-red-500'
+                    : status === 'inprogress'
+                      ? 'bg-amber-500'
+                      : status === 'approved'
+                        ? 'bg-blue-500'
+                        : 'bg-red-500'
             }`}
             style={{ fontSize: '11px', fontWeight: 700 }}
           >

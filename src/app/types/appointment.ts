@@ -34,7 +34,9 @@ export type AppointmentSlotStatus =
   | 'booked'
   | 'completed'
   | 'missed'
-  | 'cancelled';
+  | 'cancelled'
+  | 'inprogress'
+  | 'approved';
 
 /**
  * Unified appointment slot — replaces the old Slot15 interface.

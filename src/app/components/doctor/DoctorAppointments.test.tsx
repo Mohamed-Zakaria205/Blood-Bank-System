@@ -439,4 +439,64 @@ describe('DoctorAppointments Component', () => {
     expect(screen.getByText('لا توجد مواعيد اليوم')).toBeInTheDocument();
     unmountEmpty();
   });
+
+  it('renders inProgress and approved status slots correctly without action buttons', () => {
+    const customSlots = [
+      {
+        id: 'slot-in-progress',
+        time: '12:00',
+        date: TODAY,
+        status: 'inprogress' as any,
+        donorName: 'سعيد عبد الحليم',
+        donorAge: 40,
+        donorGender: 'male' as const,
+        donorPhone: '01011113333',
+        donorNationalId: '29001012409876',
+        donorBloodType: 'O+' as const,
+        donationType: 'wholeblood' as const,
+      },
+      {
+        id: 'slot-approved',
+        time: '12:30',
+        date: TODAY,
+        status: 'approved' as any,
+        donorName: 'أميرة سعيد',
+        donorAge: 29,
+        donorGender: 'female' as const,
+        donorPhone: '01122224444',
+        donorNationalId: '30001012409876',
+        donorBloodType: 'A+' as const,
+        donationType: 'plasma' as const,
+      },
+    ];
+
+    mockUseAppointmentSlots.mockReturnValue({
+      data: customSlots,
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    render(<DoctorAppointments />);
+
+    // Check slot-in-progress renders correctly
+    expect(screen.getByText('سعيد عبد الحليم')).toBeInTheDocument();
+    expect(screen.getByText('قيد التنفيذ')).toBeInTheDocument();
+
+    // Find the inProgress card container and assert no action buttons are present
+    const inProgressCard = screen.getByText('سعيد عبد الحليم').closest('.rounded-xl') as HTMLElement;
+    expect(within(inProgressCard).queryByRole('button', { name: 'بدء التسجيل' })).not.toBeInTheDocument();
+    expect(within(inProgressCard).queryByRole('button', { name: 'إلغاء' })).not.toBeInTheDocument();
+    expect(within(inProgressCard).queryByRole('button', { name: 'لم يحضر' })).not.toBeInTheDocument();
+
+    // Check slot-approved renders correctly
+    expect(screen.getByText('أميرة سعيد')).toBeInTheDocument();
+    expect(screen.getByText('قيد المراجعة')).toBeInTheDocument();
+
+    // Find the approved card container and assert no action buttons are present
+    const approvedCard = screen.getByText('أميرة سعيد').closest('.rounded-xl') as HTMLElement;
+    expect(within(approvedCard).queryByRole('button', { name: 'بدء التسجيل' })).not.toBeInTheDocument();
+    expect(within(approvedCard).queryByRole('button', { name: 'إلغاء' })).not.toBeInTheDocument();
+    expect(within(approvedCard).queryByRole('button', { name: 'لم يحضر' })).not.toBeInTheDocument();
+  });
 });

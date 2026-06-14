@@ -1,5 +1,6 @@
 import { CalendarDays, ArrowUpRight } from 'lucide-react';
 import type { UpcomingAppointment } from '../../../types/doctorDashboard';
+import { STATUS_CONFIG } from '../doctor-appointments/appointmentConstants';
 
 interface UpcomingAppointmentsProps {
   appointments: UpcomingAppointment[];
@@ -74,12 +75,22 @@ export default function UpcomingAppointments({
                   {apt.donorBloodType}
                 </span>
               )}
-              <span
-                className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full"
-                style={{ fontSize: '11px', fontWeight: 700 }}
-              >
-                محجوز
-              </span>
+              {(() => {
+                const cfg = STATUS_CONFIG[apt.status as keyof typeof STATUS_CONFIG] || {
+                  label: apt.status || 'غير معروف',
+                  bg: 'bg-muted',
+                  border: 'border-border',
+                  text: 'text-muted-foreground',
+                };
+                return (
+                  <span
+                    className={`px-2 py-0.5 border rounded-full ${cfg.bg} ${cfg.text} ${cfg.border}`}
+                    style={{ fontSize: '11px', fontWeight: 700 }}
+                  >
+                    {cfg.label}
+                  </span>
+                );
+              })()}
             </div>
             <ArrowUpRight className="w-4 h-4 text-green-500 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
           </div>

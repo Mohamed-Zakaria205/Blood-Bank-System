@@ -159,7 +159,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donorDistrict: 'مركز وبندر بني سويف',
     donorArea: 'كورنيش النيل',
     donationType: 'wholeblood',
-    status: 'booked',
+    status: 'inprogress',
   },
 {
     id: 'S15-009',
@@ -176,7 +176,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donorDistrict: 'مركز ناصر (بوش)',
     donorArea: 'مدينة ناصر (بوش)',
     donationType: 'wholeblood',
-    status: 'booked',
+    status: 'approved',
   },
 {
     id: 'S15-010',

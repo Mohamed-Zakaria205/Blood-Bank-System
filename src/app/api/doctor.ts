@@ -41,14 +41,20 @@ function mapDoctorDashboardResponse(raw: any): DoctorDashboardResponse {
       registeredDonors: Number(camp.registeredDonors ?? 0),
       targetDonors: Number(camp.targetDonors ?? 0),
     })),
-    upcomingAppointments: (raw.upcomingAppointments || []).map((apt: any) => ({
-      id: apt.id || '',
-      time: apt.time ? apt.time.substring(0, 5) : '', // format "10:30:00" -> "10:30"
-      donorName: apt.donorName || '',
-      donorNationalId: apt.donorNationalId || '',
-      donorBloodType: apt.donorBloodType || 'O+',
-      status: apt.status || 'booked',
-    })),
+    upcomingAppointments: (raw.upcomingAppointments || []).map((apt: any) => {
+      let normalizedStatus = (apt.status || 'booked').toLowerCase();
+      if (normalizedStatus === 'noshow') {
+        normalizedStatus = 'missed';
+      }
+      return {
+        id: apt.id || '',
+        time: apt.time ? apt.time.substring(0, 5) : '', // format "10:30:00" -> "10:30"
+        donorName: apt.donorName || '',
+        donorNationalId: apt.donorNationalId || '',
+        donorBloodType: apt.donorBloodType || 'O+',
+        status: normalizedStatus,
+      };
+    }),
     recentDonations: (raw.recentDonations || []).map((don: any) => {
       const rawSource = (don.source || '').toLowerCase();
       let normalizedSource: 'walkin' | 'campaign' | 'mobileapp' = 'walkin';

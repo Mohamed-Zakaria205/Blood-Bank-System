@@ -1,6 +1,6 @@
-﻿// ── Shared constants and helpers for DoctorAppointments module ──
+// ── Shared constants and helpers for DoctorAppointments module ──
 import React from 'react';
-import { Clock, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import { Clock, CheckCircle2, XCircle, AlertTriangle, Activity, FileText } from 'lucide-react';
 import type { AppointmentSlotStatus } from '../../../types/appointment';
 
 // ── Date helpers ──
@@ -89,5 +89,19 @@ export const STATUS_CONFIG: Record<
     border: 'border-dashed border-border',
     text: 'text-muted-foreground',
     icon: <></>,
+  },
+  inprogress: {
+    label: 'قيد التنفيذ',
+    bg: 'bg-amber-50',
+    border: 'border-amber-200',
+    text: 'text-amber-700',
+    icon: <Activity className="w-4 h-4 text-amber-500" />,
+  },
+  approved: {
+    label: 'قيد المراجعة',
+    bg: 'bg-blue-50',
+    border: 'border-blue-200',
+    text: 'text-blue-700',
+    icon: <FileText className="w-4 h-4 text-blue-500" />,
   },
 };
