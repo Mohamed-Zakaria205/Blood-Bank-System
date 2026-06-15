@@ -51,8 +51,8 @@ export default function DisposeBagModal({
         className="bg-card rounded-2xl shadow-2xl w-full max-w-md p-6 outline-none overflow-hidden"
       >
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
-            <Trash2 className="w-6 h-6 text-red-600" />
+          <div className="w-12 h-12 bg-red-100 dark:bg-red-950/50 rounded-xl flex items-center justify-center">
+            <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />
           </div>
           <div>
             <h3 id="modal-title" className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
@@ -70,8 +70,8 @@ export default function DisposeBagModal({
             <div className="space-y-1.5">
               {bags.map((b) => (
                 <div key={b.id} className="flex justify-between items-center text-xs border-b border-border/40 pb-1 last:border-0 last:pb-0">
-                  <span className="font-mono text-green-700 bg-green-50 px-1.5 py-0.5 rounded">{b.bagCode}</span>
-                  <span className="px-1.5 py-0.5 bg-red-50 text-red-600 font-bold rounded">{b.bloodType}</span>
+                  <span className="font-mono text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/30 px-1.5 py-0.5 rounded">{b.bagCode}</span>
+                  <span className="px-1.5 py-0.5 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 font-bold rounded">{b.bloodType}</span>
                   <span className="text-muted-foreground">{donTypeLabels[b.donationType]}</span>
                 </div>
               ))}
@@ -104,8 +104,8 @@ export default function DisposeBagModal({
           )}
         </div>
 
-        <div className="p-3 bg-red-50 border border-red-200 rounded-xl mb-4">
-          <p className="text-red-600 text-xs flex gap-2">
+        <div className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-xl mb-4">
+          <p className="text-red-600 dark:text-red-400 text-xs flex gap-2">
             <AlertTriangle className="w-4 h-4 flex-shrink-0" />
             <span>هذا الإجراء نهائي. سيتم وضع علامة على حقيبة الدم كحقيبة تالفة وإزالتها من المخزون النشط.</span>
           </p>

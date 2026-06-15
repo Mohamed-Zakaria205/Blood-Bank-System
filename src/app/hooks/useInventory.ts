@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchBloodBags,
   fetchPaginatedBloodBags,
+  fetchBloodBagsStats,
   exportBags,
   disposeBags,
   fetchBloodInventory,
@@ -36,6 +37,13 @@ export function usePaginatedBloodBags(filters: BagFilters = {}) {
     queryKey: ['bags', 'paginated', filters],
     queryFn: ({ signal }) => fetchPaginatedBloodBags(filters, { signal }),
     placeholderData: (previousData) => previousData,
+  });
+}
+
+export function useBloodBagsStats(filters: Omit<BagFilters, 'page' | 'limit' | 'status'> = {}) {
+  return useQuery({
+    queryKey: ['bags', 'stats', filters],
+    queryFn: () => fetchBloodBagsStats(filters),
   });
 }
 

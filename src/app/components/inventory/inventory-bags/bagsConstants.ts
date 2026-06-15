@@ -30,7 +30,7 @@ export function getBagStatus(bag: BloodBag) {
   if (bag.status === 'expired') {
     return {
       label: 'منتهي الصلاحية',
-      cls: 'bg-red-100 text-red-700',
+      cls: 'bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400',
       isExpired: true,
       isAvailable: false,
     };
@@ -38,7 +38,7 @@ export function getBagStatus(bag: BloodBag) {
   if (bag.status === 'available') {
     return {
       label: 'متاح',
-      cls: 'bg-green-100 text-green-700',
+      cls: 'bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400',
       isExpired: false,
       isAvailable: true,
     };
@@ -46,7 +46,7 @@ export function getBagStatus(bag: BloodBag) {
   if (bag.status === 'issued') {
     return {
       label: 'مُصدَّر',
-      cls: 'bg-blue-100 text-blue-700',
+      cls: 'bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400',
       isExpired: false,
       isAvailable: false,
     };
@@ -54,14 +54,14 @@ export function getBagStatus(bag: BloodBag) {
   if (bag.status === 'disposed') {
     return {
       label: 'مُتلَف',
-      cls: 'bg-red-100/80 text-red-800',
+      cls: 'bg-red-100/80 dark:bg-red-500/15 text-red-800 dark:text-red-400',
       isExpired: false,
       isAvailable: false,
     };
   }
   return {
     label: bag.status || '—',
-    cls: 'bg-muted text-muted-foreground',
+    cls: 'bg-muted dark:bg-muted/30 text-muted-foreground',
     isExpired: false,
     isAvailable: false,
   };

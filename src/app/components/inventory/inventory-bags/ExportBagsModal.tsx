@@ -83,10 +83,10 @@ export default function ExportBagsModal({
         className="bg-card rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden outline-none"
       >
         {/* Modal header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-border bg-green-50">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-border bg-green-50 dark:bg-green-950/20">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-              <Upload className="w-5 h-5 text-green-600" />
+            <div className="w-10 h-10 bg-green-100 dark:bg-green-950/50 rounded-xl flex items-center justify-center">
+              <Upload className="w-5 h-5 text-green-600 dark:text-green-400" />
             </div>
             <div>
               <h3 id="modal-title" className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
@@ -153,7 +153,7 @@ export default function ExportBagsModal({
                     {bag.bagCode}
                   </span>
                   <span
-                    className="px-1 py-0.5 bg-red-50 text-red-600 rounded"
+                    className="px-1 py-0.5 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded"
                     style={{ fontSize: '10px', fontWeight: 800 }}
                   >
                     {bag.bloodType}
@@ -269,8 +269,8 @@ export default function ExportBagsModal({
               )}
             </div>
 
-            <div className="p-3 bg-green-50 border border-green-100 rounded-xl">
-              <p className="text-green-700" style={{ fontSize: '11px' }}>
+            <div className="p-3 bg-green-50 dark:bg-green-950/20 border border-green-100 dark:border-green-900/40 rounded-xl">
+              <p className="text-green-700 dark:text-green-400" style={{ fontSize: '11px' }}>
                 📋 سيتم تسجيل هذا التصدير تلقائياً باسم: <strong>{getCurrentUserName()}</strong>{' '}
                 مع التاريخ والوقت
               </p>
@@ -281,13 +281,13 @@ export default function ExportBagsModal({
         {/* ── Step 2: confirmation ── */}
         {step === 2 && (
           <div className="p-6 space-y-4">
-            <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-              <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-xl">
+              <AlertCircle className="w-5 h-5 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-amber-800" style={{ fontSize: '13px', fontWeight: 600 }}>
+                <p className="text-amber-800 dark:text-amber-300" style={{ fontSize: '13px', fontWeight: 600 }}>
                   مراجعة بيانات التصدير
                 </p>
-                <p className="text-amber-600" style={{ fontSize: '11px', marginTop: '2px' }}>
+                <p className="text-amber-600 dark:text-amber-400" style={{ fontSize: '11px', marginTop: '2px' }}>
                   يُرجى التحقق من صحة جميع البيانات قبل التأكيد النهائي. لا يمكن التراجع عن هذه
                   العملية.
                 </p>

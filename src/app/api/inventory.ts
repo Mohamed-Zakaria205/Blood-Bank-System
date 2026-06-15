@@ -147,8 +147,21 @@ export async function fetchPaginatedBloodBags(
   }
 
   // ── Real API: forward all params as query-string ─────────
+  const params: Record<string, any> = {
+    page,
+    limit,
+    sortBy,
+    sortOrder,
+  };
+  if (search) params.search = search;
+  if (bloodType) params.bloodType = bloodType;
+  if (bloodTypes) params.bloodTypes = bloodTypes;
+  if (donationType && donationType !== 'all') params.donationType = donationType;
+  if (status && status !== 'active') params.status = status;
+
   const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/blood-bags', {
-    params: { page, limit, search, bloodType, bloodTypes, donationType, status, sortBy, sortOrder }, signal: options?.signal,
+    params,
+    signal: options?.signal,
   });
   const items = wrapper.data?.items || wrapper.data?.data || [];
   return {
@@ -310,6 +323,62 @@ export async function disposeBags(
   }
 
   const { data: wrapper } = await apiClient.post<ApiResponseWrapper<BulkOperationResponse>>('/inventory/blood-bags/dispose', { bagIds, reason, notes });
+  return wrapper.data;
+}
+
+export interface BloodBagsStats {
+  availableCount: number;
+  expiredCount: number;
+  issuedCount: number;
+  disposedCount: number;
+}
+
+export async function fetchBloodBagsStats(
+  filters: Omit<BagFilters, 'page' | 'limit' | 'status'> = {}
+): Promise<BloodBagsStats> {
+  const { search = '', bloodType = '', bloodTypes = '', donationType = '' } = filters;
+
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 200));
+
+    // Apply filters to total mock bags
+    let result = MOCK_BAGS;
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (b) =>
+          b.bagCode.toLowerCase().includes(q) ||
+          (b.donorCode?.toLowerCase().includes(q) ?? false)
+      );
+    }
+    if (bloodType) {
+      result = result.filter((b) => b.bloodType === bloodType);
+    }
+    if (bloodTypes) {
+      const typesList = bloodTypes.split(',').map((t) => t.trim());
+      result = result.filter((b) => typesList.includes(b.bloodType));
+    }
+    if (donationType) {
+      result = result.filter((b) => b.donationType === donationType);
+    }
+
+    const availableCount = result.filter((b) => b.status === 'available').length;
+    const expiredCount = result.filter((b) => b.status === 'expired').length;
+    const issuedCount = result.filter((b) => b.status === 'issued').length;
+    const disposedCount = result.filter((b) => b.status === 'disposed').length;
+
+    return { availableCount, expiredCount, issuedCount, disposedCount };
+  }
+
+  const params: Record<string, any> = {};
+  if (search) params.search = search;
+  if (bloodType) params.bloodType = bloodType;
+  if (bloodTypes) params.bloodTypes = bloodTypes;
+  if (donationType && donationType !== 'all') params.donationType = donationType;
+
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<BloodBagsStats>>('/inventory/blood-bags/stats', {
+    params,
+  });
   return wrapper.data;
 }
 
