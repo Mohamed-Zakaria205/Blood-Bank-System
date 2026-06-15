@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import {
   Search,
   Check,
@@ -141,22 +141,22 @@ export default function InventoryBags() {
           {
             label: 'متاحة وصالحة',
             value: availableCount,
-            color: 'text-green-700',
-            bg: 'bg-green-50 border-green-200',
+            color: 'text-green-700 dark:text-green-400',
+            bg: 'bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20',
             filter: 'available' as const,
           },
           {
             label: 'منتهية الصلاحية',
             value: expiredCount,
-            color: 'text-red-700',
-            bg: 'bg-red-50 border-red-200',
+            color: 'text-red-700 dark:text-red-400',
+            bg: 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20',
             filter: 'expired_only' as const,
           },
           {
             label: 'مُصدَّرة',
             value: issuedCount,
-            color: 'text-blue-700',
-            bg: 'bg-blue-50 border-blue-200',
+            color: 'text-blue-700 dark:text-blue-400',
+            bg: 'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20',
             filter: 'all' as const,
           },
         ].map((s) => (
@@ -177,17 +177,17 @@ export default function InventoryBags() {
 
       {/* ── Bulk-export action bar ── */}
       {selectedBagIds.length > 0 && (
-        <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-2xl shadow-sm">
+        <div className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 rounded-2xl shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-green-100 rounded-xl flex items-center justify-center">
-              <ShoppingCart className="w-4 h-4 text-green-600" />
+            <div className="w-9 h-9 bg-green-100 dark:bg-green-500/20 rounded-xl flex items-center justify-center">
+              <ShoppingCart className="w-4 h-4 text-green-600 dark:text-green-500" />
             </div>
             <div>
-              <p className="text-green-800" style={{ fontSize: '14px', fontWeight: 700 }}>
+              <p className="text-green-800 dark:text-green-400" style={{ fontSize: '14px', fontWeight: 700 }}>
                 {selectedBagIds.length}{' '}
                 {selectedBagIds.length === 1 ? 'حقيبة محددة' : 'حقائب محددة للتصدير'}
               </p>
-              <p className="text-green-600 font-mono" style={{ fontSize: '11px' }}>
+              <p className="text-green-600 dark:text-green-500 font-mono" style={{ fontSize: '11px' }}>
                 {selectedBagsData.map((b) => b.bagCode).join(' · ')}
               </p>
             </div>
@@ -195,7 +195,7 @@ export default function InventoryBags() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSelectedBagIds([])}
-              className="px-3 py-1.5 text-green-700 hover:bg-green-100 rounded-lg transition-all"
+              className="px-3 py-1.5 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-500/20 rounded-lg transition-all"
               style={{ fontSize: '12px', fontWeight: 600 }}
             >
               إلغاء التحديد
@@ -275,8 +275,8 @@ export default function InventoryBags() {
                   <tr
                     key={bag.id}
                     className={`hover:bg-muted/40 transition-colors
-                      ${isExpired ? 'bg-red-50/30' : ''}
-                      ${isSelected ? 'bg-green-50/60' : ''}`}
+                      ${isExpired ? 'bg-red-50/30 dark:bg-red-500/10' : ''}
+                      ${isSelected ? 'bg-green-50/60 dark:bg-green-500/10' : ''}`}
                   >
                     {/* checkbox */}
                     <td className="px-4 py-3">
@@ -297,7 +297,7 @@ export default function InventoryBags() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1.5">
                         <span
-                          className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded"
+                          className="font-mono text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-2 py-0.5 rounded"
                           style={{ fontSize: '11px', fontWeight: 700 }}
                         >
                           {bag.bagCode}
@@ -311,7 +311,7 @@ export default function InventoryBags() {
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className="px-2 py-0.5 bg-red-50 text-red-600 rounded"
+                        className="px-2 py-0.5 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded"
                         style={{ fontSize: '12px', fontWeight: 800 }}
                       >
                         {bag.bloodType}
@@ -357,7 +357,7 @@ export default function InventoryBags() {
                         {isAvailable && (
                           <button
                             onClick={() => openExportForBag(bag)}
-                            className="flex items-center gap-1 px-2.5 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all"
+                            className="flex items-center gap-1 px-2.5 py-1.5 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-500/30 rounded-lg transition-all"
                             style={{ fontSize: '11px', fontWeight: 700 }}
                           >
                             <Upload className="w-3.5 h-3.5" /> تصدير
@@ -368,8 +368,8 @@ export default function InventoryBags() {
                             onClick={() => setDisposeModal(bag)}
                             className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg transition-all ${
                               isExpired || bag.status === 'rejected'
-                                ? 'bg-red-100 text-red-600 hover:bg-red-200'
-                                : 'bg-orange-50 text-orange-600 hover:bg-orange-100'
+                                ? 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-500/30'
+                                : 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-500/20'
                             }`}
                             style={{ fontSize: '11px', fontWeight: 700 }}
                           >

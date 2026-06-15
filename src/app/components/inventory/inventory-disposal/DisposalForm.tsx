@@ -44,11 +44,10 @@ export default function DisposalForm({
     <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
       {/* Form header */}
       <div
-        className="flex items-center gap-3 px-6 py-4 border-b border-border"
-        style={{ background: 'linear-gradient(to left, #fff7f7, #fff)' }}
+        className="flex items-center gap-3 px-6 py-4 border-b border-border bg-gradient-to-l from-red-50 to-white dark:from-red-950/20 dark:to-card"
       >
-        <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
-          <Trash2 className="w-5 h-5 text-red-600" />
+        <div className="w-10 h-10 bg-red-100 dark:bg-red-500/20 rounded-xl flex items-center justify-center">
+          <Trash2 className="w-5 h-5 text-red-600 dark:text-red-500" />
         </div>
         <div>
           <h2 className="text-foreground" style={{ fontSize: '15px', fontWeight: 700 }}>
@@ -103,7 +102,7 @@ export default function DisposalForm({
                       <tr
                         key={bag.id}
                         onClick={() => onToggleSelect(bag.id)}
-                        className={`cursor-pointer transition-colors hover:bg-muted/40 ${isSelected ? 'bg-red-50/70' : ''}`}
+                        className={`cursor-pointer transition-colors hover:bg-muted/40 ${isSelected ? 'bg-red-50/70 dark:bg-red-500/10' : ''}`}
                       >
                         <td className="px-3 py-2.5 w-10">
                           <div
@@ -118,7 +117,7 @@ export default function DisposalForm({
                         </td>
                         <td className="px-3 py-2.5">
                           <span
-                            className="font-mono text-green-700 bg-green-50 px-2 py-0.5 rounded"
+                            className="font-mono text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-2 py-0.5 rounded"
                             style={{ fontSize: '11px', fontWeight: 700 }}
                           >
                             {bag.bagCode}
@@ -126,7 +125,7 @@ export default function DisposalForm({
                         </td>
                         <td className="px-3 py-2.5">
                           <span
-                            className="px-2 py-0.5 bg-red-50 text-red-600 rounded"
+                            className="px-2 py-0.5 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded"
                             style={{ fontSize: '12px', fontWeight: 800 }}
                           >
                             {bag.bloodType}
@@ -155,15 +154,14 @@ export default function DisposalForm({
               {selectedBagsData.map((bag) => (
                 <span
                   key={bag.id}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-50 border border-red-200 rounded-lg"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-lg"
                 >
                   <span
-                    className="font-mono text-red-700"
-                    style={{ fontSize: '11px', fontWeight: 700 }}
+                    className="font-mono text-red-700 dark:text-red-400 text-[11px] font-bold"
                   >
                     {bag.bagCode}
                   </span>
-                  <span className="text-red-400" style={{ fontSize: '10px', fontWeight: 700 }}>
+                  <span className="text-red-400 text-[10px] font-bold">
                     {bag.bloodType}
                   </span>
                   <button
