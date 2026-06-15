@@ -21,8 +21,14 @@ export const DISPOSAL_REASONS = [
     suggested: 'disposed' as const,
   },
   {
-    value: 'damaged',
-    label: 'تلف الحقيبة',
+    value: 'failed_screening',
+    label: 'فشل في التحاليل المخبرية',
+    icon: '🧪',
+    suggested: 'disposed' as const,
+  },
+  {
+    value: 'damaged_storage',
+    label: 'تلف أثناء التخزين',
     icon: '💔',
     suggested: 'disposed' as const,
   },
@@ -33,14 +39,8 @@ export const DISPOSAL_REASONS = [
     suggested: 'disposed' as const,
   },
   {
-    value: 'lab_failed',
-    label: 'فشل في التحاليل المخبرية',
-    icon: '🧪',
-    suggested: 'rejected' as const,
-  },
-  {
-    value: 'storage',
-    label: 'مشكلة في التخزين',
+    value: 'preparation_error',
+    label: 'خطأ في التحضير',
     icon: '❄️',
     suggested: 'disposed' as const,
   },
@@ -63,17 +63,7 @@ export function getCurrentUserName() {
 // ── BagStatusChip sub-component ──
 
 export function BagStatusChip({ bag }: { bag: BloodBag }) {
-  const days = daysUntil(bag.expiryDate);
-  if (bag.status === 'rejected')
-    return (
-      <span
-        className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 whitespace-nowrap"
-        style={{ fontSize: '10px', fontWeight: 700 }}
-      >
-        مرفوضة مخبرياً
-      </span>
-    );
-  if (days < 0)
+  if (bag.status === 'expired')
     return (
       <span
         className="px-2 py-0.5 rounded-full bg-red-100 text-red-700 whitespace-nowrap"
@@ -82,7 +72,27 @@ export function BagStatusChip({ bag }: { bag: BloodBag }) {
         منتهية الصلاحية
       </span>
     );
-  if (days <= 3)
+  if (bag.status === 'disposed')
+    return (
+      <span
+        className="px-2 py-0.5 rounded-full bg-red-100/80 text-red-800 whitespace-nowrap"
+        style={{ fontSize: '10px', fontWeight: 700 }}
+      >
+        مُتلَف
+      </span>
+    );
+  if (bag.status === 'issued')
+    return (
+      <span
+        className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 whitespace-nowrap"
+        style={{ fontSize: '10px', fontWeight: 700 }}
+      >
+        مُصدَّر
+      </span>
+    );
+
+  const days = daysUntil(bag.expiryDate);
+  if (days >= 0 && days <= 3)
     return (
       <span
         className="px-2 py-0.5 rounded-full bg-red-50 text-red-600 whitespace-nowrap"
@@ -91,7 +101,7 @@ export function BagStatusChip({ bag }: { bag: BloodBag }) {
         تنتهي خلال {days} أيام
       </span>
     );
-  if (days <= 5)
+  if (days >= 0 && days <= 5)
     return (
       <span
         className="px-2 py-0.5 rounded-full bg-orange-50 text-orange-600 whitespace-nowrap"

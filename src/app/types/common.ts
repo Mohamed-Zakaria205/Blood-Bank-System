@@ -8,6 +8,9 @@ export interface PaginatedResponse<T> {
   total: number;
   page: number;
   limit: number;
+  totalPages?: number;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
 }
 
 /** Standard single-item response from the backend */
@@ -46,7 +49,11 @@ export interface DonationFilters extends PaginationParams {
 export interface BagFilters extends PaginationParams {
   search?: string;
   bloodType?: string;
+  bloodTypes?: string;
+  donationType?: string;
   status?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
 /** Campaign filter params */
@@ -87,12 +94,6 @@ export type DonationType = 'wholeblood' | 'plasma' | 'platelets';
 export type DonorStatus = 'eligible' | 'rejected' | 'deferred';
 export type CampaignStatus = 'active' | 'notactive' | 'completed';
 export type InventoryStatus = 'normal' | 'low' | 'critical';
-export type BloodBagStatus =
-  | 'available'
-  | 'reserved'
-  | 'issued'
-  | 'expired'
-  | 'rejected'
-  | 'disposed';
+export type BloodBagStatus = 'available' | 'expired' | 'issued' | 'disposed';
 export type TransactionType = 'issue' | 'return' | 'disposal' | 'receive' | 'reserve';
 export type OutflowActionType = 'exported' | 'disposed';

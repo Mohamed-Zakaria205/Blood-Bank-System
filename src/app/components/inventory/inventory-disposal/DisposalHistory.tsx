@@ -1,4 +1,4 @@
-﻿import { Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import type { BloodType } from '../../../types';
 import type { OutflowRecord } from '../../../types';
 import { BLOOD_TYPES } from '../../../constants';
@@ -208,7 +208,7 @@ export default function DisposalHistory({
                     className="px-4 py-3 text-muted-foreground whitespace-nowrap"
                     style={{ fontSize: '11px' }}
                   >
-                    {(r.performedByName || '').split(' ').slice(1, 3).join(' ')}
+                    {((r.disposedByName || r.performedByName) || '').split(' ').slice(1, 3).join(' ')}
                   </td>
                   <td
                     className="px-4 py-3 text-muted-foreground whitespace-nowrap"

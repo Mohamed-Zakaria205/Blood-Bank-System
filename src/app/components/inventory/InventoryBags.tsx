@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import {
   Search,
   Check,
@@ -8,8 +8,8 @@ import {
   ShoppingCart,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import type { BloodBag, BloodType } from '../../types';
-import { useBloodBags, useExportBags, useDisposeBag } from '../../hooks/useInventory';
+import type { BloodBag, BloodType, BloodBagStatus } from '../../types';
+import { useBloodBags, usePaginatedBloodBags, useExportBags, useDisposeBag } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 import { BLOOD_TYPES } from '../../constants';
@@ -21,12 +21,29 @@ import ExportBagsModal from './inventory-bags/ExportBagsModal';
 import DisposeBagModal from './inventory-bags/DisposeBagModal';
 
 export default function InventoryBags() {
-  const { data: bags = [], isLoading, isError } = useBloodBags();
-  const exportBagsMutation = useExportBags();
-  const disposeBagMutation = useDisposeBag();
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState<BloodType | 'all'>('all');
-  const [filterStatus, setFilterStatus] = useState<'available' | 'expired_only' | 'all'>('all');
+  const [filterStatus, setFilterStatus] = useState<BloodBagStatus | 'active'>('active');
+
+  // Fetch all bags (unpaginated) for statistics calculations
+  const { data: allBags = [], isLoading: isLoadingAll, isError: isErrorAll } = useBloodBags();
+
+  // Fetch paginated, filtered bags from server
+  const {
+    data: paginatedResponse,
+    isLoading: isLoadingPaginated,
+    isError: isErrorPaginated,
+  } = usePaginatedBloodBags({
+    page,
+    limit: 10,
+    search: search.trim() || undefined,
+    bloodType: filterType === 'all' ? undefined : filterType,
+    status: filterStatus === 'active' ? undefined : filterStatus,
+  });
+
+  const exportBagsMutation = useExportBags();
+  const disposeBagMutation = useDisposeBag();
 
   // ── Multi-select ──
   const [selectedBagIds, setSelectedBagIds] = useState<string[]>([]);
@@ -35,8 +52,10 @@ export default function InventoryBags() {
   const [exportModalOpen, setExportModalOpen] = useState(false);
 
   // ── Dispose modal ──
-  const [disposeModal, setDisposeModal] = useState<BloodBag | null>(null);
-  const [disposeReason, setDisposeReason] = useState('');
+  const [bagsToDispose, setBagsToDispose] = useState<BloodBag[] | null>(null);
+
+  const isLoading = isLoadingAll || isLoadingPaginated;
+  const isError = isErrorAll || isErrorPaginated;
 
   if (isLoading)
     return (
@@ -54,39 +73,45 @@ export default function InventoryBags() {
       />
     );
 
-  /* ── derived ── */
-  const displayBags = bags.filter((b) => {
-    if (b.status === 'disposed') return false;
-    const days = daysUntil(b.expiryDate);
-    const isExpired = b.status === 'available' && days < 0;
-    const isAvail = b.status === 'available' && days >= 0;
+  /* ── derived state ── */
+  const displayBags = paginatedResponse?.data ?? [];
+  const totalCount = paginatedResponse?.total ?? 0;
+  const totalPages = paginatedResponse?.totalPages ?? 1;
 
-    if (filterStatus === 'available' && !isAvail) return false;
-    if (filterStatus === 'expired_only' && !isExpired) return false;
-    if (filterType !== 'all' && b.bloodType !== filterType) return false;
+  // Stats computed from all bags for accurate total counters
+  const availableCount = allBags.filter((b) => b.status === 'available').length;
+  const expiredCount = allBags.filter((b) => b.status === 'expired').length;
+  const issuedCount = allBags.filter((b) => b.status === 'issued').length;
+  const disposedCount = allBags.filter((b) => b.status === 'disposed').length;
 
-    return (
-      (b.bagCode || '').toLowerCase().includes(search.toLowerCase()) ||
-      (b.bloodType || '').includes(search) ||
-      (b.donorCode ?? '').includes(search)
-    );
-  });
+  const selectedBagsData = allBags.filter((b) => selectedBagIds.includes(b.id));
 
-  const availableCount = bags.filter(
-    (b) => b.status === 'available' && daysUntil(b.expiryDate) >= 0,
-  ).length;
-  const expiredCount = bags.filter(
-    (b) => b.status === 'available' && daysUntil(b.expiryDate) < 0,
-  ).length;
-  const issuedCount = bags.filter((b) => b.status === 'issued').length;
-
-  const selectedBagsData = bags.filter((b) => selectedBagIds.includes(b.id));
+  // Determine selectable bags on page (available or expired)
+  const selectablePageIds = displayBags
+    .filter((b) => b.status === 'available' || b.status === 'expired')
+    .map((b) => b.id);
+  const isAllPageSelected =
+    selectablePageIds.length > 0 && selectablePageIds.every((id) => selectedBagIds.includes(id));
 
   /* ── helpers ── */
   const toggleSelect = (bagId: string) =>
     setSelectedBagIds((prev) =>
       prev.includes(bagId) ? prev.filter((id) => id !== bagId) : [...prev, bagId],
     );
+
+  const toggleSelectAllPage = () => {
+    if (isAllPageSelected) {
+      setSelectedBagIds((prev) => prev.filter((id) => !selectablePageIds.includes(id)));
+    } else {
+      setSelectedBagIds((prev) => {
+        const next = [...prev];
+        selectablePageIds.forEach((id) => {
+          if (!next.includes(id)) next.push(id);
+        });
+        return next;
+      });
+    }
+  };
 
   const openExportForBag = (bag: BloodBag) => {
     setSelectedBagIds([bag.id]);
@@ -95,31 +120,66 @@ export default function InventoryBags() {
 
   const handleConfirmExport = async (form: ExportFormState) => {
     try {
-      await exportBagsMutation.mutateAsync({
+      const res = await exportBagsMutation.mutateAsync({
         bagIds: selectedBagIds,
         recipient: form,
       });
-      toast.success(`تم تصدير ${selectedBagIds.length} حقيبة بنجاح`);
+
+      if (res.processed > 0 && res.failed > 0) {
+        toast.warning(`تم صرف ${res.processed} حقائب بنجاح، وفشل صرف ${res.failed} حقائب.`);
+      } else if (res.processed === 0) {
+        toast.error(`فشل صرف جميع الحقائب المحددة (${res.failed} حقائب)`);
+      } else {
+        toast.success(`تم صرف ${res.processed} حقيبة بنجاح`);
+      }
+
       setExportModalOpen(false);
       setSelectedBagIds([]);
     } catch (err) {
       console.error(err);
+      toast.error('حدث خطأ أثناء إتمام عملية الصرف');
     }
   };
 
-  const handleDispose = async () => {
-    if (!disposeModal) return;
+  const handleDispose = async (reason: string, notes?: string) => {
+    if (!bagsToDispose) return;
     try {
-      await disposeBagMutation.mutateAsync({
-        bagId: disposeModal.id,
-        reason: disposeReason || 'إتلاف وفق البروتوكول',
+      const bagIds = bagsToDispose.map((b) => b.id);
+      const res = await disposeBagMutation.mutateAsync({
+        bagIds,
+        reason,
+        notes,
       });
-      toast.success('تم إتلاف الحقيبة بنجاح');
-      setDisposeModal(null);
-      setDisposeReason('');
+
+      if (res.processed > 0 && res.failed > 0) {
+        toast.warning(`تم إتلاف ${res.processed} حقائب بنجاح، وفشل إتلاف ${res.failed} حقائب.`);
+      } else if (res.processed === 0) {
+        toast.error(`فشل إتلاف جميع الحقائب المحددة (${res.failed} حقائب)`);
+      } else {
+        toast.success(`تم إتلاف ${res.processed} حقيبة بنجاح`);
+      }
+
+      setBagsToDispose(null);
+      setSelectedBagIds([]);
     } catch (err) {
       console.error(err);
+      toast.error('حدث خطأ أثناء تسجيل عملية الإتلاف');
     }
+  };
+
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
+    setPage(1);
+  };
+
+  const handleFilterTypeChange = (val: BloodType | 'all') => {
+    setFilterType(val);
+    setPage(1);
+  };
+
+  const handleStatusFilterChange = (statusVal: BloodBagStatus | 'active') => {
+    setFilterStatus(statusVal);
+    setPage(1);
   };
 
   /* ── render ── */
@@ -135,14 +195,15 @@ export default function InventoryBags() {
         </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           {
             label: 'متاحة وصالحة',
             value: availableCount,
             color: 'text-green-700',
             bg: 'bg-green-50 border-green-200',
+            ring: 'ring-green-400',
             filter: 'available' as const,
           },
           {
@@ -150,20 +211,32 @@ export default function InventoryBags() {
             value: expiredCount,
             color: 'text-red-700',
             bg: 'bg-red-50 border-red-200',
-            filter: 'expired_only' as const,
+            ring: 'ring-red-400',
+            filter: 'expired' as const,
           },
           {
-            label: 'مُصدَّرة',
+            label: 'مُصرَّفة',
             value: issuedCount,
             color: 'text-blue-700',
             bg: 'bg-blue-50 border-blue-200',
-            filter: 'all' as const,
+            ring: 'ring-blue-400',
+            filter: 'issued' as const,
+          },
+          {
+            label: 'تالفة / مستبعدة',
+            value: disposedCount,
+            color: 'text-amber-700',
+            bg: 'bg-amber-50 border-amber-200',
+            ring: 'ring-amber-400',
+            filter: 'disposed' as const,
           },
         ].map((s) => (
           <button
             key={s.label}
-            onClick={() => setFilterStatus(filterStatus === s.filter ? 'all' : s.filter)}
-            className={`${s.bg} border rounded-2xl p-4 text-right transition-all ${filterStatus === s.filter ? 'ring-2 ring-green-400 ring-offset-1' : ''}`}
+            onClick={() => handleStatusFilterChange(filterStatus === s.filter ? 'active' : s.filter)}
+            className={`${s.bg} border rounded-2xl p-4 text-right transition-all hover:scale-[1.01] duration-200 ${
+              filterStatus === s.filter ? `ring-2 ${s.ring} ring-offset-1` : ''
+            }`}
           >
             <div className={s.color} style={{ fontSize: '26px', fontWeight: 800 }}>
               {s.value}
@@ -175,19 +248,19 @@ export default function InventoryBags() {
         ))}
       </div>
 
-      {/* ── Bulk-export action bar ── */}
+      {/* ── Bulk Actions Bar ── */}
       {selectedBagIds.length > 0 && (
-        <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-2xl shadow-sm">
+        <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-2xl shadow-sm animate-in fade-in duration-200">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-green-100 rounded-xl flex items-center justify-center">
               <ShoppingCart className="w-4 h-4 text-green-600" />
             </div>
             <div>
-              <p className="text-green-800" style={{ fontSize: '14px', fontWeight: 700 }}>
+              <p className="text-green-800 font-bold" style={{ fontSize: '14px' }}>
                 {selectedBagIds.length}{' '}
-                {selectedBagIds.length === 1 ? 'حقيبة محددة' : 'حقائب محددة للتصدير'}
+                {selectedBagIds.length === 1 ? 'حقيبة محددة' : 'حقائب محددة للعمليات الجماعية'}
               </p>
-              <p className="text-green-600 font-mono" style={{ fontSize: '11px' }}>
+              <p className="text-green-600 font-mono text-xs truncate max-w-md">
                 {selectedBagsData.map((b) => b.bagCode).join(' · ')}
               </p>
             </div>
@@ -201,12 +274,20 @@ export default function InventoryBags() {
               إلغاء التحديد
             </button>
             <button
+              onClick={() => setBagsToDispose(selectedBagsData)}
+              className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all shadow-sm"
+              style={{ fontSize: '12px', fontWeight: 700 }}
+            >
+              <Trash2 className="w-4 h-4" />
+              إتلاف ({selectedBagIds.length})
+            </button>
+            <button
               onClick={() => setExportModalOpen(true)}
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all shadow-sm"
               style={{ fontSize: '13px', fontWeight: 700 }}
             >
               <Upload className="w-4 h-4" />
-              تصدير ({selectedBagIds.length})
+              صرف ({selectedBagIds.length})
             </button>
           </div>
         </div>
@@ -218,15 +299,15 @@ export default function InventoryBags() {
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="بحث بكود الحقيبة أو الفصيلة..."
-            className="w-full pr-9 pl-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400"
+            className="w-full pr-9 pl-4 py-2.5 border border-border rounded-xl bg-card text-foreground outline-none focus:border-green-400"
             style={{ fontSize: '13px' }}
           />
         </div>
         <select
           value={filterType}
-          onChange={(e) => setFilterType(e.target.value as BloodType | 'all')}
+          onChange={(e) => handleFilterTypeChange(e.target.value as BloodType | 'all')}
           className="px-4 py-2.5 border border-border rounded-xl bg-card text-foreground outline-none"
           style={{ fontSize: '13px' }}
         >
@@ -245,11 +326,25 @@ export default function InventoryBags() {
           <table className="w-full">
             <thead>
               <tr className="bg-muted/40">
-                <th className="px-4 py-3" style={{ width: '44px' }} />
+                <th className="px-4 py-3" style={{ width: '44px' }}>
+                  {selectablePageIds.length > 0 && (
+                    <button
+                      onClick={toggleSelectAllPage}
+                      className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all
+                        ${
+                          isAllPageSelected
+                            ? 'bg-green-600 border-green-600'
+                            : 'border-border hover:border-green-400'
+                        }`}
+                    >
+                      {isAllPageSelected && <Check className="w-3 h-3 text-white" />}
+                    </button>
+                  )}
+                </th>
                 {[
                   'كود الحقيبة',
                   'الفصيلة',
-                  'نوع الدم',
+                  'نوع التبرع',
                   'تاريخ التسجيل',
                   'تاريخ الانتهاء',
                   'الحالة',
@@ -269,6 +364,7 @@ export default function InventoryBags() {
               {displayBags.map((bag) => {
                 const { label, cls, isExpired, isAvailable } = getBagStatus(bag);
                 const days = daysUntil(bag.expiryDate);
+                // Proximity warning: expires in 5 days or less (and is available status)
                 const isNear = isAvailable && days >= 0 && days <= 5;
                 const isSelected = selectedBagIds.includes(bag.id);
                 return (
@@ -278,9 +374,9 @@ export default function InventoryBags() {
                       ${isExpired ? 'bg-red-50/30' : ''}
                       ${isSelected ? 'bg-green-50/60' : ''}`}
                   >
-                    {/* checkbox */}
+                    {/* Checkbox column */}
                     <td className="px-4 py-3">
-                      {isAvailable && (
+                      {(bag.status === 'available' || bag.status === 'expired') && (
                         <button
                           onClick={() => toggleSelect(bag.id)}
                           className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all
@@ -294,6 +390,7 @@ export default function InventoryBags() {
                         </button>
                       )}
                     </td>
+                    {/* Code column */}
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1.5">
                         <span
@@ -309,6 +406,7 @@ export default function InventoryBags() {
                         )}
                       </div>
                     </td>
+                    {/* Blood Type column */}
                     <td className="px-4 py-3">
                       <span
                         className="px-2 py-0.5 bg-red-50 text-red-600 rounded"
@@ -317,12 +415,15 @@ export default function InventoryBags() {
                         {bag.bloodType}
                       </span>
                     </td>
+                    {/* Donation Type column */}
                     <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '12px' }}>
-                      {donTypeLabels[bag.donationType]}
+                      {donTypeLabels[bag.donationType] || bag.donationType}
                     </td>
+                    {/* Registration Date column */}
                     <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '12px' }}>
                       {bag.collectedDate}
                     </td>
+                    {/* Expiry Date column */}
                     <td className="px-4 py-3">
                       <span
                         className={`${isExpired ? 'text-red-600' : isNear ? 'text-orange-500' : 'text-muted-foreground'}`}
@@ -333,17 +434,18 @@ export default function InventoryBags() {
                       >
                         {bag.expiryDate}
                         {isExpired && (
-                          <span className="mr-1" style={{ fontSize: '10px' }}>
+                          <span className="mr-1 text-[10px]">
                             (منتهية)
                           </span>
                         )}
                         {isNear && (
-                          <span className="mr-1" style={{ fontSize: '10px' }}>
+                          <span className="mr-1 text-[10px]">
                             ({days}د)
                           </span>
                         )}
                       </span>
                     </td>
+                    {/* Status Badge column */}
                     <td className="px-4 py-3">
                       <span
                         className={`px-2.5 py-0.5 rounded-full ${cls}`}
@@ -352,6 +454,7 @@ export default function InventoryBags() {
                         {label}
                       </span>
                     </td>
+                    {/* Action buttons column */}
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1.5">
                         {isAvailable && (
@@ -360,14 +463,14 @@ export default function InventoryBags() {
                             className="flex items-center gap-1 px-2.5 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all"
                             style={{ fontSize: '11px', fontWeight: 700 }}
                           >
-                            <Upload className="w-3.5 h-3.5" /> تصدير
+                            <Upload className="w-3.5 h-3.5" /> صرف
                           </button>
                         )}
-                        {(isAvailable || isExpired || bag.status === 'rejected') && (
+                        {(isAvailable || isExpired) && (
                           <button
-                            onClick={() => setDisposeModal(bag)}
+                            onClick={() => setBagsToDispose([bag])}
                             className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg transition-all ${
-                              isExpired || bag.status === 'rejected'
+                              isExpired
                                 ? 'bg-red-100 text-red-600 hover:bg-red-200'
                                 : 'bg-orange-50 text-orange-600 hover:bg-orange-100'
                             }`}
@@ -381,10 +484,35 @@ export default function InventoryBags() {
                   </tr>
                 );
               })}
-              {displayBags.length === 0 && <EmptyState colSpan={8} message="لا توجد حقائب" />}
+              {displayBags.length === 0 && <EmptyState colSpan={8} message="لا توجد حقائب متطابقة" />}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted/20">
+            <p className="text-muted-foreground text-xs">
+              عرض الصفحة {page} من {totalPages} (إجمالي {totalCount} حقيبة)
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1.5 border border-border rounded-xl bg-card text-foreground hover:bg-muted transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs font-semibold"
+              >
+                السابق
+              </button>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="px-3 py-1.5 border border-border rounded-xl bg-card text-foreground hover:bg-muted transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs font-semibold"
+              >
+                التالي
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Export Modal */}
@@ -400,16 +528,13 @@ export default function InventoryBags() {
       )}
 
       {/* Dispose Modal */}
-      {disposeModal && (
+      {bagsToDispose && (
         <DisposeBagModal
-          bag={disposeModal}
-          reason={disposeReason}
+          bags={bagsToDispose}
           isPending={disposeBagMutation.isPending}
-          onReasonChange={setDisposeReason}
           onConfirm={handleDispose}
           onClose={() => {
-            setDisposeModal(null);
-            setDisposeReason('');
+            setBagsToDispose(null);
           }}
         />
       )}

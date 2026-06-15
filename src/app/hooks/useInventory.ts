@@ -6,7 +6,7 @@ import {
   fetchBloodBags,
   fetchPaginatedBloodBags,
   exportBags,
-  disposeBag,
+  disposeBags,
   fetchBloodInventory,
   fetchTransactions,
   fetchFilteredTransactions,
@@ -66,7 +66,15 @@ export function useExportBags() {
 export function useDisposeBag() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ bagId, reason }: { bagId: string; reason: string }) => disposeBag(bagId, reason),
+    mutationFn: ({
+      bagIds,
+      reason,
+      notes,
+    }: {
+      bagIds: string[];
+      reason: string;
+      notes?: string;
+    }) => disposeBags(bagIds, reason, notes),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['bags'] });
       qc.invalidateQueries({ queryKey: ['transactions'] });

@@ -28,6 +28,16 @@ export interface BloodBag {
   expiryDate: string;
   status: BloodBagStatus;
   volume: number;
+  createdAt?: string;
+  updatedAt?: string;
+  issuedAt?: string;
+  issuedById?: string;
+  issuedByName?: string;
+  disposedAt?: string;
+  disposedById?: string;
+  disposedByName?: string;
+  disposeReason?: string;
+  disposeNotes?: string;
 }
 
 export interface Transaction {
@@ -62,6 +72,15 @@ export interface OutflowRecord {
   performedBy: string;
   performedByName: string;
   timestamp: string;
+  disposedAt?: string;
+  disposedById?: string;
+  disposedByName?: string;
+  disposeReason?: string;
+  disposeNotes?: string;
+  issuedAt?: string;
+  issuedById?: string;
+  issuedByName?: string;
+  updatedAt?: string;
 }
 
 export interface MonthlyStats {

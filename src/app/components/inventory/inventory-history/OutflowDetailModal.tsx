@@ -188,7 +188,9 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
                   المنفذ
                 </p>
                 <p className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
-                  {record.performedByName}
+                  {record.actionType === 'disposed'
+                    ? record.disposedByName || record.performedByName
+                    : record.issuedByName || record.performedByName}
                 </p>
               </div>
             </div>

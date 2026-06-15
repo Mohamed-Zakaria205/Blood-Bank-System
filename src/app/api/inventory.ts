@@ -10,6 +10,7 @@ import type {
   MonthlyStats,
 } from '../types/inventory';
 import type { PaginatedResponse, BagFilters, TransactionFilters } from '../types/common';
+import type { ApiResponseWrapper } from '../types/auth';
 import {
   bloodBags as MOCK_BAGS,
   bloodInventory as MOCK_INVENTORY,
@@ -38,6 +39,20 @@ function deriveOutflowRecordsFromTransactions(): OutflowRecord[] {
   });
 }
 
+export interface BulkOperationResult {
+  bagId: string;
+  success: boolean;
+  errorCode?: string;
+  error?: string;
+}
+
+export interface BulkOperationResponse {
+  processed: number;
+  failed: number;
+  results: BulkOperationResult[];
+  updatedBags: BloodBag[];
+}
+
 // ── Blood Bags ─────────────────────────────────────────────
 
 /** Fetch all blood bags (unpaginated — used when the full list is needed) */
@@ -46,8 +61,14 @@ export async function fetchBloodBags(): Promise<PaginatedResponse<BloodBag>> {
     await new Promise((r) => setTimeout(r, 300));
     return { data: MOCK_BAGS, total: MOCK_BAGS.length, page: 1, limit: MOCK_BAGS.length };
   }
-  const { data } = await apiClient.get<PaginatedResponse<BloodBag>>('/inventory/bags');
-  return data;
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/blood-bags');
+  const items = wrapper.data?.items || wrapper.data?.data || [];
+  return {
+    data: items,
+    total: wrapper.data?.total ?? items.length,
+    page: wrapper.data?.page ?? 1,
+    limit: wrapper.data?.limit ?? items.length,
+  };
 }
 
 /**
@@ -59,7 +80,7 @@ export async function fetchBloodBags(): Promise<PaginatedResponse<BloodBag>> {
 export async function fetchPaginatedBloodBags(
   filters: BagFilters = {}, options?: { signal?: AbortSignal }
 ): Promise<PaginatedResponse<BloodBag>> {
-  const { page = 1, limit = 10, search = '', bloodType = '', status = '' } = filters;
+  const { page = 1, limit = 10, search = '', bloodType = '', bloodTypes = '', donationType = '', status = '', sortBy = 'createdAt', sortOrder = 'desc' } = filters;
 
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
@@ -75,22 +96,70 @@ export async function fetchPaginatedBloodBags(
           (b.donorCode?.toLowerCase().includes(q) ?? false),
       );
     }
-    if (bloodType) result = result.filter((b) => b.bloodType === bloodType);
-    if (status)    result = result.filter((b) => b.status === status);
+    if (bloodType) {
+      result = result.filter((b) => b.bloodType === bloodType);
+    }
+    if (bloodTypes) {
+      const typesList = bloodTypes.split(',').map((t) => t.trim());
+      result = result.filter((b) => typesList.includes(b.bloodType));
+    }
+    if (donationType) {
+      result = result.filter((b) => b.donationType === donationType);
+    }
+    
+    if (status) {
+      result = result.filter((b) => b.status === status);
+    } else {
+      // Default behavior: return active inventory (available and expired)
+      result = result.filter((b) => b.status === 'available' || b.status === 'expired');
+    }
+
+    // ── Client-side sorting ────────────────────────────────
+    const allowedSortFields = ['bagCode', 'collectedDate', 'expiryDate', 'createdAt'];
+    const activeSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
+    const activeSortOrder = sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : 'desc';
+
+    if (activeSortBy) {
+      const order = activeSortOrder === 'desc' ? -1 : 1;
+      result = [...result].sort((a, b) => {
+        const valA: any = a[activeSortBy as keyof BloodBag] ?? '';
+        const valB: any = b[activeSortBy as keyof BloodBag] ?? '';
+
+        if (typeof valA === 'string' && typeof valB === 'string') {
+          return valA.localeCompare(valB) * order;
+        }
+        if (typeof valA === 'number' && typeof valB === 'number') {
+          return (valA - valB) * order;
+        }
+        return 0;
+      });
+    }
 
     // ── Client-side pagination ─────────────────────────────
     const total = result.length;
+    const totalPages = Math.ceil(total / limit);
     const start = (page - 1) * limit;
     const data  = result.slice(start, start + limit);
+    const hasNextPage = page < totalPages;
+    const hasPreviousPage = page > 1;
 
-    return { data, total, page, limit };
+    return { data, total, page, limit, totalPages, hasNextPage, hasPreviousPage };
   }
 
   // ── Real API: forward all params as query-string ─────────
-  const { data } = await apiClient.get<PaginatedResponse<BloodBag>>('/inventory/bags', {
-    params: { page, limit, search, bloodType, status }, signal: options?.signal,
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/blood-bags', {
+    params: { page, limit, search, bloodType, bloodTypes, donationType, status, sortBy, sortOrder }, signal: options?.signal,
   });
-  return data;
+  const items = wrapper.data?.items || wrapper.data?.data || [];
+  return {
+    data: items,
+    total: wrapper.data?.total ?? 0,
+    page: wrapper.data?.page ?? page,
+    limit: wrapper.data?.limit ?? limit,
+    totalPages: wrapper.data?.totalPages,
+    hasNextPage: wrapper.data?.hasNextPage,
+    hasPreviousPage: wrapper.data?.hasPreviousPage,
+  };
 }
 
 export async function exportBags(
@@ -101,20 +170,147 @@ export async function exportBags(
     phone?: string;
     reason: string;
   },
-): Promise<void> {
+): Promise<BulkOperationResponse> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 400));
-    return;
+    const results: BulkOperationResult[] = [];
+    const updatedBags: BloodBag[] = [];
+    let processed = 0;
+    let failed = 0;
+
+    const currentTimestamp = new Date().toISOString();
+
+    for (const id of bagIds) {
+      const bag = MOCK_BAGS.find((b) => b.id === id);
+      if (!bag) {
+        failed++;
+        results.push({
+          bagId: id,
+          success: false,
+          errorCode: 'NOT_FOUND',
+          error: 'حقيبة الدم غير موجودة',
+        });
+        continue;
+      }
+
+      // Validations
+      if (bag.status === 'expired') {
+        failed++;
+        results.push({
+          bagId: id,
+          success: false,
+          errorCode: 'EXPIRED_BAG',
+          error: 'الحقيبة منتهية الصلاحية ولا يمكن صرفها',
+        });
+      } else if (bag.status === 'disposed') {
+        failed++;
+        results.push({
+          bagId: id,
+          success: false,
+          errorCode: 'INVALID_STATUS',
+          error: 'الحقيبة تالفة ولا يمكن صرفها',
+        });
+      } else if (bag.status === 'issued') {
+        failed++;
+        results.push({
+          bagId: id,
+          success: false,
+          errorCode: 'ALREADY_ISSUED',
+          error: 'الحقيبة منصرفة بالفعل',
+        });
+      } else {
+        // Success
+        processed++;
+        bag.status = 'issued';
+        bag.issuedAt = currentTimestamp;
+        bag.issuedById = 'USR-008';
+        bag.issuedByName = 'أ. نادية فتحي حسين';
+        bag.updatedAt = currentTimestamp;
+
+        results.push({
+          bagId: id,
+          success: true,
+        });
+        updatedBags.push(bag);
+      }
+    }
+
+    return { processed, failed, results, updatedBags };
   }
-  await apiClient.post('/inventory/bags/export', { bagIds, ...recipient });
+
+  const { data: wrapper } = await apiClient.post<ApiResponseWrapper<BulkOperationResponse>>('/inventory/blood-bags/issue', { bagIds, ...recipient });
+  return wrapper.data;
 }
 
-export async function disposeBag(bagId: string, reason: string): Promise<void> {
+export async function disposeBags(
+  bagIds: string[],
+  reason: string,
+  notes?: string
+): Promise<BulkOperationResponse> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return;
+    const results: BulkOperationResult[] = [];
+    const updatedBags: BloodBag[] = [];
+    let processed = 0;
+    let failed = 0;
+
+    const currentTimestamp = new Date().toISOString();
+
+    for (const id of bagIds) {
+      const bag = MOCK_BAGS.find((b) => b.id === id);
+      if (!bag) {
+        failed++;
+        results.push({
+          bagId: id,
+          success: false,
+          errorCode: 'NOT_FOUND',
+          error: 'حقيبة الدم غير موجودة',
+        });
+        continue;
+      }
+
+      // Validations
+      if (bag.status === 'disposed') {
+        failed++;
+        results.push({
+          bagId: id,
+          success: false,
+          errorCode: 'ALREADY_DISPOSED',
+          error: 'الحقيبة تالفة بالفعل',
+        });
+      } else if (bag.status === 'issued') {
+        failed++;
+        results.push({
+          bagId: id,
+          success: false,
+          errorCode: 'INVALID_STATUS',
+          error: 'الحقيبة منصرفة بالفعل ولا يمكن إتلافها',
+        });
+      } else {
+        // Success
+        processed++;
+        // Disposal reasons should be immutable after disposal
+        bag.status = 'disposed';
+        bag.disposedAt = currentTimestamp;
+        bag.disposedById = 'USR-008';
+        bag.disposedByName = 'أ. نادية فتحي حسين';
+        bag.disposeReason = reason;
+        bag.disposeNotes = notes || '';
+        bag.updatedAt = currentTimestamp;
+
+        results.push({
+          bagId: id,
+          success: true,
+        });
+        updatedBags.push(bag);
+      }
+    }
+
+    return { processed, failed, results, updatedBags };
   }
-  await apiClient.post(`/inventory/bags/${bagId}/dispose`, { reason });
+
+  const { data: wrapper } = await apiClient.post<ApiResponseWrapper<BulkOperationResponse>>('/inventory/blood-bags/dispose', { bagIds, reason, notes });
+  return wrapper.data;
 }
 
 // ── Blood Inventory Summary ────────────────────────────────
@@ -123,8 +319,14 @@ export async function fetchBloodInventory(): Promise<PaginatedResponse<BloodInve
     await new Promise((r) => setTimeout(r, 200));
     return { data: MOCK_INVENTORY, total: MOCK_INVENTORY.length, page: 1, limit: MOCK_INVENTORY.length };
   }
-  const { data } = await apiClient.get<PaginatedResponse<BloodInventoryItem>>('/inventory/summary');
-  return data;
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/summary');
+  const items = wrapper.data?.items || wrapper.data?.data || [];
+  return {
+    data: items,
+    total: wrapper.data?.total ?? items.length,
+    page: wrapper.data?.page ?? 1,
+    limit: wrapper.data?.limit ?? items.length,
+  };
 }
 
 // ── Transactions ───────────────────────────────────────────
@@ -135,8 +337,14 @@ export async function fetchTransactions(): Promise<PaginatedResponse<Transaction
     await new Promise((r) => setTimeout(r, 300));
     return { data: MOCK_TRANSACTIONS, total: MOCK_TRANSACTIONS.length, page: 1, limit: MOCK_TRANSACTIONS.length };
   }
-  const { data } = await apiClient.get<PaginatedResponse<Transaction>>('/inventory/transactions');
-  return data;
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/transactions');
+  const items = wrapper.data?.items || wrapper.data?.data || [];
+  return {
+    data: items,
+    total: wrapper.data?.total ?? items.length,
+    page: wrapper.data?.page ?? 1,
+    limit: wrapper.data?.limit ?? items.length,
+  };
 }
 
 /**
@@ -167,10 +375,16 @@ export async function fetchFilteredTransactions(
     return { data, total, page, limit };
   }
 
-  const { data } = await apiClient.get<PaginatedResponse<Transaction>>('/inventory/transactions', {
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/transactions', {
     params: { page, limit, search, type, bloodType, dateFrom, dateTo }, signal: options?.signal,
   });
-  return data;
+  const items = wrapper.data?.items || wrapper.data?.data || [];
+  return {
+    data: items,
+    total: wrapper.data?.total ?? 0,
+    page: wrapper.data?.page ?? page,
+    limit: wrapper.data?.limit ?? limit,
+  };
 }
 
 // ── Outflow Records ────────────────────────────────────────
@@ -180,8 +394,14 @@ export async function fetchOutflowRecords(): Promise<PaginatedResponse<OutflowRe
     const mockOutflow = deriveOutflowRecordsFromTransactions();
     return { data: mockOutflow, total: mockOutflow.length, page: 1, limit: mockOutflow.length };
   }
-  const { data } = await apiClient.get<PaginatedResponse<OutflowRecord>>('/inventory/outflow');
-  return data;
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/outflow');
+  const items = wrapper.data?.items || wrapper.data?.data || [];
+  return {
+    data: items,
+    total: wrapper.data?.total ?? items.length,
+    page: wrapper.data?.page ?? 1,
+    limit: wrapper.data?.limit ?? items.length,
+  };
 }
 
 // ── Monthly Stats ──────────────────────────────────────────
@@ -190,6 +410,12 @@ export async function fetchMonthlyStats(): Promise<PaginatedResponse<MonthlyStat
     await new Promise((r) => setTimeout(r, 200));
     return { data: MOCK_MONTHLY_STATS, total: MOCK_MONTHLY_STATS.length, page: 1, limit: MOCK_MONTHLY_STATS.length };
   }
-  const { data } = await apiClient.get<PaginatedResponse<MonthlyStats>>('/stats/monthly');
-  return data;
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/stats/monthly');
+  const items = wrapper.data?.items || wrapper.data?.data || [];
+  return {
+    data: items,
+    total: wrapper.data?.total ?? items.length,
+    page: wrapper.data?.page ?? 1,
+    limit: wrapper.data?.limit ?? items.length,
+  };
 }

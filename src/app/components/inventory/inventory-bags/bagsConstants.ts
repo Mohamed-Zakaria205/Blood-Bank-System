@@ -1,10 +1,14 @@
-﻿// ── Shared types and constants for InventoryBags module ──
+// ── Shared types and constants for InventoryBags module ──
 import type { BloodBag } from '../../../types';
 
-export const TODAY = new Date('2025-04-29');
+export const TODAY = new Date();
 
 export function daysUntil(d: string) {
-  return Math.ceil((new Date(d).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24));
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(d);
+  target.setHours(0, 0, 0, 0);
+  return Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 }
 
 export const donTypeLabels: Record<string, string> = {
@@ -23,37 +27,40 @@ export function getCurrentUserName() {
 }
 
 export function getBagStatus(bag: BloodBag) {
-  const days = daysUntil(bag.expiryDate);
-  if (bag.status === 'available' && days < 0)
+  if (bag.status === 'expired') {
     return {
-      label: 'منتهية',
+      label: 'منتهي الصلاحية',
       cls: 'bg-red-100 text-red-700',
       isExpired: true,
       isAvailable: false,
     };
-  if (bag.status === 'available')
+  }
+  if (bag.status === 'available') {
     return {
       label: 'متاح',
       cls: 'bg-green-100 text-green-700',
       isExpired: false,
       isAvailable: true,
     };
-  if (bag.status === 'issued')
+  }
+  if (bag.status === 'issued') {
     return {
       label: 'مُصدَّر',
       cls: 'bg-blue-100 text-blue-700',
       isExpired: false,
       isAvailable: false,
     };
-  if (bag.status === 'rejected')
+  }
+  if (bag.status === 'disposed') {
     return {
-      label: 'مرفوض',
-      cls: 'bg-orange-100 text-orange-700',
+      label: 'مُتلَف',
+      cls: 'bg-red-100/80 text-red-800',
       isExpired: false,
       isAvailable: false,
     };
+  }
   return {
-    label: bag.status,
+    label: bag.status || '—',
     cls: 'bg-muted text-muted-foreground',
     isExpired: false,
     isAvailable: false,

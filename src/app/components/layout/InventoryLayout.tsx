@@ -24,7 +24,7 @@ export default function InventoryLayout() {
     if (b.status !== 'available') return false;
     return new Date(b.expiryDate) < TODAY;
   });
-  const rejectedBags = bags.filter((b) => b.status === 'rejected');
+  const rejectedBags = bags.filter((b) => b.status === 'disposed' && b.disposeReason === 'failed_screening');
   const totalAlerts = nearExpiry.length + expiredActive.length;
 
   const notifications = [

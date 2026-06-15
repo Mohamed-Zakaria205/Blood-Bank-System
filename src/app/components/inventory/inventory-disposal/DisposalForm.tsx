@@ -14,12 +14,10 @@ interface DisposalFormProps {
   selectedBagIds: string[];
   selectedBagsData: BloodBag[];
   category: string;
-  targetStatus: 'disposed' | 'rejected';
   notes: string;
   formErrors: Record<string, string>;
   onToggleSelect: (bagId: string) => void;
   onCategoryChange: (val: string) => void;
-  onTargetStatusChange: (val: 'disposed' | 'rejected') => void;
   onNotesChange: (val: string) => void;
   onOpenConfirm: () => void;
 }
@@ -31,12 +29,10 @@ export default function DisposalForm({
   selectedBagIds,
   selectedBagsData,
   category,
-  targetStatus,
   notes,
   formErrors,
   onToggleSelect,
   onCategoryChange,
-  onTargetStatusChange,
   onNotesChange,
   onOpenConfirm,
 }: DisposalFormProps) {
@@ -223,26 +219,9 @@ export default function DisposalForm({
               الحالة الجديدة للحقيبة
             </label>
             <div className="flex gap-4 pt-2">
-              {(
-                [
-                  ['disposed', '🗑️ مُتلَف'],
-                  ['rejected', '🚫 مرفوض'],
-                ] as [string, string][]
-              ).map(([val, lbl]) => (
-                <label key={val} className="flex items-center gap-2 cursor-pointer select-none">
-                  <div
-                    onClick={() => onTargetStatusChange(val as 'disposed' | 'rejected')}
-                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
-                      targetStatus === val ? 'border-red-600' : 'border-border'
-                    }`}
-                  >
-                    {targetStatus === val && <div className="w-2 h-2 rounded-full bg-red-600" />}
-                  </div>
-                  <span className="text-foreground" style={{ fontSize: '13px' }}>
-                    {lbl}
-                  </span>
-                </label>
-              ))}
+              <span className="text-foreground font-semibold" style={{ fontSize: '13px' }}>
+                🗑️ مُتلَف
+              </span>
             </div>
           </div>
         </div>

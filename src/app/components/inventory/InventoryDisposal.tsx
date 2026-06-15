@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import {
   AlertTriangle,
   CheckCircle,
@@ -14,7 +14,6 @@ import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkelet
 // ── Sub-components ──
 import {
   daysUntil,
-  DISPOSAL_REASONS,
 } from './inventory-disposal/disposalConstants';
 import DisposalForm from './inventory-disposal/DisposalForm';
 import DisposalHistory from './inventory-disposal/DisposalHistory';
@@ -35,7 +34,6 @@ export default function InventoryDisposal() {
   const [bagSearch, setBagSearch] = useState('');
   const [selectedBagIds, setSelectedBagIds] = useState<string[]>([]);
   const [category, setCategory] = useState('');
-  const [targetStatus, setTargetStatus] = useState<'disposed' | 'rejected'>('disposed');
   const [notes, setNotes] = useState('');
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [showConfirm, setShowConfirm] = useState(false);
@@ -67,12 +65,10 @@ export default function InventoryDisposal() {
     const d = daysUntil(b.expiryDate);
     return b.status === 'available' && d >= 0 && d <= 5;
   }).length;
-  const expiredCount = bags.filter(
-    (b) => b.status === 'available' && daysUntil(b.expiryDate) < 0,
-  ).length;
-  const rejectedCount = bags.filter((b) => b.status === 'rejected').length;
+  const expiredCount = bags.filter((b) => b.status === 'expired').length;
+  const rejectedCount = 0; // rejected status is removed
   const disposedCount = bags.filter((b) => b.status === 'disposed').length;
-  const flaggedCount = nearExpiryCount + expiredCount + rejectedCount;
+  const flaggedCount = nearExpiryCount + expiredCount;
 
   const candidateBags = (() => {
     const eligible = bags.filter(
@@ -88,7 +84,6 @@ export default function InventoryDisposal() {
 
     return searched.sort((a, b) => {
       const priority = (bag: typeof a) => {
-        if (bag.status === 'rejected') return 0;
         const d = daysUntil(bag.expiryDate);
         if (d < 0) return 1;
         if (d <= 3) return 2;
@@ -131,8 +126,6 @@ export default function InventoryDisposal() {
 
   const handleCategoryChange = (val: string) => {
     setCategory(val);
-    const r = DISPOSAL_REASONS.find((r) => r.value === val);
-    if (r) setTargetStatus(r.suggested);
     if (formErrors.category) setFormErrors((p) => ({ ...p, category: '' }));
   };
 
@@ -149,12 +142,21 @@ export default function InventoryDisposal() {
   };
 
   const handleConfirmDispose = async () => {
-    const label = DISPOSAL_REASONS.find((r) => r.value === category)?.label ?? category;
     try {
-      await Promise.all(
-        selectedBagIds.map((id) => disposeBagMutation.mutateAsync({ bagId: id, reason: label })),
-      );
-      toast.success(`تم إتلاف ${selectedBagIds.length} حقيبة بنجاح`);
+      const res = await disposeBagMutation.mutateAsync({
+        bagIds: selectedBagIds,
+        reason: category,
+        notes: notes || undefined,
+      });
+
+      if (res.processed > 0 && res.failed > 0) {
+        toast.warning(`تم إتلاف ${res.processed} حقائب بنجاح، وفشل إتلاف ${res.failed} حقائب.`);
+      } else if (res.processed === 0) {
+        toast.error(`فشل إتلاف جميع الحقائب المحددة (${res.failed} حقائب)`);
+      } else {
+        toast.success(`تم إتلاف ${res.processed} حقيبة بنجاح`);
+      }
+
       setShowConfirm(false);
       setSelectedBagIds([]);
       setCategory('');
@@ -162,6 +164,7 @@ export default function InventoryDisposal() {
       setFormErrors({});
     } catch (err) {
       console.error(err);
+      toast.error('حدث خطأ أثناء الإتلاف');
     }
   };
 
@@ -257,12 +260,10 @@ export default function InventoryDisposal() {
         selectedBagIds={selectedBagIds}
         selectedBagsData={selectedBagsData}
         category={category}
-        targetStatus={targetStatus}
         notes={notes}
         formErrors={formErrors}
         onToggleSelect={toggleSelect}
         onCategoryChange={handleCategoryChange}
-        onTargetStatusChange={setTargetStatus}
         onNotesChange={setNotes}
         onOpenConfirm={handleOpenConfirm}
       />
@@ -294,7 +295,7 @@ export default function InventoryDisposal() {
         <ConfirmDisposalModal
           selectedBagsData={selectedBagsData}
           category={category}
-          targetStatus={targetStatus}
+          targetStatus="disposed"
           notes={notes}
           isPending={disposeBagMutation.isPending}
           onConfirm={handleConfirmDispose}
