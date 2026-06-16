@@ -20,22 +20,24 @@ import {
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 function deriveOutflowRecordsFromTransactions(): OutflowRecord[] {
-  return MOCK_TRANSACTIONS.filter((t) => t.type === 'issue' || t.type === 'disposal').map((t, index) => {
-    const bag = MOCK_BAGS.find(b => b.id === t.bagIds[0]);
-    return {
-      id: `OUT-MOCK-${String(index + 1).padStart(3, '0')}`,
-      bagId: t.bagIds[0] ?? '',
-      bagCode: t.bagCodes[0] ?? '',
-      bloodType: t.bloodType,
-      donationType: bag?.donationType || 'wholeblood',
-      actionType: t.type === 'issue' ? 'exported' : 'disposed',
-      recipientName: t.type === 'issue' ? t.destination : undefined,
-      reason: t.notes ?? (t.type === 'issue' ? 'صرف من المخزون' : 'إتلاف من المخزون'),
-      performedBy: t.performedBy,
-      performedByName: t.performedByName,
-      timestamp: t.timestamp,
-    };
-  });
+  return MOCK_TRANSACTIONS.filter((t) => t.type === 'issue' || t.type === 'disposal').map(
+    (t, index) => {
+      const bag = MOCK_BAGS.find((b) => b.id === t.bagIds[0]);
+      return {
+        id: `OUT-MOCK-${String(index + 1).padStart(3, '0')}`,
+        bagId: t.bagIds[0] ?? '',
+        bagCode: t.bagCodes[0] ?? '',
+        bloodType: t.bloodType,
+        donationType: bag?.donationType || 'wholeblood',
+        actionType: t.type === 'issue' ? 'exported' : 'disposed',
+        recipientName: t.type === 'issue' ? t.destination : undefined,
+        reason: t.notes ?? (t.type === 'issue' ? 'صرف من المخزون' : 'إتلاف من المخزون'),
+        performedBy: t.performedBy,
+        performedByName: t.performedByName,
+        timestamp: t.timestamp,
+      };
+    },
+  );
 }
 
 // ── Blood Bags ─────────────────────────────────────────────
@@ -57,7 +59,8 @@ export async function fetchBloodBags(): Promise<PaginatedResponse<BloodBag>> {
  * Real API: all params are forwarded as query-string parameters.
  */
 export async function fetchPaginatedBloodBags(
-  filters: BagFilters = {}, options?: { signal?: AbortSignal }
+  filters: BagFilters = {},
+  options?: { signal?: AbortSignal },
 ): Promise<PaginatedResponse<BloodBag>> {
   const { page = 1, limit = 10, search = '', bloodType = '', status = '' } = filters;
 
@@ -71,24 +74,24 @@ export async function fetchPaginatedBloodBags(
       const q = search.toLowerCase();
       result = result.filter(
         (b) =>
-          b.bagCode.toLowerCase().includes(q) ||
-          (b.donorCode?.toLowerCase().includes(q) ?? false),
+          b.bagCode.toLowerCase().includes(q) || (b.donorCode?.toLowerCase().includes(q) ?? false),
       );
     }
     if (bloodType) result = result.filter((b) => b.bloodType === bloodType);
-    if (status)    result = result.filter((b) => b.status === status);
+    if (status) result = result.filter((b) => b.status === status);
 
     // ── Client-side pagination ─────────────────────────────
     const total = result.length;
     const start = (page - 1) * limit;
-    const data  = result.slice(start, start + limit);
+    const data = result.slice(start, start + limit);
 
     return { data, total, page, limit };
   }
 
   // ── Real API: forward all params as query-string ─────────
   const { data } = await apiClient.get<PaginatedResponse<BloodBag>>('/inventory/bags', {
-    params: { page, limit, search, bloodType, status }, signal: options?.signal,
+    params: { page, limit, search, bloodType, status },
+    signal: options?.signal,
   });
   return data;
 }
@@ -121,7 +124,12 @@ export async function disposeBag(bagId: string, reason: string): Promise<void> {
 export async function fetchBloodInventory(): Promise<PaginatedResponse<BloodInventoryItem>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
-    return { data: MOCK_INVENTORY, total: MOCK_INVENTORY.length, page: 1, limit: MOCK_INVENTORY.length };
+    return {
+      data: MOCK_INVENTORY,
+      total: MOCK_INVENTORY.length,
+      page: 1,
+      limit: MOCK_INVENTORY.length,
+    };
   }
   const { data } = await apiClient.get<PaginatedResponse<BloodInventoryItem>>('/inventory/summary');
   return data;
@@ -133,7 +141,12 @@ export async function fetchBloodInventory(): Promise<PaginatedResponse<BloodInve
 export async function fetchTransactions(): Promise<PaginatedResponse<Transaction>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    return { data: MOCK_TRANSACTIONS, total: MOCK_TRANSACTIONS.length, page: 1, limit: MOCK_TRANSACTIONS.length };
+    return {
+      data: MOCK_TRANSACTIONS,
+      total: MOCK_TRANSACTIONS.length,
+      page: 1,
+      limit: MOCK_TRANSACTIONS.length,
+    };
   }
   const { data } = await apiClient.get<PaginatedResponse<Transaction>>('/inventory/transactions');
   return data;
@@ -145,9 +158,17 @@ export async function fetchTransactions(): Promise<PaginatedResponse<Transaction
  */
 export async function fetchFilteredTransactions(
   filters: TransactionFilters = {},
-  options?: { signal?: AbortSignal }
+  options?: { signal?: AbortSignal },
 ): Promise<PaginatedResponse<Transaction>> {
-  const { page = 1, limit = 10, search = '', type = '', bloodType = '', dateFrom = '', dateTo = '' } = filters;
+  const {
+    page = 1,
+    limit = 10,
+    search = '',
+    type = '',
+    bloodType = '',
+    dateFrom = '',
+    dateTo = '',
+  } = filters;
 
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
@@ -157,18 +178,19 @@ export async function fetchFilteredTransactions(
       const q = search.toLowerCase();
       result = result.filter((t) => t.bagCodes.some((c) => c.toLowerCase().includes(q)));
     }
-    if (type)      result = result.filter((t) => t.type === type);
+    if (type) result = result.filter((t) => t.type === type);
     if (bloodType) result = result.filter((t) => t.bloodType === bloodType);
-    if (dateFrom)  result = result.filter((t) => t.timestamp >= dateFrom);
-    if (dateTo)    result = result.filter((t) => t.timestamp <= dateTo);
+    if (dateFrom) result = result.filter((t) => t.timestamp >= dateFrom);
+    if (dateTo) result = result.filter((t) => t.timestamp <= dateTo);
 
     const total = result.length;
-    const data  = result.slice((page - 1) * limit, page * limit);
+    const data = result.slice((page - 1) * limit, page * limit);
     return { data, total, page, limit };
   }
 
   const { data } = await apiClient.get<PaginatedResponse<Transaction>>('/inventory/transactions', {
-    params: { page, limit, search, type, bloodType, dateFrom, dateTo }, signal: options?.signal,
+    params: { page, limit, search, type, bloodType, dateFrom, dateTo },
+    signal: options?.signal,
   });
   return data;
 }
@@ -188,7 +210,12 @@ export async function fetchOutflowRecords(): Promise<PaginatedResponse<OutflowRe
 export async function fetchMonthlyStats(): Promise<PaginatedResponse<MonthlyStats>> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
-    return { data: MOCK_MONTHLY_STATS, total: MOCK_MONTHLY_STATS.length, page: 1, limit: MOCK_MONTHLY_STATS.length };
+    return {
+      data: MOCK_MONTHLY_STATS,
+      total: MOCK_MONTHLY_STATS.length,
+      page: 1,
+      limit: MOCK_MONTHLY_STATS.length,
+    };
   }
   const { data } = await apiClient.get<PaginatedResponse<MonthlyStats>>('/stats/monthly');
   return data;

@@ -5,14 +5,7 @@ import LoginForm from './LoginForm';
 
 describe('LoginForm Component', () => {
   it('should render email field with LTR directionality', () => {
-    render(
-      <LoginForm
-        authError=""
-        loading={false}
-        onSubmit={vi.fn()}
-        onInputChange={vi.fn()}
-      />
-    );
+    render(<LoginForm authError="" loading={false} onSubmit={vi.fn()} onInputChange={vi.fn()} />);
 
     const emailInput = screen.getByPlaceholderText('example@bloodlink.benisuef.eg');
     expect(emailInput).toBeInTheDocument();
@@ -20,14 +13,7 @@ describe('LoginForm Component', () => {
   });
 
   it('should toggle password visibility and update button aria-label', () => {
-    render(
-      <LoginForm
-        authError=""
-        loading={false}
-        onSubmit={vi.fn()}
-        onInputChange={vi.fn()}
-      />
-    );
+    render(<LoginForm authError="" loading={false} onSubmit={vi.fn()} onInputChange={vi.fn()} />);
 
     const passwordInput = screen.getByPlaceholderText('••••••••');
     const toggleButton = screen.getByRole('button', { name: 'إظهار كلمة المرور' });
@@ -47,26 +33,14 @@ describe('LoginForm Component', () => {
   it('should render authentication errors provided from the parent', () => {
     const errorMsg = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
     render(
-      <LoginForm
-        authError={errorMsg}
-        loading={false}
-        onSubmit={vi.fn()}
-        onInputChange={vi.fn()}
-      />
+      <LoginForm authError={errorMsg} loading={false} onSubmit={vi.fn()} onInputChange={vi.fn()} />,
     );
 
     expect(screen.getByText(errorMsg)).toBeInTheDocument();
   });
 
   it('should display Arabic validation errors when fields are touched and left empty', async () => {
-    render(
-      <LoginForm
-        authError=""
-        loading={false}
-        onSubmit={vi.fn()}
-        onInputChange={vi.fn()}
-      />
-    );
+    render(<LoginForm authError="" loading={false} onSubmit={vi.fn()} onInputChange={vi.fn()} />);
 
     const emailInput = screen.getByPlaceholderText('example@bloodlink.benisuef.eg');
     const passwordInput = screen.getByPlaceholderText('••••••••');
@@ -86,14 +60,7 @@ describe('LoginForm Component', () => {
 
   it('should display Arabic validation error for invalid email format', async () => {
     const user = userEvent.setup();
-    render(
-      <LoginForm
-        authError=""
-        loading={false}
-        onSubmit={vi.fn()}
-        onInputChange={vi.fn()}
-      />
-    );
+    render(<LoginForm authError="" loading={false} onSubmit={vi.fn()} onInputChange={vi.fn()} />);
 
     const emailInput = screen.getByPlaceholderText('example@bloodlink.benisuef.eg');
     await user.type(emailInput, 'invalidemail');
@@ -108,12 +75,7 @@ describe('LoginForm Component', () => {
     const user = userEvent.setup();
     const mockSubmit = vi.fn();
     render(
-      <LoginForm
-        authError=""
-        loading={false}
-        onSubmit={mockSubmit}
-        onInputChange={vi.fn()}
-      />
+      <LoginForm authError="" loading={false} onSubmit={mockSubmit} onInputChange={vi.fn()} />,
     );
 
     const emailInput = screen.getByPlaceholderText('example@bloodlink.benisuef.eg');
@@ -137,12 +99,7 @@ describe('LoginForm Component', () => {
     const user = userEvent.setup();
     const mockInputChange = vi.fn();
     render(
-      <LoginForm
-        authError=""
-        loading={false}
-        onSubmit={vi.fn()}
-        onInputChange={mockInputChange}
-      />
+      <LoginForm authError="" loading={false} onSubmit={vi.fn()} onInputChange={mockInputChange} />,
     );
 
     const emailInput = screen.getByPlaceholderText('example@bloodlink.benisuef.eg');

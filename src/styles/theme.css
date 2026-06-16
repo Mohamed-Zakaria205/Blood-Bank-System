@@ -186,8 +186,6 @@
   color-scheme: dark;
 }
 
-
-
 /* Disable transitions during rapid/programmatic changes */
 .no-transition,
 .no-transition * {

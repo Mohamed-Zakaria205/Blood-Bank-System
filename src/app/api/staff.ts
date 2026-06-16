@@ -3,7 +3,12 @@
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
 import { ApiError } from './errors';
-import type { User, CreateStaffRequest, UpdateStaffRequest, ApiResponseWrapper } from '../types/auth';
+import type {
+  User,
+  CreateStaffRequest,
+  UpdateStaffRequest,
+  ApiResponseWrapper,
+} from '../types/auth';
 import type { PaginatedResponse, StaffFilters } from '../types/common';
 
 /** Fetch all staff members (excludes admins) */
@@ -17,7 +22,8 @@ export async function fetchStaff(): Promise<PaginatedResponse<User>> {
  * Mock: client-side filter + slice. Real API: forwarded as query-string.
  */
 export async function fetchFilteredStaff(
-  filters: StaffFilters = {}, options?: { signal?: AbortSignal }
+  filters: StaffFilters = {},
+  options?: { signal?: AbortSignal },
 ): Promise<PaginatedResponse<User>> {
   const { page = 1, limit = 10, search = '', role = '', status = '' } = filters;
 
@@ -32,7 +38,8 @@ export async function fetchFilteredStaff(
 
   // Use 'any' for the generic to bypass strict typing because the backend sends 'items' instead of 'data'
   const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/Staff', {
-    params: { page, limit, search, role: mappedRole, status }, signal: options?.signal,
+    params: { page, limit, search, role: mappedRole, status },
+    signal: options?.signal,
   });
 
   if (!wrapper.success) {
@@ -48,7 +55,7 @@ export async function fetchFilteredStaff(
 
   // The backend returns an array in `items`, but our frontend `PaginatedResponse` expects it in `data`
   const rawItems = wrapper.data.items || [];
-  
+
   const mappedData = rawItems.map((u: any) => ({
     ...u,
     role: (reverseRoleMap[u.role] || u.role) as User['role'],
@@ -75,17 +82,17 @@ export async function createStaff(payload: CreateStaffRequest): Promise<string> 
     role: roleMap[payload.role] || payload.role,
   };
 
-  const { data: wrapper } = await apiClient.post<ApiResponseWrapper<string>>('/Staff', backendPayload);
+  const { data: wrapper } = await apiClient.post<ApiResponseWrapper<string>>(
+    '/Staff',
+    backendPayload,
+  );
   if (!wrapper.success) {
     throw new ApiError(wrapper.message || 'حدث خطأ أثناء إضافة الكادر الطبي');
   }
   return wrapper.data;
 }
 
-export async function updateStaff(
-  id: string,
-  payload: UpdateStaffRequest,
-): Promise<string> {
+export async function updateStaff(id: string, payload: UpdateStaffRequest): Promise<string> {
   const roleMap: Record<string, string> = {
     admin: 'Admin',
     doctor: 'Doctor',
@@ -98,7 +105,10 @@ export async function updateStaff(
     role: payload.role ? roleMap[payload.role] || payload.role : undefined,
   };
 
-  const { data: wrapper } = await apiClient.patch<ApiResponseWrapper<string>>(`/Staff/${id}`, backendPayload);
+  const { data: wrapper } = await apiClient.patch<ApiResponseWrapper<string>>(
+    `/Staff/${id}`,
+    backendPayload,
+  );
   if (!wrapper.success) {
     throw new ApiError(wrapper.message || 'حدث خطأ أثناء تعديل بيانات الكادر الطبي');
   }

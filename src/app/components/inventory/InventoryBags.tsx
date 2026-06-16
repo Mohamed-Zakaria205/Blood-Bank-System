@@ -1,12 +1,5 @@
 ﻿import { useState } from 'react';
-import {
-  Search,
-  Check,
-  AlertTriangle,
-  Upload,
-  Trash2,
-  ShoppingCart,
-} from 'lucide-react';
+import { Search, Check, AlertTriangle, Upload, Trash2, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 import type { BloodBag, BloodType } from '../../types';
 import { useBloodBags, useExportBags, useDisposeBag } from '../../hooks/useInventory';

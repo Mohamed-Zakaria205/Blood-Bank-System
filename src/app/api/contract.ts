@@ -48,10 +48,13 @@ export const EligibilityStatsContractSchema = z.object({
     deferred: z.number(),
     ineligible: z.number(),
   }),
-  bloodTypeCounts: z.record(z.string(), z.object({
-    eligible: z.number(),
-    total: z.number(),
-  })),
+  bloodTypeCounts: z.record(
+    z.string(),
+    z.object({
+      eligible: z.number(),
+      total: z.number(),
+    }),
+  ),
 });
 
 export const EligibilitySettingsContractSchema = z.object({
@@ -117,7 +120,7 @@ export const DoctorDashboardContractSchema = z.object({
       dayName: z.string(),
       date: z.string(),
       donationsCount: z.number(),
-    })
+    }),
   ),
   activeCampaigns: z.array(
     z.object({
@@ -126,7 +129,7 @@ export const DoctorDashboardContractSchema = z.object({
       status: z.string(),
       registeredDonors: z.number(),
       targetDonors: z.number(),
-    })
+    }),
   ),
   upcomingAppointments: z.array(
     z.object({
@@ -136,7 +139,7 @@ export const DoctorDashboardContractSchema = z.object({
       donorNationalId: z.string().optional().nullable(),
       donorBloodType: z.string().optional().nullable(),
       status: z.string(),
-    })
+    }),
   ),
   recentDonations: z.array(
     z.object({
@@ -145,7 +148,7 @@ export const DoctorDashboardContractSchema = z.object({
       name: z.string(),
       source: z.enum(['walkin', 'campaign', 'mobileapp']),
       donationDate: z.string(),
-    })
+    }),
   ),
 });
 
@@ -154,11 +157,7 @@ export const DoctorDashboardContractSchema = z.object({
  * Helper to validate API responses without throwing errors that break the UI.
  * It logs a vivid warning in the console if the contract is violated.
  */
-export function validateContract<T>(
-  schemaName: string,
-  schema: z.ZodType<T>,
-  data: unknown,
-): void {
+export function validateContract<T>(schemaName: string, schema: z.ZodType<T>, data: unknown): void {
   // Only validate in development to avoid performance hits in production
   // or you can enable it globally if contract strictness is critical.
   if (!import.meta.env.DEV) return;

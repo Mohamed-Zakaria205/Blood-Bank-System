@@ -1,11 +1,4 @@
-import {
-  CheckCircle2,
-  X,
-  Check,
-  AlertCircle,
-  Droplets,
-  AlertTriangle,
-} from 'lucide-react';
+import { CheckCircle2, X, Check, AlertCircle, Droplets, AlertTriangle } from 'lucide-react';
 import type { LabTest } from '../../../types';
 import { formatLocalizedDate } from '../../../utils/date';
 import { BLOOD_TYPES } from '../../../constants';
@@ -65,7 +58,11 @@ export default function ScreeningEntryModal({
           className={`flex items-center justify-between p-5 rounded-t-2xl ${isRejected ? 'bg-gradient-to-r from-red-600 to-red-500' : 'bg-gradient-to-r from-green-700 to-green-600'}`}
         >
           <div>
-            <h3 id="modal-title" className="text-white" style={{ fontSize: '17px', fontWeight: 700 }}>
+            <h3
+              id="modal-title"
+              className="text-white"
+              style={{ fontSize: '17px', fontWeight: 700 }}
+            >
               فحص حقيبة الدم — الفحوصات المعيارية
             </h3>
             <div className="flex items-center gap-2 mt-1.5">
@@ -124,7 +121,7 @@ export default function ScreeningEntryModal({
                   تاريخ الطلب
                 </p>
                 <p className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
-                  {entryModal.requestedAt}
+                  {entryModal.requestedAt ? formatLocalizedDate(entryModal.requestedAt) : ''}
                 </p>
               </div>
             </div>
@@ -147,11 +144,10 @@ export default function ScreeningEntryModal({
                   key={bt}
                   type="button"
                   onClick={() => onUpdateForm((p) => ({ ...p, confirmedBloodType: bt }))}
-                  className={`py-2.5 rounded-xl border-2 transition-all ${
-                    form.confirmedBloodType === bt
+                  className={`py-2.5 rounded-xl border-2 transition-all ${form.confirmedBloodType === bt
                       ? 'border-green-600 bg-green-50 text-green-700'
                       : 'border-border text-muted-foreground hover:border-green-200'
-                  }`}
+                    }`}
                   style={{
                     fontSize: '14px',
                     fontWeight: form.confirmedBloodType === bt ? 800 : 500,
@@ -183,17 +179,15 @@ export default function ScreeningEntryModal({
               {screeningTests.map((test) => (
                 <div
                   key={test.key}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all ${
-                    form[test.key] === 'positive'
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all ${form[test.key] === 'positive'
                       ? 'bg-red-50 border-red-200'
                       : 'bg-card border-border hover:border-green-200'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`w-9 h-9 rounded-xl flex flex-col items-center justify-center flex-shrink-0 ${
-                        form[test.key] === 'positive' ? 'bg-red-100' : 'bg-green-50'
-                      }`}
+                      className={`w-9 h-9 rounded-xl flex flex-col items-center justify-center flex-shrink-0 ${form[test.key] === 'positive' ? 'bg-red-100' : 'bg-green-50'
+                        }`}
                     >
                       <span
                         className={`${form[test.key] === 'positive' ? 'text-red-700' : 'text-green-700'}`}
@@ -203,10 +197,7 @@ export default function ScreeningEntryModal({
                       </span>
                     </div>
                     <div>
-                      <p
-                        className="text-foreground"
-                        style={{ fontSize: '13px', fontWeight: 600 }}
-                      >
+                      <p className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
                         {test.label}
                       </p>
                       <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
@@ -217,22 +208,20 @@ export default function ScreeningEntryModal({
                   <div className="flex gap-2">
                     <button
                       onClick={() => updateTest(test.key, 'negative')}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-                        form[test.key] === 'negative'
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${form[test.key] === 'negative'
                           ? 'bg-green-600 text-white shadow-sm'
                           : 'bg-muted/40 border border-border text-muted-foreground hover:bg-green-50 hover:border-green-300'
-                      }`}
+                        }`}
                       style={{ fontSize: '12px', fontWeight: 600 }}
                     >
                       <Check className="w-3 h-3" /> سالب
                     </button>
                     <button
                       onClick={() => updateTest(test.key, 'positive')}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-                        form[test.key] === 'positive'
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${form[test.key] === 'positive'
                           ? 'bg-red-500 text-white shadow-sm'
                           : 'bg-muted/40 border border-border text-muted-foreground hover:bg-red-50 hover:border-red-300'
-                      }`}
+                        }`}
                       style={{ fontSize: '12px', fontWeight: 600 }}
                     >
                       <X className="w-3 h-3" /> موجب
@@ -318,11 +307,10 @@ export default function ScreeningEntryModal({
             <button
               onClick={onSubmit}
               disabled={submitting}
-              className={`flex-1 py-3 rounded-xl text-white shadow-md hover:shadow-lg transition-all disabled:opacity-60 ${
-                isRejected
+              className={`flex-1 py-3 rounded-xl text-white shadow-md hover:shadow-lg transition-all disabled:opacity-60 ${isRejected
                   ? 'bg-gradient-to-r from-red-600 to-red-500'
                   : 'bg-gradient-to-r from-green-700 to-green-600'
-              }`}
+                }`}
               style={{ fontSize: '14px', fontWeight: 600 }}
             >
               {submitting ? (

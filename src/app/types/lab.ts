@@ -42,6 +42,7 @@ export interface Sample {
   status: 'pending' | 'testing' | 'completed';
   labDoctor?: string;
   city?: string;
+  nationalId?: string;
 }
 
 export interface TestResult {
@@ -59,4 +60,17 @@ export interface TestResult {
   labDoctor: string;
   date: string;
   notes?: string;
+  nationalId?: string;
+}
+
+export interface LabDashboardStats {
+  tests: {
+    pending: number;
+    completed: number;
+  };
+  results: {
+    total: number;
+    safe: number;
+    rejected: number;
+  };
 }

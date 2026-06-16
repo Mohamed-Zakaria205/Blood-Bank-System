@@ -32,15 +32,15 @@ describe('RoleGuard Component', () => {
             <Route index element={<div>Protected Content Renders</div>} />
           </Route>
         </Routes>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   };
 
   it('redirects to /login if user is null', () => {
     vi.mocked(useAuth).mockReturnValue({ user: null } as any);
-    
+
     renderGuard('admin');
-    
+
     expect(mockNavigate).toHaveBeenCalledWith('/login', { replace: true });
     expect(screen.queryByText('Protected Content Renders')).not.toBeInTheDocument();
     expect(screen.queryByText('غير مصرح بالدخول')).not.toBeInTheDocument();
@@ -48,9 +48,9 @@ describe('RoleGuard Component', () => {
 
   it('renders UnauthorizedPage if user role does not match allowedRole', () => {
     vi.mocked(useAuth).mockReturnValue({ user: { role: 'doctor' } } as any);
-    
+
     renderGuard('admin');
-    
+
     expect(screen.getByText('غير مصرح بالدخول')).toBeInTheDocument();
     expect(screen.getByText('ليس لديك صلاحية للوصول إلى هذه الصفحة')).toBeInTheDocument();
     expect(screen.queryByText('Protected Content Renders')).not.toBeInTheDocument();
@@ -59,9 +59,9 @@ describe('RoleGuard Component', () => {
 
   it('renders child route content if user role matches allowedRole', () => {
     vi.mocked(useAuth).mockReturnValue({ user: { role: 'admin' } } as any);
-    
+
     renderGuard('admin');
-    
+
     expect(screen.getByText('Protected Content Renders')).toBeInTheDocument();
     expect(screen.queryByText('غير مصرح بالدخول')).not.toBeInTheDocument();
     expect(mockNavigate).not.toHaveBeenCalled();

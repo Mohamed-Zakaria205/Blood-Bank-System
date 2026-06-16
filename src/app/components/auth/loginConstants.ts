@@ -91,9 +91,13 @@ export const systemStats = [
 // ── Role → dashboard destination mapping ───────────────────
 export function getRoleDashboardPath(role: string): string {
   switch (role) {
-    case 'admin':     return '/admin';
-    case 'lab':       return '/lab';
-    case 'inventory': return '/inventory';
-    default:          return '/doctor';
+    case 'admin':
+      return '/admin';
+    case 'lab':
+      return '/lab';
+    case 'inventory':
+      return '/inventory';
+    default:
+      return '/doctor';
   }
 }

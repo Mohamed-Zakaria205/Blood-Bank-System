@@ -7,11 +7,11 @@ interface ActiveCampaignsPanelProps {
 }
 
 const STATUS_STYLE: Record<string, { label: string; cls: string }> = {
-  active:    { label: 'نشطة',   cls: 'bg-green-100 text-green-700' },
-  notactive: { label: 'قادمة',  cls: 'bg-blue-100 text-blue-700' },
-  upcoming:  { label: 'قادمة',  cls: 'bg-blue-100 text-blue-700' },
+  active: { label: 'نشطة', cls: 'bg-green-100 text-green-700' },
+  notactive: { label: 'قادمة', cls: 'bg-blue-100 text-blue-700' },
+  upcoming: { label: 'قادمة', cls: 'bg-blue-100 text-blue-700' },
   completed: { label: 'مكتملة', cls: 'bg-gray-100 text-gray-600' },
-  cancelled: { label: 'ملغاة',  cls: 'bg-red-100 text-red-600' },
+  cancelled: { label: 'ملغاة', cls: 'bg-red-100 text-red-600' },
 };
 
 export default function ActiveCampaignsPanel({ campaigns, onViewAll }: ActiveCampaignsPanelProps) {
@@ -31,8 +31,12 @@ export default function ActiveCampaignsPanel({ campaigns, onViewAll }: ActiveCam
       </div>
       <div className="space-y-3 overflow-y-auto max-h-48">
         {campaigns.slice(0, 4).map((c) => {
-          const pct = c.targetDonors > 0 ? Math.round((c.registeredDonors / c.targetDonors) * 100) : 0;
-          const statusCfg = STATUS_STYLE[c.status] ?? { label: c.status, cls: 'bg-muted text-muted-foreground' };
+          const pct =
+            c.targetDonors > 0 ? Math.round((c.registeredDonors / c.targetDonors) * 100) : 0;
+          const statusCfg = STATUS_STYLE[c.status] ?? {
+            label: c.status,
+            cls: 'bg-muted text-muted-foreground',
+          };
           return (
             <div key={c.id} className="p-3 bg-muted/40 rounded-xl">
               <div className="flex items-start justify-between mb-1.5">

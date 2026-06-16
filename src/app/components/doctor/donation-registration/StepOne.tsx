@@ -54,10 +54,7 @@ export default function StepOne({
     <>
       {/* Source Selection */}
       <div>
-        <label
-          className="block text-foreground mb-2"
-          style={{ fontSize: '13px', fontWeight: 600 }}
-        >
+        <label className="block text-foreground mb-2" style={{ fontSize: '13px', fontWeight: 600 }}>
           <Activity className="w-4 h-4 inline ml-1 text-green-600" />
           مصدر المتبرع
         </label>
@@ -139,15 +136,11 @@ export default function StepOne({
             )}
             {selectedCampaign && (
               <div className="mt-2 p-2.5 bg-purple-50 border border-purple-100 rounded-xl flex items-center justify-between">
-                <span
-                  className="text-purple-700"
-                  style={{ fontSize: '12px', fontWeight: 600 }}
-                >
+                <span className="text-purple-700" style={{ fontSize: '12px', fontWeight: 600 }}>
                   {selectedCampaign.title}
                 </span>
                 <span className="text-purple-500" style={{ fontSize: '11px' }}>
-                  {selectedCampaign.registeredDonors} / {selectedCampaign.targetDonors}{' '}
-                  متبرع
+                  {selectedCampaign.registeredDonors} / {selectedCampaign.targetDonors} متبرع
                 </span>
               </div>
             )}
@@ -327,10 +320,7 @@ export default function StepOne({
 
       {/* Address → Governorate + District + Area */}
       <div>
-        <label
-          className="block text-foreground mb-2"
-          style={{ fontSize: '13px', fontWeight: 600 }}
-        >
+        <label className="block text-foreground mb-2" style={{ fontSize: '13px', fontWeight: 600 }}>
           <MapPin className="w-4 h-4 inline ml-1 text-green-600" />
           العنوان التفصيلي
         </label>
@@ -437,8 +427,19 @@ export default function StepOne({
           {submitting ? (
             <>
               <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
               </svg>
               جاري التسجيل...
             </>
@@ -453,4 +454,3 @@ export default function StepOne({
     </>
   );
 }
-

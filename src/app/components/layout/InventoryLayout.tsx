@@ -59,14 +59,15 @@ export default function InventoryLayout() {
     { path: '/inventory/inventory-alerts', label: 'تحليلات المخزون', icon: Activity },
   ];
 
-  const headerAlert = totalAlerts > 0 ? (
-    <div className="hidden sm:flex items-center gap-1.5 bg-yellow-50 border border-yellow-100 px-3 py-1.5 rounded-lg">
-      <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
-      <span className="text-yellow-600" style={{ fontSize: '12px', fontWeight: 600 }}>
-        {totalAlerts} حقائب تحتاج مراجعة
-      </span>
-    </div>
-  ) : undefined;
+  const headerAlert =
+    totalAlerts > 0 ? (
+      <div className="hidden sm:flex items-center gap-1.5 bg-yellow-50 border border-yellow-100 px-3 py-1.5 rounded-lg">
+        <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+        <span className="text-yellow-600" style={{ fontSize: '12px', fontWeight: 600 }}>
+          {totalAlerts} حقائب تحتاج مراجعة
+        </span>
+      </div>
+    ) : undefined;
 
   return (
     <DashboardLayout

@@ -82,7 +82,12 @@ export default function AdminInventory() {
             مخزون الدم
           </h1>
           <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
-            آخر تحديث: اليوم، {new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}
+            آخر تحديث: اليوم،{' '}
+            {new Intl.DateTimeFormat('ar-EG', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            }).format(new Date())}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -185,7 +190,13 @@ export default function AdminInventory() {
                 dataKey="units"
                 radius={[6, 6, 0, 0]}
                 shape={(props: unknown) => {
-                  const { x, y, width, height, index } = props as { x: number; y: number; width: number; height: number; index: number };
+                  const { x, y, width, height, index } = props as {
+                    x: number;
+                    y: number;
+                    width: number;
+                    height: number;
+                    index: number;
+                  };
                   const item = inventory[index];
                   return (
                     <rect
@@ -196,7 +207,7 @@ export default function AdminInventory() {
                       rx={6}
                       ry={6}
                       fill={barColors[item?.status ?? 'normal']}
-                    />  
+                    />
                   );
                 }}
               />

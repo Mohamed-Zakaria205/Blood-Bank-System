@@ -1,9 +1,4 @@
-import type {
-  BloodBag,
-  BloodInventoryItem,
-  MonthlyStats,
-  Transaction,
-} from '../types';
+import type { BloodBag, BloodInventoryItem, MonthlyStats, Transaction } from '../types';
 
 export const bloodInventory: BloodInventoryItem[] = [
   {

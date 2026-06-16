@@ -10,7 +10,12 @@ interface BloodTypeBarProps {
   onToggle: (type: BloodType | 'all') => void;
 }
 
-export default function BloodTypeBar({ enriched = [], stats, filterBlood, onToggle }: BloodTypeBarProps) {
+export default function BloodTypeBar({
+  enriched = [],
+  stats,
+  filterBlood,
+  onToggle,
+}: BloodTypeBarProps) {
   return (
     <div className="bg-card rounded-2xl p-5 border border-border shadow-sm">
       <h3 className="text-foreground mb-4" style={{ fontSize: '14px', fontWeight: 700 }}>

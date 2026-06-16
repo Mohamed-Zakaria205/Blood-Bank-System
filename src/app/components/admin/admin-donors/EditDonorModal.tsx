@@ -47,7 +47,11 @@ export default function EditDonorModal({
       >
         <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card">
           <div>
-            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
+            <h3
+              id="modal-title"
+              className="text-foreground"
+              style={{ fontSize: '18px', fontWeight: 700 }}
+            >
               تعديل بيانات المتبرع
             </h3>
             <p className="text-green-600 font-mono" style={{ fontSize: '12px' }}>
@@ -171,7 +175,6 @@ export default function EditDonorModal({
                 ))}
               </select>
             </div>
-
 
             {/* العنوان (المحافظة + المركز + المنطقة) */}
             <div className="col-span-2 border-t border-border pt-4 mt-2">

@@ -17,7 +17,11 @@ import type { ApiResponse } from '../../types/common';
 // import type { AxiosError } from 'axios';
 import { useDebounce } from '../../hooks/useDebounce';
 import { BLOOD_TYPES } from '../../constants';
-import { usePaginatedEligibleDonors, useDonorEligibilityStats, useSendDonorNotification } from '../../hooks/useDonors';
+import {
+  usePaginatedEligibleDonors,
+  useDonorEligibilityStats,
+  useSendDonorNotification,
+} from '../../hooks/useDonors';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import {
   Pagination,
@@ -43,7 +47,9 @@ import BloodTypeBar from './doctor-eligibility/BloodTypeBar';
 export default function DoctorEligibility() {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300);
-  const [filterStatus, setFilterStatus] = useState<'all' | 'eligible' | 'soon' | 'not_yet' | 'deferred' | 'ineligible'>('all');
+  const [filterStatus, setFilterStatus] = useState<
+    'all' | 'eligible' | 'soon' | 'not_yet' | 'deferred' | 'ineligible'
+  >('all');
   const [filterBlood, setFilterBlood] = useState<BloodType | 'all'>('all');
   const [page, setPage] = useState(1);
   const [notifModal, setNotifModal] = useState<NotifModal | null>(null);
@@ -65,7 +71,12 @@ export default function DoctorEligibility() {
     }
   }, [sentNotifs]);
 
-  const { data: response, isLoading, isError, refetch } = usePaginatedEligibleDonors({
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = usePaginatedEligibleDonors({
     page,
     limit: 10,
     search: debouncedSearch,
@@ -73,7 +84,12 @@ export default function DoctorEligibility() {
     status: filterStatus === 'all' ? '' : filterStatus,
   });
 
-  const { data: stats, isLoading: statsLoading, isError: statsError, refetch: refetchStats } = useDonorEligibilityStats();
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    isError: statsError,
+    refetch: refetchStats,
+  } = useDonorEligibilityStats();
   const sendNotifMutation = useSendDonorNotification();
 
   const donorsData = response?.data || [];
@@ -119,9 +135,10 @@ export default function DoctorEligibility() {
   const sendNotification = () => {
     if (!notifModal) return;
 
-    const message = notifModal.type === 'emergency'
-      ? `🚨 طلب دم طارئ — بنك دم بني سويف\nفصيلة الدم: ${notifModal.donor.bloodType}\nيرجى التواصل فوراً على: 082-XXXXXXX`
-      : `💚 أنت الآن مؤهل للتبرع بالدم مجدداً!\nآخر تبرع: ${notifModal.donor.lastDonationDate ?? 'لم يتبرع'}\nاحجز موعدك عبر التطبيق أو تواصل معنا.`;
+    const message =
+      notifModal.type === 'emergency'
+        ? `🚨 طلب دم طارئ — بنك دم بني سويف\nفصيلة الدم: ${notifModal.donor.bloodType}\nيرجى التواصل فوراً على: 082-XXXXXXX`
+        : `💚 أنت الآن مؤهل للتبرع بالدم مجدداً!\nآخر تبرع: ${notifModal.donor.lastDonationDate ?? 'لم يتبرع'}\nاحجز موعدك عبر التطبيق أو تواصل معنا.`;
 
     if (message.length > 320) {
       toast.error('محتوى الرسالة طويل جداً (الحد الأقصى 320 حرف)');
@@ -138,20 +155,21 @@ export default function DoctorEligibility() {
       },
       {
         onSuccess: (res: ApiResponse<string>) => {
-          setSentNotifs((prev: Set<string>) => new Set([...prev, `${notifModal.donor.id}-${notifModal.type}`]));
+          setSentNotifs(
+            (prev: Set<string>) => new Set([...prev, `${notifModal.donor.id}-${notifModal.type}`]),
+          );
           toast.success(
-            res.message || (
-              notifModal.type === 'emergency'
+            res.message ||
+              (notifModal.type === 'emergency'
                 ? `تم إرسال إشعار طارئ إلى ${notifModal.donor.name}`
-                : `تم إرسال إشعار جاهزية إلى ${notifModal.donor.name}`
-            )
+                : `تم إرسال إشعار جاهزية إلى ${notifModal.donor.name}`),
           );
           setNotifModal(null);
         },
         onError: (err: any) => {
           toast.error(err.response?.data?.message || 'تعذر إرسال الإشعار. يرجى المحاولة لاحقاً');
         },
-      }
+      },
     );
   };
 
@@ -184,13 +202,7 @@ export default function DoctorEligibility() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {(
           [
-            [
-              'all',
-              'الجميع',
-              counts.all,
-              'text-foreground',
-              'bg-muted/40 border-border',
-            ],
+            ['all', 'الجميع', counts.all, 'text-foreground', 'bg-muted/40 border-border'],
             [
               'eligible',
               'مؤهلون الآن',
@@ -230,7 +242,10 @@ export default function DoctorEligibility() {
         ).map(([val, lbl, cnt, color, bg]) => (
           <button
             key={val}
-            onClick={() => { setFilterStatus(val); setPage(1); }}
+            onClick={() => {
+              setFilterStatus(val);
+              setPage(1);
+            }}
             role="radio"
             aria-checked={filterStatus === val}
             aria-label={`${lbl} (${cnt} متبرع)`}
@@ -247,7 +262,15 @@ export default function DoctorEligibility() {
       </div>
 
       {/* Blood type eligibility bar */}
-      <BloodTypeBar enriched={enriched} stats={stats} filterBlood={filterBlood} onToggle={(blood) => { setFilterBlood(blood); setPage(1); }} />
+      <BloodTypeBar
+        enriched={enriched}
+        stats={stats}
+        filterBlood={filterBlood}
+        onToggle={(blood) => {
+          setFilterBlood(blood);
+          setPage(1);
+        }}
+      />
 
       {/* Search & filters */}
       <div className="flex flex-col sm:flex-row gap-3">
@@ -255,7 +278,10 @@ export default function DoctorEligibility() {
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             maxLength={100}
             aria-label="بحث بالاسم أو رقم الهاتف أو الفصيلة"
             placeholder="بحث بالاسم أو رقم الهاتف أو الفصيلة..."
@@ -265,7 +291,10 @@ export default function DoctorEligibility() {
         </div>
         <select
           value={filterBlood}
-          onChange={(e) => { setFilterBlood(e.target.value as BloodType | 'all'); setPage(1); }}
+          onChange={(e) => {
+            setFilterBlood(e.target.value as BloodType | 'all');
+            setPage(1);
+          }}
           className="px-4 py-2.5 border border-border rounded-xl bg-card text-foreground outline-none"
           style={{ fontSize: '13px' }}
         >
@@ -279,7 +308,10 @@ export default function DoctorEligibility() {
       </div>
 
       {/* Total results count */}
-      <div className="flex items-center justify-between text-muted-foreground px-1" style={{ fontSize: '13px' }}>
+      <div
+        className="flex items-center justify-between text-muted-foreground px-1"
+        style={{ fontSize: '13px' }}
+      >
         <span>تم العثور على {total} نتيجة</span>
       </div>
 

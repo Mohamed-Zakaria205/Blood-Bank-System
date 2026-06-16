@@ -58,7 +58,7 @@ describe('useAppointmentsHub hook', () => {
         centerId: 'center-abc',
         onCancelled: onCancelledMock,
         enabled: false,
-      })
+      }),
     );
 
     expect(mockBuild).not.toHaveBeenCalled();
@@ -73,13 +73,12 @@ describe('useAppointmentsHub hook', () => {
         centerId: 'center-123',
         onCancelled: onCancelledMock,
         enabled: true,
-      })
+      }),
     );
 
-    expect(mockWithUrl).toHaveBeenCalledWith(
-      expect.stringContaining('/hubs/appointments'),
-      { withCredentials: true }
-    );
+    expect(mockWithUrl).toHaveBeenCalledWith(expect.stringContaining('/hubs/appointments'), {
+      withCredentials: true,
+    });
     expect(mockWithAutomaticReconnect).toHaveBeenCalled();
     expect(mockBuild).toHaveBeenCalled();
     expect(mockOn).toHaveBeenCalledWith('AppointmentCancelled', expect.any(Function));
@@ -101,7 +100,7 @@ describe('useAppointmentsHub hook', () => {
       useAppointmentsHub({
         onCancelled: onCancelledMock,
         enabled: true,
-      })
+      }),
     );
 
     await vi.waitFor(() => {
@@ -121,11 +120,11 @@ describe('useAppointmentsHub hook', () => {
       useAppointmentsHub({
         onCancelled: onCancelledMock,
         enabled: true,
-      })
+      }),
     );
 
     expect(capturedCallback).toBeTypeOf('function');
-    
+
     const sampleNotification = {
       id: 'notif-1',
       donorName: 'أحمد علي',
@@ -139,18 +138,18 @@ describe('useAppointmentsHub hook', () => {
   });
 
   it('gracefully catches and logs connection failures', async () => {
-    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
     mockStart.mockRejectedValue(new Error('SignalR network error'));
 
     renderHook(() =>
       useAppointmentsHub({
         onCancelled: onCancelledMock,
         enabled: true,
-      })
+      }),
     );
 
     expect(mockStart).toHaveBeenCalled();
-    
+
     await vi.waitFor(() => {
       expect(mockInvoke).not.toHaveBeenCalled();
     });

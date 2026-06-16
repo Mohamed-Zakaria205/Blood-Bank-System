@@ -13,12 +13,12 @@ import type { BloodType, DonationType } from './common';
  */
 export interface CancellationNotification {
   id: string;
-  appointmentId?: string;  // from backend push — kept for backward compat
+  appointmentId?: string; // from backend push — kept for backward compat
   donorName: string;
-  donorPhone?: string;     // only available in local optimistic notifications
+  donorPhone?: string; // only available in local optimistic notifications
   date: string;
   time: string;
-  campaignId?: string;     // only available in local optimistic notifications
+  campaignId?: string; // only available in local optimistic notifications
   cancelledAt: string;
   cancelledByName: string;
   reason?: string;
@@ -29,12 +29,7 @@ export interface CancellationNotification {
  * Status values as returned by the backend.
  * The backend is the source of truth — no client-side derivation.
  */
-export type AppointmentSlotStatus =
-  | 'available'
-  | 'booked'
-  | 'completed'
-  | 'missed'
-  | 'cancelled';
+export type AppointmentSlotStatus = 'available' | 'booked' | 'completed' | 'missed' | 'cancelled';
 
 /**
  * Unified appointment slot — replaces the old Slot15 interface.

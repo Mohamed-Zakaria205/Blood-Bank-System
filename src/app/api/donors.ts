@@ -2,15 +2,29 @@
 // Donors & Donations API service
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
-import type { Donor, Donation, BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest, EligibilityStats, SendNotificationRequest, EligibilitySettings } from '../types/donor';
+import type {
+  Donor,
+  Donation,
+  BasicDonationRequest,
+  MedicalRecordRequest,
+  UpdateDonorRequest,
+  EligibilityStats,
+  SendNotificationRequest,
+  EligibilitySettings,
+} from '../types/donor';
 import type { PaginatedResponse, ApiResponse, DonorFilters } from '../types/common';
 import type { DonationCenter } from '../types/donationCenter';
 import type { ApiResponseWrapper } from '../types/auth';
-import { validateContract, createPaginatedSchema, DonorContractSchema, EligibilityStatsContractSchema, EligibilitySettingsContractSchema } from './contract';
+import {
+  validateContract,
+  createPaginatedSchema,
+  DonorContractSchema,
+  EligibilityStatsContractSchema,
+  EligibilitySettingsContractSchema,
+} from './contract';
 // import { donors as MOCK_DONORS } from '../data/donors.mock';
 // import { donations as MOCK_DONATIONS } from '../data/donations.mock';
 import axios from 'axios';
-
 
 /** In-memory store — donors (profiles) */
 // let mockDonorStore: Donor[] = [...MOCK_DONORS];
@@ -38,13 +52,15 @@ export function mapRawDonor(item: any): Donor {
 
 /** Fetch all donors (unpaginated — used by components that need the full list) */
 export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
-    items?: Donor[];
-    data?: Donor[];
-    total: number;
-    page: number;
-    limit: number;
-  }>>('/donors');
+  const { data: wrapper } = await apiClient.get<
+    ApiResponseWrapper<{
+      items?: Donor[];
+      data?: Donor[];
+      total: number;
+      page: number;
+      limit: number;
+    }>
+  >('/donors');
   const rawItems = wrapper.data?.items || wrapper.data?.data || [];
   const mappedItems: Donor[] = rawItems.map(mapRawDonor);
   const total = wrapper.data?.total || mappedItems.length;
@@ -52,7 +68,7 @@ export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
     data: mappedItems,
     total,
     page: wrapper.data?.page || 1,
-    limit: wrapper.data?.limit || mappedItems.length
+    limit: wrapper.data?.limit || mappedItems.length,
   };
   validateContract('Donors List', createPaginatedSchema(DonorContractSchema), result);
   return result;
@@ -67,16 +83,17 @@ export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
  * Real API: all params are forwarded as query-string parameters.
  */
 export async function fetchPaginatedDonors(
-  filters: DonorFilters = {}, options?: { signal?: AbortSignal }
+  filters: DonorFilters = {},
+  options?: { signal?: AbortSignal },
 ): Promise<PaginatedResponse<Donor>> {
   const { page = 1, limit = 10, search = '', bloodType = '', status = '', district = '' } = filters;
 
   // if (USE_MOCK) {
   //   await new Promise((r) => setTimeout(r, 300));
-  // 
+  //
   //   // ── Client-side filtering ──────────────────────────────
   //   let result = mockDonorStore;
-  // 
+  //
   //   if (search) {
   //     const q = search.toLowerCase();
   //     result = result.filter(
@@ -90,12 +107,12 @@ export async function fetchPaginatedDonors(
   //   if (bloodType) result = result.filter((d) => d.bloodType === bloodType);
   //   if (status) result = result.filter((d) => d.status === status);
   //   if (district) result = result.filter((d) => d.district === district);
-  // 
+  //
   //   // ── Client-side pagination ─────────────────────────────
   //   const total = result.length;
   //   const start = (page - 1) * limit;
   //   const data = result.slice(start, start + limit);
-  // 
+  //
   //   return { data, total, page, limit };
   // }
 
@@ -107,13 +124,15 @@ export async function fetchPaginatedDonors(
   if (district) params.district = district;
 
   try {
-    const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
-      items?: Donor[];
-      data?: Donor[];
-      total: number;
-      page: number;
-      limit: number;
-    }>>('/Donors', {
+    const { data: wrapper } = await apiClient.get<
+      ApiResponseWrapper<{
+        items?: Donor[];
+        data?: Donor[];
+        total: number;
+        page: number;
+        limit: number;
+      }>
+    >('/Donors', {
       params,
       signal: options?.signal,
     });
@@ -140,7 +159,8 @@ export async function fetchPaginatedDonors(
  * Uses the new backend endpoint designed specifically for the Donor Eligibility feature.
  */
 export async function fetchPaginatedEligibleDonors(
-  filters: DonorFilters = {}, options?: { signal?: AbortSignal }
+  filters: DonorFilters = {},
+  options?: { signal?: AbortSignal },
 ): Promise<PaginatedResponse<Donor>> {
   const { page = 1, limit = 10, search = '', bloodType = '', status = '' } = filters;
 
@@ -150,13 +170,15 @@ export async function fetchPaginatedEligibleDonors(
   if (status && status !== 'all') params.status = status;
 
   try {
-    const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
-      items?: Donor[];
-      data?: Donor[];
-      total: number;
-      page: number;
-      limit: number;
-    }>>('/Donors/eligibility', {
+    const { data: wrapper } = await apiClient.get<
+      ApiResponseWrapper<{
+        items?: Donor[];
+        data?: Donor[];
+        total: number;
+        page: number;
+        limit: number;
+      }>
+    >('/Donors/eligibility', {
       params,
       signal: options?.signal,
     });
@@ -193,7 +215,9 @@ export async function fetchDonorById(id: string): Promise<ApiResponse<Donor>> {
   }
 }
 
-export async function searchDonorByNationalId(nationalId: string): Promise<ApiResponse<Donor | null>> {
+export async function searchDonorByNationalId(
+  nationalId: string,
+): Promise<ApiResponse<Donor | null>> {
   try {
     const { data } = await apiClient.get<ApiResponse<Donor | null>>('/Donors/search', {
       params: { nationalId },
@@ -229,7 +253,10 @@ export async function updateDonor(
   if (payload.dateOfBirth !== undefined) patchPayload.dateOfBirth = payload.dateOfBirth;
 
   try {
-    const { data } = await apiClient.patch<ApiResponseWrapper<Donor>>(`/Donors/${id}`, patchPayload);
+    const { data } = await apiClient.patch<ApiResponseWrapper<Donor>>(
+      `/Donors/${id}`,
+      patchPayload,
+    );
     return data;
   } catch (error) {
     console.error('Error in updateDonor:', error);
@@ -240,7 +267,9 @@ export async function updateDonor(
 /** Fetch eligibility statistics for status cards and blood type bar */
 export async function fetchDonorEligibilityStats(): Promise<ApiResponse<EligibilityStats>> {
   try {
-    const { data } = await apiClient.get<ApiResponseWrapper<EligibilityStats>>('/Donors/eligibility/stats');
+    const { data } = await apiClient.get<ApiResponseWrapper<EligibilityStats>>(
+      '/Donors/eligibility/stats',
+    );
     validateContract('Eligibility Stats', EligibilityStatsContractSchema, data.data);
     return { data: data.data };
   } catch (error) {
@@ -252,7 +281,8 @@ export async function fetchDonorEligibilityStats(): Promise<ApiResponse<Eligibil
 /** Fetch eligibility settings (wait periods) for admin */
 export async function fetchEligibilitySettings(): Promise<ApiResponse<EligibilitySettings>> {
   try {
-    const { data } = await apiClient.get<ApiResponseWrapper<EligibilitySettings>>('/Settings/eligibility');
+    const { data } =
+      await apiClient.get<ApiResponseWrapper<EligibilitySettings>>('/Settings/eligibility');
     validateContract('Eligibility Settings', EligibilitySettingsContractSchema, data.data);
     return { data: data.data };
   } catch (error) {
@@ -262,9 +292,14 @@ export async function fetchEligibilitySettings(): Promise<ApiResponse<Eligibilit
 }
 
 /** Update eligibility settings (wait periods) for admin */
-export async function updateEligibilitySettings(settings: EligibilitySettings): Promise<ApiResponse<void>> {
+export async function updateEligibilitySettings(
+  settings: EligibilitySettings,
+): Promise<ApiResponse<void>> {
   try {
-    const { data } = await apiClient.put<ApiResponseWrapper<void>>('/Settings/eligibility', settings);
+    const { data } = await apiClient.put<ApiResponseWrapper<void>>(
+      '/Settings/eligibility',
+      settings,
+    );
     return { data: undefined, message: data.message };
   } catch (error) {
     console.error('[API] updateEligibilitySettings error:', error);
@@ -275,10 +310,13 @@ export async function updateEligibilitySettings(settings: EligibilitySettings): 
 /** Send SMS / App notification to a donor */
 export async function sendDonorNotification(
   donorId: string,
-  payload: SendNotificationRequest
+  payload: SendNotificationRequest,
 ): Promise<ApiResponse<string>> {
   try {
-    const { data } = await apiClient.post<ApiResponseWrapper<string>>(`/Donors/${donorId}/notifications`, payload);
+    const { data } = await apiClient.post<ApiResponseWrapper<string>>(
+      `/Donors/${donorId}/notifications`,
+      payload,
+    );
     return { data: data.data, message: data.message };
   } catch (error) {
     console.error('[API] sendDonorNotification error:', error);
@@ -292,15 +330,16 @@ export async function sendDonorNotification(
 
 /** Fetch ALL donations (unpaginated — used by dashboards for statistics) */
 export async function fetchAllDonations(): Promise<PaginatedResponse<Donation>> {
-
   try {
-    const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
-      items?: Donation[];
-      data?: Donation[];
-      total: number;
-      page: number;
-      limit: number;
-    }>>('/Donations', { params: { limit: 9999 } });
+    const { data: wrapper } = await apiClient.get<
+      ApiResponseWrapper<{
+        items?: Donation[];
+        data?: Donation[];
+        total: number;
+        page: number;
+        limit: number;
+      }>
+    >('/Donations', { params: { limit: 9999 } });
 
     const rawItems = wrapper.data?.items || wrapper.data?.data || [];
 
@@ -320,10 +359,10 @@ export async function fetchAllDonations(): Promise<PaginatedResponse<Donation>> 
  * Fetch donations with pagination, search and filtering.
  */
 export async function fetchPaginatedDonations(
-  filters: DonorFilters = {}, options?: { signal?: AbortSignal }
+  filters: DonorFilters = {},
+  options?: { signal?: AbortSignal },
 ): Promise<PaginatedResponse<Donation>> {
   const { page = 1, limit = 10, search = '', bloodType = '', district = '' } = filters;
-
 
   const params: Record<string, any> = { page, limit };
   if (search) params.search = search;
@@ -331,13 +370,15 @@ export async function fetchPaginatedDonations(
   if (district) params.district = district;
 
   try {
-    const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
-      items?: Donation[];
-      data?: Donation[];
-      total: number;
-      page: number;
-      limit: number;
-    }>>('/Donations', {
+    const { data: wrapper } = await apiClient.get<
+      ApiResponseWrapper<{
+        items?: Donation[];
+        data?: Donation[];
+        total: number;
+        page: number;
+        limit: number;
+      }>
+    >('/Donations', {
       params,
       signal: options?.signal,
     });
@@ -359,22 +400,30 @@ export async function fetchPaginatedDonations(
 }
 
 /** POST /donations — Step 1: create donation with basic info */
-export async function addDonation(payload: BasicDonationRequest): Promise<ApiResponse<{ id: string } | string>> {
-
-  const { data } = await apiClient.post<ApiResponse<{ id: string } | string>>('/Donations', payload);
+export async function addDonation(
+  payload: BasicDonationRequest,
+): Promise<ApiResponse<{ id: string } | string>> {
+  const { data } = await apiClient.post<ApiResponse<{ id: string } | string>>(
+    '/Donations',
+    payload,
+  );
   return data;
 }
 
 /** POST /donations/:id/medical-record — Step 2: add medical data */
-export async function addMedicalRecord(donationId: string, payload: MedicalRecordRequest): Promise<ApiResponse<string>> {
-
-  const { data } = await apiClient.post<ApiResponse<string>>('/Donations/' + donationId + '/medical-record', payload);
+export async function addMedicalRecord(
+  donationId: string,
+  payload: MedicalRecordRequest,
+): Promise<ApiResponse<string>> {
+  const { data } = await apiClient.post<ApiResponse<string>>(
+    '/Donations/' + donationId + '/medical-record',
+    payload,
+  );
   return data;
 }
 
 /** DELETE /donations/:id — remove a donation */
 export async function deleteDonation(donationId: string): Promise<ApiResponse<void>> {
-
   try {
     const { data } = await apiClient.delete<ApiResponseWrapper<any>>(`/Donations/${donationId}`);
     return {
@@ -389,9 +438,10 @@ export async function deleteDonation(donationId: string): Promise<ApiResponse<vo
 
 /** POST /donations/:id/confirm — mark donation as sent to lab */
 export async function confirmDonation(donationId: string): Promise<ApiResponse<void>> {
-
   try {
-    const { data } = await apiClient.post<ApiResponseWrapper<any>>(`/Donations/${donationId}/confirm`);
+    const { data } = await apiClient.post<ApiResponseWrapper<any>>(
+      `/Donations/${donationId}/confirm`,
+    );
     return {
       data: undefined as any,
       message: data.message || 'تم إرسال التبرع للمختبر بنجاح',

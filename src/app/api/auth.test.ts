@@ -76,9 +76,9 @@ describe('Auth API Services', () => {
         },
       });
 
-      await expect(loginApi({ email: 'test@example.com', password: 'wrong' }))
-        .rejects
-        .toThrow('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+      await expect(loginApi({ email: 'test@example.com', password: 'wrong' })).rejects.toThrow(
+        'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+      );
     });
 
     it('should translate account disabled error to Arabic', async () => {
@@ -91,9 +91,9 @@ describe('Auth API Services', () => {
         },
       });
 
-      await expect(loginApi({ email: 'disabled@example.com', password: 'password123' }))
-        .rejects
-        .toThrow('هذا الحساب معطل. يرجى التواصل مع المدير');
+      await expect(
+        loginApi({ email: 'disabled@example.com', password: 'password123' }),
+      ).rejects.toThrow('هذا الحساب معطل. يرجى التواصل مع المدير');
     });
 
     it('should handle Axios exceptions and wrap in ApiError with proper Arabic message', async () => {
@@ -107,9 +107,9 @@ describe('Auth API Services', () => {
       };
       mockPost.mockRejectedValueOnce(axiosError);
 
-      await expect(loginApi({ email: 'test@example.com', password: 'wrong' }))
-        .rejects
-        .toThrow('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+      await expect(loginApi({ email: 'test@example.com', password: 'wrong' })).rejects.toThrow(
+        'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+      );
     });
   });
 

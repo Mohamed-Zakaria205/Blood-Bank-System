@@ -81,8 +81,6 @@ export interface TransactionFilters extends PaginationParams {
   dateTo?: string;
 }
 
-
-
 /** Re-usable literal unions */
 export type BloodType = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
 export type DonationType = 'wholeblood' | 'plasma' | 'platelets';

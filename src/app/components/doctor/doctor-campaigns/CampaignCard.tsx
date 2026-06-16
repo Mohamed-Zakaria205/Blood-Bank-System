@@ -47,7 +47,7 @@ export default function CampaignCard({
 
   // ── Lazy fetch: only fires when the card is expanded ──
   const { data: campApts = [], isLoading: isSlotsLoading } = useCampaignAppointments(
-    isExpanded ? c.id : null
+    isExpanded ? c.id : null,
   );
 
   // Use server-provided count for the badge; fall back to fetched length after load
@@ -132,9 +132,7 @@ export default function CampaignCard({
       <div className="space-y-2 mb-4">
         <div className="flex items-center gap-2 text-muted-foreground">
           <MapPin className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
-          <span style={{ fontSize: '13px' }}>
-            {c.city}
-          </span>
+          <span style={{ fontSize: '13px' }}>{c.city}</span>
         </div>
         <div className="flex items-center gap-2 text-muted-foreground">
           <Calendar className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
@@ -207,10 +205,7 @@ export default function CampaignCard({
           >
             <div className="flex items-center gap-2">
               <CalendarDays className="w-4 h-4 text-green-600" />
-              <span
-                className="text-green-700"
-                style={{ fontSize: '13px', fontWeight: 700 }}
-              >
+              <span className="text-green-700" style={{ fontSize: '13px', fontWeight: 700 }}>
                 المواعيد من التطبيق
               </span>
               <span
@@ -248,7 +243,9 @@ export default function CampaignCard({
                             ? 'bg-muted/40 border-border'
                             : 'bg-muted/40 border-border hover:border-green-200 hover:bg-green-50 cursor-pointer'
                       }`}
-                      onClick={() => isBooked && navigate(`/doctor/register?apt=${apt.id}&campaignId=${c.id}`)}
+                      onClick={() =>
+                        isBooked && navigate(`/doctor/register?apt=${apt.id}&campaignId=${c.id}`)
+                      }
                     >
                       <div className="flex-shrink-0 text-center w-14">
                         <span

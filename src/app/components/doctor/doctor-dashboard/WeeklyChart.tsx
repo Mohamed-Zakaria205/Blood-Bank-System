@@ -27,9 +27,7 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
             إجمالي {total} متبرع — المعدل اليومي {avgPerDay}
           </p>
         </div>
-        <div
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-green-200 bg-green-50"
-        >
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-green-200 bg-green-50">
           <TrendingUp className="w-3.5 h-3.5 text-green-600" />
           <span className="text-green-700" style={{ fontSize: '12px', fontWeight: 700 }}>
             هذا الأسبوع
@@ -41,27 +39,37 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
       <div className="px-6 pt-5 pb-4">
         <div className="relative" style={{ height: '176px' }}>
           {/* Horizontal grid lines + y-axis labels */}
-          {[maxVal, Math.round(maxVal * 0.66), Math.round(maxVal * 0.33), 0].filter((v, i, arr) => arr.indexOf(v) === i && v > 0).map((v) => (
-            <div
-              key={v}
-              className="absolute w-full flex items-center gap-3 pointer-events-none"
-              style={{ bottom: `${(v / maxVal) * 140 + 24}px` }}
-            >
-              <span
-                className="text-muted-foreground/50 flex-shrink-0 text-right"
-                style={{ fontSize: '9px', fontWeight: 600, width: '14px' }}
+          {[maxVal, Math.round(maxVal * 0.66), Math.round(maxVal * 0.33), 0]
+            .filter((v, i, arr) => arr.indexOf(v) === i && v > 0)
+            .map((v) => (
+              <div
+                key={v}
+                className="absolute w-full flex items-center gap-3 pointer-events-none"
+                style={{ bottom: `${(v / maxVal) * 140 + 24}px` }}
               >
-                {v}
-              </span>
-              <div className="flex-1 border-t border-dashed border-border" />
-            </div>
-          ))}
+                <span
+                  className="text-muted-foreground/50 flex-shrink-0 text-right"
+                  style={{ fontSize: '9px', fontWeight: 600, width: '14px' }}
+                >
+                  {v}
+                </span>
+                <div className="flex-1 border-t border-dashed border-border" />
+              </div>
+            ))}
 
           {/* Bars */}
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 pl-5">
             {weekData.map((d) => {
               const barHeightPx = Math.max((d.donors / maxVal) * 140, d.donors > 0 ? 10 : 4);
-              const arabicDays = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+              const arabicDays = [
+                'الأحد',
+                'الإثنين',
+                'الثلاثاء',
+                'الأربعاء',
+                'الخميس',
+                'الجمعة',
+                'السبت',
+              ];
               const isToday = d.day === arabicDays[new Date().getDay()];
               return (
                 <div key={d.day} className="flex flex-col items-center gap-1.5 flex-1 group">
@@ -84,8 +92,8 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
                       background: isToday
                         ? 'linear-gradient(180deg, #15803d 0%, #22c55e 100%)'
                         : d.donors > 0
-                        ? 'linear-gradient(180deg, #86efac 0%, #bbf7d0 100%)'
-                        : 'var(--muted)',
+                          ? 'linear-gradient(180deg, #86efac 0%, #bbf7d0 100%)'
+                          : 'var(--muted)',
                       boxShadow: isToday ? '0 4px 12px rgba(34,197,94,0.30)' : undefined,
                     }}
                   />

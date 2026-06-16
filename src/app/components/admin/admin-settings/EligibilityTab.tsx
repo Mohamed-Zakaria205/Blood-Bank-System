@@ -38,7 +38,7 @@ export default function EligibilityTab() {
         onError: () => {
           toast.error('تعذر تحديث الإعدادات. يرجى المحاولة لاحقاً');
         },
-      }
+      },
     );
   };
 

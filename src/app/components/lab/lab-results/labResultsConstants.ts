@@ -1,7 +1,4 @@
-// ── Shared constants, helpers and types for LabResults module ──
-import type { TestResult, Sample } from '../../../types/lab';
-import type { Donor } from '../../../types/donor';
-
+import type { TestResult } from '../../../types/lab';
 /** 4 standard screening tests */
 export const SCREENING_TESTS = [
   {
@@ -30,17 +27,8 @@ export const SCREENING_TESTS = [
   },
 ] as const;
 
-// ── Build combined list (pending samples + completed results) ──
-export function buildCombinedList(
-  testResults: TestResult[],
-  samplesData: Sample[],
-  donorsData: Donor[],
-) {
-  function getDonorNationalId(donationCode: string): string {
-    const donor = donorsData.find((d) => d.donorCode === donationCode);
-    return donor?.nationalId || '—';
-  }
-
+// ── Build results list ──
+export function buildResultsList(testResults: TestResult[]) {
   const completed = testResults.map((r) => ({
     id: r.id,
     sampleId: r.sampleId,
@@ -48,7 +36,7 @@ export function buildCombinedList(
     donorCode: r.donationCode,
     donationCode: r.donationCode,
     donorName: r.donorName,
-    nationalId: getDonorNationalId(r.donationCode),
+    nationalId: r.nationalId || '—',
     bloodType: r.bloodType,
     confirmedBloodType: r.confirmedBloodType,
     hcv: r.hcv,
@@ -62,31 +50,7 @@ export function buildCombinedList(
     displayStatus: r.outcome === 'safe' ? 'safe' : 'rejected',
   }));
 
-  const completedSampleIds = new Set(completed.map((r) => r.sampleId));
-  const pendingEntries = samplesData
-    .filter((s) => !completedSampleIds.has(s.id))
-    .map((s) => ({
-      id: `PENDING-${s.id}`,
-      sampleId: s.id,
-      sampleCode: s.donationCode,
-      donorCode: s.donationCode,
-      donationCode: s.donationCode,
-      donorName: s.donorName,
-      nationalId: getDonorNationalId(s.donationCode),
-      bloodType: s.bloodType,
-      confirmedBloodType: null,
-      hcv: null,
-      hbv: null,
-      syphilis: null,
-      hiv: null,
-      outcome: 'pending',
-      labDoctor: s.labDoctor || '—',
-      date: s.collectedDate,
-      notes: undefined as string | undefined,
-      displayStatus: 'pending',
-    }));
-
-  return [...pendingEntries, ...completed].sort((a) => (a.displayStatus === 'pending' ? -1 : 1));
+  return completed.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
-export type CombinedEntry = ReturnType<typeof buildCombinedList>[0];
+export type ResultEntry = ReturnType<typeof buildResultsList>[0];

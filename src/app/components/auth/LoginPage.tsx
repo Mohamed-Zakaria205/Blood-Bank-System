@@ -81,7 +81,7 @@ export default function LoginPage() {
     if (!result.success) {
       const newAttempts = attempts + 1;
       localStorage.setItem('bloodlink_login_attempts', newAttempts.toString());
-      
+
       if (newAttempts >= 5) {
         const lockUntil = Date.now() + 60 * 1000;
         localStorage.setItem('bloodlink_login_lockout', lockUntil.toString());
@@ -155,8 +155,12 @@ export default function LoginPage() {
             >
               <Droplet className="w-8 h-8 text-white" />
             </div>
-            <p className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>BloodLink</p>
-            <p className="text-muted-foreground" style={{ fontSize: '13px' }}>نظام إدارة بنك الدم — بني سويف</p>
+            <p className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
+              BloodLink
+            </p>
+            <p className="text-muted-foreground" style={{ fontSize: '13px' }}>
+              نظام إدارة بنك الدم — بني سويف
+            </p>
           </div>
 
           {/* Greeting */}
@@ -171,7 +175,9 @@ export default function LoginPage() {
             >
               مرحباً بك 👋
             </h2>
-            <p className="text-muted-foreground" style={{ fontSize: '14px' }}>سجّل دخولك للوصول إلى لوحة التحكم</p>
+            <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
+              سجّل دخولك للوصول إلى لوحة التحكم
+            </p>
           </div>
 
           {/* Login form */}
@@ -187,9 +193,7 @@ export default function LoginPage() {
           />
 
           {/* Footer note */}
-          <div
-            className="mt-6 p-4 rounded-xl border border-border text-center bg-card/80"
-          >
+          <div className="mt-6 p-4 rounded-xl border border-border text-center bg-card/80">
             <p className="text-muted-foreground" style={{ fontSize: '12px' }}>
               🔒 النظام للاستخدام الداخلي فقط — لا يسمح بالتسجيل الذاتي
             </p>

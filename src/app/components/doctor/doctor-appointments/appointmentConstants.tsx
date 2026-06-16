@@ -38,7 +38,15 @@ export const WEEK_DATES = Array.from({ length: 7 }, (_, i) => {
   d.setDate(_startOfWeek.getDate() + i);
   return formatLocalDate(d);
 });
-export const WEEK_DAY_NAMES = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+export const WEEK_DAY_NAMES = [
+  'السبت',
+  'الأحد',
+  'الاثنين',
+  'الثلاثاء',
+  'الأربعاء',
+  'الخميس',
+  'الجمعة',
+];
 
 // ── Status ──
 // The backend is the source of truth for all statuses.

@@ -10,5 +10,3 @@ export * from './inventory';
 export * from './lab';
 export * from './appointment';
 export * from './doctorDashboard';
-
-

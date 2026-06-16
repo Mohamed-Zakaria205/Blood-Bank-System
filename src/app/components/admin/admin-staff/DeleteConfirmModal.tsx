@@ -21,7 +21,11 @@ export default function DeleteConfirmModal({ onConfirm, onCancel }: DeleteConfir
         <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Trash2 className="w-7 h-7 text-red-600" />
         </div>
-        <h3 id="modal-title" className="text-foreground mb-2" style={{ fontSize: '18px', fontWeight: 700 }}>
+        <h3
+          id="modal-title"
+          className="text-foreground mb-2"
+          style={{ fontSize: '18px', fontWeight: 700 }}
+        >
           حذف الحساب
         </h3>
         <p className="text-muted-foreground mb-6" style={{ fontSize: '14px' }}>

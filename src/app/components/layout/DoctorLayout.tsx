@@ -48,7 +48,13 @@ export default function DoctorLayout() {
     { path: '/doctor/donations', label: 'التبرعات', icon: Users },
     { path: '/doctor/appointments', label: 'المواعيد', icon: CalendarDays },
     { path: '/doctor/eligibility', label: 'مؤهلية المتبرعين', icon: HeartPulse },
-    { path: '/doctor/campaigns', label: 'حملات التبرع', icon: Megaphone, badgeCount: activeCampaigns.length, badgeColor: 'bg-green-100 text-green-700' },
+    {
+      path: '/doctor/campaigns',
+      label: 'حملات التبرع',
+      icon: Megaphone,
+      badgeCount: activeCampaigns.length,
+      badgeColor: 'bg-green-100 text-green-700',
+    },
   ];
 
   const sidebarExtra = (

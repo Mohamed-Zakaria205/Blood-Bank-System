@@ -1,6 +1,5 @@
 import type { BloodType, CampaignStatus } from './common';
 
-
 export interface DashboardStatistics {
   todayDonationsCount: number;
   totalDonationsCount: number;

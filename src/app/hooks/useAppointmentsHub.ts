@@ -16,11 +16,7 @@
 //   });
 // ═══════════════════════════════════════════════════════════
 import { useEffect, useRef } from 'react';
-import {
-  HubConnectionBuilder,
-  HubConnectionState,
-  LogLevel,
-} from '@microsoft/signalr';
+import { HubConnectionBuilder, HubConnectionState, LogLevel } from '@microsoft/signalr';
 import type { CancellationNotification } from '../types/appointment';
 
 interface UseAppointmentsHubOptions {
@@ -39,7 +35,9 @@ export function useAppointmentsHub({
 }: UseAppointmentsHubOptions) {
   // Keep a stable ref to the callback so we don't re-connect on every render
   const onCancelledRef = useRef(onCancelled);
-  useEffect(() => { onCancelledRef.current = onCancelled; }, [onCancelled]);
+  useEffect(() => {
+    onCancelledRef.current = onCancelled;
+  }, [onCancelled]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -56,9 +54,7 @@ export function useAppointmentsHub({
         withCredentials: true,
       })
       .withAutomaticReconnect()
-      .configureLogging(
-        import.meta.env.DEV ? LogLevel.Information : LogLevel.Warning,
-      )
+      .configureLogging(import.meta.env.DEV ? LogLevel.Information : LogLevel.Warning)
       .build();
 
     // Listen for cancellation push events
@@ -93,7 +89,9 @@ export function useAppointmentsHub({
 
     // Cleanup: stop connection when component unmounts or options change
     return () => {
-      connection.stop().catch(() => {/* ignore stop errors */});
+      connection.stop().catch(() => {
+        /* ignore stop errors */
+      });
     };
   }, [enabled, centerId]); // reconnect only when enabled/centerId change
 }

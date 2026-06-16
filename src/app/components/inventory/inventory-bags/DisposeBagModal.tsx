@@ -35,7 +35,11 @@ export default function DisposeBagModal({
             <Trash2 className="w-6 h-6 text-red-600" />
           </div>
           <div>
-            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
+            <h3
+              id="modal-title"
+              className="text-foreground"
+              style={{ fontSize: '17px', fontWeight: 700 }}
+            >
               تأكيد الإتلاف
             </h3>
             <p className="text-muted-foreground" style={{ fontSize: '12px' }}>

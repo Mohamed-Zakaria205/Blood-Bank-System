@@ -4,7 +4,13 @@ import { Check, Smartphone } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useFilteredCampaigns } from '../../hooks/useCampaigns';
 import { useAppointmentSlotById } from '../../hooks/useAppointments';
-import { useAddDonation, useAddMedicalRecord, useSearchDonor, useDonationCenters, useDeleteDonation } from '../../hooks/useDonors';
+import {
+  useAddDonation,
+  useAddMedicalRecord,
+  useSearchDonor,
+  useDonationCenters,
+  useDeleteDonation,
+} from '../../hooks/useDonors';
 import { toast } from 'sonner';
 import { useForm, Path, PathValue } from 'react-hook-form';
 import { Form } from '../ui/form';
@@ -15,11 +21,13 @@ import { EGYPT_DATA } from '../../data/egypt';
 
 import { extractDobFromNationalId, normalizeDateToISO } from '../../utils/dateUtils';
 // ── Sub-components ──
-import { donorSchema, initialForm, type SimpleForm } from './donation-registration/donationFormSchema';
+import {
+  donorSchema,
+  initialForm,
+  type SimpleForm,
+} from './donation-registration/donationFormSchema';
 import StepOne from './donation-registration/StepOne';
 import StepTwo from './donation-registration/StepTwo';
-
-
 
 export default function DonationRegistrationForm() {
   const navigate = useNavigate();
@@ -45,16 +53,16 @@ export default function DonationRegistrationForm() {
   const getInitialForm = useCallback((): SimpleForm => {
     if (appointment) {
       const birthYear = appointment.donorAge
-        ? (appointment.donorAge > 120
-            ? appointment.donorAge
-            : new Date().getFullYear() - appointment.donorAge)
+        ? appointment.donorAge > 120
+          ? appointment.donorAge
+          : new Date().getFullYear() - appointment.donorAge
         : null;
       const approxDob = birthYear ? `${String(birthYear).padStart(4, '0')}-01-01` : '';
       const finalDob = appointment.donorDateOfBirth
         ? normalizeDateToISO(appointment.donorDateOfBirth)
-        : (appointment.donorNationalId 
-            ? extractDobFromNationalId(appointment.donorNationalId) 
-            : approxDob);
+        : appointment.donorNationalId
+          ? extractDobFromNationalId(appointment.donorNationalId)
+          : approxDob;
       // Determine the donation source based on appointment metadata
       // Use campaignId from the appointment slot, or fall back to the URL param
       const resolvedCampaignId = appointment.campaignId || urlCampaignId;
@@ -169,12 +177,7 @@ export default function DonationRegistrationForm() {
     if (gov) setValue('governorate', gov, { shouldDirty: true });
     if (dist) setValue('district', dist, { shouldDirty: true });
     if (area) setValue('area', area, { shouldDirty: true });
-  }, [
-    appointment?.donorGovernorate,
-    appointment?.donorDistrict,
-    appointment?.donorArea,
-    setValue,
-  ]);
+  }, [appointment?.donorGovernorate, appointment?.donorDistrict, appointment?.donorArea, setValue]);
 
   useEffect(() => {
     register('source');
@@ -194,7 +197,10 @@ export default function DonationRegistrationForm() {
   // Auto-select the donation center when there's only one option and source is walkin
   useEffect(() => {
     if (donationCenters.length === 1 && form.source === 'walkin' && !form.donationCenterId) {
-      setValue('donationCenterId', donationCenters[0].id, { shouldDirty: true, shouldValidate: true });
+      setValue('donationCenterId', donationCenters[0].id, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
     }
   }, [donationCenters, form.source, form.donationCenterId, setValue]);
 
@@ -258,13 +264,13 @@ export default function DonationRegistrationForm() {
           updateField('bloodType', d.bloodType || '');
           const gov = d.governorate || 'بني سويف';
           let dist = d.district || 'مركز وبندر بني سويف';
-          
+
           const govObj = EGYPT_DATA.find((g) => g.name_ar === gov);
           if (govObj) {
             const exactDist = govObj.cities.find((c) => c.city_name_ar === dist);
             if (!exactDist) {
               const partialDist = govObj.cities.find(
-                (c) => c.city_name_ar.includes(dist) || dist.includes(c.city_name_ar)
+                (c) => c.city_name_ar.includes(dist) || dist.includes(c.city_name_ar),
               );
               if (partialDist) dist = partialDist.city_name_ar;
             }
@@ -283,7 +289,7 @@ export default function DonationRegistrationForm() {
       },
       onError: () => {
         toast.error('حدث خطأ أثناء البحث');
-      }
+      },
     });
   };
 
@@ -323,11 +329,10 @@ export default function DonationRegistrationForm() {
           // For walkin: use the selected center's ID.
           donationCenterId:
             values.source === 'campaign'
-              ? (donationCenters[0]?.id || values.donationCenterId || undefined)
+              ? donationCenters[0]?.id || values.donationCenterId || undefined
               : values.donationCenterId || undefined,
           // campaignId is an additional field — only sent when source is 'campaign'
-          campaignId:
-            values.source === 'campaign' ? values.campaignId || undefined : undefined,
+          campaignId: values.source === 'campaign' ? values.campaignId || undefined : undefined,
         },
         {
           onSuccess: (res) => {
@@ -345,7 +350,7 @@ export default function DonationRegistrationForm() {
           onSettled: () => {
             setSubmitting(false);
           },
-        }
+        },
       );
     }
   };
@@ -369,7 +374,7 @@ export default function DonationRegistrationForm() {
           deferredUntil: values.deferredUntil || undefined,
           bloodType: values.bloodType ? (values.bloodType as BloodType) : undefined,
           donationType: values.donationType as DonationType,
-        }
+        },
       },
       {
         onSuccess: () => {
@@ -396,12 +401,8 @@ export default function DonationRegistrationForm() {
     submitForm();
   };
 
-
   const selectedCampaign = activeCampaigns.find((c) => c.id === form.campaignId);
   const selectedCenter = donationCenters.find((c) => c.id === form.donationCenterId);
-
-
-
 
   // ── Registration Form ──
   return (

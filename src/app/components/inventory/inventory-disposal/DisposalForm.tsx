@@ -132,13 +132,19 @@ export default function DisposalForm({
                             {bag.bloodType}
                           </span>
                         </td>
-                        <td className="px-3 py-2.5 text-muted-foreground" style={{ fontSize: '11px' }}>
+                        <td
+                          className="px-3 py-2.5 text-muted-foreground"
+                          style={{ fontSize: '11px' }}
+                        >
                           {donTypeLabels[bag.donationType]}
                         </td>
                         <td className="px-3 py-2.5">
                           <BagStatusChip bag={bag} />
                         </td>
-                        <td className="px-3 py-2.5 text-muted-foreground" style={{ fontSize: '10px' }}>
+                        <td
+                          className="px-3 py-2.5 text-muted-foreground"
+                          style={{ fontSize: '10px' }}
+                        >
                           {bag.expiryDate}
                         </td>
                       </tr>

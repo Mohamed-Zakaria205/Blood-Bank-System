@@ -1,8 +1,4 @@
-import type {
-  LabTest,
-  Sample,
-  TestResult,
-} from '../types';
+import type { LabTest, Sample, TestResult } from '../types';
 
 export const labTests: LabTest[] = [
   {
@@ -108,6 +104,7 @@ export const samples: Sample[] = [
     collectedDate: '2025-04-26',
     status: 'pending',
     city: 'بني سويف',
+    nationalId: '29810151122334',
   },
   {
     id: 'S-002',
@@ -118,6 +115,7 @@ export const samples: Sample[] = [
     collectedDate: '2025-04-26',
     status: 'pending',
     city: 'الواسطى',
+    nationalId: '29505221144556',
   },
   {
     id: 'S-003',
@@ -129,6 +127,7 @@ export const samples: Sample[] = [
     status: 'testing',
     labDoctor: 'د. ياسمين حسام نور',
     city: 'ناصر',
+    nationalId: '29907142211889',
   },
   {
     id: 'S-004',
@@ -139,6 +138,7 @@ export const samples: Sample[] = [
     collectedDate: '2025-04-26',
     status: 'pending',
     city: 'سمسطا',
+    nationalId: '30101011234567',
   },
   {
     id: 'S-005',
@@ -150,6 +150,7 @@ export const samples: Sample[] = [
     status: 'completed',
     labDoctor: 'د. ياسمين حسام نور',
     city: 'إهناسيا',
+    nationalId: '29011122334455',
   },
   {
     id: 'S-006',
@@ -161,6 +162,7 @@ export const samples: Sample[] = [
     status: 'completed',
     labDoctor: 'د. كريم وليد سعد',
     city: 'الواسطى',
+    nationalId: '28805051122334',
   },
   // S-007 removed: DON-005 (يوسف إبراهيم غانم) status=ineligible — sample code restricted
   // S-008 removed: DON-010 (هبة الله صبري كامل) status=deferred — sample code restricted
@@ -182,6 +184,7 @@ export const testResults: TestResult[] = [
     labDoctor: 'د. ياسمين حسام نور',
     date: '2025-04-25',
     notes: 'نتائج التحاليل ضمن المعدل الطبيعي',
+    nationalId: '29011122334455',
   },
   {
     id: 'TR-002',
@@ -197,6 +200,7 @@ export const testResults: TestResult[] = [
     outcome: 'safe',
     labDoctor: 'د. كريم وليد سعد',
     date: '2025-04-25',
+    nationalId: '28805051122334',
   },
   // TR-003 removed: DON-005 (يوسف إبراهيم غانم) status=ineligible — removed from lab results
 ];

@@ -1,13 +1,5 @@
 ﻿import { useState } from 'react';
-import {
-  Search,
-  Upload,
-  Trash2,
-  Download,
-  TrendingDown,
-  Package,
-  Eye,
-} from 'lucide-react';
+import { Search, Upload, Trash2, Download, TrendingDown, Package, Eye } from 'lucide-react';
 import { OutflowActionType, OutflowRecord, BloodType } from '../../types';
 import { BLOOD_TYPES } from '../../constants';
 import { useBloodBags, useOutflowRecords } from '../../hooks/useInventory';

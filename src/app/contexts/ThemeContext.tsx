@@ -29,11 +29,9 @@ export interface ThemeContextValue {
 export function useTheme(): ThemeContextValue {
   const { theme, resolvedTheme, setTheme } = useNextTheme();
 
-  const resolved: 'light' | 'dark' =
-    resolvedTheme === 'dark' ? 'dark' : 'light';
+  const resolved: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light';
 
-  const currentTheme: Theme =
-    theme === 'dark' ? 'dark' : theme === 'system' ? 'system' : 'light';
+  const currentTheme: Theme = theme === 'dark' ? 'dark' : theme === 'system' ? 'system' : 'light';
 
   const toggleTheme = () => {
     setTheme(resolved === 'dark' ? 'light' : 'dark');

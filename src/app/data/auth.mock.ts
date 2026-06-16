@@ -1,6 +1,4 @@
-import type {
-  User,
-} from '../types';
+import type { User } from '../types';
 
 export interface MockUser extends User {
   password: string;

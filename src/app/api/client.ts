@@ -30,7 +30,7 @@ const apiClient = axios.create({
 });
 
 // ── Request interceptor ──────────────────────────────────────
-// No need to attach Authorization header manually since the backend 
+// No need to attach Authorization header manually since the backend
 // uses HttpOnly cookies. The browser attaches them automatically
 // thanks to `withCredentials: true`.
 apiClient.interceptors.request.use(

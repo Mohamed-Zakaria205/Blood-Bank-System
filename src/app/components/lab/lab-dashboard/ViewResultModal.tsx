@@ -2,6 +2,7 @@ import { CheckCircle2, XCircle, X, Check } from 'lucide-react';
 import type { LabTest } from '../../../types';
 import { screeningTests, donationTypeLabels } from './labConstants';
 import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
+import { formatLocalizedDateTime, formatLocalizedDate } from '../../../utils/date';
 
 interface ViewResultModalProps {
   viewModal: LabTest;
@@ -29,7 +30,11 @@ export default function ViewResultModal({ viewModal, onClose }: ViewResultModalP
           className={`flex items-center justify-between p-5 rounded-t-2xl ${viewModal.result?.outcome === 'safe' ? 'bg-gradient-to-r from-green-700 to-green-600' : 'bg-gradient-to-r from-red-600 to-red-500'}`}
         >
           <div>
-            <h3 id="modal-title" className="text-white" style={{ fontSize: '17px', fontWeight: 700 }}>
+            <h3
+              id="modal-title"
+              className="text-white"
+              style={{ fontSize: '17px', fontWeight: 700 }}
+            >
               نتائج فحص الحقيبة
             </h3>
             <p className="text-white/80" style={{ fontSize: '12px' }}>
@@ -142,7 +147,9 @@ export default function ViewResultModal({ viewModal, onClose }: ViewResultModalP
                 وقت الإكمال
               </p>
               <p className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
-                {viewModal.result?.completedAt}
+                {viewModal.result?.completedAt
+                  ? formatLocalizedDateTime(viewModal.result.completedAt)
+                  : ''}
               </p>
             </div>
             <div className="p-3 bg-muted/40 rounded-xl">
@@ -150,7 +157,7 @@ export default function ViewResultModal({ viewModal, onClose }: ViewResultModalP
                 طلب التحليل
               </p>
               <p className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
-                {viewModal.requestedAt}
+                {viewModal.requestedAt ? formatLocalizedDate(viewModal.requestedAt) : ''}
               </p>
             </div>
           </div>

@@ -66,8 +66,6 @@ export default function AdminDashboard() {
   if (errorDonors)
     return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetchDonors()} />;
 
-
-
   const stats = [
     {
       label: 'إجمالي المتبرعين',
@@ -266,7 +264,10 @@ export default function AdminDashboard() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
+                      <span
+                        className="text-foreground"
+                        style={{ fontSize: '13px', fontWeight: 600 }}
+                      >
                         {d.name}
                       </span>
                     </td>

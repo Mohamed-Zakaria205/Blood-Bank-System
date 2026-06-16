@@ -1,686 +1,686 @@
 export const BENI_SUEF_CITIES = [
   {
-    "id": "277",
-    "governorate_id": "17",
-    "city_name_ar": "مركز وبندر بني سويف",
-    "city_name_en": "Beni Suef District",
-    "areas": [
+    id: '277',
+    governorate_id: '17',
+    city_name_ar: 'مركز وبندر بني سويف',
+    city_name_en: 'Beni Suef District',
+    areas: [
       {
-        "id": 101,
-        "name_ar": "الأباصيري",
-        "name_en": "Al Abaseri"
+        id: 101,
+        name_ar: 'الأباصيري',
+        name_en: 'Al Abaseri',
       },
       {
-        "id": 102,
-        "name_ar": "صلاح سالم",
-        "name_en": "Salah Salem"
+        id: 102,
+        name_ar: 'صلاح سالم',
+        name_en: 'Salah Salem',
       },
       {
-        "id": 103,
-        "name_ar": "مقبل",
-        "name_en": "Mokbel"
+        id: 103,
+        name_ar: 'مقبل',
+        name_en: 'Mokbel',
       },
       {
-        "id": 104,
-        "name_ar": "حي الرمد",
-        "name_en": "Al Ramad"
+        id: 104,
+        name_ar: 'حي الرمد',
+        name_en: 'Al Ramad',
       },
       {
-        "id": 105,
-        "name_ar": "حي الزهور",
-        "name_en": "Al Zohour"
+        id: 105,
+        name_ar: 'حي الزهور',
+        name_en: 'Al Zohour',
       },
       {
-        "id": 106,
-        "name_ar": "الغمراوي",
-        "name_en": "Al Ghamrawy"
+        id: 106,
+        name_ar: 'الغمراوي',
+        name_en: 'Al Ghamrawy',
       },
       {
-        "id": 107,
-        "name_ar": "محي الدين",
-        "name_en": "Mohie El Din"
+        id: 107,
+        name_ar: 'محي الدين',
+        name_en: 'Mohie El Din',
       },
       {
-        "id": 108,
-        "name_ar": "الجزيرة",
-        "name_en": "Al Jazeera"
+        id: 108,
+        name_ar: 'الجزيرة',
+        name_en: 'Al Jazeera',
       },
       {
-        "id": 109,
-        "name_ar": "المرماح",
-        "name_en": "Al Mirmah"
+        id: 109,
+        name_ar: 'المرماح',
+        name_en: 'Al Mirmah',
       },
       {
-        "id": 110,
-        "name_ar": "كورنيش النيل",
-        "name_en": "Nile Corniche"
+        id: 110,
+        name_ar: 'كورنيش النيل',
+        name_en: 'Nile Corniche',
       },
       {
-        "id": 111,
-        "name_ar": "أرض المحلج",
-        "name_en": "Ard Al Mahlag"
+        id: 111,
+        name_ar: 'أرض المحلج',
+        name_en: 'Ard Al Mahlag',
       },
       {
-        "id": 112,
-        "name_ar": "العمارنة",
-        "name_en": "Al Amarna"
+        id: 112,
+        name_ar: 'العمارنة',
+        name_en: 'Al Amarna',
       },
       {
-        "id": 113,
-        "name_ar": "حوض الدلالة",
-        "name_en": "Hod Al Dalala"
+        id: 113,
+        name_ar: 'حوض الدلالة',
+        name_en: 'Hod Al Dalala',
       },
       {
-        "id": 114,
-        "name_ar": "عزبة التحرير",
-        "name_en": "Ezbet Al Tahrir"
+        id: 114,
+        name_ar: 'عزبة التحرير',
+        name_en: 'Ezbet Al Tahrir',
       },
       {
-        "id": 115,
-        "name_ar": "أرض الحرية",
-        "name_en": "Ard Al Horeya"
+        id: 115,
+        name_ar: 'أرض الحرية',
+        name_en: 'Ard Al Horeya',
       },
       {
-        "id": 116,
-        "name_ar": "حي العبور",
-        "name_en": "Al Obour"
+        id: 116,
+        name_ar: 'حي العبور',
+        name_en: 'Al Obour',
       },
       {
-        "id": 117,
-        "name_ar": "بياض العرب",
-        "name_en": "Bayad Al Arab"
+        id: 117,
+        name_ar: 'بياض العرب',
+        name_en: 'Bayad Al Arab',
       },
       {
-        "id": 118,
-        "name_ar": "تزمنت الشرقية",
-        "name_en": "Tazmant Al Sharqiya"
+        id: 118,
+        name_ar: 'تزمنت الشرقية',
+        name_en: 'Tazmant Al Sharqiya',
       },
       {
-        "id": 119,
-        "name_ar": "تزمنت الغربية",
-        "name_en": "Tazmant Al Gharbiya"
+        id: 119,
+        name_ar: 'تزمنت الغربية',
+        name_en: 'Tazmant Al Gharbiya',
       },
       {
-        "id": 120,
-        "name_ar": "شريف باشا",
-        "name_en": "Sherif Pasha"
+        id: 120,
+        name_ar: 'شريف باشا',
+        name_en: 'Sherif Pasha',
       },
       {
-        "id": 121,
-        "name_ar": "باروط",
-        "name_en": "Barout"
+        id: 121,
+        name_ar: 'باروط',
+        name_en: 'Barout',
       },
       {
-        "id": 122,
-        "name_ar": "إهوة",
-        "name_en": "Ihwa"
+        id: 122,
+        name_ar: 'إهوة',
+        name_en: 'Ihwa',
       },
       {
-        "id": 123,
-        "name_ar": "حاجر بني سليمان",
-        "name_en": "Hager Beni Suleiman"
+        id: 123,
+        name_ar: 'حاجر بني سليمان',
+        name_en: 'Hager Beni Suleiman',
       },
       {
-        "id": 124,
-        "name_ar": "نعيم",
-        "name_en": "Naeim"
+        id: 124,
+        name_ar: 'نعيم',
+        name_en: 'Naeim',
       },
       {
-        "id": 125,
-        "name_ar": "بلفيا",
-        "name_en": "Belfya"
+        id: 125,
+        name_ar: 'بلفيا',
+        name_en: 'Belfya',
       },
       {
-        "id": 126,
-        "name_ar": "بني هارون",
-        "name_en": "Beni Haroun"
+        id: 126,
+        name_ar: 'بني هارون',
+        name_en: 'Beni Haroun',
       },
       {
-        "id": 127,
-        "name_ar": "أبشنا",
-        "name_en": "Abshna"
+        id: 127,
+        name_ar: 'أبشنا',
+        name_en: 'Abshna',
       },
       {
-        "id": 128,
-        "name_ar": "سنور",
-        "name_en": "Sannour"
+        id: 128,
+        name_ar: 'سنور',
+        name_en: 'Sannour',
       },
       {
-        "id": 129,
-        "name_ar": "الدوية",
-        "name_en": "Al Dawayah"
+        id: 129,
+        name_ar: 'الدوية',
+        name_en: 'Al Dawayah',
       },
       {
-        "id": 130,
-        "name_ar": "الحلابية",
-        "name_en": "Al Halabiya"
+        id: 130,
+        name_ar: 'الحلابية',
+        name_en: 'Al Halabiya',
       },
       {
-        "id": 131,
-        "name_ar": "باها",
-        "name_en": "Baha"
-      }
-    ]
+        id: 131,
+        name_ar: 'باها',
+        name_en: 'Baha',
+      },
+    ],
   },
   {
-    "id": "278",
-    "governorate_id": "17",
-    "city_name_ar": "بني سويف الجديدة (شرق النيل)",
-    "city_name_en": "New Beni Suef",
-    "areas": [
+    id: '278',
+    governorate_id: '17',
+    city_name_ar: 'بني سويف الجديدة (شرق النيل)',
+    city_name_en: 'New Beni Suef',
+    areas: [
       {
-        "id": 201,
-        "name_ar": "الحي الأول",
-        "name_en": "First District"
+        id: 201,
+        name_ar: 'الحي الأول',
+        name_en: 'First District',
       },
       {
-        "id": 202,
-        "name_ar": "الحي الثاني",
-        "name_en": "Second District"
+        id: 202,
+        name_ar: 'الحي الثاني',
+        name_en: 'Second District',
       },
       {
-        "id": 203,
-        "name_ar": "الحي الثالث",
-        "name_en": "Third District"
+        id: 203,
+        name_ar: 'الحي الثالث',
+        name_en: 'Third District',
       },
       {
-        "id": 204,
-        "name_ar": "الحي الرابع",
-        "name_en": "Fourth District"
+        id: 204,
+        name_ar: 'الحي الرابع',
+        name_en: 'Fourth District',
       },
       {
-        "id": 205,
-        "name_ar": "الحي الخامس",
-        "name_en": "Fifth District"
+        id: 205,
+        name_ar: 'الحي الخامس',
+        name_en: 'Fifth District',
       },
       {
-        "id": 206,
-        "name_ar": "الحي السادس",
-        "name_en": "Sixth District"
+        id: 206,
+        name_ar: 'الحي السادس',
+        name_en: 'Sixth District',
       },
       {
-        "id": 207,
-        "name_ar": "ابني بيتك 1",
-        "name_en": "Ebny Beitak 1"
+        id: 207,
+        name_ar: 'ابني بيتك 1',
+        name_en: 'Ebny Beitak 1',
       },
       {
-        "id": 208,
-        "name_ar": "ابني بيتك 2",
-        "name_en": "Ebny Beitak 2"
+        id: 208,
+        name_ar: 'ابني بيتك 2',
+        name_en: 'Ebny Beitak 2',
       },
       {
-        "id": 209,
-        "name_ar": "الإسكان الاجتماعي",
-        "name_en": "Social Housing"
+        id: 209,
+        name_ar: 'الإسكان الاجتماعي',
+        name_en: 'Social Housing',
       },
       {
-        "id": 210,
-        "name_ar": "مساكن الجهاز",
-        "name_en": "Authority Housing"
+        id: 210,
+        name_ar: 'مساكن الجهاز',
+        name_en: 'Authority Housing',
       },
       {
-        "id": 211,
-        "name_ar": "المدينة الجامعية",
-        "name_en": "University City"
+        id: 211,
+        name_ar: 'المدينة الجامعية',
+        name_en: 'University City',
       },
       {
-        "id": 212,
-        "name_ar": "منطقة الصناعات الخفيفة",
-        "name_en": "Light Industries Zone"
+        id: 212,
+        name_ar: 'منطقة الصناعات الخفيفة',
+        name_en: 'Light Industries Zone',
       },
       {
-        "id": 213,
-        "name_ar": "منطقة الصناعات المتوسطة",
-        "name_en": "Medium Industries Zone"
+        id: 213,
+        name_ar: 'منطقة الصناعات المتوسطة',
+        name_en: 'Medium Industries Zone',
       },
       {
-        "id": 214,
-        "name_ar": "الحمرايا",
-        "name_en": "Al Hamraya"
-      }
-    ]
+        id: 214,
+        name_ar: 'الحمرايا',
+        name_en: 'Al Hamraya',
+      },
+    ],
   },
   {
-    "id": "279",
-    "governorate_id": "17",
-    "city_name_ar": "مركز الواسطى",
-    "city_name_en": "Al Wasta District",
-    "areas": [
+    id: '279',
+    governorate_id: '17',
+    city_name_ar: 'مركز الواسطى',
+    city_name_en: 'Al Wasta District',
+    areas: [
       {
-        "id": 301,
-        "name_ar": "مدينة الواسطى",
-        "name_en": "Al Wasta City"
+        id: 301,
+        name_ar: 'مدينة الواسطى',
+        name_en: 'Al Wasta City',
       },
       {
-        "id": 302,
-        "name_ar": "الميمون",
-        "name_en": "Al Maymoun"
+        id: 302,
+        name_ar: 'الميمون',
+        name_en: 'Al Maymoun',
       },
       {
-        "id": 303,
-        "name_ar": "ميدوم",
-        "name_en": "Meidum"
+        id: 303,
+        name_ar: 'ميدوم',
+        name_en: 'Meidum',
       },
       {
-        "id": 304,
-        "name_ar": "أبو صير الملق",
-        "name_en": "Abu Sir Al Malaq"
+        id: 304,
+        name_ar: 'أبو صير الملق',
+        name_en: 'Abu Sir Al Malaq',
       },
       {
-        "id": 305,
-        "name_ar": "إطواب",
-        "name_en": "Itwab"
+        id: 305,
+        name_ar: 'إطواب',
+        name_en: 'Itwab',
       },
       {
-        "id": 306,
-        "name_ar": "قمن العروس",
-        "name_en": "Qemn Al Arous"
+        id: 306,
+        name_ar: 'قمن العروس',
+        name_en: 'Qemn Al Arous',
       },
       {
-        "id": 307,
-        "name_ar": "إنفسط",
-        "name_en": "Infast"
+        id: 307,
+        name_ar: 'إنفسط',
+        name_en: 'Infast',
       },
       {
-        "id": 308,
-        "name_ar": "بني حدير",
-        "name_en": "Beni Hedir"
+        id: 308,
+        name_ar: 'بني حدير',
+        name_en: 'Beni Hedir',
       },
       {
-        "id": 309,
-        "name_ar": "جزيرة المساعدة",
-        "name_en": "Geziret Al Mosaada"
+        id: 309,
+        name_ar: 'جزيرة المساعدة',
+        name_en: 'Geziret Al Mosaada',
       },
       {
-        "id": 310,
-        "name_ar": "صفط الشرقية",
-        "name_en": "Saft Al Sharqiya"
+        id: 310,
+        name_ar: 'صفط الشرقية',
+        name_en: 'Saft Al Sharqiya',
       },
       {
-        "id": 311,
-        "name_ar": "زاوية المصلوب",
-        "name_en": "Zawyat Al Masloub"
+        id: 311,
+        name_ar: 'زاوية المصلوب',
+        name_en: 'Zawyat Al Masloub',
       },
       {
-        "id": 312,
-        "name_ar": "أبويط",
-        "name_en": "Abwit"
+        id: 312,
+        name_ar: 'أبويط',
+        name_en: 'Abwit',
       },
       {
-        "id": 313,
-        "name_ar": "أفوة",
-        "name_en": "Afwa"
+        id: 313,
+        name_ar: 'أفوة',
+        name_en: 'Afwa',
       },
       {
-        "id": 314,
-        "name_ar": "الحومة",
-        "name_en": "Al Houma"
+        id: 314,
+        name_ar: 'الحومة',
+        name_en: 'Al Houma',
       },
       {
-        "id": 315,
-        "name_ar": "بني غنيم",
-        "name_en": "Beni Ghoneim"
+        id: 315,
+        name_ar: 'بني غنيم',
+        name_en: 'Beni Ghoneim',
       },
       {
-        "id": 316,
-        "name_ar": "كوم إدريجة",
-        "name_en": "Kom Idriga"
-      }
-    ]
+        id: 316,
+        name_ar: 'كوم إدريجة',
+        name_en: 'Kom Idriga',
+      },
+    ],
   },
   {
-    "id": "280",
-    "governorate_id": "17",
-    "city_name_ar": "مركز ناصر (بوش)",
-    "city_name_en": "Naser District",
-    "areas": [
+    id: '280',
+    governorate_id: '17',
+    city_name_ar: 'مركز ناصر (بوش)',
+    city_name_en: 'Naser District',
+    areas: [
       {
-        "id": 401,
-        "name_ar": "مدينة ناصر (بوش)",
-        "name_en": "Naser City"
+        id: 401,
+        name_ar: 'مدينة ناصر (بوش)',
+        name_en: 'Naser City',
       },
       {
-        "id": 402,
-        "name_ar": "الشناوية",
-        "name_en": "Al Shennawiya"
+        id: 402,
+        name_ar: 'الشناوية',
+        name_en: 'Al Shennawiya',
       },
       {
-        "id": 403,
-        "name_ar": "اشمنت",
-        "name_en": "Ashmant"
+        id: 403,
+        name_ar: 'اشمنت',
+        name_en: 'Ashmant',
       },
       {
-        "id": 404,
-        "name_ar": "دلاص",
-        "name_en": "Dalas"
+        id: 404,
+        name_ar: 'دلاص',
+        name_en: 'Dalas',
       },
       {
-        "id": 405,
-        "name_ar": "بهبشين",
-        "name_en": "Bahbashin"
+        id: 405,
+        name_ar: 'بهبشين',
+        name_en: 'Bahbashin',
       },
       {
-        "id": 406,
-        "name_ar": "الحمام",
-        "name_en": "Al Hamam"
+        id: 406,
+        name_ar: 'الحمام',
+        name_en: 'Al Hamam',
       },
       {
-        "id": 407,
-        "name_ar": "بني عدي",
-        "name_en": "Beni Oday"
+        id: 407,
+        name_ar: 'بني عدي',
+        name_en: 'Beni Oday',
       },
       {
-        "id": 408,
-        "name_ar": "الزيتون",
-        "name_en": "Al Zaytoun"
+        id: 408,
+        name_ar: 'الزيتون',
+        name_en: 'Al Zaytoun',
       },
       {
-        "id": 409,
-        "name_ar": "الرياض",
-        "name_en": "Al Riyadh"
+        id: 409,
+        name_ar: 'الرياض',
+        name_en: 'Al Riyadh',
       },
       {
-        "id": 410,
-        "name_ar": "كوم أبو خلاد",
-        "name_en": "Kom Abu Khalad"
+        id: 410,
+        name_ar: 'كوم أبو خلاد',
+        name_en: 'Kom Abu Khalad',
       },
       {
-        "id": 411,
-        "name_ar": "طنسا الملق",
-        "name_en": "Tansa Al Malaq"
+        id: 411,
+        name_ar: 'طنسا الملق',
+        name_en: 'Tansa Al Malaq',
       },
       {
-        "id": 412,
-        "name_ar": "البرج",
-        "name_en": "Al Borg"
-      }
-    ]
+        id: 412,
+        name_ar: 'البرج',
+        name_en: 'Al Borg',
+      },
+    ],
   },
   {
-    "id": "281",
-    "governorate_id": "17",
-    "city_name_ar": "مركز ببا",
-    "city_name_en": "Beba District",
-    "areas": [
+    id: '281',
+    governorate_id: '17',
+    city_name_ar: 'مركز ببا',
+    city_name_en: 'Beba District',
+    areas: [
       {
-        "id": 501,
-        "name_ar": "مدينة ببا",
-        "name_en": "Beba City"
+        id: 501,
+        name_ar: 'مدينة ببا',
+        name_en: 'Beba City',
       },
       {
-        "id": 502,
-        "name_ar": "سدس الأمراء",
-        "name_en": "Seds Al Omaraa"
+        id: 502,
+        name_ar: 'سدس الأمراء',
+        name_en: 'Seds Al Omaraa',
       },
       {
-        "id": 503,
-        "name_ar": "طنسا بني مالو",
-        "name_en": "Tansa Beni Malo"
+        id: 503,
+        name_ar: 'طنسا بني مالو',
+        name_en: 'Tansa Beni Malo',
       },
       {
-        "id": 504,
-        "name_ar": "هلية",
-        "name_en": "Heliya"
+        id: 504,
+        name_ar: 'هلية',
+        name_en: 'Heliya',
       },
       {
-        "id": 505,
-        "name_ar": "قمبش عبد الحميد",
-        "name_en": "Qambash"
+        id: 505,
+        name_ar: 'قمبش عبد الحميد',
+        name_en: 'Qambash',
       },
       {
-        "id": 506,
-        "name_ar": "صفط راشين",
-        "name_en": "Saft Rashin"
+        id: 506,
+        name_ar: 'صفط راشين',
+        name_en: 'Saft Rashin',
       },
       {
-        "id": 507,
-        "name_ar": "غياضة الشرقية",
-        "name_en": "Ghiada Al Sharqiya"
+        id: 507,
+        name_ar: 'غياضة الشرقية',
+        name_en: 'Ghiada Al Sharqiya',
       },
       {
-        "id": 508,
-        "name_ar": "غياضة الغربية",
-        "name_en": "Ghiada Al Gharbiya"
+        id: 508,
+        name_ar: 'غياضة الغربية',
+        name_en: 'Ghiada Al Gharbiya',
       },
       {
-        "id": 509,
-        "name_ar": "جزيرة ببا",
-        "name_en": "Geziret Beba"
+        id: 509,
+        name_ar: 'جزيرة ببا',
+        name_en: 'Geziret Beba',
       },
       {
-        "id": 510,
-        "name_ar": "الضباعنة",
-        "name_en": "Al Dabaana"
+        id: 510,
+        name_ar: 'الضباعنة',
+        name_en: 'Al Dabaana',
       },
       {
-        "id": 511,
-        "name_ar": "بني قاسم",
-        "name_en": "Beni Qasim"
+        id: 511,
+        name_ar: 'بني قاسم',
+        name_en: 'Beni Qasim',
       },
       {
-        "id": 512,
-        "name_ar": "بني ماضي",
-        "name_en": "Beni Madi"
+        id: 512,
+        name_ar: 'بني ماضي',
+        name_en: 'Beni Madi',
       },
       {
-        "id": 513,
-        "name_ar": "طوة",
-        "name_en": "Tawa"
+        id: 513,
+        name_ar: 'طوة',
+        name_en: 'Tawa',
       },
       {
-        "id": 514,
-        "name_ar": "جبل النور",
-        "name_en": "Gabal Al Nour"
-      }
-    ]
+        id: 514,
+        name_ar: 'جبل النور',
+        name_en: 'Gabal Al Nour',
+      },
+    ],
   },
   {
-    "id": "282",
-    "governorate_id": "17",
-    "city_name_ar": "مركز إهناسيا",
-    "city_name_en": "Ehnasia District",
-    "areas": [
+    id: '282',
+    governorate_id: '17',
+    city_name_ar: 'مركز إهناسيا',
+    city_name_en: 'Ehnasia District',
+    areas: [
       {
-        "id": 601,
-        "name_ar": "مدينة إهناسيا",
-        "name_en": "Ehnasia City"
+        id: 601,
+        name_ar: 'مدينة إهناسيا',
+        name_en: 'Ehnasia City',
       },
       {
-        "id": 602,
-        "name_ar": "قاي",
-        "name_en": "Qai"
+        id: 602,
+        name_ar: 'قاي',
+        name_en: 'Qai',
       },
       {
-        "id": 603,
-        "name_ar": "العواونة",
-        "name_en": "Al Awawna"
+        id: 603,
+        name_ar: 'العواونة',
+        name_en: 'Al Awawna',
       },
       {
-        "id": 604,
-        "name_ar": "براوة",
-        "name_en": "Brawa"
+        id: 604,
+        name_ar: 'براوة',
+        name_en: 'Brawa',
       },
       {
-        "id": 605,
-        "name_ar": "ننا",
-        "name_en": "Nana"
+        id: 605,
+        name_ar: 'ننا',
+        name_en: 'Nana',
       },
       {
-        "id": 606,
-        "name_ar": "ميانة",
-        "name_en": "Mayana"
+        id: 606,
+        name_ar: 'ميانة',
+        name_en: 'Mayana',
       },
       {
-        "id": 607,
-        "name_ar": "النويرة",
-        "name_en": "Al Nuwaira"
+        id: 607,
+        name_ar: 'النويرة',
+        name_en: 'Al Nuwaira',
       },
       {
-        "id": 608,
-        "name_ar": "سدمنت الجبل",
-        "name_en": "Sedment Al Gabal"
+        id: 608,
+        name_ar: 'سدمنت الجبل',
+        name_en: 'Sedment Al Gabal',
       },
       {
-        "id": 609,
-        "name_ar": "طما فيوم",
-        "name_en": "Tama Fayoum"
+        id: 609,
+        name_ar: 'طما فيوم',
+        name_en: 'Tama Fayoum',
       },
       {
-        "id": 610,
-        "name_ar": "منهرو",
-        "name_en": "Manharo"
+        id: 610,
+        name_ar: 'منهرو',
+        name_en: 'Manharo',
       },
       {
-        "id": 611,
-        "name_ar": "خورشيد",
-        "name_en": "Khorshid"
+        id: 611,
+        name_ar: 'خورشيد',
+        name_en: 'Khorshid',
       },
       {
-        "id": 612,
-        "name_ar": "كوم الرمل",
-        "name_en": "Kom Al Raml"
+        id: 612,
+        name_ar: 'كوم الرمل',
+        name_en: 'Kom Al Raml',
       },
       {
-        "id": 613,
-        "name_ar": "الشوبك",
-        "name_en": "Al Shobak"
-      }
-    ]
+        id: 613,
+        name_ar: 'الشوبك',
+        name_en: 'Al Shobak',
+      },
+    ],
   },
   {
-    "id": "283",
-    "governorate_id": "17",
-    "city_name_ar": "مركز سمسطا",
-    "city_name_en": "Somasta District",
-    "areas": [
+    id: '283',
+    governorate_id: '17',
+    city_name_ar: 'مركز سمسطا',
+    city_name_en: 'Somasta District',
+    areas: [
       {
-        "id": 701,
-        "name_ar": "مدينة سمسطا",
-        "name_en": "Somasta City"
+        id: 701,
+        name_ar: 'مدينة سمسطا',
+        name_en: 'Somasta City',
       },
       {
-        "id": 702,
-        "name_ar": "مازورة",
-        "name_en": "Mazoura"
+        id: 702,
+        name_ar: 'مازورة',
+        name_en: 'Mazoura',
       },
       {
-        "id": 703,
-        "name_ar": "الشنطور",
-        "name_en": "Al Shantour"
+        id: 703,
+        name_ar: 'الشنطور',
+        name_en: 'Al Shantour',
       },
       {
-        "id": 704,
-        "name_ar": "دشطوط",
-        "name_en": "Dashtout"
+        id: 704,
+        name_ar: 'دشطوط',
+        name_en: 'Dashtout',
       },
       {
-        "id": 705,
-        "name_ar": "بدهل",
-        "name_en": "Badhal"
+        id: 705,
+        name_ar: 'بدهل',
+        name_en: 'Badhal',
       },
       {
-        "id": 706,
-        "name_ar": "نزلة الديب",
-        "name_en": "Nazlet Al Deeb"
+        id: 706,
+        name_ar: 'نزلة الديب',
+        name_en: 'Nazlet Al Deeb',
       },
       {
-        "id": 707,
-        "name_ar": "العساكرة",
-        "name_en": "Al Asakra"
+        id: 707,
+        name_ar: 'العساكرة',
+        name_en: 'Al Asakra',
       },
       {
-        "id": 708,
-        "name_ar": "كوم النور",
-        "name_en": "Kom Al Nour"
+        id: 708,
+        name_ar: 'كوم النور',
+        name_en: 'Kom Al Nour',
       },
       {
-        "id": 709,
-        "name_ar": "المحمودية",
-        "name_en": "Al Mahmoudiya"
+        id: 709,
+        name_ar: 'المحمودية',
+        name_en: 'Al Mahmoudiya',
       },
       {
-        "id": 710,
-        "name_ar": "بني حلة",
-        "name_en": "Beni Hella"
+        id: 710,
+        name_ar: 'بني حلة',
+        name_en: 'Beni Hella',
       },
       {
-        "id": 711,
-        "name_ar": "دشاشة",
-        "name_en": "Deshasha"
-      }
-    ]
+        id: 711,
+        name_ar: 'دشاشة',
+        name_en: 'Deshasha',
+      },
+    ],
   },
   {
-    "id": "284",
-    "governorate_id": "17",
-    "city_name_ar": "مركز الفشن",
-    "city_name_en": "Al Fashn District",
-    "areas": [
+    id: '284',
+    governorate_id: '17',
+    city_name_ar: 'مركز الفشن',
+    city_name_en: 'Al Fashn District',
+    areas: [
       {
-        "id": 801,
-        "name_ar": "مدينة الفشن",
-        "name_en": "Al Fashn City"
+        id: 801,
+        name_ar: 'مدينة الفشن',
+        name_en: 'Al Fashn City',
       },
       {
-        "id": 802,
-        "name_ar": "تلت",
-        "name_en": "Talt"
+        id: 802,
+        name_ar: 'تلت',
+        name_en: 'Talt',
       },
       {
-        "id": 803,
-        "name_ar": "شنرا",
-        "name_en": "Shanra"
+        id: 803,
+        name_ar: 'شنرا',
+        name_en: 'Shanra',
       },
       {
-        "id": 804,
-        "name_ar": "الفنت",
-        "name_en": "Al Fant"
+        id: 804,
+        name_ar: 'الفنت',
+        name_en: 'Al Fant',
       },
       {
-        "id": 805,
-        "name_ar": "اقفهص",
-        "name_en": "Aqfahs"
+        id: 805,
+        name_ar: 'اقفهص',
+        name_en: 'Aqfahs',
       },
       {
-        "id": 806,
-        "name_ar": "دلهانس",
-        "name_en": "Dalhans"
+        id: 806,
+        name_ar: 'دلهانس',
+        name_en: 'Dalhans',
       },
       {
-        "id": 807,
-        "name_ar": "أبسوج",
-        "name_en": "Absoug"
+        id: 807,
+        name_ar: 'أبسوج',
+        name_en: 'Absoug',
       },
       {
-        "id": 808,
-        "name_ar": "صفط النور",
-        "name_en": "Saft Al Nour"
+        id: 808,
+        name_ar: 'صفط النور',
+        name_en: 'Saft Al Nour',
       },
       {
-        "id": 809,
-        "name_ar": "نزلة البرقي",
-        "name_en": "Nazlet Al Barqi"
+        id: 809,
+        name_ar: 'نزلة البرقي',
+        name_en: 'Nazlet Al Barqi',
       },
       {
-        "id": 810,
-        "name_ar": "الحيبة",
-        "name_en": "Al Hiba"
+        id: 810,
+        name_ar: 'الحيبة',
+        name_en: 'Al Hiba',
       },
       {
-        "id": 811,
-        "name_ar": "كفر درويش",
-        "name_en": "Kafr Darwish"
+        id: 811,
+        name_ar: 'كفر درويش',
+        name_en: 'Kafr Darwish',
       },
       {
-        "id": 812,
-        "name_ar": "بني صالح",
-        "name_en": "Beni Saleh"
+        id: 812,
+        name_ar: 'بني صالح',
+        name_en: 'Beni Saleh',
       },
       {
-        "id": 813,
-        "name_ar": "زرابي الفشن",
-        "name_en": "Zaraby Al Fashn"
-      }
-    ]
-  }
+        id: 813,
+        name_ar: 'زرابي الفشن',
+        name_en: 'Zaraby Al Fashn',
+      },
+    ],
+  },
 ] as const;

@@ -12,11 +12,7 @@
 } from 'lucide-react';
 import type { AppointmentSlot } from '../../../types';
 import { useCampaigns } from '../../../hooks/useCampaigns';
-import {
-  STATUS_CONFIG,
-  DONATION_LABELS,
-  DONATION_COLORS,
-} from './appointmentConstants';
+import { STATUS_CONFIG, DONATION_LABELS, DONATION_COLORS } from './appointmentConstants';
 
 // ── Campaign badge ──
 function CampaignBadge({ campaignId }: { campaignId?: string }) {

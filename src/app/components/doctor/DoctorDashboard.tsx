@@ -1,16 +1,15 @@
 import { useNavigate } from 'react-router';
-import {
-  UserPlus,
-  Megaphone,
-  Building2,
-  Smartphone,
-} from 'lucide-react';
+import { UserPlus, Megaphone, Building2, Smartphone } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { useDoctorDashboardData } from './hooks/useDoctorDashboardData';
 
 // ── Sub-components ──
-import { TODAY_DATE_DISPLAY, buildStats, buildQuickActions } from './doctor-dashboard/dashboardConstants';
+import {
+  TODAY_DATE_DISPLAY,
+  buildStats,
+  buildQuickActions,
+} from './doctor-dashboard/dashboardConstants';
 import WeeklyChart from './doctor-dashboard/WeeklyChart';
 import ActiveCampaignsPanel from './doctor-dashboard/ActiveCampaignsPanel';
 import UpcomingAppointments from './doctor-dashboard/UpcomingAppointments';
@@ -19,12 +18,7 @@ import RecentDonations from './doctor-dashboard/RecentDonations';
 export default function DoctorDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const {
-    data,
-    isLoading,
-    isError,
-    refetch,
-  } = useDoctorDashboardData();
+  const { data, isLoading, isError, refetch } = useDoctorDashboardData();
 
   if (isLoading)
     return (
@@ -125,8 +119,12 @@ export default function DoctorDashboard() {
             <div className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
               {sources.walkinTotal}
             </div>
-            <div className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>تبرع داخل البنك</div>
-            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>{sources.walkinToday} اليوم</div>
+            <div className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
+              تبرع داخل البنك
+            </div>
+            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>
+              {sources.walkinToday} اليوم
+            </div>
           </div>
         </div>
         <div className="bg-card rounded-2xl p-4 border border-purple-100 shadow-sm flex items-center gap-4">
@@ -137,8 +135,12 @@ export default function DoctorDashboard() {
             <div className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
               {sources.campaignTotal}
             </div>
-            <div className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>عن طريق حملة</div>
-            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>{sources.campaignToday} اليوم</div>
+            <div className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
+              عن طريق حملة
+            </div>
+            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>
+              {sources.campaignToday} اليوم
+            </div>
           </div>
         </div>
         <div className="bg-card rounded-2xl p-4 border border-blue-100 shadow-sm flex items-center gap-4">
@@ -149,8 +151,12 @@ export default function DoctorDashboard() {
             <div className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
               {sources.appTotal}
             </div>
-            <div className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>حجز من التطبيق</div>
-            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>{sources.appToday} اليوم</div>
+            <div className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
+              حجز من التطبيق
+            </div>
+            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>
+              {sources.appToday} اليوم
+            </div>
           </div>
         </div>
       </div>

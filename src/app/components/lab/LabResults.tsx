@@ -1,53 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Search,
   CheckCircle2,
   XCircle,
-  Clock,
   Eye,
   X,
   FlaskConical,
   Filter,
   CreditCard,
+  ChevronRight,
+  ChevronLeft,
 } from 'lucide-react';
-import { useTestResults, useSamples } from '../../hooks/useLabTests';
-import { useDonors } from '../../hooks/useDonors';
+import { formatLocalizedDateTime } from '../../utils/date';
+import { useTestResults, useLabDashboardStats } from '../../hooks/useLabTests';
+import { useDebounce } from '../../hooks/useDebounce';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 
 // ── Sub-components ──
-import { SCREENING_TESTS, buildCombinedList } from './lab-results/labResultsConstants';
-import type { CombinedEntry } from './lab-results/labResultsConstants';
+import { SCREENING_TESTS, buildResultsList } from './lab-results/labResultsConstants';
+import type { ResultEntry } from './lab-results/labResultsConstants';
 import ResultDetailModal from './lab-results/ResultDetailModal';
 
 // ── Status badge helper ──
-function getStatusBadge(entry: CombinedEntry) {
-  if (entry.displayStatus === 'pending')
-    return (
-      <span
-        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full whitespace-nowrap"
-        style={{
-          background: 'rgba(251,191,36,0.12)',
-          border: '1px solid rgba(251,191,36,0.3)',
-          fontSize: '10px',
-          fontWeight: 700,
-          color: '#92400e',
-        }}
-      >
-        <Clock className="w-3 h-3" />
-        معلق
-      </span>
-    );
+function getStatusBadge(entry: ResultEntry) {
   if (entry.displayStatus === 'safe')
     return (
       <span
-        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full whitespace-nowrap"
+        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full whitespace-nowrap bg-green-100/50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 text-green-700 dark:text-green-400"
         style={{
-          background: 'rgba(74,222,128,0.1)',
-          border: '1px solid rgba(74,222,128,0.25)',
           fontSize: '10px',
           fontWeight: 700,
-          color: '#14532d',
         }}
       >
         <CheckCircle2 className="w-3 h-3" />
@@ -56,13 +39,10 @@ function getStatusBadge(entry: CombinedEntry) {
     );
   return (
     <span
-      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full whitespace-nowrap"
+      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full whitespace-nowrap bg-red-100/50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400"
       style={{
-        background: 'rgba(248,113,113,0.1)',
-        border: '1px solid rgba(248,113,113,0.25)',
         fontSize: '10px',
         fontWeight: 700,
-        color: '#7f1d1d',
       }}
     >
       <XCircle className="w-3 h-3" />
@@ -90,76 +70,62 @@ function testBadge(val: 'negative' | 'positive' | null) {
 }
 
 export default function LabResults() {
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 500);
+  const [filter, setFilter] = useState('all');
+  const [page, setPage] = useState(1);
+  const limit = 20;
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, filter]);
+
   const {
-    data: testResultsData = [],
+    data: testResultsResponse,
     isLoading: isLoadingResults,
     isError: isErrorResults,
+    isFetching,
+    isPlaceholderData,
     refetch: refetchResults,
-  } = useTestResults();
-  const {
-    data: samplesData = [],
-    isLoading: isLoadingSamples,
-    isError: isErrorSamples,
-    refetch: refetchSamples,
-  } = useSamples();
-  const { data: donorsData = [], isLoading: isLoadingDonors } = useDonors();
+  } = useTestResults({
+    page,
+    limit,
+    search: debouncedSearch,
+    outcome: filter === 'safe' ? 'safe' : filter === 'rejected' ? 'rejected' : '',
+  });
 
-  const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('all');
-  const [viewEntry, setViewEntry] = useState<CombinedEntry | null>(null);
+  const { data: statsData } = useLabDashboardStats();
 
-  const isLoading = isLoadingResults || isLoadingSamples || isLoadingDonors;
-  const isError = isErrorResults || isErrorSamples;
+  const [viewEntry, setViewEntry] = useState<ResultEntry | null>(null);
+
+  const isLoading = isLoadingResults;
+  const isError = isErrorResults;
 
   if (isLoading)
     return (
-      <div className="space-y-6 p-2">
-        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
+      <div className="space-y-6">
         <CardSkeleton count={3} />
-        <TableSkeleton rows={5} cols={6} />
+        <TableSkeleton cols={8} rows={5} />
       </div>
     );
+
   if (isError)
     return (
       <ErrorState
-        message="تعذر تحميل نتائج الفحوصات"
-        onRetry={() => {
-          refetchResults();
-          refetchSamples();
-        }}
+        message="يرجى المحاولة مرة أخرى أو التحقق من اتصالك بالإنترنت"
+        onRetry={() => refetchResults()}
       />
     );
 
-  const allEntries = buildCombinedList(testResultsData, samplesData, donorsData);
+  const testResultsData = testResultsResponse?.data || [];
+  const filtered = buildResultsList(testResultsData);
 
-  const filtered = allEntries.filter((r) => {
-    const q = search.toLowerCase().trim();
-    const matchSearch =
-      !q ||
-      (r.sampleCode || '').toLowerCase().includes(q) ||
-      (r.donationCode || '').toLowerCase().includes(q) ||
-      (r.donorName || '').includes(search) ||
-      (r.sampleId || '').toLowerCase().includes(q) ||
-      (r.nationalId || '').includes(search);
-    const matchFilter =
-      filter === 'all' ||
-      (filter === 'safe' && r.displayStatus === 'safe') ||
-      (filter === 'rejected' && r.displayStatus === 'rejected') ||
-      (filter === 'pending' && r.displayStatus === 'pending');
-    return matchSearch && matchFilter;
-  });
+  const totalItems = testResultsResponse?.total || 0;
+  const totalPages = Math.max(1, Math.ceil(totalItems / limit));
 
-  const getRowBg = (entry: CombinedEntry) => {
-    if (entry.displayStatus === 'pending') return 'rgba(251,191,36,0.06)';
-    if (entry.displayStatus === 'rejected') return 'rgba(248,113,113,0.05)';
-    return '';
-  };
-
-  const totals = {
-    all: allEntries.length,
-    pending: allEntries.filter((r) => r.displayStatus === 'pending').length,
-    safe: allEntries.filter((r) => r.displayStatus === 'safe').length,
-    rejected: allEntries.filter((r) => r.displayStatus === 'rejected').length,
+  const getRowBg = (entry: ResultEntry) => {
+    if (entry.displayStatus === 'safe') return 'rgba(74,222,128,0.04)';
+    return 'rgba(248,113,113,0.04)';
   };
 
   return (
@@ -177,20 +143,24 @@ export default function LabResults() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: 'إجمالي العينات', value: totals.all, icon: '🔬', btn: 'all', bg: 'bg-card border-border' },
+          { label: 'إجمالي النتائج', icon: '🔬', btn: 'all', bg: 'bg-card border-border', count: statsData?.results.total },
           {
-            label: 'معلقة', value: totals.pending, icon: '⏳', btn: 'pending', bg: '',
-            style: { background: 'rgba(251,191,36,0.08)', borderColor: 'rgba(251,191,36,0.25)' },
-          },
-          {
-            label: 'آمنة', value: totals.safe, icon: '✅', btn: 'safe', bg: '',
+            label: 'آمنة',
+            icon: '✅',
+            btn: 'safe',
+            bg: '',
             style: { background: 'rgba(74,222,128,0.08)', borderColor: 'rgba(74,222,128,0.25)' },
+            count: statsData?.results.safe,
           },
           {
-            label: 'مرفوضة', value: totals.rejected, icon: '❌', btn: 'rejected', bg: '',
+            label: 'مرفوضة',
+            icon: '❌',
+            btn: 'rejected',
+            bg: '',
             style: { background: 'rgba(248,113,113,0.08)', borderColor: 'rgba(248,113,113,0.25)' },
+            count: statsData?.results.rejected,
           },
         ].map((s, i) => (
           <button
@@ -200,10 +170,10 @@ export default function LabResults() {
             style={'style' in s ? s.style : undefined}
           >
             <div className="text-2xl mb-2">{s.icon}</div>
-            <div className="text-foreground" style={{ fontSize: '24px', fontWeight: 700 }}>
-              {s.value}
+            <div className="text-foreground mb-1" style={{ fontSize: '20px', fontWeight: 800 }}>
+              {s.count ?? '—'}
             </div>
-            <div className="text-muted-foreground" style={{ fontSize: '11px' }}>
+            <div className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
               {s.label}
             </div>
           </button>
@@ -244,15 +214,7 @@ export default function LabResults() {
 
       {/* Color Legend */}
       <div className="flex flex-wrap gap-3">
-        <div
-          className="flex items-center gap-2 px-3 py-2 rounded-xl border"
-          style={{ background: 'rgba(251,191,36,0.08)', borderColor: 'rgba(251,191,36,0.25)' }}
-        >
-          <div className="w-3 h-3 rounded-full bg-yellow-400" />
-          <span className="text-yellow-700" style={{ fontSize: '12px', fontWeight: 600 }}>
-            معلق — لم يُفحص بعد
-          </span>
-        </div>
+
         <div
           className="flex items-center gap-2 px-3 py-2 rounded-xl border"
           style={{ background: 'rgba(248,113,113,0.08)', borderColor: 'rgba(248,113,113,0.25)' }}
@@ -297,10 +259,9 @@ export default function LabResults() {
         <div className="flex gap-2 mt-3 flex-wrap items-center">
           <Filter className="w-4 h-4 text-muted-foreground" />
           {[
-            { key: 'all', label: 'الكل', count: totals.all, activeBg: '#374151' },
-            { key: 'pending', label: '⏳ معلق', count: totals.pending, activeBg: '#d97706' },
-            { key: 'safe', label: '✅ آمن', count: totals.safe, activeBg: '#16a34a' },
-            { key: 'rejected', label: '❌ مرفوض', count: totals.rejected, activeBg: '#dc2626' },
+            { key: 'all', label: 'الكل', activeBg: '#374151' },
+            { key: 'safe', label: '✅ آمن', activeBg: '#16a34a' },
+            { key: 'rejected', label: '❌ مرفوض', activeBg: '#dc2626' },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -312,10 +273,10 @@ export default function LabResults() {
                 ...(filter === tab.key && {
                   background: tab.activeBg,
                   borderColor: tab.activeBg,
-                })
+                }),
               }}
             >
-              {tab.label} ({tab.count})
+              {tab.label}
             </button>
           ))}
         </div>
@@ -324,11 +285,12 @@ export default function LabResults() {
       {/* Results Table */}
       <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="px-4 py-3 border-b border-border flex items-center justify-between bg-muted/40">
-          <span className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
-            النتائج ({filtered.length})
+          <span className="text-muted-foreground flex items-center gap-2" style={{ fontSize: '13px', fontWeight: 600 }}>
+            النتائج
+            {isFetching && <div className="w-3 h-3 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />}
           </span>
           {search && (
-            <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
+            <span className="text-muted-foreground flex items-center gap-2" style={{ fontSize: '12px' }}>
               نتائج البحث عن: "<span className="text-green-600">{search}</span>"
             </span>
           )}
@@ -338,31 +300,61 @@ export default function LabResults() {
           <table className="w-full min-w-[920px]">
             <thead>
               <tr className="border-b border-border bg-muted/40/80">
-                <th className="text-right px-4 py-3.5 text-muted-foreground whitespace-nowrap" style={{ fontSize: '11px', fontWeight: 700 }}>
+                <th
+                  className="text-right px-4 py-3.5 text-muted-foreground whitespace-nowrap"
+                  style={{ fontSize: '11px', fontWeight: 700 }}
+                >
                   <span className="flex items-center gap-1.5">
                     <FlaskConical className="w-3 h-3" />
                     كود العينة
                   </span>
                 </th>
-                <th className="text-right px-3 py-3.5 text-muted-foreground whitespace-nowrap" style={{ fontSize: '11px', fontWeight: 600 }}>
+                <th
+                  className="text-right px-3 py-3.5 text-muted-foreground whitespace-nowrap"
+                  style={{ fontSize: '11px', fontWeight: 600 }}
+                >
                   <span className="flex items-center gap-1">
                     <CreditCard className="w-3 h-3" />
                     رقم الهوية
                   </span>
                 </th>
-                <th className="text-right px-3 py-3.5 text-muted-foreground" style={{ fontSize: '11px', fontWeight: 600 }}>المتبرع</th>
-                <th className="text-right px-3 py-3.5 text-muted-foreground" style={{ fontSize: '11px', fontWeight: 600 }}>الفصيلة</th>
+                <th
+                  className="text-right px-3 py-3.5 text-muted-foreground"
+                  style={{ fontSize: '11px', fontWeight: 600 }}
+                >
+                  المتبرع
+                </th>
+                <th
+                  className="text-right px-3 py-3.5 text-muted-foreground"
+                  style={{ fontSize: '11px', fontWeight: 600 }}
+                >
+                  الفصيلة
+                </th>
                 {SCREENING_TESTS.map((t) => (
-                  <th key={t.key} className="text-center px-3 py-3.5 text-muted-foreground whitespace-nowrap" style={{ fontSize: '11px', fontWeight: 700 }}>
+                  <th
+                    key={t.key}
+                    className="text-center px-3 py-3.5 text-muted-foreground whitespace-nowrap"
+                    style={{ fontSize: '11px', fontWeight: 700 }}
+                  >
                     {t.abbr}
                   </th>
                 ))}
-                <th className="text-right px-3 py-3.5 text-muted-foreground" style={{ fontSize: '11px', fontWeight: 600 }}>الحالة</th>
-                <th className="text-right px-3 py-3.5 text-muted-foreground" style={{ fontSize: '11px', fontWeight: 600 }}>التاريخ</th>
+                <th
+                  className="text-right px-3 py-3.5 text-muted-foreground"
+                  style={{ fontSize: '11px', fontWeight: 600 }}
+                >
+                  الحالة
+                </th>
+                <th
+                  className="text-right px-3 py-3.5 text-muted-foreground"
+                  style={{ fontSize: '11px', fontWeight: 600 }}
+                >
+                  التاريخ
+                </th>
                 <th className="px-3 py-3.5" />
               </tr>
             </thead>
-            <tbody>
+            <tbody className={`transition-opacity duration-200 ${isFetching ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
               {filtered.map((entry) => (
                 <tr
                   key={entry.id}
@@ -383,14 +375,20 @@ export default function LabResults() {
                   <td className="px-3 py-3.5">
                     <div className="flex items-center gap-1">
                       <CreditCard className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                      <span className="font-mono text-muted-foreground" style={{ fontSize: '11px' }}>
+                      <span
+                        className="font-mono text-muted-foreground"
+                        style={{ fontSize: '11px' }}
+                      >
                         {entry.nationalId}
                       </span>
                     </div>
                   </td>
                   <td className="px-3 py-3.5">
                     <div>
-                      <div className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
+                      <div
+                        className="text-foreground"
+                        style={{ fontSize: '12px', fontWeight: 600 }}
+                      >
                         {entry.donorName}
                       </div>
                       <div className="font-mono text-muted-foreground" style={{ fontSize: '10px' }}>
@@ -403,17 +401,22 @@ export default function LabResults() {
                       className="bg-muted text-foreground px-2 py-0.5 rounded-lg font-mono"
                       style={{ fontSize: '12px', fontWeight: 700 }}
                     >
-                      {entry.confirmedBloodType || entry.bloodType}
+                      {entry.confirmedBloodType || entry.bloodType || '—'}
                     </span>
                   </td>
                   {SCREENING_TESTS.map((t) => (
                     <td key={t.key} className="px-3 py-3.5 text-center">
-                      {testBadge((entry as Record<string, unknown>)[t.key] as 'negative' | 'positive' | null)}
+                      {testBadge(
+                        (entry as Record<string, unknown>)[t.key] as 'negative' | 'positive' | null,
+                      )}
                     </td>
                   ))}
                   <td className="px-3 py-3.5">{getStatusBadge(entry)}</td>
-                  <td className="px-3 py-3.5 text-muted-foreground whitespace-nowrap" style={{ fontSize: '11px' }}>
-                    {entry.date}
+                  <td
+                    className="px-3 py-3.5 text-muted-foreground whitespace-nowrap"
+                    style={{ fontSize: '11px' }}
+                  >
+                    {entry.date ? formatLocalizedDateTime(entry.date) : ''}
                   </td>
                   <td className="px-3 py-3.5">
                     <button
@@ -427,7 +430,7 @@ export default function LabResults() {
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && (
+              {filtered.length === 0 && !isLoading && (
                 <EmptyState
                   colSpan={11}
                   message={search ? `لا توجد نتائج لـ "${search}"` : 'لا توجد نتائج في هذه الفئة'}
@@ -436,6 +439,31 @@ export default function LabResults() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-muted/20">
+            <div className="text-muted-foreground" style={{ fontSize: '13px' }}>
+              صفحة {page} من {totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="p-1.5 rounded-lg border border-border hover:bg-muted disabled:opacity-50 disabled:hover:bg-transparent"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+                className="p-1.5 rounded-lg border border-border hover:bg-muted disabled:opacity-50 disabled:hover:bg-transparent"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

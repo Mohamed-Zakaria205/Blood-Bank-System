@@ -5,10 +5,8 @@ import { CancelModal } from './CancelModal';
 // Mock the useCampaigns hook since we're testing the component isolated
 vi.mock('../../hooks/useCampaigns', () => ({
   useCampaigns: () => ({
-    data: [
-      { id: 'camp1', title: 'Test Campaign' }
-    ]
-  })
+    data: [{ id: 'camp1', title: 'Test Campaign' }],
+  }),
 }));
 
 const mockSlot = {
@@ -17,18 +15,13 @@ const mockSlot = {
   time: '10:00',
   status: 'booked' as const,
   donorName: 'John Doe',
-  campaignId: 'camp1'
+  campaignId: 'camp1',
 };
 
 describe('CancelModal', () => {
   it('renders the modal with slot details', () => {
     render(
-      <CancelModal 
-        slot={mockSlot} 
-        doctorName="Dr. Smith" 
-        onConfirm={vi.fn()} 
-        onClose={vi.fn()} 
-      />
+      <CancelModal slot={mockSlot} doctorName="Dr. Smith" onConfirm={vi.fn()} onClose={vi.fn()} />,
     );
 
     // Verify slot details
@@ -46,12 +39,12 @@ describe('CancelModal', () => {
     const handleClose = vi.fn();
 
     render(
-      <CancelModal 
-        slot={mockSlot} 
-        doctorName="Dr. Smith" 
-        onConfirm={handleConfirm} 
-        onClose={handleClose} 
-      />
+      <CancelModal
+        slot={mockSlot}
+        doctorName="Dr. Smith"
+        onConfirm={handleConfirm}
+        onClose={handleClose}
+      />,
     );
 
     const reasonInput = screen.getByPlaceholderText(/مثال: ظروف طارئة/i);
@@ -61,7 +54,7 @@ describe('CancelModal', () => {
     fireEvent.click(confirmButton);
 
     expect(handleConfirm).toHaveBeenCalledWith('Patient did not show up');
-    
+
     // Test that onClose is called after confirm
     await waitFor(() => {
       expect(handleClose).toHaveBeenCalled();
@@ -72,12 +65,12 @@ describe('CancelModal', () => {
     const handleClose = vi.fn();
 
     render(
-      <CancelModal 
-        slot={mockSlot} 
-        doctorName="Dr. Smith" 
-        onConfirm={vi.fn()} 
-        onClose={handleClose} 
-      />
+      <CancelModal
+        slot={mockSlot}
+        doctorName="Dr. Smith"
+        onConfirm={vi.fn()}
+        onClose={handleClose}
+      />,
     );
 
     // The close button has an X icon but we can find it by its onClick or structure,

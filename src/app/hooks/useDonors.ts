@@ -2,8 +2,32 @@
 // React Query hooks — Donors & Donations
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchDonors, fetchDonorById, updateDonor, fetchPaginatedDonors, fetchPaginatedEligibleDonors, fetchPaginatedDonations, fetchAllDonations, searchDonorByNationalId, addDonation, addMedicalRecord, deleteDonation, confirmDonation, fetchDonationCenters, fetchDonorEligibilityStats, sendDonorNotification, fetchEligibilitySettings, updateEligibilitySettings } from '../api/donors';
-import type { BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest, SendNotificationRequest, EligibilitySettings } from '../types/donor';
+import {
+  fetchDonors,
+  fetchDonorById,
+  updateDonor,
+  fetchPaginatedDonors,
+  fetchPaginatedEligibleDonors,
+  fetchPaginatedDonations,
+  fetchAllDonations,
+  searchDonorByNationalId,
+  addDonation,
+  addMedicalRecord,
+  deleteDonation,
+  confirmDonation,
+  fetchDonationCenters,
+  fetchDonorEligibilityStats,
+  sendDonorNotification,
+  fetchEligibilitySettings,
+  updateEligibilitySettings,
+} from '../api/donors';
+import type {
+  BasicDonationRequest,
+  MedicalRecordRequest,
+  UpdateDonorRequest,
+  SendNotificationRequest,
+  EligibilitySettings,
+} from '../types/donor';
 import type { DonorFilters } from '../types/common';
 
 // ═══════════════════════════════════════════════════════════
@@ -154,7 +178,7 @@ export function useAddDonation() {
 export function useAddMedicalRecord() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ donationId, payload }: { donationId: string, payload: MedicalRecordRequest }) =>
+    mutationFn: ({ donationId, payload }: { donationId: string; payload: MedicalRecordRequest }) =>
       addMedicalRecord(donationId, payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['donors'] });

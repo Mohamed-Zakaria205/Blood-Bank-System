@@ -9,7 +9,12 @@ interface NotifyDonorModalProps {
   isPending?: boolean;
 }
 
-export default function NotifyDonorModal({ modal, onSend, onCancel, isPending = false }: NotifyDonorModalProps) {
+export default function NotifyDonorModal({
+  modal,
+  onSend,
+  onCancel,
+  isPending = false,
+}: NotifyDonorModalProps) {
   const isEmergency = modal.type === 'emergency';
   const modalRef = useModalFocusTrap(onCancel);
 
@@ -37,7 +42,11 @@ export default function NotifyDonorModal({ modal, onSend, onCancel, isPending = 
               )}
             </div>
             <div>
-              <h3 id="modal-title" className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
+              <h3
+                id="modal-title"
+                className="text-foreground"
+                style={{ fontSize: '17px', fontWeight: 700 }}
+              >
                 {isEmergency ? 'إشعار طارئ' : 'إشعار جاهزية للتبرع'}
               </h3>
               <p className="text-muted-foreground" style={{ fontSize: '12px' }}>
@@ -89,7 +98,10 @@ export default function NotifyDonorModal({ modal, onSend, onCancel, isPending = 
               محتوى الإشعار
             </label>
             <div id="message-preview" className="p-3 bg-muted/40 border border-border rounded-xl">
-              <p className="text-foreground" style={{ fontSize: '13px', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
+              <p
+                className="text-foreground"
+                style={{ fontSize: '13px', lineHeight: '1.6', whiteSpace: 'pre-line' }}
+              >
                 {isEmergency
                   ? `🚨 طلب دم طارئ — بنك دم بني سويف\nفصيلة الدم: ${modal.donor.bloodType}\nيرجى التواصل فوراً على: 082-XXXXXXX`
                   : `💚 أنت الآن مؤهل للتبرع بالدم مجدداً!\nآخر تبرع: ${modal.donor.lastDonationDate ?? 'لم يتبرع'}\nاحجز موعدك عبر التطبيق أو تواصل معنا.`}

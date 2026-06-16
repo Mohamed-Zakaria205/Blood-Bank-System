@@ -1,12 +1,11 @@
-import type {
-  Campaign,
-} from '../types';
+import type { Campaign } from '../types';
 
 export const campaigns: Campaign[] = [
   {
     id: 'CAM-001',
     title: 'حملة التبرع - مستشفى بني سويف العام',
-    latitude: 29.0661, longitude: 31.0994,
+    latitude: 29.0661,
+    longitude: 31.0994,
     city: 'بني سويف',
     date: '2025-05-10',
     startTime: '08:00',
@@ -25,7 +24,8 @@ export const campaigns: Campaign[] = [
   {
     id: 'CAM-002',
     title: 'يوم التبرع الشهري - مركز الواسطى',
-    latitude: 29.0661, longitude: 31.0994,
+    latitude: 29.0661,
+    longitude: 31.0994,
     city: 'الواسطى',
     date: '2025-04-20',
     startTime: '08:00',
@@ -44,7 +44,8 @@ export const campaigns: Campaign[] = [
   {
     id: 'CAM-003',
     title: 'حملة الدم الطارئة - مستشفى ناصر',
-    latitude: 29.0661, longitude: 31.0994,
+    latitude: 29.0661,
+    longitude: 31.0994,
     city: 'ناصر',
     date: '2025-04-28',
     startTime: '08:00',
@@ -63,7 +64,8 @@ export const campaigns: Campaign[] = [
   {
     id: 'CAM-004',
     title: 'حملة التبرع - جامعة بني سويف',
-    latitude: 29.0661, longitude: 31.0994,
+    latitude: 29.0661,
+    longitude: 31.0994,
     city: 'بني سويف',
     date: '2025-05-20',
     startTime: '08:00',
@@ -82,7 +84,8 @@ export const campaigns: Campaign[] = [
   {
     id: 'CAM-005',
     title: 'يوم التبرع - ببا',
-    latitude: 29.0661, longitude: 31.0994,
+    latitude: 29.0661,
+    longitude: 31.0994,
     city: 'ببا',
     date: '2025-03-15',
     startTime: '08:00',

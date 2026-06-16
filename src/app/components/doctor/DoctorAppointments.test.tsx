@@ -69,9 +69,7 @@ vi.mock('@tanstack/react-query', async (importOriginal) => {
 // Mock useCampaigns
 vi.mock('../../hooks/useCampaigns', () => ({
   useCampaigns: () => ({
-    data: [
-      { id: 'camp-1', title: 'حملة جامعة بني سويف' },
-    ],
+    data: [{ id: 'camp-1', title: 'حملة جامعة بني سويف' }],
   }),
 }));
 
@@ -157,7 +155,7 @@ describe('DoctorAppointments Component', () => {
     return icon ? (icon.closest('button') as HTMLButtonElement) : null;
   };
 
-  it('renders stats cards and today\'s appointments', () => {
+  it("renders stats cards and today's appointments", () => {
     render(<DoctorAppointments />);
 
     // Header
@@ -201,7 +199,7 @@ describe('DoctorAppointments Component', () => {
       expect.objectContaining({
         dateFrom: WEEK_DATES[0],
         dateTo: WEEK_DATES[6],
-      })
+      }),
     );
 
     // Month view
@@ -211,7 +209,7 @@ describe('DoctorAppointments Component', () => {
       expect.objectContaining({
         dateFrom: expect.any(String),
         dateTo: expect.any(String),
-      })
+      }),
     );
 
     // Today view
@@ -220,7 +218,7 @@ describe('DoctorAppointments Component', () => {
     expect(mockUseAppointmentSlots).toHaveBeenCalledWith(
       expect.objectContaining({
         date: TODAY,
-      })
+      }),
     );
   });
 
@@ -230,17 +228,17 @@ describe('DoctorAppointments Component', () => {
     // Click "محجوز" stats card
     const bookedCard = screen.getAllByText('محجوز')[0].closest('div')!;
     fireEvent.click(bookedCard);
-    
+
     // Check that appointment slots query is called with status: 'booked'
     expect(mockUseAppointmentSlots).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: 'booked' })
+      expect.objectContaining({ status: 'booked' }),
     );
 
     // Click "الكل" in filter bar
     const allFilterBtn = screen.getByRole('button', { name: 'الكل' });
     fireEvent.click(allFilterBtn);
     expect(mockUseAppointmentSlots).toHaveBeenLastCalledWith(
-      expect.not.objectContaining({ status: expect.any(String) })
+      expect.not.objectContaining({ status: expect.any(String) }),
     );
   });
 
@@ -323,7 +321,7 @@ describe('DoctorAppointments Component', () => {
 
     await waitFor(() => {
       expect(toast.info).toHaveBeenCalledWith('إلغاء جديد: أسامة محمد — 2026-05-31');
-      
+
       // Bell notification count should show 1 unread notification
       const bellBtn = getBellButton(container);
       expect(bellBtn).toBeInTheDocument();
@@ -389,7 +387,7 @@ describe('DoctorAppointments Component', () => {
       { ...storedNotifications[1], read: false },
     ];
     localStorage.setItem('doctor_notifications', JSON.stringify(newStoredNotifications));
-    
+
     // Re-render to load updated localStorage notifications
     const { container: secondContainer } = render(<DoctorAppointments />);
     const secondBellBtn = getBellButton(secondContainer)!;

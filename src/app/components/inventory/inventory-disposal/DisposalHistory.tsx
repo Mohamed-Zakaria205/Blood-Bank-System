@@ -3,11 +3,7 @@ import type { BloodType } from '../../../types';
 import type { OutflowRecord } from '../../../types';
 import { BLOOD_TYPES } from '../../../constants';
 import { EmptyState } from '../../shared/EmptyState';
-import {
-  DISPOSAL_REASONS,
-  donTypeLabels,
-  getCategoryLabel,
-} from './disposalConstants';
+import { DISPOSAL_REASONS, donTypeLabels, getCategoryLabel } from './disposalConstants';
 
 interface DisposalHistoryProps {
   disposalRecords: OutflowRecord[];

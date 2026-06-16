@@ -4,19 +4,16 @@ import AdminDonors from './AdminDonors';
 import { toast } from 'sonner';
 
 // Setup hoisted mocks
-const {
-  mockUsePaginatedDonors,
-  mockUseUpdateDonor,
-  mockUseDonor,
-  mockFetchDonorById,
-} = vi.hoisted(() => {
-  return {
-    mockUsePaginatedDonors: vi.fn(),
-    mockUseUpdateDonor: vi.fn(),
-    mockUseDonor: vi.fn(),
-    mockFetchDonorById: vi.fn(),
-  };
-});
+const { mockUsePaginatedDonors, mockUseUpdateDonor, mockUseDonor, mockFetchDonorById } = vi.hoisted(
+  () => {
+    return {
+      mockUsePaginatedDonors: vi.fn(),
+      mockUseUpdateDonor: vi.fn(),
+      mockUseDonor: vi.fn(),
+      mockFetchDonorById: vi.fn(),
+    };
+  },
+);
 
 // Mock hooks
 vi.mock('../../hooks/useDonors', () => ({
@@ -141,17 +138,17 @@ describe('AdminDonors Component', () => {
     expect(mockUsePaginatedDonors).toHaveBeenCalledWith(
       expect.objectContaining({
         search: 'أحمد',
-      })
+      }),
     );
 
     const selects = screen.getAllByRole('combobox');
-    
+
     // Blood type select (index 0)
     fireEvent.change(selects[0], { target: { value: 'A+' } });
     expect(mockUsePaginatedDonors).toHaveBeenCalledWith(
       expect.objectContaining({
         bloodType: 'A+',
-      })
+      }),
     );
 
     // Status select (index 1)
@@ -159,7 +156,7 @@ describe('AdminDonors Component', () => {
     expect(mockUsePaginatedDonors).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'eligible',
-      })
+      }),
     );
 
     // City select (index 2)
@@ -167,7 +164,7 @@ describe('AdminDonors Component', () => {
     expect(mockUsePaginatedDonors).toHaveBeenCalledWith(
       expect.objectContaining({
         district: 'مركز وبندر بني سويف',
-      })
+      }),
     );
   });
 
@@ -222,7 +219,9 @@ describe('AdminDonors Component', () => {
     // Test phone validation (invalid format)
     fireEvent.change(phoneInput, { target: { value: '123456' } });
     fireEvent.click(screen.getByText('حفظ التعديلات'));
-    expect(toast.error).toHaveBeenCalledWith('رقم الهاتف المحمول غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015');
+    expect(toast.error).toHaveBeenCalledWith(
+      'رقم الهاتف المحمول غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015',
+    );
 
     // Fix phone, test National ID validation (empty)
     fireEvent.change(phoneInput, { target: { value: '01011112222' } });
@@ -248,7 +247,7 @@ describe('AdminDonors Component', () => {
             nationalId: '29001012409876',
           }),
         }),
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -279,7 +278,7 @@ describe('AdminDonors Component', () => {
     render(<AdminDonors />);
 
     expect(screen.getByText('تعذر تحميل بيانات المتبرعين')).toBeInTheDocument();
-    
+
     const retryBtn = screen.getByText('إعادة المحاولة');
     fireEvent.click(retryBtn);
     expect(mockRefetch).toHaveBeenCalled();

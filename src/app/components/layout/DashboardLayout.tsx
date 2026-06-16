@@ -1,11 +1,6 @@
 import { useState, ReactNode } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router';
-import {
-  LogOut,
-  Menu,
-  X,
-  Droplet,
-} from 'lucide-react';
+import { LogOut, Menu, X, Droplet } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import NotificationDropdown, { Notification } from './NotificationDropdown';
 import { ThemeToggle } from '../shared/ThemeToggle';
@@ -62,12 +57,18 @@ export default function DashboardLayout({
         <div className="flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={accentGradient ? { background: accentGradient } : { backgroundColor: accentColor }}
+            style={
+              accentGradient ? { background: accentGradient } : { backgroundColor: accentColor }
+            }
           >
             <Droplet className="w-5 h-5 text-white" />
           </div>
           <div>
-            <p id="sidebar-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 800 }}>
+            <p
+              id="sidebar-title"
+              className="text-foreground"
+              style={{ fontSize: '18px', fontWeight: 800 }}
+            >
               BloodLink
             </p>
             <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
@@ -99,10 +100,9 @@ export default function DashboardLayout({
             to={item.path}
             end={item.end}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
-                isActive
-                  ? 'text-white shadow-md'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+              `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${isActive
+                ? 'text-white shadow-md'
+                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
               }`
             }
             style={({ isActive }) => ({
