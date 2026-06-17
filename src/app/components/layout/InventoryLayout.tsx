@@ -54,7 +54,6 @@ export default function InventoryLayout() {
   const navItems: NavItem[] = [
     { path: '/inventory', label: 'لوحة المخزون', icon: LayoutDashboard, end: true },
     { path: '/inventory/bags', label: 'حقائب الدم', icon: Package },
-    { path: '/inventory/disposal', label: 'إتلاف الحقائب', icon: Trash2 },
     { path: '/inventory/history', label: 'سجل الصادر', icon: History },
     { path: '/inventory/inventory-alerts', label: 'تحليلات المخزون', icon: Activity },
   ];

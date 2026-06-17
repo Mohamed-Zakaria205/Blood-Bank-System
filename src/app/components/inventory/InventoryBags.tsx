@@ -28,7 +28,6 @@ export default function InventoryBags() {
   const [selectedBloodTypes, setSelectedBloodTypes] = useState<BloodType[]>([]);
   const [donationType, setDonationType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<BloodBagStatus | 'active'>('active');
-  const [sortBy, setSortBy] = useState<string>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   // Fetch backend-driven statistics counts
@@ -46,7 +45,7 @@ export default function InventoryBags() {
     bloodTypes: selectedBloodTypes.length > 0 ? selectedBloodTypes.join(',') : undefined,
     donationType: donationType === 'all' ? undefined : donationType,
     status: filterStatus === 'active' ? 'all' : filterStatus,
-    sortBy,
+    sortBy: 'createdAt',
     sortOrder,
   });
 
@@ -99,7 +98,6 @@ export default function InventoryBags() {
     selectedBloodTypes.length > 0 ||
     donationType !== 'all' ||
     filterStatus !== 'active' ||
-    sortBy !== 'createdAt' ||
     sortOrder !== 'desc' ||
     page !== 1;
 
@@ -223,11 +221,6 @@ export default function InventoryBags() {
 
   const handleDonationTypeChange = (val: string) => {
     setDonationType(val);
-    setPage(1);
-  };
-
-  const handleSortByChange = (val: string) => {
-    setSortBy(val);
     setPage(1);
   };
 
@@ -356,8 +349,8 @@ export default function InventoryBags() {
 
       {/* Filters & Sorting Panel */}
       <div className="bg-card rounded-2xl border border-border p-4 space-y-4 shadow-sm">
-        {/* First row: Search, Donation Type, Sort By, Sort Order */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+        {/* First row: Search, Donation Type, Sort Order */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Search input */}
           <div className="relative">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -381,19 +374,6 @@ export default function InventoryBags() {
             <option value="wholeblood">دم كامل (Whole Blood)</option>
             <option value="plasma">بلازما (Plasma)</option>
             <option value="platelets">صفائح دموية (Platelets)</option>
-          </select>
-
-          {/* Sort By select */}
-          <select
-            value={sortBy}
-            onChange={(e) => handleSortByChange(e.target.value)}
-            className="px-3 py-2.5 border border-border rounded-xl bg-card text-foreground outline-none focus:border-green-500"
-            style={{ fontSize: '13px' }}
-          >
-            <option value="createdAt">ترتيب حسب: تاريخ التسجيل</option>
-            <option value="expiryDate">ترتيب حسب: تاريخ الانتهاء</option>
-            <option value="collectedDate">ترتيب حسب: تاريخ الجمع</option>
-            <option value="bagCode">ترتيب حسب: كود الحقيبة</option>
           </select>
 
           {/* Sort Order Toggle */}
@@ -453,7 +433,6 @@ export default function InventoryBags() {
                   setSelectedBloodTypes([]);
                   setDonationType('all');
                   setFilterStatus('active');
-                  setSortBy('createdAt');
                   setSortOrder('desc');
                   setPage(1);
                 }}
