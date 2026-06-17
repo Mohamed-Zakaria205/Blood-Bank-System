@@ -1,10 +1,6 @@
 ﻿import { XCircle, UserPlus, AlertTriangle } from 'lucide-react';
 import type { AppointmentSlot } from '../../../types';
-import {
-  STATUS_CONFIG,
-  DONATION_LABELS,
-  DONATION_COLORS,
-} from './appointmentConstants';
+import { STATUS_CONFIG, DONATION_LABELS, DONATION_COLORS } from './appointmentConstants';
 
 interface AppointmentRowProps {
   slot: AppointmentSlot;

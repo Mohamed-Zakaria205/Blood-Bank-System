@@ -63,6 +63,20 @@ export interface LabTestFilters extends PaginationParams {
   bloodType?: string;
 }
 
+/** Sample filter params */
+export interface SampleFilters extends PaginationParams {
+  search?: string;
+  status?: string;
+  bloodType?: string;
+}
+
+/** Result filter params */
+export interface ResultFilters extends PaginationParams {
+  search?: string;
+  bloodType?: string;
+  outcome?: string;
+}
+
 /** Staff filter params */
 export interface StaffFilters extends PaginationParams {
   search?: string;
@@ -78,8 +92,6 @@ export interface TransactionFilters extends PaginationParams {
   dateFrom?: string;
   dateTo?: string;
 }
-
-
 
 /** Re-usable literal unions */
 export type BloodType = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';

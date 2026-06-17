@@ -66,7 +66,9 @@ describe('donorSchema Zod validation', () => {
       const result = donorSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('تاريخ الميلاد يجب أن يجعل السن بين 18 و 65 سنة');
+        expect(result.error.issues[0].message).toBe(
+          'تاريخ الميلاد يجب أن يجعل السن بين 18 و 65 سنة',
+        );
       }
     });
 
@@ -76,7 +78,9 @@ describe('donorSchema Zod validation', () => {
       const result = donorSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('تاريخ الميلاد يجب أن يجعل السن بين 18 و 65 سنة');
+        expect(result.error.issues[0].message).toBe(
+          'تاريخ الميلاد يجب أن يجعل السن بين 18 و 65 سنة',
+        );
       }
     });
 
@@ -112,7 +116,9 @@ describe('donorSchema Zod validation', () => {
       const result = donorSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('رقم الهاتف غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015');
+        expect(result.error.issues[0].message).toBe(
+          'رقم الهاتف غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015',
+        );
       }
     });
   });
@@ -123,25 +129,39 @@ describe('donorSchema Zod validation', () => {
       const result = donorSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        const centerIssue = result.error.issues.find(issue => issue.path.includes('donationCenterId'));
+        const centerIssue = result.error.issues.find((issue) =>
+          issue.path.includes('donationCenterId'),
+        );
         expect(centerIssue).toBeDefined();
         expect(centerIssue?.message).toBe('اختر مركز التبرع');
       }
     });
 
     it('should require campaignId when source is campaign', () => {
-      const data = { ...getValidData(), source: 'campaign' as const, campaignId: '', donationCenterId: '' };
+      const data = {
+        ...getValidData(),
+        source: 'campaign' as const,
+        campaignId: '',
+        donationCenterId: '',
+      };
       const result = donorSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        const campaignIssue = result.error.issues.find(issue => issue.path.includes('campaignId'));
+        const campaignIssue = result.error.issues.find((issue) =>
+          issue.path.includes('campaignId'),
+        );
         expect(campaignIssue).toBeDefined();
         expect(campaignIssue?.message).toBe('اختر الحملة');
       }
     });
 
     it('should pass on source app without center or campaign ID', () => {
-      const data = { ...getValidData(), source: 'app' as const, campaignId: '', donationCenterId: '' };
+      const data = {
+        ...getValidData(),
+        source: 'app' as const,
+        campaignId: '',
+        donationCenterId: '',
+      };
       const result = donorSchema.safeParse(data);
       expect(result.success).toBe(true);
     });

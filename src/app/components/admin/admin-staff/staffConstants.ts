@@ -1,8 +1,4 @@
-import {
-  FlaskConical,
-  Stethoscope,
-  Package,
-} from 'lucide-react';
+import { FlaskConical, Stethoscope, Package } from 'lucide-react';
 import { z } from 'zod';
 
 export type StaffRole = 'doctor' | 'lab' | 'inventory';

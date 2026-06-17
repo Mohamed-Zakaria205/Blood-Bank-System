@@ -2,14 +2,7 @@
 // LoginForm — email / password fields + submit button
 // ═══════════════════════════════════════════════════════════
 import { useState } from 'react';
-import {
-  Droplet,
-  Eye,
-  EyeOff,
-  Lock,
-  Mail,
-  AlertCircle,
-} from 'lucide-react';
+import { Droplet, Eye, EyeOff, Lock, Mail, AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '../ui/form';
@@ -26,12 +19,7 @@ interface LoginFormProps {
   onInputChange: () => void;
 }
 
-export default function LoginForm({
-  authError,
-  loading,
-  onSubmit,
-  onInputChange,
-}: LoginFormProps) {
+export default function LoginForm({ authError, loading, onSubmit, onInputChange }: LoginFormProps) {
   const [showPass, setShowPass] = useState(false);
 
   const formMethods = useForm<LoginFormValues>({
@@ -59,11 +47,11 @@ export default function LoginForm({
     <>
       {/* ── Error Alert ─────────────────────────────────── */}
       {authError && (
-        <div
-          className="flex items-start gap-3 p-3.5 rounded-xl mb-5 border bg-destructive/10 border-destructive/30"
-        >
+        <div className="flex items-start gap-3 p-3.5 rounded-xl mb-5 border bg-destructive/10 border-destructive/30">
           <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-destructive" />
-          <p className="text-destructive" style={{ fontSize: '13px' }}>{authError}</p>
+          <p className="text-destructive" style={{ fontSize: '13px' }}>
+            {authError}
+          </p>
         </div>
       )}
 
@@ -98,7 +86,9 @@ export default function LoginForm({
               />
             </div>
             {errors.email?.message && (
-              <p className="text-destructive" style={{ fontSize: '12px' }}>{errors.email.message}</p>
+              <p className="text-destructive" style={{ fontSize: '12px' }}>
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -138,7 +128,9 @@ export default function LoginForm({
               </button>
             </div>
             {errors.password?.message && (
-              <p className="text-destructive" style={{ fontSize: '12px' }}>{errors.password.message}</p>
+              <p className="text-destructive" style={{ fontSize: '12px' }}>
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -150,9 +142,7 @@ export default function LoginForm({
             style={{
               fontSize: '15px',
               fontWeight: 700,
-              background: loading
-                ? '#9ca3af'
-                : 'linear-gradient(135deg, #15803d 0%, #22c55e 100%)',
+              background: loading ? '#9ca3af' : 'linear-gradient(135deg, #15803d 0%, #22c55e 100%)',
               boxShadow: loading ? 'none' : '0 6px 20px rgba(22,163,74,0.28)',
             }}
           >

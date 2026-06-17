@@ -80,7 +80,9 @@ describe('handleApiError function', () => {
     const result = handleApiError(axiosError);
     expect(result.message).toContain('One or more validation errors occurred.');
     expect(result.message).toContain('email: البريد الإلكتروني غير صالح');
-    expect(result.message).toContain('phone: رقم الهاتف يجب أن يتكون من 11 رقمًا, رقم الهاتف غير مسجل');
+    expect(result.message).toContain(
+      'phone: رقم الهاتف يجب أن يتكون من 11 رقمًا, رقم الهاتف غير مسجل',
+    );
   });
 
   it('should fallback to error.message if no response data is present in AxiosError', () => {

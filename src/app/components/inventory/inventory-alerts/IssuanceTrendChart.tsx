@@ -68,7 +68,10 @@ export default function IssuanceTrendChart({ data }: IssuanceTrendChartProps) {
             name="هدر"
             strokeDasharray="5 5"
           />
-          <Legend key="legend" wrapperStyle={{ fontFamily: 'Tajawal', fontSize: '12px', color: chart.labelColor }} />
+          <Legend
+            key="legend"
+            wrapperStyle={{ fontFamily: 'Tajawal', fontSize: '12px', color: chart.labelColor }}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>

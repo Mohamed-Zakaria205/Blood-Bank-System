@@ -13,12 +13,12 @@ import type { BloodType, DonationType } from './common';
  */
 export interface CancellationNotification {
   id: string;
-  appointmentId?: string;  // from backend push — kept for backward compat
+  appointmentId?: string; // from backend push — kept for backward compat
   donorName: string;
-  donorPhone?: string;     // only available in local optimistic notifications
+  donorPhone?: string; // only available in local optimistic notifications
   date: string;
   time: string;
-  campaignId?: string;     // only available in local optimistic notifications
+  campaignId?: string; // only available in local optimistic notifications
   cancelledAt: string;
   cancelledByName: string;
   reason?: string;

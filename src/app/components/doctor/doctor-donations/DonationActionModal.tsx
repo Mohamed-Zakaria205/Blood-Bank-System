@@ -78,7 +78,11 @@ export default function DonationActionModal({
                 <FlaskConical className="w-8 h-8 text-amber-600 dark:text-amber-500" />
               )}
             </div>
-            <h2 id="modal-title" className="text-foreground mb-1" style={{ fontSize: '20px', fontWeight: 800 }}>
+            <h2
+              id="modal-title"
+              className="text-foreground mb-1"
+              style={{ fontSize: '20px', fontWeight: 800 }}
+            >
               {alreadySent ? 'تم الإرسال للمختبر ✅' : 'مراجعة بيانات التبرع'}
             </h2>
             <p className="text-muted-foreground" style={{ fontSize: '13px' }}>
@@ -91,7 +95,10 @@ export default function DonationActionModal({
           {/* ── Donation Code ── */}
           <div className="p-4 bg-gradient-to-l from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-200 dark:border-green-900/30 rounded-2xl flex items-center justify-between">
             <div>
-              <p className="text-muted-foreground mb-0.5" style={{ fontSize: '11px', fontWeight: 600 }}>
+              <p
+                className="text-muted-foreground mb-0.5"
+                style={{ fontSize: '11px', fontWeight: 600 }}
+              >
                 رمز التبرع
               </p>
               <p
@@ -116,26 +123,44 @@ export default function DonationActionModal({
             </p>
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-xl text-center">
-                <p className="text-muted-foreground mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
+                <p
+                  className="text-muted-foreground mb-1"
+                  style={{ fontSize: '10px', fontWeight: 600 }}
+                >
                   فصيلة الدم
                 </p>
-                <p className="text-red-700 dark:text-red-400 font-mono" style={{ fontSize: '20px', fontWeight: 900 }}>
+                <p
+                  className="text-red-700 dark:text-red-400 font-mono"
+                  style={{ fontSize: '20px', fontWeight: 900 }}
+                >
                   {donation.bloodType || '—'}
                 </p>
               </div>
               <div className="p-3 bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 rounded-xl text-center">
-                <p className="text-muted-foreground mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
+                <p
+                  className="text-muted-foreground mb-1"
+                  style={{ fontSize: '10px', fontWeight: 600 }}
+                >
                   نوع التبرع
                 </p>
-                <p className="text-blue-700 dark:text-blue-400" style={{ fontSize: '13px', fontWeight: 700 }}>
+                <p
+                  className="text-blue-700 dark:text-blue-400"
+                  style={{ fontSize: '13px', fontWeight: 700 }}
+                >
                   {donationTypeLabels[donation.donationType] || '—'}
                 </p>
               </div>
               <div className="p-3 bg-green-50 dark:bg-green-500/10 border border-green-100 dark:border-green-500/20 rounded-xl text-center">
-                <p className="text-muted-foreground mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
+                <p
+                  className="text-muted-foreground mb-1"
+                  style={{ fontSize: '10px', fontWeight: 600 }}
+                >
                   المتبرع
                 </p>
-                <p className="text-green-700 dark:text-green-400" style={{ fontSize: '13px', fontWeight: 700 }}>
+                <p
+                  className="text-green-700 dark:text-green-400"
+                  style={{ fontSize: '13px', fontWeight: 700 }}
+                >
                   {donation.name}
                 </p>
               </div>
@@ -151,7 +176,10 @@ export default function DonationActionModal({
               <CalendarDays className="w-3.5 h-3.5 text-purple-500" /> تاريخ التبرع
             </p>
             <div className="p-3 bg-purple-50 dark:bg-purple-500/10 border border-purple-100 dark:border-purple-500/20 rounded-xl text-center">
-              <p className="text-purple-700 dark:text-purple-400" style={{ fontSize: '14px', fontWeight: 700 }}>
+              <p
+                className="text-purple-700 dark:text-purple-400"
+                style={{ fontSize: '14px', fontWeight: 700 }}
+              >
                 {today}
               </p>
             </div>
@@ -162,21 +190,30 @@ export default function DonationActionModal({
             {donation.source === 'walkin' ? (
               <>
                 <Building2 className="w-4 h-4 text-green-600 dark:text-green-500" />
-                <span className="text-green-700 dark:text-green-400" style={{ fontSize: '13px', fontWeight: 600 }}>
+                <span
+                  className="text-green-700 dark:text-green-400"
+                  style={{ fontSize: '13px', fontWeight: 600 }}
+                >
                   تبرع داخل البنك
                 </span>
               </>
             ) : donation.source === 'campaign' ? (
               <>
                 <Megaphone className="w-4 h-4 text-purple-600 dark:text-purple-500" />
-                <span className="text-purple-700 dark:text-purple-400" style={{ fontSize: '13px', fontWeight: 600 }}>
+                <span
+                  className="text-purple-700 dark:text-purple-400"
+                  style={{ fontSize: '13px', fontWeight: 600 }}
+                >
                   تبرع من حملة{donation.campaignName ? ` — ${donation.campaignName}` : ''}
                 </span>
               </>
             ) : (
               <>
                 <Smartphone className="w-4 h-4 text-blue-600 dark:text-blue-500" />
-                <span className="text-blue-700 dark:text-blue-400" style={{ fontSize: '13px', fontWeight: 600 }}>
+                <span
+                  className="text-blue-700 dark:text-blue-400"
+                  style={{ fontSize: '13px', fontWeight: 600 }}
+                >
                   حجز من التطبيق
                 </span>
               </>
@@ -187,7 +224,10 @@ export default function DonationActionModal({
           {alreadySent ? (
             <div className="p-4 bg-green-50 dark:bg-green-500/10 border-2 border-green-200 dark:border-green-500/20 rounded-2xl text-center">
               <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-500 mx-auto mb-2" />
-              <p className="text-green-700 dark:text-green-400" style={{ fontSize: '14px', fontWeight: 700 }}>
+              <p
+                className="text-green-700 dark:text-green-400"
+                style={{ fontSize: '14px', fontWeight: 700 }}
+              >
                 تم تأكيد وإرسال هذا التبرع للمختبر
               </p>
               <p className="text-green-500 dark:text-green-600 mt-1" style={{ fontSize: '12px' }}>
@@ -223,7 +263,10 @@ export default function DonationActionModal({
                 </div>
               ) : (
                 <div className="p-4 bg-red-50 dark:bg-red-500/10 border-2 border-red-200 dark:border-red-500/20 rounded-2xl space-y-3">
-                  <p className="text-red-700 dark:text-red-400 text-center" style={{ fontSize: '14px', fontWeight: 700 }}>
+                  <p
+                    className="text-red-700 dark:text-red-400 text-center"
+                    style={{ fontSize: '14px', fontWeight: 700 }}
+                  >
                     هل أنت متأكد من حذف هذا التبرع؟
                   </p>
                   <p className="text-red-500 text-center" style={{ fontSize: '12px' }}>

@@ -1,8 +1,13 @@
-﻿import { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Settings2, Save, Check } from 'lucide-react';
 import { BLOOD_TYPES } from '../../constants';
 import type { BloodType } from '../../types';
-import { useBloodBags, useBloodInventory, useTransactions, useMonthlyStats } from '../../hooks/useInventory';
+import {
+  useBloodBags,
+  useBloodInventory,
+  useTransactions,
+  useMonthlyStats,
+} from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 
 // ── Sub-components ──
@@ -20,20 +25,37 @@ function daysUntil(d: string) {
 
 export default function InventoryAlerts() {
   const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
-  const { data: inventoryData = [], isLoading: isLoadingInv, isError: isErrorInv } = useBloodInventory();
+  const {
+    data: inventoryData = [],
+    isLoading: isLoadingInv,
+    isError: isErrorInv,
+  } = useBloodInventory();
   const { data: transactions = [], isLoading: isLoadingTx, isError: isErrorTx } = useTransactions();
-  const { data: monthlyStats = [], isLoading: isLoadingStats, isError: isErrorStats } = useMonthlyStats();
+  const {
+    data: monthlyStats = [],
+    isLoading: isLoadingStats,
+    isError: isErrorStats,
+  } = useMonthlyStats();
 
   // Initialise thresholds from API data (once)
   const thresholdsInitialised = useRef(false);
-  const [thresholds, setThresholds] = useState<Record<BloodType, number>>(
-    () => BLOOD_TYPES.reduce((acc, t) => { acc[t] = DEFAULT_MIN; return acc; }, {} as Record<BloodType, number>),
+  const [thresholds, setThresholds] = useState<Record<BloodType, number>>(() =>
+    BLOOD_TYPES.reduce(
+      (acc, t) => {
+        acc[t] = DEFAULT_MIN;
+        return acc;
+      },
+      {} as Record<BloodType, number>,
+    ),
   );
 
   if (!thresholdsInitialised.current && inventoryData.length > 0) {
     thresholdsInitialised.current = true;
     const fromApi = inventoryData.reduce(
-      (acc, b) => { acc[b.type] = b.minRequired; return acc; },
+      (acc, b) => {
+        acc[b.type] = b.minRequired;
+        return acc;
+      },
       {} as Record<BloodType, number>,
     );
     setThresholds(fromApi);

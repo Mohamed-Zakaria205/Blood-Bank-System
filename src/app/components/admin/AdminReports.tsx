@@ -229,7 +229,10 @@ export default function AdminReports() {
                   },
                 ].map((tip, i) => (
                   <div key={i} className="col-span-3 p-4 bg-muted/40 rounded-xl">
-                    <p className="text-foreground mb-2" style={{ fontSize: '13px', fontWeight: 700 }}>
+                    <p
+                      className="text-foreground mb-2"
+                      style={{ fontSize: '13px', fontWeight: 700 }}
+                    >
                       {tip.title}
                     </p>
                     <ol className="space-y-1">

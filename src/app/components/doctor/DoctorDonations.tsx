@@ -14,7 +14,11 @@ import {
 } from 'lucide-react';
 import { BLOOD_TYPES } from '../../constants';
 import CustomDateModal from './doctor-donations/CustomDateModal';
-import { usePaginatedDonations, useDeleteDonation, useConfirmDonation } from '../../hooks/useDonors';
+import {
+  usePaginatedDonations,
+  useDeleteDonation,
+  useConfirmDonation,
+} from '../../hooks/useDonors';
 import { useFilterChange } from '../../hooks/useFilterChange';
 import { toast } from 'sonner';
 import { handleApiError } from '../../api/errors';
@@ -33,11 +37,7 @@ import {
 import type { Donation } from '../../types';
 
 // ── Sub-components ──
-import {
-  donationTypeLabels,
-  genderLabels,
-  tableHeaders,
-} from './doctor-donations/donorsConstants';
+import { donationTypeLabels, genderLabels, tableHeaders } from './doctor-donations/donorsConstants';
 import DonorDetailModal from './doctor-donations/DonorDetailModal';
 import DonationActionModal from './doctor-donations/DonationActionModal';
 
@@ -185,9 +185,7 @@ export default function DoctorDonations() {
         <TableSkeleton rows={7} cols={10} />
       </div>
     );
-  if (isError)
-    return <ErrorState message="تعذر تحميل بيانات التبرعات" onRetry={() => refetch()} />;
-
+  if (isError) return <ErrorState message="تعذر تحميل بيانات التبرعات" onRetry={() => refetch()} />;
 
   return (
     <div className="space-y-6">
@@ -510,4 +508,3 @@ export default function DoctorDonations() {
     </div>
   );
 }
-

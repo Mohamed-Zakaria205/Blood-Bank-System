@@ -12,7 +12,8 @@ const relDate = (offsetDays: number): string => {
   return d.toISOString().split('T')[0];
 };
 
-export const appointmentSlotsData: AppointmentSlot[] = [{
+export const appointmentSlotsData: AppointmentSlot[] = [
+  {
     id: 'S15-001',
     date: relDate(0),
     time: '08:00',
@@ -31,7 +32,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     status: 'completed',
     completedAt: '08:12',
   },
-{
+  {
     id: 'S15-002',
     date: relDate(0),
     time: '08:30',
@@ -50,7 +51,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     status: 'completed',
     completedAt: '08:44',
   },
-{
+  {
     id: 'S15-003',
     date: relDate(0),
     time: '09:00',
@@ -69,7 +70,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     status: 'completed',
     completedAt: '09:14',
   },
-{
+  {
     id: 'S15-004',
     date: relDate(0),
     time: '09:30',
@@ -88,7 +89,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     status: 'completed',
     completedAt: '09:44',
   },
-{
+  {
     id: 'S15-005',
     date: relDate(0),
     time: '10:00',
@@ -106,7 +107,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     status: 'missed',
     notes: 'لم تحضر',
   },
-{
+  {
     id: 'S15-006',
     date: relDate(0),
     time: '10:30',
@@ -126,7 +127,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     cancelledByName: 'د. أحمد السيد',
     cancellationReason: 'ظروف طارئة',
   },
-{
+  {
     id: 'S15-007',
     date: relDate(0),
     time: '11:00',
@@ -144,7 +145,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     status: 'completed',
     completedAt: '11:14',
   },
-{
+  {
     id: 'S15-008',
     date: relDate(0),
     time: '13:00',
@@ -161,7 +162,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'wholeblood',
     status: 'inprogress',
   },
-{
+  {
     id: 'S15-009',
     date: relDate(0),
     time: '13:30',
@@ -178,7 +179,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'wholeblood',
     status: 'approved',
   },
-{
+  {
     id: 'S15-010',
     date: relDate(0),
     time: '14:00',
@@ -196,7 +197,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     status: 'booked',
     campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
-{
+  {
     id: 'S15-011',
     date: relDate(0),
     time: '14:30',
@@ -213,7 +214,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'wholeblood',
     status: 'booked',
   },
-{
+  {
     id: 'S15-012',
     date: relDate(0),
     time: '15:00',
@@ -231,7 +232,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     status: 'booked',
     campaignId: '4f7d2e1b-92c4-4b5a-87d9-32e6c8f4a1b5',
   },
-{
+  {
     id: 'S15-013',
     date: relDate(0),
     time: '15:30',
@@ -248,7 +249,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'wholeblood',
     status: 'booked',
   },
-{
+  {
     id: 'S15-014',
     date: relDate(-1),
     time: '08:00',
@@ -267,7 +268,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     completedAt: '08:14',
     campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
-{
+  {
     id: 'S15-015',
     date: relDate(-1),
     time: '08:30',
@@ -286,7 +287,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     completedAt: '08:45',
     campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
-{
+  {
     id: 'S15-016',
     date: relDate(-1),
     time: '09:00',
@@ -305,7 +306,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     notes: 'لم يحضر',
     campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
-{
+  {
     id: 'S15-017',
     date: relDate(-1),
     time: '09:30',
@@ -324,7 +325,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     completedAt: '09:42',
     campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
-{
+  {
     id: 'S15-018',
     date: relDate(-1),
     time: '10:00',
@@ -343,7 +344,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     completedAt: '10:15',
     campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
-{
+  {
     id: 'S15-019',
     date: relDate(-1),
     time: '13:00',
@@ -363,7 +364,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     completedAt: '13:12',
     campaignId: '9d53c61c-d563-4de2-afba-1cb3493f7a42',
   },
-{
+  {
     id: 'S15-020',
     date: relDate(-2),
     time: '08:00',
@@ -382,7 +383,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     completedAt: '08:11',
     campaignId: '4f7d2e1b-92c4-4b5a-87d9-32e6c8f4a1b5',
   },
-{
+  {
     id: 'S15-021',
     date: relDate(-2),
     time: '08:30',
@@ -401,7 +402,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     completedAt: '08:43',
     campaignId: '4f7d2e1b-92c4-4b5a-87d9-32e6c8f4a1b5',
   },
-{
+  {
     id: 'S15-022',
     date: relDate(-2),
     time: '09:00',
@@ -419,7 +420,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     status: 'missed',
     notes: 'لم يحضر',
   },
-{
+  {
     id: 'S15-023',
     date: relDate(-2),
     time: '13:30',
@@ -437,7 +438,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     status: 'completed',
     completedAt: '13:42',
   },
-{
+  {
     id: 'S15-024',
     date: relDate(1),
     time: '09:00',
@@ -454,7 +455,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'wholeblood',
     status: 'booked',
   },
-{
+  {
     id: 'S15-025',
     date: relDate(1),
     time: '09:30',
@@ -471,7 +472,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'plasma',
     status: 'booked',
   },
-{
+  {
     id: 'S15-026',
     date: relDate(1),
     time: '10:00',
@@ -488,7 +489,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'wholeblood',
     status: 'booked',
   },
-{
+  {
     id: 'S15-027',
     date: relDate(2),
     time: '08:00',
@@ -506,7 +507,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     status: 'booked',
     campaignId: '5e8c1d9a-03b5-4c6d-98e7-43f5b2a6c7d8',
   },
-{
+  {
     id: 'S15-028',
     date: relDate(2),
     time: '08:30',
@@ -524,7 +525,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     status: 'booked',
     campaignId: '5e8c1d9a-03b5-4c6d-98e7-43f5b2a6c7d8',
   },
-{
+  {
     id: 'S15-029',
     date: relDate(2),
     time: '09:00',
@@ -542,7 +543,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     status: 'booked',
     campaignId: '5e8c1d9a-03b5-4c6d-98e7-43f5b2a6c7d8',
   },
-{
+  {
     id: 'S15-030',
     date: relDate(2),
     time: '09:30',
@@ -559,7 +560,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'wholeblood',
     status: 'booked',
   },
-{
+  {
     id: 'S15-031',
     date: relDate(3),
     time: '10:00',
@@ -576,7 +577,7 @@ export const appointmentSlotsData: AppointmentSlot[] = [{
     donationType: 'wholeblood',
     status: 'booked',
   },
-{
+  {
     id: 'S15-032',
     date: relDate(3),
     time: '13:00',

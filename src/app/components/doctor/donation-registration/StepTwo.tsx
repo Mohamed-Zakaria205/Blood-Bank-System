@@ -38,10 +38,7 @@ export default function StepTwo({
     <>
       {/* Blood Type — optional */}
       <div>
-        <label
-          className="block text-foreground mb-2"
-          style={{ fontSize: '13px', fontWeight: 600 }}
-        >
+        <label className="block text-foreground mb-2" style={{ fontSize: '13px', fontWeight: 600 }}>
           <Droplets className="w-4 h-4 inline ml-1 text-red-500" />
           فصيلة الدم{' '}
           <span className="text-muted-foreground" style={{ fontWeight: 400 }}>
@@ -68,10 +65,7 @@ export default function StepTwo({
 
       {/* Donation Type */}
       <div>
-        <label
-          className="block text-foreground mb-2"
-          style={{ fontSize: '13px', fontWeight: 600 }}
-        >
+        <label className="block text-foreground mb-2" style={{ fontSize: '13px', fontWeight: 600 }}>
           نوع التبرع
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -130,12 +124,18 @@ export default function StepTwo({
               {...register('weight')}
               placeholder="مثال: 75"
               className={`w-full px-3 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:ring-2 ${
-                errors.weight ? 'border-red-400 focus:ring-red-100' : 'border-border focus:border-blue-400 focus:ring-blue-100'
+                errors.weight
+                  ? 'border-red-400 focus:ring-red-100'
+                  : 'border-border focus:border-blue-400 focus:ring-blue-100'
               }`}
               style={{ fontSize: '13px' }}
               dir="ltr"
             />
-            {errors.weight && <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>{errors.weight.message}</p>}
+            {errors.weight && (
+              <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
+                {errors.weight.message}
+              </p>
+            )}
           </div>
           <div>
             <label
@@ -148,12 +148,18 @@ export default function StepTwo({
               {...register('bloodPressure')}
               placeholder="120/80"
               className={`w-full px-3 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:ring-2 ${
-                errors.bloodPressure ? 'border-red-400 focus:ring-red-100' : 'border-border focus:border-red-400 focus:ring-red-100'
+                errors.bloodPressure
+                  ? 'border-red-400 focus:ring-red-100'
+                  : 'border-border focus:border-red-400 focus:ring-red-100'
               }`}
               style={{ fontSize: '13px' }}
               dir="ltr"
             />
-            {errors.bloodPressure && <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>{errors.bloodPressure.message}</p>}
+            {errors.bloodPressure && (
+              <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
+                {errors.bloodPressure.message}
+              </p>
+            )}
           </div>
           <div>
             <label
@@ -168,12 +174,18 @@ export default function StepTwo({
               placeholder="مثال: 13.5"
               step="0.1"
               className={`w-full px-3 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:ring-2 ${
-                errors.hemoglobin ? 'border-red-400 focus:ring-red-100' : 'border-border focus:border-purple-400 focus:ring-purple-100'
+                errors.hemoglobin
+                  ? 'border-red-400 focus:ring-red-100'
+                  : 'border-border focus:border-purple-400 focus:ring-purple-100'
               }`}
               style={{ fontSize: '13px' }}
               dir="ltr"
             />
-            {errors.hemoglobin && <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>{errors.hemoglobin.message}</p>}
+            {errors.hemoglobin && (
+              <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
+                {errors.hemoglobin.message}
+              </p>
+            )}
           </div>
         </div>
 
@@ -208,10 +220,7 @@ export default function StepTwo({
 
       {/* Chronic Diseases */}
       <div>
-        <label
-          className="block text-foreground mb-2"
-          style={{ fontSize: '13px', fontWeight: 600 }}
-        >
+        <label className="block text-foreground mb-2" style={{ fontSize: '13px', fontWeight: 600 }}>
           <Activity className="w-4 h-4 inline ml-1 text-orange-500" />
           الأمراض المزمنة{' '}
           <span className="text-muted-foreground" style={{ fontWeight: 400 }}>
@@ -242,10 +251,7 @@ export default function StepTwo({
         {form.diseases.length > 0 && (
           <div className="mt-2 p-2 bg-red-50 border border-red-100 rounded-xl">
             <p className="text-red-600" style={{ fontSize: '11px', fontWeight: 600 }}>
-              محدد:{' '}
-              {form.diseases
-                .map((id) => DISEASES.find((d) => d.id === id)?.label)
-                .join('، ')}
+              محدد: {form.diseases.map((id) => DISEASES.find((d) => d.id === id)?.label).join('، ')}
             </p>
           </div>
         )}
@@ -255,10 +261,7 @@ export default function StepTwo({
 
       {/* Donor Status */}
       <div>
-        <label
-          className="block text-foreground mb-2"
-          style={{ fontSize: '13px', fontWeight: 600 }}
-        >
+        <label className="block text-foreground mb-2" style={{ fontSize: '13px', fontWeight: 600 }}>
           حالة المتبرع *
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -398,7 +401,6 @@ export default function StepTwo({
                 </p>
               )}
             </div>
-
           </div>
         )}
       </div>
@@ -450,4 +452,3 @@ export default function StepTwo({
     </>
   );
 }
-

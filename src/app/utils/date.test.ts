@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  toISODateTime,
-  toISODate,
-  formatLocalizedDate,
-  formatLocalizedDateTime,
-} from './date';
+import { toISODateTime, toISODate, formatLocalizedDate, formatLocalizedDateTime } from './date';
 
 describe('toISODateTime', () => {
   it('should format a valid date, string, or number to ISO 8601', () => {

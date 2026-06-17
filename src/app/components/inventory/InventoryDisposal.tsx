@@ -1,21 +1,12 @@
 ﻿import { useState } from 'react';
-import {
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  XCircle,
-  AlertOctagon,
-} from 'lucide-react';
+import { AlertTriangle, CheckCircle, Clock, XCircle, AlertOctagon } from 'lucide-react';
 import { toast } from 'sonner';
 import type { BloodType } from '../../types';
 import { useBloodBags, useOutflowRecords, useDisposeBag } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 
 // ── Sub-components ──
-import {
-  daysUntil,
-  DISPOSAL_REASONS,
-} from './inventory-disposal/disposalConstants';
+import { daysUntil, DISPOSAL_REASONS } from './inventory-disposal/disposalConstants';
 import DisposalForm from './inventory-disposal/DisposalForm';
 import DisposalHistory from './inventory-disposal/DisposalHistory';
 import ConfirmDisposalModal from './inventory-disposal/ConfirmDisposalModal';

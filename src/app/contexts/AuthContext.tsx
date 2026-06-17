@@ -91,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (prev && (prev.role !== currentUser.role || prev.name !== currentUser.name)) {
             const newUser = { id: currentUser.id, name: currentUser.name, role: currentUser.role };
             localStorage.setItem('bloodlink_user', JSON.stringify(newUser));
-            
+
             if (prev.role !== currentUser.role) {
               toast.info('تم تحديث صلاحيات حسابك. قد يتم إعادة توجيهك.');
             }
@@ -106,11 +106,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Re-validate every 5 minutes
     const interval = setInterval(validateSession, 5 * 60 * 1000);
-    
+
     // Also re-validate on window focus
     const onFocus = () => validateSession();
     window.addEventListener('focus', onFocus);
-    
+
     return () => {
       clearInterval(interval);
       window.removeEventListener('focus', onFocus);
@@ -138,7 +138,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: true };
     } catch (err: unknown) {
       const message =
-        (err instanceof Error ? err.message : null) || 'بيانات الدخول غير صحيحة، يرجى المحاولة مجدداً';
+        (err instanceof Error ? err.message : null) ||
+        'بيانات الدخول غير صحيحة، يرجى المحاولة مجدداً';
       return { success: false, error: message };
     } finally {
       setIsLoading(false);

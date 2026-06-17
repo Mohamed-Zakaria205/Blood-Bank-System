@@ -36,21 +36,24 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
     const lowercase = 'abcdefghijklmnopqrstuvwxyz';
     const numbers = '0123456789';
     const symbols = '!@#$%^&*()_+~}{[]:;?><,./-';
-    
+
     // Ensure we have at least one of each to satisfy complexity rules
     let password = '';
     password += uppercase[Math.floor(Math.random() * uppercase.length)];
     password += lowercase[Math.floor(Math.random() * lowercase.length)];
     password += numbers[Math.floor(Math.random() * numbers.length)];
     password += symbols[Math.floor(Math.random() * symbols.length)];
-    
+
     const allChars = uppercase + lowercase + numbers + symbols;
     for (let i = 4; i < length; i++) {
       password += allChars[Math.floor(Math.random() * allChars.length)];
     }
-    
+
     // Shuffle the password characters
-    return password.split('').sort(() => 0.5 - Math.random()).join('');
+    return password
+      .split('')
+      .sort(() => 0.5 - Math.random())
+      .join('');
   };
 
   const handleGeneratePassword = () => {
@@ -66,13 +69,16 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
       toast.error('لا يوجد كلمة مرور لنسخها');
       return;
     }
-    navigator.clipboard.writeText(password).then(() => {
-      setCopiedPass(true);
-      toast.success('تم نسخ كلمة المرور بنجاح');
-      setTimeout(() => setCopiedPass(false), 2000);
-    }).catch(() => {
-      toast.error('فشل نسخ كلمة المرور');
-    });
+    navigator.clipboard
+      .writeText(password)
+      .then(() => {
+        setCopiedPass(true);
+        toast.success('تم نسخ كلمة المرور بنجاح');
+        setTimeout(() => setCopiedPass(false), 2000);
+      })
+      .catch(() => {
+        toast.error('فشل نسخ كلمة المرور');
+      });
   };
 
   const formMethods = useForm<StaffForm>({
@@ -118,7 +124,11 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
         {/* Modal Header */}
         <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card z-10">
           <div>
-            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
+            <h3
+              id="modal-title"
+              className="text-foreground"
+              style={{ fontSize: '18px', fontWeight: 700 }}
+            >
               إضافة كادر طبي جديد
             </h3>
             <p className="text-muted-foreground mt-0.5" style={{ fontSize: '13px' }}>
@@ -225,9 +235,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                     type="text"
                     {...register('nationalId', {
                       setValueAs: (value) =>
-                        typeof value === 'string'
-                          ? value.replace(/\D/g, '').slice(0, 14)
-                          : value,
+                        typeof value === 'string' ? value.replace(/\D/g, '').slice(0, 14) : value,
                     })}
                     placeholder="14 رقماً"
                     maxLength={14}
@@ -257,9 +265,7 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                     type="tel"
                     {...register('phone', {
                       setValueAs: (value) =>
-                        typeof value === 'string'
-                          ? value.replace(/\D/g, '').slice(0, 11)
-                          : value,
+                        typeof value === 'string' ? value.replace(/\D/g, '').slice(0, 11) : value,
                     })}
                     placeholder="01xxxxxxxxx"
                     maxLength={11}
@@ -389,7 +395,11 @@ export default function AddStaffModal({ onClose, onSubmit }: AddStaffModalProps)
                         title="نسخ كلمة المرور"
                         aria-label="نسخ كلمة المرور"
                       >
-                        {copiedPass ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                        {copiedPass ? (
+                          <Check className="w-4 h-4 text-green-600" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
                       </button>
                       <button
                         type="button"

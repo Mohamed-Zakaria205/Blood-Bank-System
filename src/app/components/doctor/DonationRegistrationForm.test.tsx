@@ -76,7 +76,7 @@ describe('DonationRegistrationForm Component', () => {
           { id: 'camp-1', campaignCode: 'CAM-1', title: 'حملة جامعة بني سويف', status: 'active', targetDonors: 100, registeredDonors: 10 },
           { id: 'camp-2', campaignCode: 'CAM-2', title: 'حملة النادي الرياضي', status: 'completed', targetDonors: 100, registeredDonors: 95 },
         ],
-      }
+      },
     });
 
     // Default mock donation centers
@@ -126,10 +126,7 @@ describe('DonationRegistrationForm Component', () => {
     });
 
     // Default empty search params
-    mockUseSearchParams.mockReturnValue([
-      new URLSearchParams(),
-      vi.fn(),
-    ]);
+    mockUseSearchParams.mockReturnValue([new URLSearchParams(), vi.fn()]);
   });
 
   describe('Step 1 - Basic Information Flow', () => {
@@ -170,8 +167,14 @@ describe('DonationRegistrationForm Component', () => {
 
       await waitFor(() => {
         expect(screen.getByText('أدخل الاسم الثنائي على الأقل')).toBeInTheDocument();
-        expect(screen.getByText('رقم الهاتف غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015')).toBeInTheDocument();
-        expect(screen.getByText('الرقم القومي غير صحيح أو غير متطابق مع تاريخ الميلاد')).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            'رقم الهاتف غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015',
+          ),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('الرقم القومي غير صحيح أو غير متطابق مع تاريخ الميلاد'),
+        ).toBeInTheDocument();
       });
     });
 
@@ -204,7 +207,9 @@ describe('DonationRegistrationForm Component', () => {
       fireEvent.click(searchButton);
 
       await waitFor(() => {
-        expect(toast.success).toHaveBeenCalledWith('تم العثور على المتبرع، تم ملء البيانات تلقائياً');
+        expect(toast.success).toHaveBeenCalledWith(
+          'تم العثور على المتبرع، تم ملء البيانات تلقائياً',
+        );
         expect(container.querySelector('input[name="name"]')).toHaveValue('محمد أحمد علي');
         expect(container.querySelector('input[name="phone"]')).toHaveValue('01099998888');
         expect(container.querySelector('input[name="nationalId"]')).toHaveValue('29005152409876');
@@ -242,14 +247,22 @@ describe('DonationRegistrationForm Component', () => {
       const { container } = render(<DonationRegistrationForm />);
 
       // Fill valid values
-      fireEvent.change(container.querySelector('input[name="name"]')!, { target: { value: 'حسن حسني' } });
+      fireEvent.change(container.querySelector('input[name="name"]')!, {
+        target: { value: 'حسن حسني' },
+      });
 
       const maleButton = screen.getByRole('button', { name: 'ذكر' });
       fireEvent.click(maleButton);
 
-      fireEvent.change(container.querySelector('input[name="dateOfBirth"]')!, { target: { value: '1995-10-10' } });
-      fireEvent.change(container.querySelector('input[name="phone"]')!, { target: { value: '01234567890' } });
-      fireEvent.change(container.querySelector('input[name="nationalId"]')!, { target: { value: '29510102409876' } });
+      fireEvent.change(container.querySelector('input[name="dateOfBirth"]')!, {
+        target: { value: '1995-10-10' },
+      });
+      fireEvent.change(container.querySelector('input[name="phone"]')!, {
+        target: { value: '01234567890' },
+      });
+      fireEvent.change(container.querySelector('input[name="nationalId"]')!, {
+        target: { value: '29510102409876' },
+      });
 
       // Governorate select
       const govSelect = screen.getByText('— اختر المحافظة —').closest('select')!;
@@ -282,7 +295,9 @@ describe('DonationRegistrationForm Component', () => {
         expect(mockUseAddDonation).toHaveBeenCalled();
         expect(toast.success).toHaveBeenCalledWith('تم تسجيل التبرع المبدئي بنجاح');
         // We should be in Step 2: "البيانات الطبية" header
-        expect(screen.getByText((_, el) => el?.textContent?.replace(/\s+/g, '') === 'البياناتالطبية')).toBeInTheDocument();
+        expect(
+          screen.getByText((_, el) => el?.textContent?.replace(/\s+/g, '') === 'البياناتالطبية'),
+        ).toBeInTheDocument();
       });
     });
   });
@@ -290,11 +305,19 @@ describe('DonationRegistrationForm Component', () => {
   describe('Step 2 - Medical Information Flow', () => {
     // Helper to transition to Step 2
     const fillStepOneAndMoveToStepTwo = async (container: HTMLElement) => {
-      fireEvent.change(container.querySelector('input[name="name"]')!, { target: { value: 'حسن حسني' } });
+      fireEvent.change(container.querySelector('input[name="name"]')!, {
+        target: { value: 'حسن حسني' },
+      });
       fireEvent.click(screen.getByRole('button', { name: 'ذكر' }));
-      fireEvent.change(container.querySelector('input[name="dateOfBirth"]')!, { target: { value: '1995-10-10' } });
-      fireEvent.change(container.querySelector('input[name="phone"]')!, { target: { value: '01234567890' } });
-      fireEvent.change(container.querySelector('input[name="nationalId"]')!, { target: { value: '29510102409876' } });
+      fireEvent.change(container.querySelector('input[name="dateOfBirth"]')!, {
+        target: { value: '1995-10-10' },
+      });
+      fireEvent.change(container.querySelector('input[name="phone"]')!, {
+        target: { value: '01234567890' },
+      });
+      fireEvent.change(container.querySelector('input[name="nationalId"]')!, {
+        target: { value: '29510102409876' },
+      });
 
       const govSelect = screen.getByText('— اختر المحافظة —').closest('select')!;
       fireEvent.change(govSelect, { target: { value: 'بني سويف' } });
@@ -316,7 +339,9 @@ describe('DonationRegistrationForm Component', () => {
       fireEvent.change(centerSelect, { target: { value: 'center-1' } });
       fireEvent.click(screen.getByRole('button', { name: /التالي/i }));
       await waitFor(() => {
-        expect(screen.getByText((_, el) => el?.textContent?.replace(/\s+/g, '') === 'البياناتالطبية')).toBeInTheDocument();
+        expect(
+          screen.getByText((_, el) => el?.textContent?.replace(/\s+/g, '') === 'البياناتالطبية'),
+        ).toBeInTheDocument();
       });
     };
 
@@ -397,9 +422,15 @@ describe('DonationRegistrationForm Component', () => {
       fireEvent.click(bPlusButton);
 
       // Fill weight, pressure, hemoglobin
-      fireEvent.change(container.querySelector('input[name="weight"]')!, { target: { value: '80' } });
-      fireEvent.change(container.querySelector('input[name="bloodPressure"]')!, { target: { value: '120/80' } });
-      fireEvent.change(container.querySelector('input[name="hemoglobin"]')!, { target: { value: '14.0' } });
+      fireEvent.change(container.querySelector('input[name="weight"]')!, {
+        target: { value: '80' },
+      });
+      fireEvent.change(container.querySelector('input[name="bloodPressure"]')!, {
+        target: { value: '120/80' },
+      });
+      fireEvent.change(container.querySelector('input[name="hemoglobin"]')!, {
+        target: { value: '14.0' },
+      });
 
       // Click submit
       const submitButton = screen.getByRole('button', { name: /تسجيل التبرع/i });
@@ -431,10 +462,7 @@ describe('DonationRegistrationForm Component', () => {
       };
 
       // Mock searchParams to return apt=apt-777
-      mockUseSearchParams.mockReturnValue([
-        new URLSearchParams('?apt=apt-777'),
-        vi.fn(),
-      ]);
+      mockUseSearchParams.mockReturnValue([new URLSearchParams('?apt=apt-777'), vi.fn()]);
 
       // Mock useAppointmentSlotById to return mockAppointment
       mockUseAppointmentSlotById.mockReturnValue({

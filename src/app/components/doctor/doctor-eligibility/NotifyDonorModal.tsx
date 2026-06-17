@@ -9,7 +9,12 @@ interface NotifyDonorModalProps {
   isPending?: boolean;
 }
 
-export default function NotifyDonorModal({ modal, onSend, onCancel, isPending = false }: NotifyDonorModalProps) {
+export default function NotifyDonorModal({
+  modal,
+  onSend,
+  onCancel,
+  isPending = false,
+}: NotifyDonorModalProps) {
   const isEmergency = modal.type === 'emergency';
   const modalRef = useModalFocusTrap(onCancel);
   const isBulk = modal.donors.length > 1;
@@ -43,7 +48,11 @@ export default function NotifyDonorModal({ modal, onSend, onCancel, isPending = 
               )}
             </div>
             <div>
-              <h3 id="modal-title" className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
+              <h3
+                id="modal-title"
+                className="text-foreground"
+                style={{ fontSize: '17px', fontWeight: 700 }}
+              >
                 {isEmergency ? 'إشعار طارئ' : 'إشعار جاهزية للتبرع'}
               </h3>
               <p className="text-muted-foreground" style={{ fontSize: '12px' }}>

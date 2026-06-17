@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { useAuth } from '../../contexts/AuthContext';
 
-
 // ── Constants & types ──
 import type { FacilityInfo, NotifSettings } from './admin-settings/settingsConstants';
 import {
@@ -20,7 +19,6 @@ import EligibilityTab from './admin-settings/EligibilityTab';
 
 export default function AdminSettings() {
   useAuth();
-
 
   const [activeTab, setActiveTab] = useState('system');
   const [saved, setSaved] = useState(false);

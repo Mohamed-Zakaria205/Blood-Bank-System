@@ -1,13 +1,5 @@
 import { useEffect } from 'react';
-import {
-  X,
-  Phone,
-  MapPin,
-  CreditCard,
-  User as UserIcon,
-  Mail,
-  Edit2,
-} from 'lucide-react';
+import { X, Phone, MapPin, CreditCard, User as UserIcon, Mail, Edit2 } from 'lucide-react';
 import { CITIES } from '../../../constants';
 import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 import { useForm } from 'react-hook-form';
@@ -37,7 +29,7 @@ export default function EditStaffModal({ user, onClose, onSubmit }: EditStaffMod
     mode: 'onTouched',
     resolver: zodResolver(editStaffSchema),
   });
-  
+
   const {
     register,
     handleSubmit,
@@ -74,7 +66,11 @@ export default function EditStaffModal({ user, onClose, onSubmit }: EditStaffMod
         {/* Modal Header */}
         <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card z-10">
           <div>
-            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
+            <h3
+              id="modal-title"
+              className="text-foreground"
+              style={{ fontSize: '18px', fontWeight: 700 }}
+            >
               تعديل بيانات الكادر الطبي
             </h3>
             <p className="text-muted-foreground mt-0.5" style={{ fontSize: '13px' }}>
@@ -181,9 +177,7 @@ export default function EditStaffModal({ user, onClose, onSubmit }: EditStaffMod
                     type="text"
                     {...register('nationalId', {
                       setValueAs: (value) =>
-                        typeof value === 'string'
-                          ? value.replace(/\D/g, '').slice(0, 14)
-                          : value,
+                        typeof value === 'string' ? value.replace(/\D/g, '').slice(0, 14) : value,
                     })}
                     placeholder="14 رقماً"
                     maxLength={14}
@@ -213,9 +207,7 @@ export default function EditStaffModal({ user, onClose, onSubmit }: EditStaffMod
                     type="tel"
                     {...register('phone', {
                       setValueAs: (value) =>
-                        typeof value === 'string'
-                          ? value.replace(/\D/g, '').slice(0, 11)
-                          : value,
+                        typeof value === 'string' ? value.replace(/\D/g, '').slice(0, 11) : value,
                     })}
                     placeholder="01xxxxxxxxx"
                     maxLength={11}

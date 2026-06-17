@@ -81,13 +81,11 @@ function mapDoctorDashboardResponse(raw: any): DoctorDashboardResponse {
  */
 export async function fetchDoctorDashboardData(): Promise<DoctorDashboardResponse> {
   // Real backend implementation
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<DoctorDashboardResponse>>(
-    '/Doctor/dashboard'
-  );
+  const { data: wrapper } =
+    await apiClient.get<ApiResponseWrapper<DoctorDashboardResponse>>('/Doctor/dashboard');
 
   const mappedData = mapDoctorDashboardResponse(wrapper.data);
-  
+
   validateContract('Doctor Dashboard Live', DoctorDashboardContractSchema, mappedData);
   return mappedData;
 }
-

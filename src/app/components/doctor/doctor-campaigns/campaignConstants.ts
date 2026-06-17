@@ -68,14 +68,14 @@ export function buildSlots(
   let endMin = eh * 60 + em;
   const dur = parseInt(duration) || 30;
   const cap = Math.max(1, parseInt(capacity) || 1);
-  
+
   // Support campaigns crossing midnight
   if (endMin <= startMin) {
     endMin += 24 * 60;
   }
-  
+
   if (dur <= 0) return [];
-  
+
   const result: GeneratedSlot[] = [];
   for (let t = startMin; t + dur <= endMin; t += dur) {
     const fmt = (min: number) => {

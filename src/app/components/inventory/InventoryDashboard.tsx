@@ -60,7 +60,10 @@ export default function InventoryDashboard() {
 
   // Available by blood type
   const byType = BLOOD_TYPES.reduce(
-    (acc, t) => { acc[t] = bags.filter((b) => b.bloodType === t && b.status === 'available').length; return acc; },
+    (acc, t) => {
+      acc[t] = bags.filter((b) => b.bloodType === t && b.status === 'available').length;
+      return acc;
+    },
     {} as Record<BloodType, number>,
   );
   const maxUnits = Math.max(...Object.values(byType), 1);
@@ -78,7 +81,8 @@ export default function InventoryDashboard() {
           لوحة مخزون الدم
         </h1>
         <p className="text-muted-foreground mt-0.5" style={{ fontSize: '14px' }}>
-          مرحباً {user?.name?.split(' ').slice(1, 3).join(' ')} — {format(new Date(), 'EEEE، d MMMM yyyy', { locale: ar })}
+          مرحباً {user?.name?.split(' ').slice(1, 3).join(' ')} —{' '}
+          {format(new Date(), 'EEEE، d MMMM yyyy', { locale: ar })}
         </p>
       </div>
 

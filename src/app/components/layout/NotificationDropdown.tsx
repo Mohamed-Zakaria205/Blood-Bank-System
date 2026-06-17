@@ -33,7 +33,13 @@ const darkColorMap = {
   blue: { bg: 'rgba(107,174,214,0.15)', icon: '#6baed6', text: '#7eb3e0', sub: '#6baed6' },
 };
 
-export default function NotificationDropdown({ notifications, open, onToggle, onClose, onMarkAllRead }: Props) {
+export default function NotificationDropdown({
+  notifications,
+  open,
+  onToggle,
+  onClose,
+  onMarkAllRead,
+}: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const dropdownRef = useModalFocusTrap(onClose, open);
   const { isDark } = useTheme();

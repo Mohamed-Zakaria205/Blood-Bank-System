@@ -12,42 +12,43 @@ export interface LabResultData {
 }
 
 export interface LabTestResult extends LabResultData {
+  outcome: 'safe' | 'rejected';
   notes: string;
-  suitable: boolean;
   completedAt: string;
-  completedBy: string;
+  completedById: string;
+  completedByName: string;
 }
 
 export interface LabTest {
   id: string;
   donorId: string;
   donorName: string;
-  donorCode: string;
+  donationCode: string;
   bloodType: BloodType;
   donationType: DonationType;
   city: string;
   requestedAt: string;
-  status: 'pending' | 'completed' | 'cancelled';
+  status: 'pending' | 'completed';
   result?: LabTestResult;
 }
 
 export interface Sample {
   id: string;
-  donorCode: string;
+  donationCode: string;
   donorName: string;
   bloodType: BloodType;
   donationType: DonationType;
   collectedDate: string;
   status: 'pending' | 'testing' | 'completed';
-  priority: 'normal' | 'urgent';
   labDoctor?: string;
   city?: string;
+  nationalId?: string;
 }
 
 export interface TestResult {
   id: string;
   sampleId: string;
-  donorCode: string;
+  donationCode: string;
   donorName: string;
   bloodType: BloodType;
   confirmedBloodType: BloodType;
@@ -55,8 +56,21 @@ export interface TestResult {
   hbv: 'negative' | 'positive';
   syphilis: 'negative' | 'positive';
   hiv: 'negative' | 'positive';
-  result: 'safe' | 'unsafe';
+  outcome: 'safe' | 'rejected';
   labDoctor: string;
   date: string;
   notes?: string;
+  nationalId?: string;
+}
+
+export interface LabDashboardStats {
+  tests: {
+    pending: number;
+    completed: number;
+  };
+  results: {
+    total: number;
+    safe: number;
+    rejected: number;
+  };
 }

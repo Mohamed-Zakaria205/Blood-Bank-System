@@ -2,9 +2,21 @@
 // React Query hooks — Lab (tests, samples, results)
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchLabTests, submitLabTestResult, fetchSamples, fetchTestResults, fetchFilteredLabTests } from '../api/lab';
-import type { LabResultData } from '../types/lab';
-import type { LabTestFilters } from '../types/common';
+import {
+  fetchLabTests,
+  submitLabTestResult,
+  fetchSamples,
+  fetchTestResults,
+  fetchFilteredLabTests,
+  fetchLabDashboardStats,
+} from '../api/lab';
+import type { LabResultData, Sample, TestResult } from '../types/lab';
+import type {
+  LabTestFilters,
+  PaginatedResponse,
+  SampleFilters,
+  ResultFilters,
+} from '../types/common';
 
 /** Fetch all lab tests (pending + completed) */
 export function useLabTests() {
@@ -37,7 +49,6 @@ export function useSubmitLabResult() {
       testId: string;
       result: LabResultData & {
         notes: string;
-        suitable: boolean;
       };
     }) => submitLabTestResult(testId, result),
     onSuccess: () => {
@@ -45,24 +56,36 @@ export function useSubmitLabResult() {
       qc.invalidateQueries({ queryKey: ['samples'] });
       qc.invalidateQueries({ queryKey: ['test-results'] });
       qc.invalidateQueries({ queryKey: ['bags'] });
+      qc.invalidateQueries({ queryKey: ['lab-dashboard-stats'] });
     },
   });
 }
 
 /** Fetch all samples */
-export function useSamples() {
+export function useSamples(filters: SampleFilters = {}, options?: { enabled?: boolean }) {
   return useQuery({
-    queryKey: ['samples'],
-    queryFn: fetchSamples,
-    select: (res) => res.data,
+    queryKey: ['samples', filters],
+    queryFn: () => fetchSamples(filters),
+    select: (res: PaginatedResponse<Sample>) => res,
+    enabled: options?.enabled,
   });
 }
 
 /** Fetch all test results */
-export function useTestResults() {
+export function useTestResults(filters: ResultFilters = {}, options?: { enabled?: boolean }) {
   return useQuery({
-    queryKey: ['test-results'],
-    queryFn: fetchTestResults,
-    select: (res) => res.data,
+    queryKey: ['test-results', filters],
+    queryFn: () => fetchTestResults(filters),
+    select: (res: PaginatedResponse<TestResult>) => res,
+    enabled: options?.enabled,
+    placeholderData: (previousData) => previousData,
+  });
+}
+
+/** Fetch dashboard statistics */
+export function useLabDashboardStats() {
+  return useQuery({
+    queryKey: ['lab-dashboard-stats'],
+    queryFn: fetchLabDashboardStats,
   });
 }

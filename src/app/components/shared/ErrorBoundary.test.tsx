@@ -52,7 +52,7 @@ describe('ErrorBoundary Component', () => {
 
     expect(screen.getByText('خطأ 404: Not Found')).toBeInTheDocument();
     expect(
-      screen.getByText('الصفحة التي تحاول الوصول إليها غير موجودة أو حدث خطأ في الخادم.')
+      screen.getByText('الصفحة التي تحاول الوصول إليها غير موجودة أو حدث خطأ في الخادم.'),
     ).toBeInTheDocument();
 
     // Assert RTL and Tajawal font styles
@@ -79,7 +79,7 @@ describe('ErrorBoundary Component', () => {
 
     expect(screen.getByText('عذراً، حدث خطأ غير متوقع')).toBeInTheDocument();
     expect(
-      screen.getByText('نواجه مشكلة فنية حالياً. يرجى تحديث الصفحة أو العودة للرئيسية.')
+      screen.getByText('نواجه مشكلة فنية حالياً. يرجى تحديث الصفحة أو العودة للرئيسية.'),
     ).toBeInTheDocument();
   });
 

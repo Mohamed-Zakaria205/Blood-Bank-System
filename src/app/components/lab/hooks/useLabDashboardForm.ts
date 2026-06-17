@@ -21,7 +21,7 @@ export function useLabDashboardForm() {
     setErrors({});
   };
 
-  const isUnsafe = form
+  const isRejected = form
     ? form.hcv === 'positive' ||
       form.hbv === 'positive' ||
       form.syphilis === 'positive' ||
@@ -48,12 +48,11 @@ export function useLabDashboardForm() {
           syphilis: form.syphilis,
           hiv: form.hiv,
           notes: form.notes,
-          suitable: !isUnsafe,
         },
       });
       setEntryModal(null);
       toast.success(
-        `تم إدخال نتائج حقيبة ${entryModal.bloodType} — ${entryModal.donorCode} بنجاح (${!isUnsafe ? 'آمنة ✅' : 'غير آمنة ⚠️'})`,
+        `تم إدخال نتائج حقيبة ${entryModal.bloodType} — ${entryModal.donationCode} بنجاح (${!isRejected ? 'آمنة ✅' : 'مرفوضة ⚠️'})`,
       );
     } catch (err) {
       console.error(err);
@@ -74,7 +73,7 @@ export function useLabDashboardForm() {
     errors,
     submitting,
     openEntry,
-    isUnsafe,
+    isRejected,
     submitResult,
   };
 }

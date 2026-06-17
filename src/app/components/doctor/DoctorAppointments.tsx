@@ -18,10 +18,7 @@ import { CancelModal } from '../shared/CancelModal';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 
 // ── Sub-components ──
-import {
-  WEEK_DAY_NAMES,
-  STATUS_CONFIG,
-} from './doctor-appointments/appointmentConstants';
+import { WEEK_DAY_NAMES, STATUS_CONFIG } from './doctor-appointments/appointmentConstants';
 import type { EffectiveStatus } from './doctor-appointments/appointmentConstants';
 import AppointmentCard from './doctor-appointments/AppointmentCard';
 import AppointmentRow from './doctor-appointments/AppointmentRow';
@@ -52,7 +49,10 @@ export default function DoctorAppointments() {
       let parsed = stored ? JSON.parse(stored) : [];
       // Clean up old notifications (e.g. older than 7 days)
       const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-      parsed = parsed.filter((n: CancellationNotification) => new Date(n.cancelledAt || Date.now()).getTime() > sevenDaysAgo);
+      parsed = parsed.filter(
+        (n: CancellationNotification) =>
+          new Date(n.cancelledAt || Date.now()).getTime() > sevenDaysAgo,
+      );
       // Limit to 50 items
       return parsed.slice(0, 50);
     } catch (error) {
@@ -77,17 +77,20 @@ export default function DoctorAppointments() {
   const qc = useQueryClient();
 
   // Real-time push from SignalR: a donor cancelled a confirmed appointment
-  const handleRemoteCancellation = useCallback((notification: CancellationNotification) => {
-    setNotifications((prev) => {
-      // Deduplicate by id in case the push fires more than once
-      if (prev.some((n) => n.id === notification.id)) return prev;
-      return [{ ...notification, read: false }, ...prev].slice(0, 50);
-    });
-    // Refresh the slots + stats so the cancelled slot disappears from the list
-    qc.invalidateQueries({ queryKey: ['appointment-slots'] });
-    qc.invalidateQueries({ queryKey: ['appointment-stats'] });
-    toast.info(`إلغاء جديد: ${notification.donorName || 'متبرع'} — ${notification.date}`);
-  }, [qc]);
+  const handleRemoteCancellation = useCallback(
+    (notification: CancellationNotification) => {
+      setNotifications((prev) => {
+        // Deduplicate by id in case the push fires more than once
+        if (prev.some((n) => n.id === notification.id)) return prev;
+        return [{ ...notification, read: false }, ...prev].slice(0, 50);
+      });
+      // Refresh the slots + stats so the cancelled slot disappears from the list
+      qc.invalidateQueries({ queryKey: ['appointment-slots'] });
+      qc.invalidateQueries({ queryKey: ['appointment-stats'] });
+      toast.info(`إلغاء جديد: ${notification.donorName || 'متبرع'} — ${notification.date}`);
+    },
+    [qc],
+  );
 
   // Connect to SignalR hub — null centerId joins "Global" broadcast group
   useAppointmentsHub({
@@ -228,16 +231,22 @@ export default function DoctorAppointments() {
           return (
             <div key={slot.id} className="flex gap-3 items-stretch">
               <div
-                className={`flex-shrink-0 w-16 flex flex-col items-center justify-center rounded-xl py-2 ${slot.status === 'completed' || slot.status === 'missed' || slot.status === 'cancelled'
+                className={`flex-shrink-0 w-16 flex flex-col items-center justify-center rounded-xl py-2 ${
+                  slot.status === 'completed' ||
+                  slot.status === 'missed' ||
+                  slot.status === 'cancelled'
                     ? 'bg-muted'
                     : 'bg-green-50 border border-green-100'
-                  }`}
+                }`}
               >
                 <span
-                  className={`font-mono ${slot.status === 'completed' || slot.status === 'missed' || slot.status === 'cancelled'
+                  className={`font-mono ${
+                    slot.status === 'completed' ||
+                    slot.status === 'missed' ||
+                    slot.status === 'cancelled'
                       ? 'text-muted-foreground'
                       : 'text-green-700'
-                    }`}
+                  }`}
                   style={{ fontSize: '13px', fontWeight: 700 }}
                   dir="ltr"
                 >
@@ -450,33 +459,39 @@ export default function DoctorAppointments() {
           {
             key: 'booked' as EffectiveStatus,
             label: 'محجوز',
-            count: stats?.booked ?? slots.filter((s) => s.date === TODAY && s.status === 'booked').length,
+            count:
+              stats?.booked ??
+              slots.filter((s) => s.date === TODAY && s.status === 'booked').length,
             color: 'bg-green-50 border-green-100 text-green-700',
           },
           {
             key: 'completed' as EffectiveStatus,
             label: 'مكتمل',
-            count: stats?.completed ?? slots.filter((s) => s.date === TODAY && s.status === 'completed').length,
+            count:
+              stats?.completed ??
+              slots.filter((s) => s.date === TODAY && s.status === 'completed').length,
             color: 'bg-muted/40 border-border text-muted-foreground',
           },
           {
             key: 'missed' as EffectiveStatus,
             label: 'لم يحضر',
-            count: stats?.missed ?? slots.filter((s) => s.date === TODAY && s.status === 'missed').length,
+            count:
+              stats?.missed ??
+              slots.filter((s) => s.date === TODAY && s.status === 'missed').length,
             color: 'bg-orange-50 border-orange-100 text-orange-700',
           },
           {
             key: 'cancelled' as EffectiveStatus,
             label: 'ملغى',
-            count: stats?.cancelled ?? slots.filter((s) => s.date === TODAY && s.status === 'cancelled').length,
+            count:
+              stats?.cancelled ??
+              slots.filter((s) => s.date === TODAY && s.status === 'cancelled').length,
             color: 'bg-red-50 border-red-100 text-red-700',
           },
         ].map((s) => (
           <div
             key={s.key}
-            onClick={() =>
-              setFilterStatus(filterStatus === s.key ? 'all' : s.key)
-            }
+            onClick={() => setFilterStatus(filterStatus === s.key ? 'all' : s.key)}
             className={`p-4 rounded-2xl border cursor-pointer transition-all ${s.color} ${filterStatus === s.key ? 'ring-2 ring-offset-1 ring-current shadow-md' : 'hover:shadow-sm'}`}
           >
             <p style={{ fontSize: '24px', fontWeight: 800 }}>{s.count}</p>
@@ -487,7 +502,10 @@ export default function DoctorAppointments() {
 
       {/* Filter bar (all views) */}
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="flex items-center gap-1 text-muted-foreground" style={{ fontSize: '13px' }}>
+        <span
+          className="flex items-center gap-1 text-muted-foreground"
+          style={{ fontSize: '13px' }}
+        >
           <Filter className="w-4 h-4" /> فلتر:
         </span>
         {(['all', 'booked', 'completed', 'missed', 'cancelled'] as const).map((f) => (

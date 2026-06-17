@@ -2,7 +2,13 @@
 // React Query hooks — Staff (users)
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchStaff, createStaff, updateStaff, deleteStaff, fetchFilteredStaff } from '../api/staff';
+import {
+  fetchStaff,
+  createStaff,
+  updateStaff,
+  deleteStaff,
+  fetchFilteredStaff,
+} from '../api/staff';
 import type { UpdateStaffRequest } from '../types/auth';
 import type { StaffFilters } from '../types/common';
 

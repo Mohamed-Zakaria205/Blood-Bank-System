@@ -126,7 +126,10 @@ export default function SuccessScreen({
               <>
                 <div className="h-px bg-muted" />
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
+                  <span
+                    className="text-muted-foreground"
+                    style={{ fontSize: '12px', fontWeight: 600 }}
+                  >
                     موجل حتى
                   </span>
                   <span
@@ -189,7 +192,10 @@ export default function SuccessScreen({
         {/* ── Sample Code — prominent ── */}
         <div className="p-4 bg-gradient-to-l from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl mb-4 flex items-center justify-between">
           <div>
-            <p className="text-muted-foreground mb-0.5" style={{ fontSize: '11px', fontWeight: 600 }}>
+            <p
+              className="text-muted-foreground mb-0.5"
+              style={{ fontSize: '11px', fontWeight: 600 }}
+            >
               رمز العينة (مولّد تلقائياً)
             </p>
             <p
@@ -214,12 +220,15 @@ export default function SuccessScreen({
             className="text-muted-foreground mb-3 flex items-center gap-1.5"
             style={{ fontSize: '12px', fontWeight: 700 }}
           >
-            <Activity className="w-3.5 h-3.5 text-green-600" /> البيانات الطبية (مُعبَّأة تلقائياً
-            — للقراءة فقط)
+            <Activity className="w-3.5 h-3.5 text-green-600" /> البيانات الطبية (مُعبَّأة تلقائياً —
+            للقراءة فقط)
           </p>
           <div className="grid grid-cols-3 gap-3">
             <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-center">
-              <p className="text-muted-foreground mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
+              <p
+                className="text-muted-foreground mb-1"
+                style={{ fontSize: '10px', fontWeight: 600 }}
+              >
                 فصيلة الدم
               </p>
               <p className="text-red-700 font-mono" style={{ fontSize: '20px', fontWeight: 900 }}>
@@ -227,7 +236,10 @@ export default function SuccessScreen({
               </p>
             </div>
             <div className="p-3 bg-blue-50 border border-blue-100 rounded-xl text-center">
-              <p className="text-muted-foreground mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
+              <p
+                className="text-muted-foreground mb-1"
+                style={{ fontSize: '10px', fontWeight: 600 }}
+              >
                 نوع التبرع
               </p>
               <p className="text-blue-700" style={{ fontSize: '13px', fontWeight: 700 }}>
@@ -235,7 +247,10 @@ export default function SuccessScreen({
               </p>
             </div>
             <div className="p-3 bg-green-50 border border-green-100 rounded-xl text-center">
-              <p className="text-muted-foreground mb-1" style={{ fontSize: '10px', fontWeight: 600 }}>
+              <p
+                className="text-muted-foreground mb-1"
+                style={{ fontSize: '10px', fontWeight: 600 }}
+              >
                 حالة التأهل
               </p>
               <p className="text-green-700" style={{ fontSize: '13px', fontWeight: 700 }}>
@@ -322,8 +337,8 @@ export default function SuccessScreen({
         <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl mb-4 flex items-start gap-2.5">
           <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
           <p className="text-amber-700" style={{ fontSize: '12px', lineHeight: '1.6' }}>
-            بعد الضغط على <strong>«تأكيد وإرسال للمختبر»</strong>، ستُقفَل البيانات وتُرسَل
-            تلقائياً إلى دكتور التحاليل لاستكمال الفحوصات المخبرية.
+            بعد الضغط على <strong>«تأكيد وإرسال للمختبر»</strong>، ستُقفَل البيانات وتُرسَل تلقائياً
+            إلى دكتور التحاليل لاستكمال الفحوصات المخبرية.
           </p>
         </div>
 
@@ -354,4 +369,3 @@ export default function SuccessScreen({
     </div>
   );
 }
-

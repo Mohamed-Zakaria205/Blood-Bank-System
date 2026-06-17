@@ -44,7 +44,11 @@ export default function ConfirmDisposalModal({
             <AlertTriangle className="w-6 h-6 text-red-600" />
           </div>
           <div>
-            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
+            <h3
+              id="modal-title"
+              className="text-foreground"
+              style={{ fontSize: '17px', fontWeight: 700 }}
+            >
               تأكيد الإتلاف النهائي
             </h3>
             <p className="text-red-600" style={{ fontSize: '12px' }}>
@@ -126,8 +130,7 @@ export default function ConfirmDisposalModal({
           <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl">
             <AlertOctagon className="w-4 h-4 text-amber-500 flex-shrink-0" />
             <p className="text-amber-700" style={{ fontSize: '11px' }}>
-              لن تظهر هذه الحقائب في المخزون المتاح بعد تأكيد الإتلاف. يمكن مراجعتها في سجل
-              الإتلاف.
+              لن تظهر هذه الحقائب في المخزون المتاح بعد تأكيد الإتلاف. يمكن مراجعتها في سجل الإتلاف.
             </p>
           </div>
         </div>

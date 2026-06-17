@@ -50,15 +50,11 @@ const sanitizeMsg = (msg?: string) => {
  */
 export async function loginApi(credentials: LoginRequest): Promise<User> {
   try {
-    const { data: wrapper } = await rawAxios.post<LoginResponse>(
-      '/Auth/login',
-      credentials,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    const { data: wrapper } = await rawAxios.post<LoginResponse>('/Auth/login', credentials, {
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+    });
 
     if (!wrapper.success) {
       const msg = translateErrorMessage(wrapper.message || 'فشل تسجيل الدخول');
@@ -113,7 +109,10 @@ export async function refreshTokenApi(): Promise<void> {
   const { data: wrapper } = await rawAxios.post<RefreshResponse>('/Auth/refresh', {});
 
   if (!wrapper.success) {
-    throw new ApiError(sanitizeMsg(wrapper.message) || 'انتهت الجلسة، يرجى تسجيل الدخول مجدداً', 401);
+    throw new ApiError(
+      sanitizeMsg(wrapper.message) || 'انتهت الجلسة، يرجى تسجيل الدخول مجدداً',
+      401,
+    );
   }
 }
 

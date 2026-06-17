@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { Plus, Search } from 'lucide-react';
-import { useFilteredCampaigns, useCreateCampaign, useUpdateCampaign, useDeleteCampaign, useCompleteCampaign } from '../../hooks/useCampaigns';
+import {
+  useFilteredCampaigns,
+  useCreateCampaign,
+  useUpdateCampaign,
+  useDeleteCampaign,
+  useCompleteCampaign,
+} from '../../hooks/useCampaigns';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'sonner';
 import {
@@ -74,7 +80,7 @@ export default function DoctorCampaigns() {
     title: '',
     message: '',
     variant: 'danger',
-    onConfirm: () => { },
+    onConfirm: () => {},
   });
 
   const handleFilterStatus = (status: string) => {
@@ -146,7 +152,7 @@ export default function DoctorCampaigns() {
           onError: () => {
             toast.error('تعذر تحديث الحملة، حاول مرة أخرى');
           },
-        }
+        },
       );
     } else {
       createCampaignMutation.mutate(campaignData, {
@@ -179,9 +185,10 @@ export default function DoctorCampaigns() {
       recurrenceType: campaign.recurrence?.type || 'none',
       recurrenceDays: campaign.recurrence?.weekDays || [],
       recurrenceEndDate: campaign.recurrence?.endDate || '',
-      availableDonationTypes: (campaign.availableDonationTypes && campaign.availableDonationTypes.length > 0)
-        ? campaign.availableDonationTypes.map(t => t.toLowerCase())
-        : ['wholeblood'],
+      availableDonationTypes:
+        campaign.availableDonationTypes && campaign.availableDonationTypes.length > 0
+          ? campaign.availableDonationTypes.map((t) => t.toLowerCase())
+          : ['wholeblood'],
     });
     setEditingCampaignId(campaign.id);
     setShowModal(true);

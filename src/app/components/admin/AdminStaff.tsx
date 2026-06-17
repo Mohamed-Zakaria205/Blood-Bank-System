@@ -1,16 +1,13 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useAuth } from '../../contexts/AuthContext';
+import { UserPlus, Search, Trash2, Copy, Check, ChevronDown, Edit2 } from 'lucide-react';
 import {
-  UserPlus,
-  Search,
-  Trash2,
-  Copy,
-  Check,
-  ChevronDown,
-  Edit2,
-} from 'lucide-react';
-import { useFilteredStaff, useCreateStaff, useDeleteStaff, useUpdateStaff } from '../../hooks/useStaff';
+  useFilteredStaff,
+  useCreateStaff,
+  useDeleteStaff,
+  useUpdateStaff,
+} from '../../hooks/useStaff';
 import { useFilterChange } from '../../hooks/useFilterChange';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
@@ -120,10 +117,7 @@ export default function AdminStaff() {
         <TableSkeleton rows={5} cols={6} />
       </div>
     );
-  if (isError)
-    return (
-      <ErrorState message="فشل تحميل الكوادر الطبية" onRetry={refetch} />
-    );
+  if (isError) return <ErrorState message="فشل تحميل الكوادر الطبية" onRetry={refetch} />;
 
   return (
     <div className="space-y-6">
@@ -253,7 +247,10 @@ export default function AdminStaff() {
                           <cfg.icon className={`w-4 h-4 ${cfg.color}`} />
                         </div>
                         <div>
-                          <p className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
+                          <p
+                            className="text-foreground"
+                            style={{ fontSize: '13px', fontWeight: 600 }}
+                          >
                             {u.name}
                           </p>
                           <span
@@ -266,18 +263,27 @@ export default function AdminStaff() {
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="text-muted-foreground font-mono" style={{ fontSize: '12px' }}>
+                      <span
+                        className="text-muted-foreground font-mono"
+                        style={{ fontSize: '12px' }}
+                      >
                         {u.nationalId || '—'}
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="text-muted-foreground font-mono" style={{ fontSize: '12px' }}>
+                      <span
+                        className="text-muted-foreground font-mono"
+                        style={{ fontSize: '12px' }}
+                      >
                         {u.phone || '—'}
                       </span>
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground font-mono" style={{ fontSize: '11px' }}>
+                        <span
+                          className="text-muted-foreground font-mono"
+                          style={{ fontSize: '11px' }}
+                        >
                           {u.email}
                         </span>
                         <button
@@ -341,7 +347,7 @@ export default function AdminStaff() {
             </tbody>
           </table>
         </div>
-        
+
         {/* Pagination UI */}
         {totalPages > 1 && (
           <div className="p-4 border-t border-border flex items-center justify-center bg-muted/40">
@@ -392,12 +398,7 @@ export default function AdminStaff() {
       </div>
 
       {/* Add Staff Modal */}
-      {showModal && (
-        <AddStaffModal
-          onClose={() => setShowModal(false)}
-          onSubmit={handleAddStaff}
-        />
-      )}
+      {showModal && <AddStaffModal onClose={() => setShowModal(false)} onSubmit={handleAddStaff} />}
 
       {/* Delete Confirm */}
       {deleteId && (

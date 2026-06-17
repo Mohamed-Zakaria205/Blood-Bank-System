@@ -91,7 +91,9 @@ export default function NotificationsPanel({
                 )}
               </div>
               <span className="text-muted-foreground flex-shrink-0" style={{ fontSize: '10px' }}>
-                {n.cancelledAt ? formatDistanceToNow(new Date(n.cancelledAt), { addSuffix: true, locale: ar }) : ''}
+                {n.cancelledAt
+                  ? formatDistanceToNow(new Date(n.cancelledAt), { addSuffix: true, locale: ar })
+                  : ''}
               </span>
             </div>
           ))

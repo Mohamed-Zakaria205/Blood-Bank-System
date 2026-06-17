@@ -26,14 +26,14 @@ export function useAdminDashboardData() {
     const labDoctors = staffData.filter((u) => u.role === 'lab');
     const totalUnits = bloodInventory.reduce((s, b) => s + b.units, 0);
     const criticalCount = bloodInventory.filter((b) => b.status === 'critical').length;
-    
+
     const recentDonors = [...donors]
       .sort(
         (a, b) =>
           new Date(b.registeredAt ?? '').getTime() - new Date(a.registeredAt ?? '').getTime(),
       )
       .slice(0, 6);
-      
+
     const campaignDonors = donors.filter((d) => (d as any).source === 'campaign');
     const walkinDonors = donors.filter((d) => (d as any).source === 'walkin');
     const appDonors = donors.filter((d) => (d as any).source === 'app');

@@ -1,9 +1,4 @@
-import {
-  X,
-  Building2,
-  Smartphone,
-  Megaphone,
-} from 'lucide-react';
+import { X, Building2, Smartphone, Megaphone } from 'lucide-react';
 import type { Donation } from '../../../types';
 import { donationTypeLabels, genderLabels } from './donorsConstants';
 import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
@@ -34,7 +29,11 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card">
           <div>
-            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 700 }}>
+            <h3
+              id="modal-title"
+              className="text-foreground"
+              style={{ fontSize: '18px', fontWeight: 700 }}
+            >
               تفاصيل التبرع
             </h3>
             <p className="text-green-600 font-mono" style={{ fontSize: '12px' }}>
@@ -91,10 +90,7 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
                 <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                   نوع التبرع
                 </p>
-                <p
-                  className="text-foreground mt-0.5"
-                  style={{ fontSize: '13px', fontWeight: 600 }}
-                >
+                <p className="text-foreground mt-0.5" style={{ fontSize: '13px', fontWeight: 600 }}>
                   {donationTypeLabels[donation.donationType]}
                 </p>
               </div>
@@ -102,10 +98,7 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
                 <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
                   تاريخ التبرع
                 </p>
-                <p
-                  className="text-foreground mt-0.5"
-                  style={{ fontSize: '13px', fontWeight: 600 }}
-                >
+                <p className="text-foreground mt-0.5" style={{ fontSize: '13px', fontWeight: 600 }}>
                   {donation.donationDate || '—'}
                 </p>
               </div>
@@ -164,15 +157,11 @@ export default function DonorDetailModal({ donation, onClose }: DonorDetailModal
                 {[
                   [
                     'الوزن',
-                    donation.additionalData.weight
-                      ? `${donation.additionalData.weight} كجم`
-                      : '—',
+                    donation.additionalData.weight ? `${donation.additionalData.weight} كجم` : '—',
                   ],
                   [
                     'الطول',
-                    donation.additionalData.height
-                      ? `${donation.additionalData.height} سم`
-                      : '—',
+                    donation.additionalData.height ? `${donation.additionalData.height} سم` : '—',
                   ],
                   [
                     'الهيموجلوبين',

@@ -95,7 +95,10 @@ function PaginationEllipsis({ className, ...props }: React.ComponentProps<'span'
   );
 }
 
-function generatePaginationNumbers(currentPage: number, totalPages: number): (number | 'ellipsis')[] {
+function generatePaginationNumbers(
+  currentPage: number,
+  totalPages: number,
+): (number | 'ellipsis')[] {
   if (totalPages <= 5) {
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }

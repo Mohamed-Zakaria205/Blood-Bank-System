@@ -1,13 +1,5 @@
 import { useMemo, useEffect } from 'react';
-import {
-  X,
-  Check,
-  Clock,
-  Users,
-  LayoutGrid,
-  Info,
-  MapPin,
-} from 'lucide-react';
+import { X, Check, Clock, Users, LayoutGrid, Info, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { CITIES } from '../../../constants';
 import type { CampaignFormState } from './campaignConstants';
@@ -28,7 +20,15 @@ L.Icon.Default.mergeOptions({
 
 // ── Location Selector Map (internal) ──
 
-function LocationSelectorMap({ lat, lng, onChange }: { lat: number, lng: number, onChange: (lat: number, lng: number) => void }) {
+function LocationSelectorMap({
+  lat,
+  lng,
+  onChange,
+}: {
+  lat: number;
+  lng: number;
+  onChange: (lat: number, lng: number) => void;
+}) {
   const MapEvents = () => {
     useMapEvents({
       click(e) {
@@ -47,7 +47,16 @@ function LocationSelectorMap({ lat, lng, onChange }: { lat: number, lng: number,
   };
 
   return (
-    <div style={{ height: '250px', width: '100%', borderRadius: '0.75rem', overflow: 'hidden', border: '1px solid #e2e8f0', zIndex: 10 }}>
+    <div
+      style={{
+        height: '250px',
+        width: '100%',
+        borderRadius: '0.75rem',
+        overflow: 'hidden',
+        border: '1px solid #e2e8f0',
+        zIndex: 10,
+      }}
+    >
       <MapContainer center={[lat, lng]} zoom={13} style={{ height: '100%', width: '100%' }}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
@@ -172,7 +181,7 @@ export default function CreateCampaignModal({
       },
       () => {
         toast.error('تعذر تحديد موقعك، يرجى التحقق من الصلاحيات');
-      }
+      },
     );
   };
 
@@ -191,7 +200,11 @@ export default function CreateCampaignModal({
         className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto outline-none"
       >
         <div className="flex items-center justify-between p-6 border-b border-border">
-          <h3 id="modal-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 800 }}>
+          <h3
+            id="modal-title"
+            className="text-foreground"
+            style={{ fontSize: '18px', fontWeight: 800 }}
+          >
             {isEditing ? 'تعديل بيانات الحملة' : 'إنشاء حملة جديدة'}
           </h3>
           <button
@@ -245,7 +258,13 @@ export default function CreateCampaignModal({
                 <LocationSelectorMap
                   lat={currentLat}
                   lng={currentLng}
-                  onChange={(lat, lng) => onUpdateForm(p => ({ ...p, latitude: lat.toString(), longitude: lng.toString() }))}
+                  onChange={(lat, lng) =>
+                    onUpdateForm((p) => ({
+                      ...p,
+                      latitude: lat.toString(),
+                      longitude: lng.toString(),
+                    }))
+                  }
                 />
                 <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
                   يمكنك أيضاً النقر على الخريطة لتحديد موقع الحملة بدقة.
@@ -331,17 +350,17 @@ export default function CreateCampaignModal({
                         : [...currentTypes, opt.value];
                       onUpdateForm((p) => ({ ...p, availableDonationTypes: newTypes }));
                     }}
-                    className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border transition-all ${
-                      isSelected
+                    className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border transition-all ${isSelected
                         ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800'
                         : 'bg-muted/40 text-muted-foreground border-border hover:bg-muted'
-                    }`}
+                      }`}
                     style={{ fontSize: '13px', fontWeight: 600 }}
                   >
                     <div
-                      className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
-                        isSelected ? 'border-blue-600 bg-blue-600 dark:border-blue-500 dark:bg-blue-500' : 'border-muted-foreground'
-                      }`}
+                      className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${isSelected
+                          ? 'border-blue-600 bg-blue-600 dark:border-blue-500 dark:bg-blue-500'
+                          : 'border-muted-foreground'
+                        }`}
                     >
                       {isSelected && <Check className="w-3 h-3 text-white" />}
                     </div>
@@ -507,10 +526,7 @@ export default function CreateCampaignModal({
                     </span>
                     <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 rounded-xl">
                       <Users className="w-3.5 h-3.5 text-blue-500" />
-                      <span
-                        className="text-blue-700"
-                        style={{ fontSize: '12px', fontWeight: 700 }}
-                      >
+                      <span className="text-blue-700" style={{ fontSize: '12px', fontWeight: 700 }}>
                         {form.slotCapacity} متبرع / فترة
                       </span>
                     </div>
@@ -564,10 +580,7 @@ export default function CreateCampaignModal({
                   {/* Info note */}
                   <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100">
                     <Info className="w-3.5 h-3.5 text-blue-500 flex-shrink-0 mt-0.5" />
-                    <p
-                      className="text-blue-700"
-                      style={{ fontSize: '11px', lineHeight: '1.6' }}
-                    >
+                    <p className="text-blue-700" style={{ fontSize: '11px', lineHeight: '1.6' }}>
                       عند امتلاء فترة زمنية بالكامل، تُغلق تلقائياً أمام الحجوزات الجديدة. يمكن
                       للمتبرعين الحجز في الفترات المتاحة عبر التطبيق .
                     </p>
@@ -591,12 +604,21 @@ export default function CreateCampaignModal({
             </h4>
             <div className="space-y-4">
               <div>
-                <label className="block text-foreground mb-1.5" style={{ fontSize: '13px', fontWeight: 600 }}>
+                <label
+                  className="block text-foreground mb-1.5"
+                  style={{ fontSize: '13px', fontWeight: 600 }}
+                >
                   معدل التكرار
                 </label>
                 <select
                   value={form.recurrenceType}
-                  onChange={(e) => onUpdateForm((p) => ({ ...p, recurrenceType: e.target.value as any, recurrenceDays: [] }))}
+                  onChange={(e) =>
+                    onUpdateForm((p) => ({
+                      ...p,
+                      recurrenceType: e.target.value as any,
+                      recurrenceDays: [],
+                    }))
+                  }
                   className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
                   style={{ fontSize: '13px' }}
                 >
@@ -610,27 +632,32 @@ export default function CreateCampaignModal({
 
               {form.recurrenceType === 'custom' && (
                 <div>
-                  <label className="block text-foreground mb-1.5" style={{ fontSize: '13px', fontWeight: 600 }}>
+                  <label
+                    className="block text-foreground mb-1.5"
+                    style={{ fontSize: '13px', fontWeight: 600 }}
+                  >
                     أيام التكرار
                   </label>
                   <div className="flex flex-row-reverse flex-wrap gap-2 text-center" dir="ltr">
-                    {['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].map((day, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => {
-                          const isSelected = form.recurrenceDays.includes(idx);
-                          const newDays = isSelected
-                            ? form.recurrenceDays.filter(d => d !== idx)
-                            : [...form.recurrenceDays, idx];
-                          onUpdateForm((p) => ({ ...p, recurrenceDays: newDays }));
-                        }}
-                        className={`flex-1 min-w-[40px] py-2 px-2 rounded-lg border transition-all ${form.recurrenceDays.includes(idx) ? 'bg-green-600 text-white border-green-600 shadow-sm' : 'bg-muted/40 text-muted-foreground border-border hover:bg-muted'}`}
-                        style={{ fontSize: '12px', fontWeight: 600 }}
-                      >
-                        {day}
-                      </button>
-                    ))}
+                    {['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].map(
+                      (day, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => {
+                            const isSelected = form.recurrenceDays.includes(idx);
+                            const newDays = isSelected
+                              ? form.recurrenceDays.filter((d) => d !== idx)
+                              : [...form.recurrenceDays, idx];
+                            onUpdateForm((p) => ({ ...p, recurrenceDays: newDays }));
+                          }}
+                          className={`flex-1 min-w-[40px] py-2 px-2 rounded-lg border transition-all ${form.recurrenceDays.includes(idx) ? 'bg-green-600 text-white border-green-600 shadow-sm' : 'bg-muted/40 text-muted-foreground border-border hover:bg-muted'}`}
+                          style={{ fontSize: '12px', fontWeight: 600 }}
+                        >
+                          {day}
+                        </button>
+                      ),
+                    )}
                   </div>
                   {errors.recurrence && (
                     <p className="text-red-500 mt-1 text-right" style={{ fontSize: '11px' }}>
@@ -642,13 +669,18 @@ export default function CreateCampaignModal({
 
               {form.recurrenceType !== 'none' && (
                 <div>
-                  <label className="block text-foreground mb-1.5" style={{ fontSize: '13px', fontWeight: 600 }}>
+                  <label
+                    className="block text-foreground mb-1.5"
+                    style={{ fontSize: '13px', fontWeight: 600 }}
+                  >
                     تاريخ انتهاء التكرار (اختياري)
                   </label>
                   <input
                     type="date"
                     value={form.recurrenceEndDate || ''}
-                    onChange={(e) => onUpdateForm((p) => ({ ...p, recurrenceEndDate: e.target.value }))}
+                    onChange={(e) =>
+                      onUpdateForm((p) => ({ ...p, recurrenceEndDate: e.target.value }))
+                    }
                     className="w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
                     style={{ fontSize: '13px' }}
                   />

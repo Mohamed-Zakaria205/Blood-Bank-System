@@ -45,7 +45,6 @@ export interface Transaction {
   requestId?: string;
 }
 
-
 export interface OutflowRecord {
   id: string;
   bagId: string;
