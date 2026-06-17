@@ -6,12 +6,15 @@ import { useEffect, useRef, RefObject } from 'react';
  * - Closes the modal when the Escape key is pressed.
  * - Restores focus to the element that was focused before opening the modal upon unmounting.
  * - Automatically focuses the first focusable element inside the modal.
- * 
+ *
  * @param onClose Callback function to invoke when the Escape key is pressed.
  * @param enabled Whether the focus trap is currently active.
  * @returns A ref object to be attached to the modal wrapper element.
  */
-export function useModalFocusTrap(onClose: () => void, enabled = true): RefObject<HTMLDivElement | null> {
+export function useModalFocusTrap(
+  onClose: () => void,
+  enabled = true,
+): RefObject<HTMLDivElement | null> {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const onCloseRef = useRef(onClose);
 
@@ -36,7 +39,7 @@ export function useModalFocusTrap(onClose: () => void, enabled = true): RefObjec
         const focusableSelector =
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
         const focusableElements = Array.from(
-          modalRef.current.querySelectorAll(focusableSelector)
+          modalRef.current.querySelectorAll(focusableSelector),
         ) as HTMLElement[];
 
         if (focusableElements.length > 0) {
@@ -72,11 +75,13 @@ export function useModalFocusTrap(onClose: () => void, enabled = true): RefObjec
       if (!modalRef.current.hasAttribute('tabindex')) {
         modalRef.current.setAttribute('tabindex', '-1');
       }
-      
+
       const focusableSelector =
         'button, [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-      const firstFocusable = modalRef.current.querySelector(focusableSelector) as HTMLElement | null;
-      
+      const firstFocusable = modalRef.current.querySelector(
+        focusableSelector,
+      ) as HTMLElement | null;
+
       if (firstFocusable) {
         // Delay focus slightly to ensure transition/rendering is completed
         const timer = setTimeout(() => {

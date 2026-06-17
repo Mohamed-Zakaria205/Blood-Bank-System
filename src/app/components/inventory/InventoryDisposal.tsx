@@ -1,11 +1,5 @@
 import { useState } from 'react';
-import {
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  XCircle,
-  AlertOctagon,
-} from 'lucide-react';
+import { AlertTriangle, CheckCircle, Clock, XCircle, AlertOctagon } from 'lucide-react';
 import { toast } from 'sonner';
 import type { BloodType } from '../../types';
 import { useBloodBags, useOutflowRecords, useDisposeBag } from '../../hooks/useInventory';
@@ -76,10 +70,10 @@ export default function InventoryDisposal() {
     );
     const searched = bagSearch.trim()
       ? eligible.filter(
-          (b) =>
-            b.bagCode.toLowerCase().includes(bagSearch.toLowerCase()) ||
-            b.bloodType.toLowerCase().includes(bagSearch.toLowerCase()),
-        )
+        (b) =>
+          b.bagCode.toLowerCase().includes(bagSearch.toLowerCase()) ||
+          b.bloodType.toLowerCase().includes(bagSearch.toLowerCase()),
+      )
       : eligible.slice(0, 40);
 
     return searched.sort((a, b) => {

@@ -4,19 +4,15 @@ import AdminStaff from './AdminStaff';
 import { toast } from 'sonner';
 
 // Setup hoisted mocks
-const {
-  mockUseFilteredStaff,
-  mockUseCreateStaff,
-  mockUseUpdateStaff,
-  mockUseDeleteStaff,
-} = vi.hoisted(() => {
-  return {
-    mockUseFilteredStaff: vi.fn(),
-    mockUseCreateStaff: vi.fn(),
-    mockUseUpdateStaff: vi.fn(),
-    mockUseDeleteStaff: vi.fn(),
-  };
-});
+const { mockUseFilteredStaff, mockUseCreateStaff, mockUseUpdateStaff, mockUseDeleteStaff } =
+  vi.hoisted(() => {
+    return {
+      mockUseFilteredStaff: vi.fn(),
+      mockUseCreateStaff: vi.fn(),
+      mockUseUpdateStaff: vi.fn(),
+      mockUseDeleteStaff: vi.fn(),
+    };
+  });
 
 // Mock hooks
 vi.mock('../../hooks/useStaff', () => ({
@@ -123,12 +119,12 @@ describe('AdminStaff Component', () => {
     expect(mockUseFilteredStaff).toHaveBeenCalledWith(
       expect.objectContaining({
         search: 'أحمد',
-      })
+      }),
     );
 
     // The first select in our document: Let's find role filter select
     const selects = screen.getAllByRole('combobox');
-    
+
     // Role select is the first select (index 0) or we can find by options
     const roleSelectDropdown = selects[0];
     fireEvent.change(roleSelectDropdown, { target: { value: 'doctor' } });
@@ -136,7 +132,7 @@ describe('AdminStaff Component', () => {
     expect(mockUseFilteredStaff).toHaveBeenCalledWith(
       expect.objectContaining({
         role: 'doctor',
-      })
+      }),
     );
 
     // Status select is the second select (index 1)
@@ -146,7 +142,7 @@ describe('AdminStaff Component', () => {
     expect(mockUseFilteredStaff).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'active',
-      })
+      }),
     );
   });
 
@@ -156,8 +152,8 @@ describe('AdminStaff Component', () => {
     const copyButtons = screen.getAllByRole('button');
     // Find the button which has Copy icon or we can check click action
     // Let's filter buttons that don't have text
-    const clipboardButtons = copyButtons.filter(btn => !btn.textContent);
-    
+    const clipboardButtons = copyButtons.filter((btn) => !btn.textContent);
+
     // The first one is the copy icon for doctor, second for lab, third/fourth etc. might be trash icons
     // Let's click the first copy button
     fireEvent.click(clipboardButtons[0]);
@@ -191,7 +187,7 @@ describe('AdminStaff Component', () => {
     render(<AdminStaff />);
 
     expect(screen.getByText('فشل تحميل الكوادر الطبية')).toBeInTheDocument();
-    
+
     const retryBtn = screen.getByText('إعادة المحاولة');
     fireEvent.click(retryBtn);
     expect(mockRefetch).toHaveBeenCalled();
@@ -242,7 +238,7 @@ describe('AdminStaff Component', () => {
           address: 'وسط البلد، بني سويف',
           nationalId: '29012345678901',
           role: 'doctor', // default role
-        })
+        }),
       );
     });
 
@@ -275,14 +271,16 @@ describe('AdminStaff Component', () => {
     // Let's select the first delete button. The table rows can be inspected.
     // In our component, the trash icon is inside a button. We can find by selecting buttons that contain no text
     // Let's look at allButtons:
-    const deleteButton = allButtons.find(btn => btn.className.includes('text-red-400'));
+    const deleteButton = allButtons.find((btn) => btn.className.includes('text-red-400'));
     if (!deleteButton) throw new Error('Delete button not found');
-    
+
     fireEvent.click(deleteButton);
 
     // Verify DeleteConfirmModal is shown
     expect(screen.getByText('حذف الحساب')).toBeInTheDocument();
-    expect(screen.getByText('هل أنت متأكد من حذف هذا الحساب؟ لا يمكن التراجع.')).toBeInTheDocument();
+    expect(
+      screen.getByText('هل أنت متأكد من حذف هذا الحساب؟ لا يمكن التراجع.'),
+    ).toBeInTheDocument();
 
     // Click confirm delete
     const confirmButton = screen.getByRole('button', { name: 'حذف' });
@@ -331,7 +329,7 @@ describe('AdminStaff Component', () => {
             email: 'doctor@bloodlink.gov.eg',
             role: 'doctor',
           }),
-        })
+        }),
       );
     });
 

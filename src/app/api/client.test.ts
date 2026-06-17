@@ -100,7 +100,9 @@ describe('Axios Client & Token Refresh Interceptor', () => {
 
     const { refreshTokenApi } = await import('./auth');
 
-    await expect(apiClient.get('/some-endpoint')).rejects.toThrow('غير مصرح بالدخول. يرجى تسجيل الدخول مجدداً');
+    await expect(apiClient.get('/some-endpoint')).rejects.toThrow(
+      'غير مصرح بالدخول. يرجى تسجيل الدخول مجدداً',
+    );
     expect(refreshTokenApi).not.toHaveBeenCalled();
   });
 
@@ -171,11 +173,13 @@ describe('Axios Client & Token Refresh Interceptor', () => {
 
     expect(logoutApi).not.toHaveBeenCalled();
     expect(localStorage.getItem('bloodlink_user')).toBeNull();
-    
+
     expect(dispatchSpy).toHaveBeenCalled();
-    const event = dispatchSpy.mock.calls.find(call => call[0] instanceof CustomEvent && call[0].type === 'bloodlink:session-expired')?.[0] as CustomEvent;
+    const event = dispatchSpy.mock.calls.find(
+      (call) => call[0] instanceof CustomEvent && call[0].type === 'bloodlink:session-expired',
+    )?.[0] as CustomEvent;
     expect(event).toBeDefined();
-    
+
     dispatchSpy.mockRestore();
   });
 

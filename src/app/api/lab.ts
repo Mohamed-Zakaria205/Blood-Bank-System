@@ -2,114 +2,209 @@
 // Lab API service — tests, samples, results
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
-import { ApiError } from './errors';
-import type { LabResultData, LabTest, Sample, TestResult } from '../types/lab';
-import type { PaginatedResponse, ApiResponse, LabTestFilters } from '../types/common';
-import {
-  labTests as MOCK_LAB_TESTS,
-  samples as MOCK_SAMPLES,
-  testResults as MOCK_TEST_RESULTS,
-} from '../data/lab.mock';
+import type { LabResultData, LabTest, Sample, TestResult, LabDashboardStats } from '../types/lab';
+import type {
+  PaginatedResponse,
+  ApiResponse,
+  LabTestFilters,
+  SampleFilters,
+  ResultFilters,
+} from '../types/common';
 import { validateContract, createPaginatedSchema, LabTestContractSchema } from './contract';
+import type { ApiResponseWrapper } from '../types/auth';
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
+const labBaseURL = apiClient.defaults.baseURL?.replace('/system', '') ?? '/api/v1';
 
-/** In-memory stores so mutations persist across refetches */
-let mockLabTests: LabTest[] = [...MOCK_LAB_TESTS];
-let mockSamples: Sample[] = [...MOCK_SAMPLES];
-let mockTestResults: TestResult[] = [...MOCK_TEST_RESULTS];
+function mapRawLabTest(item: any): LabTest {
+  if (!item) return item;
+  return {
+    ...item,
+    status: item.status?.toLowerCase() as 'pending' | 'completed',
+    result: item.result
+      ? {
+          ...item.result,
+          outcome: item.result.outcome?.toLowerCase() as 'safe' | 'rejected',
+          hcv: item.result.hcv?.toLowerCase() as 'negative' | 'positive',
+          hbv: item.result.hbv?.toLowerCase() as 'negative' | 'positive',
+          syphilis: item.result.syphilis?.toLowerCase() as 'negative' | 'positive',
+          hiv: item.result.hiv?.toLowerCase() as 'negative' | 'positive',
+        }
+      : null,
+  };
+}
+
+function mapRawSample(item: any): Sample {
+  if (!item) return item;
+  return {
+    ...item,
+    status: item.status?.toLowerCase() as 'pending' | 'testing' | 'completed',
+    nationalId:
+      item.nationalId || item.national_id || item.donorNationalId || item.NationalId || '',
+  };
+}
+
+function mapRawTestResult(item: any): TestResult {
+  if (!item) return item;
+  return {
+    ...item,
+    hcv: item.hcv?.toLowerCase() as 'negative' | 'positive',
+    hbv: item.hbv?.toLowerCase() as 'negative' | 'positive',
+    syphilis: item.syphilis?.toLowerCase() as 'negative' | 'positive',
+    hiv: item.hiv?.toLowerCase() as 'negative' | 'positive',
+    outcome: item.outcome?.toLowerCase() as 'safe' | 'rejected',
+    nationalId:
+      item.nationalId || item.national_id || item.donorNationalId || item.NationalId || '',
+  };
+}
 
 // ── Lab Tests (blood bag screening) ────────────────────────
 export async function fetchLabTests(): Promise<PaginatedResponse<LabTest>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return { data: mockLabTests, total: mockLabTests.length, page: 1, limit: mockLabTests.length };
-  }
-  const { data } = await apiClient.get<PaginatedResponse<LabTest>>('/lab/tests');
-  validateContract('Lab Tests', createPaginatedSchema(LabTestContractSchema), data);
-  return data;
+  const { data: wrapper } = await apiClient.get<
+    ApiResponseWrapper<{
+      items?: LabTest[];
+      total: number;
+      page: number;
+      limit: number;
+    }>
+  >('/lab/tests', { baseURL: labBaseURL });
+
+  const rawItems = wrapper.data?.items || [];
+  const data = rawItems.map(mapRawLabTest);
+  const total = wrapper.data?.total ?? data.length;
+  const page = wrapper.data?.page ?? 1;
+  const limit = wrapper.data?.limit ?? data.length;
+
+  const result = { data, total, page, limit };
+  validateContract('Lab Tests', createPaginatedSchema(LabTestContractSchema), result);
+  return result;
 }
 
 /**
  * Fetch lab tests with filtering and pagination.
- * Mock: client-side filter + slice. Real API: forwarded as query-string.
  */
 export async function fetchFilteredLabTests(
   filters: LabTestFilters = {},
-  options?: { signal?: AbortSignal }
+  options?: { signal?: AbortSignal },
 ): Promise<PaginatedResponse<LabTest>> {
   const { page = 1, limit = 10, search = '', status = '', bloodType = '' } = filters;
 
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-
-    let result = mockLabTests;
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        (t) => t.donorName.toLowerCase().includes(q) || t.donorCode.toLowerCase().includes(q),
-      );
-    }
-    if (status)    result = result.filter((t) => t.status === status);
-    if (bloodType) result = result.filter((t) => t.bloodType === bloodType);
-
-    const total = result.length;
-    const data  = result.slice((page - 1) * limit, page * limit);
-    return { data, total, page, limit };
-  }
-
-  const { data } = await apiClient.get<PaginatedResponse<LabTest>>('/lab/tests', {
+  const { data: wrapper } = await apiClient.get<
+    ApiResponseWrapper<{
+      items?: LabTest[];
+      total: number;
+      page: number;
+      limit: number;
+    }>
+  >('/lab/tests', {
+    baseURL: labBaseURL,
     params: { page, limit, search, status, bloodType },
     signal: options?.signal,
   });
-  validateContract('Paginated Lab Tests', createPaginatedSchema(LabTestContractSchema), data);
-  return data;
+
+  const rawItems = wrapper.data?.items || [];
+  const data = rawItems.map(mapRawLabTest);
+  const total = wrapper.data?.total ?? 0;
+  const returnedPage = wrapper.data?.page ?? page;
+  const returnedLimit = wrapper.data?.limit ?? limit;
+
+  const result = { data, total, page: returnedPage, limit: returnedLimit };
+  validateContract('Paginated Lab Tests', createPaginatedSchema(LabTestContractSchema), result);
+  return result;
 }
 
 export async function submitLabTestResult(
   testId: string,
   result: LabResultData & {
     notes: string;
-    suitable: boolean;
   },
 ): Promise<ApiResponse<LabTest>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 600));
-    const idx = mockLabTests.findIndex((t) => t.id === testId);
-    if (idx === -1) throw new ApiError('الفحص غير موجود', 404);
-    const updated: LabTest = {
-      ...mockLabTests[idx],
-      status: 'completed' as const,
-      result: {
-        ...result,
-        completedAt: new Date().toLocaleString('ar-EG'),
-        completedBy: 'current-user',
-      },
-    };
-    // ✅ Mutate the in-memory array so refetch returns the updated test
-    mockLabTests = mockLabTests.map((t) => (t.id === testId ? updated : t));
-    return { data: updated, message: 'تم حفظ نتيجة الفحص بنجاح' };
-  }
-  const { data } = await apiClient.post<ApiResponse<LabTest>>(`/lab/tests/${testId}/result`, result);
-  return data;
+  const { data: wrapper } = await apiClient.post<ApiResponseWrapper<LabTest>>(
+    `/lab/tests/${testId}/result`,
+    result,
+    { baseURL: labBaseURL },
+  );
+  return {
+    data: mapRawLabTest(wrapper.data),
+    message: wrapper.message,
+  };
 }
 
 // ── Samples ────────────────────────────────────────────────
-export async function fetchSamples(): Promise<PaginatedResponse<Sample>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return { data: mockSamples, total: mockSamples.length, page: 1, limit: mockSamples.length };
-  }
-  const { data } = await apiClient.get<PaginatedResponse<Sample>>('/lab/samples');
-  return data;
+export async function fetchSamples(
+  filters: SampleFilters = {},
+): Promise<PaginatedResponse<Sample>> {
+  const { page = 1, limit = 100, search = '', status = '', bloodType = '' } = filters;
+  const params = Object.fromEntries(
+    Object.entries({ page, limit, search, status, bloodType }).filter(
+      ([_, v]) => v !== '' && v !== null && v !== undefined,
+    ),
+  );
+  const { data: wrapper } = await apiClient.get<
+    ApiResponseWrapper<{
+      items?: Sample[];
+      total: number;
+      page: number;
+      limit: number;
+    }>
+  >('/lab/samples', {
+    baseURL: labBaseURL,
+    params,
+  });
+
+  const rawItems = wrapper.data?.items || [];
+  const data = rawItems.map(mapRawSample);
+  const total = wrapper.data?.total ?? 0;
+  const returnedPage = wrapper.data?.page ?? page;
+  const returnedLimit = wrapper.data?.limit ?? limit;
+
+  return { data, total, page: returnedPage, limit: returnedLimit };
 }
 
 // ── Test Results ───────────────────────────────────────────
-export async function fetchTestResults(): Promise<PaginatedResponse<TestResult>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return { data: mockTestResults, total: mockTestResults.length, page: 1, limit: mockTestResults.length };
-  }
-  const { data } = await apiClient.get<PaginatedResponse<TestResult>>('/lab/results');
-  return data;
+export async function fetchTestResults(
+  filters: ResultFilters = {},
+): Promise<PaginatedResponse<TestResult>> {
+  const {
+    page = 1,
+    limit = 100,
+    search = '',
+    bloodType = '',
+    outcome: outcomeFilter = '',
+  } = filters;
+  const params = Object.fromEntries(
+    Object.entries({ page, limit, search, bloodType, outcome: outcomeFilter }).filter(
+      ([_, v]) => v !== '' && v !== null && v !== undefined,
+    ),
+  );
+  const { data: wrapper } = await apiClient.get<
+    ApiResponseWrapper<{
+      items?: TestResult[];
+      total: number;
+      page: number;
+      limit: number;
+    }>
+  >('/lab/results', {
+    baseURL: labBaseURL,
+    params,
+  });
+
+  const rawItems = wrapper.data?.items || [];
+  const data = rawItems.map(mapRawTestResult);
+  const total = wrapper.data?.total ?? 0;
+  const returnedPage = wrapper.data?.page ?? page;
+  const returnedLimit = wrapper.data?.limit ?? limit;
+
+  return { data, total, page: returnedPage, limit: returnedLimit };
+}
+
+// ── Dashboard Statistics ────────────────────────────────────
+export async function fetchLabDashboardStats(): Promise<LabDashboardStats> {
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<LabDashboardStats>>(
+    '/lab/dashboard/stats',
+    {
+      baseURL: labBaseURL,
+    },
+  );
+
+  return wrapper.data!;
 }

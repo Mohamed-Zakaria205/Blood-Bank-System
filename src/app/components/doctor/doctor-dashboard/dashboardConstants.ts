@@ -1,10 +1,4 @@
-import {
-  UserPlus,
-  Megaphone,
-  Users,
-  Heart,
-  TrendingUp,
-} from 'lucide-react';
+import { UserPlus, Megaphone, Users, Heart, TrendingUp } from 'lucide-react';
 import { formatLocalizedDate, toISODate } from '../../../utils/date';
 import type { DashboardStatistics } from '../../../types/doctorDashboard';
 
@@ -13,10 +7,7 @@ export const TODAY = toISODate(new Date());
 export const TODAY_DATE_DISPLAY = formatLocalizedDate(new Date(), { weekday: 'long' });
 
 /** Stat card configuration builder */
-export function buildStats(
-  stats: DashboardStatistics,
-  navigate: (path: string) => void,
-) {
+export function buildStats(stats: DashboardStatistics, navigate: (path: string) => void) {
   return [
     {
       label: 'تبرعات اليوم',

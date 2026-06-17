@@ -7,7 +7,6 @@ import type { ApiResponseWrapper } from '../types/auth';
 import type { AppointmentSlot, AppointmentStats } from '../types/appointment';
 import type { PaginatedResponse } from '../types/common';
 
-
 export interface AppointmentFilters {
   centerId?: string;
   date?: string;
@@ -37,13 +36,15 @@ async function _fetchSlots(
     apiFilters.status = 'NoShow';
   }
 
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
-    items?: AppointmentSlot[];
-    data?: AppointmentSlot[];
-    total: number;
-    page: number;
-    limit: number;
-  }>>('/Appointments/slots', { params: apiFilters });
+  const { data: wrapper } = await apiClient.get<
+    ApiResponseWrapper<{
+      items?: AppointmentSlot[];
+      data?: AppointmentSlot[];
+      total: number;
+      page: number;
+      limit: number;
+    }>
+  >('/Appointments/slots', { params: apiFilters });
 
   const rawItems = wrapper.data?.items || wrapper.data?.data || [];
   const mappedItems: AppointmentSlot[] = rawItems.map((item: any) => {
@@ -57,7 +58,9 @@ async function _fetchSlots(
       ...item,
       status: normalizedStatus as AppointmentSlot['status'],
       date: item.date ? item.date.split('T')[0] : item.date,
-      donorGender: item.donorGender ? (item.donorGender as string).toLowerCase() as 'male' | 'female' : undefined,
+      donorGender: item.donorGender
+        ? ((item.donorGender as string).toLowerCase() as 'male' | 'female')
+        : undefined,
       centerId: item.centerId,
     };
   });
@@ -83,9 +86,7 @@ export async function fetchAppointmentSlots(
 // GET /Appointments/slots/{slotId}
 // Fetches a single appointment slot by ID.
 // ─────────────────────────────────────────────────────────────
-export async function fetchAppointmentSlotById(
-  slotId: string,
-): Promise<AppointmentSlot | null> {
+export async function fetchAppointmentSlotById(slotId: string): Promise<AppointmentSlot | null> {
   const { data: wrapper } = await apiClient.get<ApiResponseWrapper<AppointmentSlot>>(
     `/Appointments/slots/${slotId}`,
   );
@@ -95,7 +96,9 @@ export async function fetchAppointmentSlotById(
     ...item,
     status: (item.status || '').toLowerCase() as AppointmentSlot['status'],
     date: item.date ? item.date.split('T')[0] : item.date,
-    donorGender: item.donorGender ? (item.donorGender as string).toLowerCase() as 'male' | 'female' : undefined,
+    donorGender: item.donorGender
+      ? ((item.donorGender as string).toLowerCase() as 'male' | 'female')
+      : undefined,
     centerId: item.centerId,
   };
 }
@@ -142,7 +145,6 @@ export async function fetchAppointmentStats(
 // POST /Appointments/slots/{slotId}/cancel
 // ─────────────────────────────────────────────────────────────
 export async function cancelAppointment(slotId: string, reason: string): Promise<void> {
-
   await apiClient.post(`/Appointments/slots/${slotId}/cancel`, { reason });
 }
 
@@ -151,6 +153,5 @@ export async function cancelAppointment(slotId: string, reason: string): Promise
 // Marks the appointment as missed (donor didn't show up).
 // ─────────────────────────────────────────────────────────────
 export async function markNoShow(slotId: string): Promise<void> {
-
   await apiClient.post(`/Appointments/slots/${slotId}/no-show`);
 }

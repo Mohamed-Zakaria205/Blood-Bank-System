@@ -3,7 +3,6 @@ import type { BloodType } from './types';
 
 export const CITIES = BENI_SUEF_CITIES.map((city) => city.city_name_ar);
 
-
 export const DISEASES = [
   { id: 'hypertension', label: 'ضغط الدم المرتفع' },
   { id: 'diabetes', label: 'السكري' },

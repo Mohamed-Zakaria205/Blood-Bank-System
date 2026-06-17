@@ -21,11 +21,7 @@ import {
 import type { Donor } from '../../types';
 
 // ── Sub-components & constants ──
-import {
-  statusColors,
-  statusLabels,
-  adminDonorsHeaders,
-} from './admin-donors/donorsConstants';
+import { statusColors, statusLabels, adminDonorsHeaders } from './admin-donors/donorsConstants';
 import EditDonorModal from './admin-donors/EditDonorModal';
 import ViewDonorModal from './admin-donors/ViewDonorModal';
 
@@ -110,8 +106,13 @@ export default function AdminDonors() {
       return;
     }
     if (!egPhoneRegex.test(phone)) {
-      setFormErrors({ phone: 'رقم الهاتف المحمول غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015' });
-      toast.error('رقم الهاتف المحمول غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015');
+      setFormErrors({
+        phone:
+          'رقم الهاتف المحمول غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015',
+      });
+      toast.error(
+        'رقم الهاتف المحمول غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015',
+      );
       return;
     }
 
@@ -136,7 +137,7 @@ export default function AdminDonors() {
       // Compare the serialized objects to detect concurrent background changes
       if (JSON.stringify(freshRes.data) !== JSON.stringify(editingDonor)) {
         toast.error(
-          'تحذير: تم تعديل بيانات هذا المتبرع بواسطة مستخدم آخر منذ فتحك للنافذة. تم تحديث النافذة بالإصدار الأخير، يرجى المراجعة والمحاولة مجدداً.'
+          'تحذير: تم تعديل بيانات هذا المتبرع بواسطة مستخدم آخر منذ فتحك للنافذة. تم تحديث النافذة بالإصدار الأخير، يرجى المراجعة والمحاولة مجدداً.',
         );
         setEditingDonor(freshRes.data);
         setEditForm({ ...freshRes.data });
@@ -168,11 +169,15 @@ export default function AdminDonors() {
           if (rawMsg.includes('phone') || rawMsg.includes('رقم الهاتف')) {
             backendErrors.phone = 'رقم الهاتف هذا مسجل بالفعل لمتبرع آخر';
             userFriendlyMsg = 'رقم الهاتف هذا مسجل بالفعل لمتبرع آخر';
-          } 
-          if (rawMsg.includes('nationalid') || rawMsg.includes('national id') || rawMsg.includes('الرقم القومي')) {
+          }
+          if (
+            rawMsg.includes('nationalid') ||
+            rawMsg.includes('national id') ||
+            rawMsg.includes('الرقم القومي')
+          ) {
             backendErrors.nationalId = 'الرقم القومي هذا مسجل بالفعل لمتبرع آخر';
             userFriendlyMsg = 'الرقم القومي هذا مسجل بالفعل لمتبرع آخر';
-          } 
+          }
           if (rawMsg.includes('not found')) {
             userFriendlyMsg = 'المتبرع غير موجود في النظام';
           } else if (rawMsg.includes('blood') || rawMsg.includes('bloodtype')) {
@@ -189,7 +194,7 @@ export default function AdminDonors() {
 
           const validationErrors = apiErr.data?.errors;
           if (validationErrors && typeof validationErrors === 'object') {
-            Object.keys(validationErrors).forEach(key => {
+            Object.keys(validationErrors).forEach((key) => {
               const fieldName = key.charAt(0).toLowerCase() + key.slice(1);
               const msgs = validationErrors[key];
               if (Array.isArray(msgs) && msgs.length > 0) {
@@ -453,7 +458,11 @@ export default function AdminDonors() {
           form={editForm}
           onFormChange={setEditForm}
           onSave={saveEdit}
-          onCancel={() => { setEditingDonor(null); setFormErrors({}); updateMutation.reset(); }}
+          onCancel={() => {
+            setEditingDonor(null);
+            setFormErrors({});
+            updateMutation.reset();
+          }}
           loading={updateMutation.isPending}
           saved={updateMutation.isSuccess}
           errors={formErrors}
@@ -462,13 +471,8 @@ export default function AdminDonors() {
 
       {/* View Modal */}
       {viewingDonorId && (
-        <ViewDonorModal
-          donorId={viewingDonorId}
-          onClose={() => setViewingDonorId(null)}
-        />
+        <ViewDonorModal donorId={viewingDonorId} onClose={() => setViewingDonorId(null)} />
       )}
     </div>
   );
 }
-
-

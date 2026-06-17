@@ -42,7 +42,10 @@ export default function RecentDonors({ donations, onViewAll }: RecentDonationsPr
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-foreground truncate" style={{ fontSize: '13px', fontWeight: 600 }}>
+                <p
+                  className="text-foreground truncate"
+                  style={{ fontSize: '13px', fontWeight: 600 }}
+                >
                   {d.name}
                 </p>
                 <div className="flex items-center gap-1.5 mt-0.5">

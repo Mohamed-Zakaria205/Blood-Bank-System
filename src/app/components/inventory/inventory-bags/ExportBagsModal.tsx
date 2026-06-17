@@ -1,11 +1,5 @@
 import { useState } from 'react';
-import {
-  Check,
-  X,
-  Upload,
-  AlertCircle,
-  ChevronLeft,
-} from 'lucide-react';
+import { Check, X, Upload, AlertCircle, ChevronLeft } from 'lucide-react';
 import type { BloodBag } from '../../../types';
 import type { ExportFormState } from './bagsConstants';
 import { getCurrentUserName } from './bagsConstants';
@@ -89,7 +83,11 @@ export default function ExportBagsModal({
               <Upload className="w-5 h-5 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <h3 id="modal-title" className="text-foreground" style={{ fontSize: '17px', fontWeight: 700 }}>
+              <h3
+                id="modal-title"
+                className="text-foreground"
+                style={{ fontSize: '17px', fontWeight: 700 }}
+              >
                 تصدير{' '}
                 {selectedBagsData.length > 1 ? `${selectedBagsData.length} حقائب` : 'حقيبة دم'}
               </h3>
@@ -111,9 +109,7 @@ export default function ExportBagsModal({
               >
                 1
               </div>
-              <div
-                className={`w-6 h-0.5 ${step >= 2 ? 'bg-green-600' : 'bg-muted'}`}
-              />
+              <div className={`w-6 h-0.5 ${step >= 2 ? 'bg-green-600' : 'bg-muted'}`} />
               <div
                 className="w-6 h-6 rounded-full flex items-center justify-center text-white"
                 style={{

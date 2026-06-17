@@ -132,7 +132,10 @@ export default function AdminCampaigns() {
                       {statusLabels[c.status]}
                     </span>
                   </div>
-                  <h3 className="text-foreground mt-1" style={{ fontSize: '15px', fontWeight: 700 }}>
+                  <h3
+                    className="text-foreground mt-1"
+                    style={{ fontSize: '15px', fontWeight: 700 }}
+                  >
                     {c.title}
                   </h3>
                 </div>
@@ -148,9 +151,7 @@ export default function AdminCampaigns() {
               <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <MapPin className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
-                  <span style={{ fontSize: '13px' }}>
-                    {c.city}
-                  </span>
+                  <span style={{ fontSize: '13px' }}>{c.city}</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
@@ -179,7 +180,10 @@ export default function AdminCampaigns() {
               {/* Progress */}
               <div>
                 <div className="flex justify-between mb-1.5">
-                  <span className="text-muted-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
+                  <span
+                    className="text-muted-foreground"
+                    style={{ fontSize: '12px', fontWeight: 600 }}
+                  >
                     التقدم
                   </span>
                   <span className="text-green-600" style={{ fontSize: '12px', fontWeight: 700 }}>
@@ -310,7 +314,10 @@ export default function AdminCampaigns() {
               )}
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { label: 'الموقع (إحداثيات)', value: `${selected.latitude || ''}, ${selected.longitude || ''}` },
+                  {
+                    label: 'الموقع (إحداثيات)',
+                    value: `${selected.latitude || ''}, ${selected.longitude || ''}`,
+                  },
                   { label: 'المدينة', value: selected.city },
                   { label: 'التاريخ', value: selected.date },
                   { label: 'المنظم', value: selected.createdByName },
@@ -332,7 +339,10 @@ export default function AdminCampaigns() {
               </div>
               <div>
                 <div className="flex justify-between mb-1.5">
-                  <span className="text-muted-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
+                  <span
+                    className="text-muted-foreground"
+                    style={{ fontSize: '13px', fontWeight: 600 }}
+                  >
                     نسبة الإنجاز
                   </span>
                   <span className="text-green-600" style={{ fontSize: '13px', fontWeight: 700 }}>

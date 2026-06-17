@@ -40,8 +40,15 @@ export const donorSchema = z
       }
       return calculatedAge >= 18 && calculatedAge <= 65;
     }, 'تاريخ الميلاد يجب أن يجعل السن بين 18 و 65 سنة'),
-    phone: z.string().regex(/^01[0125]\d{8}$/, 'رقم الهاتف غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015'),
-    nationalId: z.string().refine(isValidEgyptianNationalId, 'الرقم القومي غير صحيح أو غير متطابق مع تاريخ الميلاد'),
+    phone: z
+      .string()
+      .regex(
+        /^01[0125]\d{8}$/,
+        'رقم الهاتف غير صحيح، يجب أن يتكون من 11 رقماً ويبدأ بـ 010 أو 011 أو 012 أو 015',
+      ),
+    nationalId: z
+      .string()
+      .refine(isValidEgyptianNationalId, 'الرقم القومي غير صحيح أو غير متطابق مع تاريخ الميلاد'),
     governorate: z.string(),
     district: z.string().min(1, 'اختر المركز'),
     area: z.string().trim().min(1, 'أدخل المنطقة'),
@@ -52,9 +59,24 @@ export const donorSchema = z
     campaignId: z.string(),
     donationCenterId: z.string(),
     status: z.enum(['eligible', 'rejected', 'deferred']),
-    weight: z.string().min(1, 'أدخل الوزن').refine((v) => !isNaN(Number(v)) && Number(v) >= 45 && Number(v) <= 200, 'الوزن يجب أن يكون بين 45 و 200 كجم'),
-    bloodPressure: z.string().min(1, 'أدخل ضغط الدم').regex(/^\d{2,3}\/\d{2,3}$/, 'يجب إدخال ضغط الدم بصيغة صحيحة (مثل 120/80)'),
-    hemoglobin: z.string().min(1, 'أدخل الهيموجلوبين').refine((v) => !isNaN(Number(v)) && Number(v) >= 7 && Number(v) <= 20, 'الهيموجلوبين يجب أن يكون بين 7 و 20 g/dL'),
+    weight: z
+      .string()
+      .min(1, 'أدخل الوزن')
+      .refine(
+        (v) => !isNaN(Number(v)) && Number(v) >= 45 && Number(v) <= 200,
+        'الوزن يجب أن يكون بين 45 و 200 كجم',
+      ),
+    bloodPressure: z
+      .string()
+      .min(1, 'أدخل ضغط الدم')
+      .regex(/^\d{2,3}\/\d{2,3}$/, 'يجب إدخال ضغط الدم بصيغة صحيحة (مثل 120/80)'),
+    hemoglobin: z
+      .string()
+      .min(1, 'أدخل الهيموجلوبين')
+      .refine(
+        (v) => !isNaN(Number(v)) && Number(v) >= 7 && Number(v) <= 20,
+        'الهيموجلوبين يجب أن يكون بين 7 و 20 g/dL',
+      ),
     isAllergic: z.boolean(),
     rejectionReason: z.string(),
     deferredUntil: z.string(),
@@ -78,7 +100,6 @@ export const donorSchema = z
   });
 
 export type SimpleForm = z.infer<typeof donorSchema>;
-
 
 export const initialForm: SimpleForm = {
   name: '',

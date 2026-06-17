@@ -297,9 +297,8 @@ export default function InventoryBags() {
           <button
             key={s.label}
             onClick={() => handleStatusFilterChange(filterStatus === s.filter ? 'active' : s.filter)}
-            className={`${s.bg} border rounded-2xl p-4 text-right transition-all hover:scale-[1.01] duration-200 ${
-              filterStatus === s.filter ? `ring-2 ${s.ring} ring-offset-1` : ''
-            }`}
+            className={`${s.bg} border rounded-2xl p-4 text-right transition-all hover:scale-[1.01] duration-200 ${filterStatus === s.filter ? `ring-2 ${s.ring} ring-offset-1` : ''
+              }`}
           >
             <div className={s.color} style={{ fontSize: '26px', fontWeight: 800 }}>
               {s.value}
@@ -434,10 +433,9 @@ export default function InventoryBags() {
                   key={type}
                   onClick={() => toggleBloodTypeSelection(type)}
                   className={`px-3 py-1 rounded-full text-xs font-bold transition-all border
-                    ${
-                      isSelected
-                        ? 'bg-red-600 border-red-600 text-white shadow-sm'
-                        : 'bg-card border-border text-foreground hover:bg-muted/50'
+                    ${isSelected
+                      ? 'bg-red-600 border-red-600 text-white shadow-sm'
+                      : 'bg-card border-border text-foreground hover:bg-muted/50'
                     }`}
                 >
                   {type}
@@ -483,10 +481,9 @@ export default function InventoryBags() {
                     <button
                       onClick={toggleSelectAllPage}
                       className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all
-                        ${
-                          isAllPageSelected
-                            ? 'bg-green-600 border-green-600'
-                            : 'border-border hover:border-green-400'
+                        ${isAllPageSelected
+                          ? 'bg-green-600 border-green-600'
+                          : 'border-border hover:border-green-400'
                         }`}
                     >
                       {isAllPageSelected && <Check className="w-3 h-3 text-white" />}
@@ -532,10 +529,9 @@ export default function InventoryBags() {
                         <button
                           onClick={() => toggleSelect(bag)}
                           className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all
-                            ${
-                              isSelected
-                                ? 'bg-green-600 border-green-600'
-                                : 'border-border hover:border-green-400'
+                            ${isSelected
+                              ? 'bg-green-600 border-green-600'
+                              : 'border-border hover:border-green-400'
                             }`}
                         >
                           {isSelected && <Check className="w-3 h-3 text-white" />}
@@ -621,11 +617,10 @@ export default function InventoryBags() {
                         {(isAvailable || isExpired) && (
                           <button
                             onClick={() => setBagsToDispose([bag])}
-                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg transition-all ${
-                              isExpired
+                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg transition-all ${isExpired
                                 ? 'bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-500/20'
                                 : 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-500/20'
-                            }`}
+                              }`}
                             style={{ fontSize: '11px', fontWeight: 700 }}
                           >
                             <Trash2 className="w-3.5 h-3.5" /> إتلاف

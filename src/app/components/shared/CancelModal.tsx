@@ -56,7 +56,11 @@ export function CancelModal({ slot, doctorName, onConfirm, onClose }: CancelModa
             <div className="w-9 h-9 bg-red-100 rounded-xl flex items-center justify-center">
               <XCircle className="w-5 h-5 text-red-600" />
             </div>
-            <h3 id="modal-title" className="text-foreground" style={{ fontSize: '16px', fontWeight: 800 }}>
+            <h3
+              id="modal-title"
+              className="text-foreground"
+              style={{ fontSize: '16px', fontWeight: 800 }}
+            >
               إلغاء الموعد
             </h3>
           </div>

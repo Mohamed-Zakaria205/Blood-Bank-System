@@ -64,7 +64,10 @@ export default function InventoryBarChart({ data }: InventoryBarChartProps) {
             fill={chart.quaternary}
             radius={[4, 4, 0, 0]}
           />
-          <Legend key="legend" wrapperStyle={{ fontFamily: 'Tajawal', fontSize: '12px', color: chart.labelColor }} />
+          <Legend
+            key="legend"
+            wrapperStyle={{ fontFamily: 'Tajawal', fontSize: '12px', color: chart.labelColor }}
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>

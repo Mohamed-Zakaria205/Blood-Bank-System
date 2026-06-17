@@ -5,15 +5,14 @@ import {
   XCircle,
   Droplets,
   Activity,
-  ChevronRight,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
+import { formatLocalizedDateTime, formatLocalizedDate } from '../../utils/date';
 
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router';
-import { useFilteredLabTests } from '../../hooks/useLabTests';
+import { useFilteredLabTests, useLabDashboardStats } from '../../hooks/useLabTests';
 import {
   Pagination,
   PaginationContent,
@@ -34,8 +33,6 @@ import { CardSkeleton, ErrorState, TableSkeleton } from '../shared/LoadingSkelet
 
 export default function LabDashboard() {
   const { user } = useAuth();
-  const navigate = useNavigate();
-
   const {
     activeTab,
     setActiveTab,
@@ -65,6 +62,8 @@ export default function LabDashboard() {
     limit: 10,
     status: activeTab,
   });
+
+  const { data: statsData } = useLabDashboardStats();
 
   const labTests = response?.data || [];
   const total = response?.total || 0;
@@ -102,14 +101,6 @@ export default function LabDashboard() {
             مرحباً {user?.name} — {format(new Date(), 'EEEE، d MMMM yyyy', { locale: ar })}
           </p>
         </div>
-        <button
-          onClick={() => navigate('/lab/samples')}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-all text-sm"
-          style={{ fontWeight: 600 }}
-        >
-          <FlaskConical className="w-4 h-4" /> فحص العينات
-          <ChevronRight className="w-4 h-4" />
-        </button>
       </div>
 
       {/* Stats row removed as server pagination is active */}
@@ -169,12 +160,12 @@ export default function LabDashboard() {
             >
               <Clock className="w-4 h-4" />
               معلقة
-              {activeTab === 'pending' && total > 0 && (
+              {statsData && statsData.tests.pending > 0 && (
                 <span
                   className="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded-full"
                   style={{ fontSize: '11px', fontWeight: 700 }}
                 >
-                  {total}
+                  {statsData.tests.pending}
                 </span>
               )}
             </button>
@@ -188,12 +179,12 @@ export default function LabDashboard() {
             >
               <CheckCircle2 className="w-4 h-4" />
               مكتملة
-              {activeTab === 'completed' && (
+              {statsData && (
                 <span
                   className="px-1.5 py-0.5 bg-green-100 text-green-700 rounded-full"
                   style={{ fontSize: '11px', fontWeight: 700 }}
                 >
-                  {total}
+                  {statsData.tests.completed}
                 </span>
               )}
             </button>
@@ -217,7 +208,7 @@ export default function LabDashboard() {
                 {labTests.map((t) => (
                   <div
                     key={t.id}
-                    className="flex items-center justify-between px-5 py-4 hover:bg-yellow-50/40 transition-colors border-b border-border last:border-0"
+                    className="flex items-center justify-between px-5 py-4 hover:bg-yellow-50/40 dark:hover:bg-yellow-500/10 transition-colors border-b border-border last:border-0"
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-yellow-50 dark:bg-yellow-500/10 rounded-xl flex items-center justify-center flex-shrink-0 border border-yellow-100 dark:border-yellow-500/20">
@@ -250,11 +241,11 @@ export default function LabDashboard() {
                               className="text-green-700 dark:text-green-400 font-mono"
                               style={{ fontSize: '11px', fontWeight: 700 }}
                             >
-                              كود العينة: {t.donorCode}
+                              كود العينة: {t.donationCode}
                             </span>
                           </div>
                           <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
-                            {t.requestedAt}
+                            {t.requestedAt ? formatLocalizedDate(t.requestedAt) : ''}
                           </span>
                         </div>
                       </div>
@@ -298,15 +289,15 @@ export default function LabDashboard() {
                 {labTests.map((t) => (
                   <div
                     key={t.id}
-                    className={`flex items-center justify-between px-5 py-4 transition-colors border-b border-border last:border-0 ${t.result === undefined ? 'hover:bg-muted/40' : t.result?.suitable ? 'hover:bg-green-50/20 dark:hover:bg-green-500/10' : 'hover:bg-red-50/20 dark:hover:bg-red-500/10'}`}
+                    className={`flex items-center justify-between px-5 py-4 transition-colors border-b border-border last:border-0 ${t.result === undefined ? 'hover:bg-muted/40' : t.result?.outcome === 'safe' ? 'hover:bg-green-50/20 dark:hover:bg-green-500/10' : 'hover:bg-red-50/20 dark:hover:bg-red-500/10'}`}
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${t.result === undefined ? 'bg-muted/40 border border-border' : t.result?.suitable ? 'bg-green-50 dark:bg-green-500/10 border border-green-100 dark:border-green-500/20' : 'bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20'}`}
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${t.result === undefined ? 'bg-muted/40 border border-border' : t.result?.outcome === 'safe' ? 'bg-green-50 dark:bg-green-500/10 border border-green-100 dark:border-green-500/20' : 'bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20'}`}
                       >
                         {t.result === undefined ? (
                           <Clock className="w-5 h-5 text-muted-foreground" />
-                        ) : t.result?.suitable ? (
+                        ) : t.result?.outcome === 'safe' ? (
                           <CheckCircle2 className="w-5 h-5 text-green-600" />
                         ) : (
                           <XCircle className="w-5 h-5 text-red-500" />
@@ -327,10 +318,10 @@ export default function LabDashboard() {
                             {t.result?.confirmedBloodType || t.bloodType}
                           </span>
                           <span
-                            className={`px-2 py-0.5 rounded-full ${t.result === undefined ? 'bg-muted text-muted-foreground' : t.result?.suitable ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'}`}
+                            className={`px-2 py-0.5 rounded-full ${t.result === undefined ? 'bg-muted text-muted-foreground' : t.result?.outcome === 'safe' ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'}`}
                             style={{ fontSize: '11px', fontWeight: 700 }}
                           >
-                            {t.result === undefined ? '⏳ جاري الفحص' : t.result?.suitable ? '✅ آمنة' : '❌ مرفوضة'}
+                            {t.result === undefined ? '⏳ جاري الفحص' : t.result?.outcome === 'safe' ? '✅ آمنة' : '❌ مرفوضة'}
                           </span>
                         </div>
                         <div className="flex items-center gap-3 flex-wrap">
@@ -340,11 +331,11 @@ export default function LabDashboard() {
                               className="text-green-700 dark:text-green-400 font-mono"
                               style={{ fontSize: '11px', fontWeight: 700 }}
                             >
-                              كود العينة: {t.donorCode}
+                              كود العينة: {t.donationCode}
                             </span>
                           </div>
                           <span className="text-muted-foreground" style={{ fontSize: '11px' }}>
-                            {t.result?.completedAt}
+                            {t.result?.completedAt ? formatLocalizedDateTime(t.result.completedAt) : ''}
                           </span>
                         </div>
                       </div>
@@ -362,7 +353,7 @@ export default function LabDashboard() {
             )}
           </div>
         )}
-        
+
         {/* Pagination UI */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center p-4 border-t border-border bg-muted/40">

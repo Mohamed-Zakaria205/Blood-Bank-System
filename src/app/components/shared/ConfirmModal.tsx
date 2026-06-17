@@ -34,26 +34,30 @@ export function ConfirmModal({
         return {
           icon: <Trash2 className="w-6 h-6 text-red-600" />,
           bgIcon: 'bg-red-100',
-          btnConfirm: 'bg-red-600 hover:bg-red-700 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600',
+          btnConfirm:
+            'bg-red-600 hover:bg-red-700 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600',
         };
       case 'success':
         return {
           icon: <CheckCircle className="w-6 h-6 text-emerald-600" />,
           bgIcon: 'bg-emerald-100',
-          btnConfirm: 'bg-emerald-600 hover:bg-emerald-700 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600',
+          btnConfirm:
+            'bg-emerald-600 hover:bg-emerald-700 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600',
         };
       case 'info':
         return {
           icon: <Info className="w-6 h-6 text-blue-600" />,
           bgIcon: 'bg-blue-100',
-          btnConfirm: 'bg-blue-600 hover:bg-blue-700 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600',
+          btnConfirm:
+            'bg-blue-600 hover:bg-blue-700 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600',
         };
       case 'warning':
       default:
         return {
           icon: <AlertTriangle className="w-6 h-6 text-amber-600" />,
           bgIcon: 'bg-amber-100',
-          btnConfirm: 'bg-amber-600 hover:bg-amber-700 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-600',
+          btnConfirm:
+            'bg-amber-600 hover:bg-amber-700 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-600',
         };
     }
   };
@@ -76,14 +80,23 @@ export function ConfirmModal({
       >
         <div className="p-6">
           <div className="flex items-start gap-4">
-            <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${styles.bgIcon}`}>
+            <div
+              className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${styles.bgIcon}`}
+            >
               {styles.icon}
             </div>
             <div className="flex-1 pt-1">
-              <h3 id="modal-title" className="text-foreground" style={{ fontSize: '18px', fontWeight: 800 }}>
+              <h3
+                id="modal-title"
+                className="text-foreground"
+                style={{ fontSize: '18px', fontWeight: 800 }}
+              >
                 {title}
               </h3>
-              <p className="text-muted-foreground mt-2 leading-relaxed" style={{ fontSize: '14px' }}>
+              <p
+                className="text-muted-foreground mt-2 leading-relaxed"
+                style={{ fontSize: '14px' }}
+              >
                 {message}
               </p>
             </div>

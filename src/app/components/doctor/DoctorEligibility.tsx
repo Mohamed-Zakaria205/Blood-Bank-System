@@ -17,7 +17,11 @@ import type { ApiResponse } from '../../types/common';
 // import type { AxiosError } from 'axios';
 import { useDebounce } from '../../hooks/useDebounce';
 import { CITIES } from '../../constants';
-import { usePaginatedEligibleDonors, useDonorEligibilityStats, useSendDonorNotifications } from '../../hooks/useDonors';
+import {
+  usePaginatedEligibleDonors,
+  useDonorEligibilityStats,
+  useSendDonorNotifications,
+} from '../../hooks/useDonors';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import {
   Pagination,
@@ -43,7 +47,9 @@ import BloodTypeBar from './doctor-eligibility/BloodTypeBar';
 export default function DoctorEligibility() {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300);
-  const [filterStatus, setFilterStatus] = useState<'all' | 'eligible' | 'soon' | 'not_yet' | 'deferred' | 'ineligible'>('all');
+  const [filterStatus, setFilterStatus] = useState<
+    'all' | 'eligible' | 'soon' | 'not_yet' | 'deferred' | 'ineligible'
+  >('all');
   const [filterBlood, setFilterBlood] = useState<BloodType | 'all'>('all');
   const [filterGender, setFilterGender] = useState<string>('all');
   const [filterDistrict, setFilterDistrict] = useState<string>('all');
@@ -73,7 +79,12 @@ export default function DoctorEligibility() {
     setSelectedDonors(new Set());
   }, [debouncedSearch, filterStatus, filterBlood, filterGender, filterDistrict, page]);
 
-  const { data: response, isLoading, isError, refetch } = usePaginatedEligibleDonors({
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = usePaginatedEligibleDonors({
     page,
     limit: 10,
     search: debouncedSearch,
@@ -83,7 +94,12 @@ export default function DoctorEligibility() {
     district: filterDistrict === 'all' ? '' : filterDistrict,
   });
 
-  const { data: stats, isLoading: statsLoading, isError: statsError, refetch: refetchStats } = useDonorEligibilityStats();
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    isError: statsError,
+    refetch: refetchStats,
+  } = useDonorEligibilityStats();
   const sendNotifMutation = useSendDonorNotifications();
 
   const donorsData = response?.data || [];
@@ -189,7 +205,7 @@ export default function DoctorEligibility() {
         onError: (err: any) => {
           toast.error(err.response?.data?.message || 'تعذر إرسال الإشعار. يرجى المحاولة لاحقاً');
         },
-      }
+      },
     );
   };
 
@@ -330,7 +346,15 @@ export default function DoctorEligibility() {
       </div>
 
       {/* Blood type eligibility bar */}
-      <BloodTypeBar enriched={enriched} stats={stats} filterBlood={filterBlood} onToggle={(blood) => { setFilterBlood(blood); setPage(1); }} />
+      <BloodTypeBar
+        enriched={enriched}
+        stats={stats}
+        filterBlood={filterBlood}
+        onToggle={(blood) => {
+          setFilterBlood(blood);
+          setPage(1);
+        }}
+      />
 
       {/* Search & filters */}
       <div className="flex flex-col sm:flex-row gap-3">
@@ -338,7 +362,10 @@ export default function DoctorEligibility() {
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             maxLength={100}
             aria-label="بحث بالاسم أو رقم الهاتف أو الفصيلة"
             placeholder="بحث بالاسم أو رقم الهاتف أو الفصيلة..."

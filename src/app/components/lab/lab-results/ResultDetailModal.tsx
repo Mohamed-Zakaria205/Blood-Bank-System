@@ -1,34 +1,29 @@
-import {
-  CheckCircle2,
-  XCircle,
-  Clock,
-  X,
-  FlaskConical,
-  CreditCard,
-  Check,
-} from 'lucide-react';
-import type { CombinedEntry } from './labResultsConstants';
+import { CheckCircle2, XCircle, X, FlaskConical, CreditCard, Check } from 'lucide-react';
+import type { ResultEntry } from './labResultsConstants';
 import { SCREENING_TESTS } from './labResultsConstants';
 import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
+import { formatLocalizedDateTime } from '../../../utils/date';
 
 interface ResultDetailModalProps {
-  entry: CombinedEntry;
+  entry: ResultEntry;
   onClose: () => void;
 }
 
 export default function ResultDetailModal({ entry, onClose }: ResultDetailModalProps) {
-  const isPending = entry.displayStatus === 'pending';
-  const isSafe = entry.result === 'safe';
+  const isSafe = entry.outcome === 'safe';
   const modalRef = useModalFocusTrap(onClose);
 
-  const headerGradient = isPending
-    ? 'linear-gradient(135deg, #d97706, #f59e0b)'
-    : isSafe
-      ? 'linear-gradient(135deg, #15803d, #22c55e)'
-      : 'linear-gradient(135deg, #dc2626, #ef4444)';
+  const headerGradient = isSafe
+    ? 'linear-gradient(135deg, #15803d, #22c55e)'
+    : 'linear-gradient(135deg, #dc2626, #ef4444)';
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div
         ref={modalRef}
         role="dialog"
@@ -37,9 +32,16 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
         className="bg-card rounded-2xl w-full max-w-md shadow-2xl overflow-hidden outline-none"
       >
         {/* Header */}
-        <div className="p-5 flex items-center justify-between" style={{ background: headerGradient }}>
+        <div
+          className="p-5 flex items-center justify-between"
+          style={{ background: headerGradient }}
+        >
           <div>
-            <h3 id="modal-title" className="text-white" style={{ fontSize: '17px', fontWeight: 700 }}>
+            <h3
+              id="modal-title"
+              className="text-white"
+              style={{ fontSize: '17px', fontWeight: 700 }}
+            >
               تفاصيل نتائج الفحص
             </h3>
             <p className="text-white/80" style={{ fontSize: '12px' }}>
@@ -65,7 +67,10 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
                   كود العينة
                 </div>
               </div>
-              <div className="font-mono text-green-800" style={{ fontSize: '12px', fontWeight: 800 }}>
+              <div
+                className="font-mono text-green-800"
+                style={{ fontSize: '12px', fontWeight: 800 }}
+              >
                 {entry.sampleCode}
               </div>
             </div>
@@ -76,7 +81,10 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
                   رقم الهوية
                 </div>
               </div>
-              <div className="font-mono text-foreground" style={{ fontSize: '12px', fontWeight: 700 }}>
+              <div
+                className="font-mono text-foreground"
+                style={{ fontSize: '12px', fontWeight: 700 }}
+              >
                 {entry.nationalId}
               </div>
             </div>
@@ -85,26 +93,10 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
           {/* Overall Result */}
           <div
             className={`flex items-center gap-3 p-4 rounded-2xl border ${
-              isPending
-                ? 'bg-yellow-50 border-yellow-100'
-                : isSafe
-                  ? 'bg-green-50 border-green-100'
-                  : 'bg-red-50 border-red-100'
+              isSafe ? 'bg-green-50 border-green-100' : 'bg-red-50 border-red-100'
             }`}
           >
-            {isPending ? (
-              <>
-                <Clock className="w-8 h-8 text-yellow-500 flex-shrink-0" />
-                <div>
-                  <div className="text-yellow-700" style={{ fontSize: '16px', fontWeight: 700 }}>
-                    ⏳ معلق
-                  </div>
-                  <div className="text-yellow-600" style={{ fontSize: '13px' }}>
-                    لم يتم الفحص بعد
-                  </div>
-                </div>
-              </>
-            ) : isSafe ? (
+            {isSafe ? (
               <>
                 <CheckCircle2 className="w-8 h-8 text-green-600 flex-shrink-0" />
                 <div>
@@ -144,60 +136,61 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
           </div>
 
           {/* Test Details */}
-          {!isPending && (
-            <div>
-              <div className="text-foreground mb-2.5" style={{ fontSize: '13px', fontWeight: 700 }}>
-                تفصيل الفحوصات الأربعة:
-              </div>
-              <div className="space-y-2">
-                {SCREENING_TESTS.map((test) => {
-                  const val = (entry as Record<string, unknown>)[test.key] as string | null;
-                  const isPositive = val === 'positive';
-                  return (
-                    <div
-                      key={test.key}
-                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl border ${isPositive ? 'bg-red-50 border-red-100' : 'bg-muted/40 border-border'}`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <div
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${isPositive ? 'bg-red-100' : 'bg-green-50'}`}
-                        >
-                          <span
-                            className={isPositive ? 'text-red-700' : 'text-green-700'}
-                            style={{ fontSize: '8px', fontWeight: 900 }}
-                          >
-                            {test.abbr}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
-                            {test.label}
-                          </p>
-                          <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
-                            {test.desc}
-                          </p>
-                        </div>
-                      </div>
-                      <span
-                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full ${!isPositive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
-                        style={{ fontSize: '11px', fontWeight: 700 }}
-                      >
-                        {!isPositive ? (
-                          <>
-                            <Check className="w-3 h-3" /> سالب
-                          </>
-                        ) : (
-                          <>
-                            <X className="w-3 h-3" /> موجب
-                          </>
-                        )}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+          <div>
+            <div className="text-foreground mb-2.5" style={{ fontSize: '13px', fontWeight: 700 }}>
+              تفصيل الفحوصات الأربعة:
             </div>
-          )}
+            <div className="space-y-2">
+              {SCREENING_TESTS.map((test) => {
+                const val = (entry as Record<string, unknown>)[test.key] as string | null;
+                const isPositive = val === 'positive';
+                return (
+                  <div
+                    key={test.key}
+                    className={`flex items-center justify-between px-3 py-2.5 rounded-xl border ${isPositive ? 'bg-red-50 border-red-100' : 'bg-muted/40 border-border'}`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${isPositive ? 'bg-red-100' : 'bg-green-50'}`}
+                      >
+                        <span
+                          className={isPositive ? 'text-red-700' : 'text-green-700'}
+                          style={{ fontSize: '8px', fontWeight: 900 }}
+                        >
+                          {test.abbr}
+                        </span>
+                      </div>
+                      <div>
+                        <p
+                          className="text-foreground"
+                          style={{ fontSize: '12px', fontWeight: 600 }}
+                        >
+                          {test.label}
+                        </p>
+                        <p className="text-muted-foreground" style={{ fontSize: '10px' }}>
+                          {test.desc}
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded-full ${!isPositive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
+                      style={{ fontSize: '11px', fontWeight: 700 }}
+                    >
+                      {!isPositive ? (
+                        <>
+                          <Check className="w-3 h-3" /> سالب
+                        </>
+                      ) : (
+                        <>
+                          <X className="w-3 h-3" /> موجب
+                        </>
+                      )}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Notes */}
           {entry.notes && (
@@ -224,7 +217,7 @@ export default function ResultDetailModal({ entry, onClose }: ResultDetailModalP
                 التاريخ
               </div>
               <div className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
-                {entry.date}
+                {entry.date ? formatLocalizedDateTime(entry.date) : ''}
               </div>
             </div>
           </div>

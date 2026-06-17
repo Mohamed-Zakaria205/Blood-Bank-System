@@ -25,7 +25,6 @@ const AdminInventory = lazy(() => import('./components/admin/AdminInventory'));
 const AdminReports = lazy(() => import('./components/admin/AdminReports'));
 const AdminSettings = lazy(() => import('./components/admin/AdminSettings'));
 
-
 // ── Doctor Pages (lazy loaded) ──
 const DoctorDashboard = lazy(() => import('./components/doctor/DoctorDashboard'));
 const DoctorDonations = lazy(() => import('./components/doctor/DoctorDonations'));
@@ -102,15 +101,18 @@ export const router = createBrowserRouter([
           {
             Component: AdminLayout,
             children: [
-              { Component: SuspenseOutlet, children: [
-                { index: true, Component: AdminDashboard },
-                { path: 'donors', Component: AdminDonors },
-                { path: 'staff', Component: AdminStaff },
-                { path: 'campaigns', Component: AdminCampaigns },
-                { path: 'inventory', Component: AdminInventory },
-                { path: 'reports', Component: AdminReports },
-                { path: 'settings', Component: AdminSettings },
-              ]},
+              {
+                Component: SuspenseOutlet,
+                children: [
+                  { index: true, Component: AdminDashboard },
+                  { path: 'donors', Component: AdminDonors },
+                  { path: 'staff', Component: AdminStaff },
+                  { path: 'campaigns', Component: AdminCampaigns },
+                  { path: 'inventory', Component: AdminInventory },
+                  { path: 'reports', Component: AdminReports },
+                  { path: 'settings', Component: AdminSettings },
+                ],
+              },
             ],
           },
         ],
@@ -124,14 +126,17 @@ export const router = createBrowserRouter([
           {
             Component: DoctorLayout,
             children: [
-              { Component: SuspenseOutlet, children: [
-                { index: true, Component: DoctorDashboard },
-                { path: 'donations', Component: DoctorDonations },
-                { path: 'register', Component: DonationRegistrationForm },
-                { path: 'campaigns', Component: DoctorCampaigns },
-                { path: 'appointments', Component: DoctorAppointments },
-                { path: 'eligibility', Component: DoctorEligibility },
-              ]},
+              {
+                Component: SuspenseOutlet,
+                children: [
+                  { index: true, Component: DoctorDashboard },
+                  { path: 'donations', Component: DoctorDonations },
+                  { path: 'register', Component: DonationRegistrationForm },
+                  { path: 'campaigns', Component: DoctorCampaigns },
+                  { path: 'appointments', Component: DoctorAppointments },
+                  { path: 'eligibility', Component: DoctorEligibility },
+                ],
+              },
             ],
           },
         ],
@@ -145,10 +150,13 @@ export const router = createBrowserRouter([
           {
             Component: LabLayout,
             children: [
-              { Component: SuspenseOutlet, children: [
-                { index: true, Component: LabDashboard },
-                { path: 'results', Component: LabResults },
-              ]},
+              {
+                Component: SuspenseOutlet,
+                children: [
+                  { index: true, Component: LabDashboard },
+                  { path: 'results', Component: LabResults },
+                ],
+              },
             ],
           },
         ],
@@ -162,13 +170,16 @@ export const router = createBrowserRouter([
           {
             Component: InventoryLayout,
             children: [
-              { Component: SuspenseOutlet, children: [
-                { index: true, Component: InventoryDashboard },
-                { path: 'bags', Component: InventoryBags },
-                { path: 'history', Component: InventoryHistory },
-                { path: 'disposal', Component: InventoryDisposal },
-                { path: 'inventory-alerts', Component: InventoryAlerts },
-              ]},
+              {
+                Component: SuspenseOutlet,
+                children: [
+                  { index: true, Component: InventoryDashboard },
+                  { path: 'bags', Component: InventoryBags },
+                  { path: 'history', Component: InventoryHistory },
+                  { path: 'disposal', Component: InventoryDisposal },
+                  { path: 'inventory-alerts', Component: InventoryAlerts },
+                ],
+              },
             ],
           },
         ],

@@ -79,7 +79,6 @@ export default function InventoryTransactions() {
       />
     );
 
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -254,11 +253,13 @@ export default function InventoryTransactions() {
                   </td>
                 </tr>
               ))}
-              {transactions.length === 0 && <EmptyState colSpan={9} message="لا توجد عمليات مسجلة" />}
+              {transactions.length === 0 && (
+                <EmptyState colSpan={9} message="لا توجد عمليات مسجلة" />
+              )}
             </tbody>
           </table>
         </div>
-        
+
         {/* Pagination UI */}
         {totalPages > 1 && (
           <div className="p-4 border-t border-border flex items-center justify-center bg-muted/40">

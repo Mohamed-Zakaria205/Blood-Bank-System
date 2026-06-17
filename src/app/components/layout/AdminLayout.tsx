@@ -40,19 +40,26 @@ export default function AdminLayout() {
     { path: '/admin/donors', label: 'المتبرعين', icon: Users },
     { path: '/admin/staff', label: 'إدارة الأطباء', icon: UserCog },
     { path: '/admin/campaigns', label: 'حملات التبرع', icon: Megaphone },
-    { path: '/admin/inventory', label: 'مخزون الدم', icon: Droplets, badgeCount: criticalItems.length, badgeColor: 'bg-red-100 text-red-600' },
+    {
+      path: '/admin/inventory',
+      label: 'مخزون الدم',
+      icon: Droplets,
+      badgeCount: criticalItems.length,
+      badgeColor: 'bg-red-100 text-red-600',
+    },
     { path: '/admin/reports', label: 'التقارير', icon: BarChart3 },
     { path: '/admin/settings', label: 'الإعدادات', icon: Settings },
   ];
 
-  const headerAlert = criticalItems.length > 0 ? (
-    <div className="hidden sm:flex items-center gap-1.5 bg-red-50 border border-red-100 px-3 py-1.5 rounded-lg">
-      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-      <span className="text-red-600" style={{ fontSize: '12px', fontWeight: 600 }}>
-        {criticalItems.length} فصائل بمستوى حرج
-      </span>
-    </div>
-  ) : undefined;
+  const headerAlert =
+    criticalItems.length > 0 ? (
+      <div className="hidden sm:flex items-center gap-1.5 bg-red-50 border border-red-100 px-3 py-1.5 rounded-lg">
+        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+        <span className="text-red-600" style={{ fontSize: '12px', fontWeight: 600 }}>
+          {criticalItems.length} فصائل بمستوى حرج
+        </span>
+      </div>
+    ) : undefined;
 
   return (
     <DashboardLayout
