@@ -57,10 +57,6 @@ export interface BulkOperationResponse {
 
 /** Fetch all blood bags (unpaginated — used when the full list is needed) */
 export async function fetchBloodBags(): Promise<PaginatedResponse<BloodBag>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return { data: MOCK_BAGS, total: MOCK_BAGS.length, page: 1, limit: MOCK_BAGS.length };
-  }
   const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/blood-bags');
   const items = wrapper.data?.items || wrapper.data?.data || [];
   return {
@@ -73,8 +69,6 @@ export async function fetchBloodBags(): Promise<PaginatedResponse<BloodBag>> {
 
 /**
  * Fetch blood bags with pagination, search and filtering.
- *
- * Mock mode: applies client-side slicing to simulate server behavior.
  * Real API: all params are forwarded as query-string parameters.
  */
 export async function fetchPaginatedBloodBags(
@@ -82,69 +76,6 @@ export async function fetchPaginatedBloodBags(
   options?: { signal?: AbortSignal },
 ): Promise<PaginatedResponse<BloodBag>> {
   const { page = 1, limit = 10, search = '', bloodType = '', bloodTypes = '', donationType = '', status = '', sortBy = 'createdAt', sortOrder = 'desc' } = filters;
-
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-
-    // ── Client-side filtering ──────────────────────────────
-    let result = MOCK_BAGS;
-
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        (b) =>
-          b.bagCode.toLowerCase().includes(q) || (b.donorCode?.toLowerCase().includes(q) ?? false),
-      );
-    }
-    if (bloodType) {
-      result = result.filter((b) => b.bloodType === bloodType);
-    }
-    if (bloodTypes) {
-      const typesList = bloodTypes.split(',').map((t) => t.trim());
-      result = result.filter((b) => typesList.includes(b.bloodType));
-    }
-    if (donationType) {
-      result = result.filter((b) => b.donationType === donationType);
-    }
-
-    if (status) {
-      result = result.filter((b) => b.status === status);
-    } else {
-      // Default behavior: return active inventory (available and expired)
-      result = result.filter((b) => b.status === 'available' || b.status === 'expired');
-    }
-
-    // ── Client-side sorting ────────────────────────────────
-    const allowedSortFields = ['bagCode', 'collectedDate', 'expiryDate', 'createdAt'];
-    const activeSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
-    const activeSortOrder = sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : 'desc';
-
-    if (activeSortBy) {
-      const order = activeSortOrder === 'desc' ? -1 : 1;
-      result = [...result].sort((a, b) => {
-        const valA: any = a[activeSortBy as keyof BloodBag] ?? '';
-        const valB: any = b[activeSortBy as keyof BloodBag] ?? '';
-
-        if (typeof valA === 'string' && typeof valB === 'string') {
-          return valA.localeCompare(valB) * order;
-        }
-        if (typeof valA === 'number' && typeof valB === 'number') {
-          return (valA - valB) * order;
-        }
-        return 0;
-      });
-    }
-
-    // ── Client-side pagination ─────────────────────────────
-    const total = result.length;
-    const totalPages = Math.ceil(total / limit);
-    const start = (page - 1) * limit;
-    const data = result.slice(start, start + limit);
-    const hasNextPage = page < totalPages;
-    const hasPreviousPage = page > 1;
-
-    return { data, total, page, limit, totalPages, hasNextPage, hasPreviousPage };
-  }
 
   // ── Real API: forward all params as query-string ─────────
   const params: Record<string, any> = {
@@ -184,73 +115,6 @@ export async function exportBags(
     reason: string;
   },
 ): Promise<BulkOperationResponse> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 400));
-    const results: BulkOperationResult[] = [];
-    const updatedBags: BloodBag[] = [];
-    let processed = 0;
-    let failed = 0;
-
-    const currentTimestamp = new Date().toISOString();
-
-    for (const id of bagIds) {
-      const bag = MOCK_BAGS.find((b) => b.id === id);
-      if (!bag) {
-        failed++;
-        results.push({
-          bagId: id,
-          success: false,
-          errorCode: 'NOT_FOUND',
-          error: 'حقيبة الدم غير موجودة',
-        });
-        continue;
-      }
-
-      // Validations
-      if (bag.status === 'expired') {
-        failed++;
-        results.push({
-          bagId: id,
-          success: false,
-          errorCode: 'EXPIRED_BAG',
-          error: 'الحقيبة منتهية الصلاحية ولا يمكن صرفها',
-        });
-      } else if (bag.status === 'disposed') {
-        failed++;
-        results.push({
-          bagId: id,
-          success: false,
-          errorCode: 'INVALID_STATUS',
-          error: 'الحقيبة تالفة ولا يمكن صرفها',
-        });
-      } else if (bag.status === 'issued') {
-        failed++;
-        results.push({
-          bagId: id,
-          success: false,
-          errorCode: 'ALREADY_ISSUED',
-          error: 'الحقيبة منصرفة بالفعل',
-        });
-      } else {
-        // Success
-        processed++;
-        bag.status = 'issued';
-        bag.issuedAt = currentTimestamp;
-        bag.issuedById = 'USR-008';
-        bag.issuedByName = 'أ. نادية فتحي حسين';
-        bag.updatedAt = currentTimestamp;
-
-        results.push({
-          bagId: id,
-          success: true,
-        });
-        updatedBags.push(bag);
-      }
-    }
-
-    return { processed, failed, results, updatedBags };
-  }
-
   const { data: wrapper } = await apiClient.post<ApiResponseWrapper<BulkOperationResponse>>('/inventory/blood-bags/issue', { bagIds, ...recipient });
   return wrapper.data;
 }
@@ -260,68 +124,6 @@ export async function disposeBags(
   reason: string,
   notes?: string
 ): Promise<BulkOperationResponse> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    const results: BulkOperationResult[] = [];
-    const updatedBags: BloodBag[] = [];
-    let processed = 0;
-    let failed = 0;
-
-    const currentTimestamp = new Date().toISOString();
-
-    for (const id of bagIds) {
-      const bag = MOCK_BAGS.find((b) => b.id === id);
-      if (!bag) {
-        failed++;
-        results.push({
-          bagId: id,
-          success: false,
-          errorCode: 'NOT_FOUND',
-          error: 'حقيبة الدم غير موجودة',
-        });
-        continue;
-      }
-
-      // Validations
-      if (bag.status === 'disposed') {
-        failed++;
-        results.push({
-          bagId: id,
-          success: false,
-          errorCode: 'ALREADY_DISPOSED',
-          error: 'الحقيبة تالفة بالفعل',
-        });
-      } else if (bag.status === 'issued') {
-        failed++;
-        results.push({
-          bagId: id,
-          success: false,
-          errorCode: 'INVALID_STATUS',
-          error: 'الحقيبة منصرفة بالفعل ولا يمكن إتلافها',
-        });
-      } else {
-        // Success
-        processed++;
-        // Disposal reasons should be immutable after disposal
-        bag.status = 'disposed';
-        bag.disposedAt = currentTimestamp;
-        bag.disposedById = 'USR-008';
-        bag.disposedByName = 'أ. نادية فتحي حسين';
-        bag.disposeReason = reason;
-        bag.disposeNotes = notes || '';
-        bag.updatedAt = currentTimestamp;
-
-        results.push({
-          bagId: id,
-          success: true,
-        });
-        updatedBags.push(bag);
-      }
-    }
-
-    return { processed, failed, results, updatedBags };
-  }
-
   const { data: wrapper } = await apiClient.post<ApiResponseWrapper<BulkOperationResponse>>('/inventory/blood-bags/dispose', { bagIds, reason, notes });
   return wrapper.data;
 }
@@ -333,52 +135,8 @@ export interface BloodBagsStats {
   disposedCount: number;
 }
 
-export async function fetchBloodBagsStats(
-  filters: Omit<BagFilters, 'page' | 'limit' | 'status'> = {}
-): Promise<BloodBagsStats> {
-  const { search = '', bloodType = '', bloodTypes = '', donationType = '' } = filters;
-
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 200));
-
-    // Apply filters to total mock bags
-    let result = MOCK_BAGS;
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        (b) =>
-          b.bagCode.toLowerCase().includes(q) ||
-          (b.donorCode?.toLowerCase().includes(q) ?? false)
-      );
-    }
-    if (bloodType) {
-      result = result.filter((b) => b.bloodType === bloodType);
-    }
-    if (bloodTypes) {
-      const typesList = bloodTypes.split(',').map((t) => t.trim());
-      result = result.filter((b) => typesList.includes(b.bloodType));
-    }
-    if (donationType) {
-      result = result.filter((b) => b.donationType === donationType);
-    }
-
-    const availableCount = result.filter((b) => b.status === 'available').length;
-    const expiredCount = result.filter((b) => b.status === 'expired').length;
-    const issuedCount = result.filter((b) => b.status === 'issued').length;
-    const disposedCount = result.filter((b) => b.status === 'disposed').length;
-
-    return { availableCount, expiredCount, issuedCount, disposedCount };
-  }
-
-  const params: Record<string, any> = {};
-  if (search) params.search = search;
-  if (bloodType) params.bloodType = bloodType;
-  if (bloodTypes) params.bloodTypes = bloodTypes;
-  if (donationType && donationType !== 'all') params.donationType = donationType;
-
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<BloodBagsStats>>('/inventory/blood-bags/stats', {
-    params,
-  });
+export async function fetchBloodBagsStats(): Promise<BloodBagsStats> {
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<BloodBagsStats>>('/inventory/blood-bags/stats');
   return wrapper.data;
 }
 

@@ -40,10 +40,10 @@ export function usePaginatedBloodBags(filters: BagFilters = {}) {
   });
 }
 
-export function useBloodBagsStats(filters: Omit<BagFilters, 'page' | 'limit' | 'status'> = {}) {
+export function useBloodBagsStats() {
   return useQuery({
-    queryKey: ['bags', 'stats', filters],
-    queryFn: () => fetchBloodBagsStats(filters),
+    queryKey: ['bags', 'stats'],
+    queryFn: fetchBloodBagsStats,
   });
 }
 

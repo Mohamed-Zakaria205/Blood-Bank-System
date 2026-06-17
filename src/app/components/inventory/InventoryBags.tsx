@@ -31,12 +31,8 @@ export default function InventoryBags() {
   const [sortBy, setSortBy] = useState<string>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  // Fetch backend-driven statistics counts matching the active filters
-  const { data: statsData, isLoading: isLoadingStats, isError: isErrorStats } = useBloodBagsStats({
-    search: search.trim() || undefined,
-    bloodTypes: selectedBloodTypes.length > 0 ? selectedBloodTypes.join(',') : undefined,
-    donationType: donationType === 'all' ? undefined : donationType,
-  });
+  // Fetch backend-driven statistics counts
+  const { data: statsData, isLoading: isLoadingStats, isError: isErrorStats } = useBloodBagsStats();
 
   // Fetch paginated, filtered bags from server
   const {
@@ -49,7 +45,7 @@ export default function InventoryBags() {
     search: search.trim() || undefined,
     bloodTypes: selectedBloodTypes.length > 0 ? selectedBloodTypes.join(',') : undefined,
     donationType: donationType === 'all' ? undefined : donationType,
-    status: filterStatus === 'active' ? undefined : filterStatus,
+    status: filterStatus === 'active' ? 'all' : filterStatus,
     sortBy,
     sortOrder,
   });
