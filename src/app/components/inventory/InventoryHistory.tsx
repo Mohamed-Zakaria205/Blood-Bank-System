@@ -1,29 +1,46 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Search, Upload, Trash2, Download, TrendingDown, Package, Eye } from 'lucide-react';
-import { OutflowActionType, OutflowRecord, BloodType } from '../../types';
+import { OutflowActionType, BloodType } from '../../types';
 import { BLOOD_TYPES } from '../../constants';
-import { useBloodBags, useOutflowRecords } from '../../hooks/useInventory';
+import { useOutflowRecords, useBloodBagsStats, useOutflowRecordDetail } from '../../hooks/useInventory';
+import { exportOutflowReport } from '../../api/inventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
+import { formatLocalizedDateTime } from '../../utils/date';
+
 
 // ── Sub-components & constants ──
 import { historyTableHeaders } from './inventory-history/historyConstants';
 import OutflowDetailModal from './inventory-history/OutflowDetailModal';
 
 export default function InventoryHistory() {
-  const {
-    data: outflowRecords = [],
-    isLoading: isLoadingOutflow,
-    isError: isErrorOutflow,
-  } = useOutflowRecords();
-  const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
+  const [page, setPage] = useState(1);
   const [filterAction, setFilterAction] = useState<OutflowActionType | 'all'>('all');
-  const [filterController, setFilterController] = useState('');
   const [filterBloodType, setFilterBloodType] = useState<BloodType | 'all'>('all');
   const [search, setSearch] = useState('');
-  const [detailRecord, setDetailRecord] = useState<OutflowRecord | null>(null);
+  const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
-  if (isLoadingBags || isLoadingOutflow)
+  // Fetch stats count and wastePercentage from backend
+  const { data: statsData, isLoading: isLoadingStats, isError: isErrorStats } = useBloodBagsStats();
+
+  // Fetch paginated history from server
+  const {
+    data: outflowResponse,
+    isLoading: isLoadingOutflow,
+    isError: isErrorOutflow,
+  } = useOutflowRecords({
+    page,
+    limit: 10,
+    search: search.trim() || undefined,
+    actionType: filterAction === 'all' ? undefined : filterAction,
+    bloodType: filterBloodType === 'all' ? undefined : filterBloodType,
+  });
+
+  // Fetch lazily full details for modal
+  const { data: detailRecord, isLoading: isLoadingDetail } = useOutflowRecordDetail(selectedRecordId);
+
+  if (isLoadingStats || isLoadingOutflow)
     return (
       <div className="space-y-6 p-2">
         <div className="h-8 w-48 bg-muted rounded animate-pulse" />
@@ -31,7 +48,7 @@ export default function InventoryHistory() {
         <TableSkeleton rows={5} cols={6} />
       </div>
     );
-  if (isErrorBags || isErrorOutflow)
+  if (isErrorStats || isErrorOutflow)
     return (
       <ErrorState
         message="فشل في تحميل سجل الصادر، يرجى المحاولة لاحقاً"
@@ -39,32 +56,62 @@ export default function InventoryHistory() {
       />
     );
 
-  const controllers = [...new Set(outflowRecords.map((r) => r.performedByName))];
+  const outflowRecords = outflowResponse?.data ?? [];
+  const totalCount = outflowResponse?.total ?? 0;
+  const totalPages = outflowResponse?.totalPages ?? 1;
 
-  const filtered = outflowRecords.filter((r) => {
-    if (filterAction !== 'all' && r.actionType !== filterAction) return false;
-    if (filterController && r.performedByName !== filterController) return false;
-    if (filterBloodType !== 'all' && r.bloodType !== filterBloodType) return false;
-    if (
-      search &&
-      !(r.bagCode || '').includes(search) &&
-      !(r.bloodType || '').includes(search) &&
-      !(r.recipientName ?? '').includes(search)
-    )
-      return false;
-    return true;
-  });
-
-  const totalExported = outflowRecords.filter((r) => r.actionType === 'exported').length;
-  const totalDisposed = outflowRecords.filter((r) => r.actionType === 'disposed').length;
-  const availableNow = bags.filter((b) => b.status === 'available').length;
+  const availableNow = statsData?.availableCount ?? 0;
+  const totalExported = statsData?.issuedCount ?? 0;
+  const totalDisposed = statsData?.disposedCount ?? 0;
+  const expiredRatio = statsData?.wastePercentage ?? 0;
   const total = availableNow + totalExported + totalDisposed;
-  const expiredRatio = total > 0 ? Math.round((totalDisposed / total) * 100) : 0;
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const blob = await exportOutflowReport({
+        search: search.trim() || undefined,
+        actionType: filterAction === 'all' ? undefined : filterAction,
+        bloodType: filterBloodType === 'all' ? undefined : filterBloodType,
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `outflow_report_${new Date().toISOString().split('T')[0]}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleFilterActionChange = (action: OutflowActionType | 'all') => {
+    setFilterAction(action);
+    setPage(1);
+  };
+
+  const handleFilterBloodTypeChange = (bloodType: BloodType | 'all') => {
+    setFilterBloodType(bloodType);
+    setPage(1);
+  };
+
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
+    setPage(1);
+  };
 
   return (
     <div className="space-y-6">
-      {detailRecord && (
-        <OutflowDetailModal record={detailRecord} onClose={() => setDetailRecord(null)} />
+      {selectedRecordId && (
+        <OutflowDetailModal
+          record={detailRecord}
+          isLoading={isLoadingDetail}
+          onClose={() => setSelectedRecordId(null)}
+        />
       )}
 
       {/* Header */}
@@ -74,14 +121,16 @@ export default function InventoryHistory() {
             سجل الصادر
           </h1>
           <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
-            {outflowRecords.length} عملية مسجلة (تصدير + إتلاف)
+            {totalCount} عملية مسجلة (تصدير + إتلاف)
           </p>
         </div>
         <button
-          className="flex items-center gap-2 px-4 py-2.5 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all"
+          onClick={handleExport}
+          disabled={isExporting}
+          className="flex items-center gap-2 px-4 py-2.5 border border-border text-muted-foreground rounded-xl hover:bg-muted/40 transition-all disabled:opacity-50"
           style={{ fontSize: '13px', fontWeight: 600 }}
         >
-          <Download className="w-4 h-4" /> تصدير التقرير
+          <Download className="w-4 h-4" /> {isExporting ? 'جاري التصدير...' : 'تصدير التقرير'}
         </button>
       </div>
 
@@ -190,7 +239,7 @@ export default function InventoryHistory() {
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="بحث بكود الحقيبة أو الفصيلة أو المستلم..."
               className="w-full pr-9 pl-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400"
               style={{ fontSize: '13px' }}
@@ -198,7 +247,7 @@ export default function InventoryHistory() {
           </div>
           <select
             value={filterBloodType}
-            onChange={(e) => setFilterBloodType(e.target.value as BloodType | 'all')}
+            onChange={(e) => handleFilterBloodTypeChange(e.target.value as BloodType | 'all')}
             className="px-4 py-2.5 border border-border rounded-xl bg-card text-foreground outline-none"
             style={{ fontSize: '13px' }}
           >
@@ -215,41 +264,26 @@ export default function InventoryHistory() {
           {(
             [
               ['all', 'الكل'],
-              ['exported', 'تصدير فقط'],
+              ['issued', 'تصدير فقط'],
               ['disposed', 'إتلاف فقط'],
             ] as [OutflowActionType | 'all', string][]
           ).map(([val, label]) => (
             <button
               key={val}
-              onClick={() => setFilterAction(val)}
+              onClick={() => handleFilterActionChange(val)}
               className={`px-4 py-2 rounded-xl transition-all ${filterAction === val ? 'bg-green-600 text-white' : 'bg-card border border-border text-muted-foreground hover:bg-muted/40'}`}
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
               {label}
             </button>
           ))}
-          {controllers.length > 1 && (
-            <select
-              value={filterController}
-              onChange={(e) => setFilterController(e.target.value)}
-              className="px-3 py-2 border border-border rounded-xl bg-card text-foreground outline-none"
-              style={{ fontSize: '13px' }}
-            >
-              <option value="">كل المنفذين</option>
-              {controllers.map((c) => (
-                <option key={c} value={c}>
-                  {c.split(' ').slice(1, 3).join(' ')}
-                </option>
-              ))}
-            </select>
-          )}
-          {(filterAction !== 'all' || filterController || filterBloodType !== 'all' || search) && (
+          {(filterAction !== 'all' || filterBloodType !== 'all' || search) && (
             <button
               onClick={() => {
                 setFilterAction('all');
-                setFilterController('');
                 setFilterBloodType('all');
                 setSearch('');
+                setPage(1);
               }}
               className="px-3 py-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 border border-border rounded-xl transition-all"
               style={{ fontSize: '12px', fontWeight: 600 }}
@@ -261,6 +295,7 @@ export default function InventoryHistory() {
       </div>
 
       {/* History Table */}
+
       <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -278,14 +313,14 @@ export default function InventoryHistory() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {filtered.map((r) => (
+              {outflowRecords.map((r) => (
                 <tr key={r.id} className="hover:bg-muted/40 transition-colors">
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
                       className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded"
                       style={{ fontSize: '11px', fontWeight: 700 }}
                     >
-                      {r.id}
+                      {r.recordCode}
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
@@ -306,10 +341,10 @@ export default function InventoryHistory() {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full ${r.actionType === 'exported' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-600'}`}
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full ${r.actionType === 'issued' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-600'}`}
                       style={{ fontSize: '11px', fontWeight: 700 }}
                     >
-                      {r.actionType === 'exported' ? (
+                      {r.actionType === 'issued' ? (
                         <>
                           <Upload className="w-3 h-3" /> تصدير
                         </>
@@ -336,11 +371,11 @@ export default function InventoryHistory() {
                     className="px-4 py-3 text-muted-foreground whitespace-nowrap"
                     style={{ fontSize: '11px' }}
                   >
-                    {r.timestamp}
+                    {formatLocalizedDateTime(r.performedAt)}
                   </td>
                   <td className="px-4 py-3">
                     <button
-                      onClick={() => setDetailRecord(r)}
+                      onClick={() => setSelectedRecordId(r.id)}
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-muted text-muted-foreground rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-all"
                       style={{ fontSize: '11px', fontWeight: 600 }}
                     >
@@ -349,10 +384,35 @@ export default function InventoryHistory() {
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && <EmptyState colSpan={8} message="لا توجد سجلات" />}
+              {outflowRecords.length === 0 && <EmptyState colSpan={8} message="لا توجد سجلات" />}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted/20">
+            <p className="text-muted-foreground text-xs">
+              عرض الصفحة {page} من {totalPages} (إجمالي {totalCount} عملية)
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={outflowResponse ? !outflowResponse.hasPreviousPage : page === 1}
+                className="px-3 py-1.5 border border-border rounded-xl bg-card text-foreground hover:bg-muted transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs font-semibold"
+              >
+                السابق
+              </button>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={outflowResponse ? !outflowResponse.hasNextPage : page === totalPages}
+                className="px-3 py-1.5 border border-border rounded-xl bg-card text-foreground hover:bg-muted transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs font-semibold"
+              >
+                التالي
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

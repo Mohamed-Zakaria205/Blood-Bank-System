@@ -108,4 +108,11 @@ export type CampaignStatus = 'active' | 'notactive' | 'completed';
 export type InventoryStatus = 'normal' | 'low' | 'critical';
 export type BloodBagStatus = 'available' | 'expired' | 'issued' | 'disposed' | 'testing';
 export type TransactionType = 'issue' | 'return' | 'disposal' | 'receive' | 'reserve';
-export type OutflowActionType = 'exported' | 'disposed';
+export type OutflowActionType = 'issued' | 'disposed';
+
+export interface OutflowFilters extends PaginationParams {
+  search?: string;
+  actionType?: OutflowActionType | 'all';
+  bloodType?: string;
+  performedById?: string;
+}

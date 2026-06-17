@@ -12,9 +12,10 @@ import {
   fetchTransactions,
   fetchFilteredTransactions,
   fetchOutflowRecords,
+  fetchOutflowRecordDetail,
   fetchMonthlyStats,
 } from '../api/inventory';
-import type { BagFilters, TransactionFilters } from '../types/common';
+import type { BagFilters, TransactionFilters, OutflowFilters } from '../types/common';
 
 // ── Blood Bags ─────────────────────────────────────────────
 
@@ -122,11 +123,20 @@ export function useFilteredTransactions(filters: TransactionFilters = {}) {
 }
 
 // ── Outflow Records ────────────────────────────────────────
-export function useOutflowRecords() {
+export function useOutflowRecords(filters: OutflowFilters = {}) {
   return useQuery({
-    queryKey: ['outflow'],
-    queryFn: fetchOutflowRecords,
-    select: (res) => res.data,
+    queryKey: ['outflow', 'filtered', filters],
+    queryFn: ({ signal }) => fetchOutflowRecords(filters, { signal }),
+    placeholderData: (previousData) => previousData,
+  });
+}
+
+export function useOutflowRecordDetail(id: string | null) {
+  return useQuery({
+    queryKey: ['outflow', 'detail', id],
+    queryFn: ({ signal }) => fetchOutflowRecordDetail(id!, { signal }),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000, // Cache details for 5 minutes
   });
 }
 

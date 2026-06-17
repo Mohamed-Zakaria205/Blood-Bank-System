@@ -7,12 +7,12 @@ import type {
   BloodInventoryItem,
   Transaction,
   OutflowRecord,
+  OutflowRecordDetail,
   MonthlyStats,
 } from '../types/inventory';
-import type { PaginatedResponse, BagFilters, TransactionFilters } from '../types/common';
+import type { PaginatedResponse, BagFilters, TransactionFilters, OutflowFilters } from '../types/common';
 import type { ApiResponseWrapper } from '../types/auth';
 import {
-  bloodBags as MOCK_BAGS,
   bloodInventory as MOCK_INVENTORY,
   initialTransactions as MOCK_TRANSACTIONS,
   monthlyStats as MOCK_MONTHLY_STATS,
@@ -20,24 +20,6 @@ import {
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
-function deriveOutflowRecordsFromTransactions(): OutflowRecord[] {
-  return MOCK_TRANSACTIONS.filter((t) => t.type === 'issue' || t.type === 'disposal').map((t, index) => {
-    const bag = MOCK_BAGS.find(b => b.id === t.bagIds[0]);
-    return {
-      id: `OUT-MOCK-${String(index + 1).padStart(3, '0')}`,
-      bagId: t.bagIds[0] ?? '',
-      bagCode: t.bagCodes[0] ?? '',
-      bloodType: t.bloodType,
-      donationType: bag?.donationType || 'wholeblood',
-      actionType: t.type === 'issue' ? 'exported' : 'disposed',
-      recipientName: t.type === 'issue' ? t.destination : undefined,
-      reason: t.notes ?? (t.type === 'issue' ? 'صرف من المخزون' : 'إتلاف من المخزون'),
-      performedBy: t.performedBy,
-      performedByName: t.performedByName,
-      timestamp: t.timestamp,
-    };
-  });
-}
 
 export interface BulkOperationResult {
   bagId: string;
@@ -134,6 +116,7 @@ export interface BloodBagsStats {
   issuedCount: number;
   disposedCount: number;
   testingCount?: number;
+  wastePercentage?: number;
 }
 
 export async function fetchBloodBagsStats(): Promise<BloodBagsStats> {
@@ -234,20 +217,63 @@ export async function fetchFilteredTransactions(
 }
 
 // ── Outflow Records ────────────────────────────────────────
-export async function fetchOutflowRecords(): Promise<PaginatedResponse<OutflowRecord>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    const mockOutflow = deriveOutflowRecordsFromTransactions();
-    return { data: mockOutflow, total: mockOutflow.length, page: 1, limit: mockOutflow.length };
-  }
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/outflow');
+export async function fetchOutflowRecords(
+  filters: OutflowFilters = {},
+  options?: { signal?: AbortSignal },
+): Promise<PaginatedResponse<OutflowRecord>> {
+  const { page = 1, limit = 10, search = '', actionType = '', bloodType = '', performedById = '' } = filters;
+
+  const params: Record<string, any> = {
+    page,
+    limit,
+  };
+  if (search) params.search = search;
+  if (actionType && actionType !== 'all') params.actionType = actionType;
+  if (bloodType && bloodType !== 'all') params.bloodType = bloodType;
+  if (performedById) params.performedById = performedById;
+
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/outflow', {
+    params,
+    signal: options?.signal,
+  });
   const items = wrapper.data?.items || wrapper.data?.data || [];
   return {
     data: items,
     total: wrapper.data?.total ?? items.length,
-    page: wrapper.data?.page ?? 1,
-    limit: wrapper.data?.limit ?? items.length,
+    page: wrapper.data?.page ?? page,
+    limit: wrapper.data?.limit ?? limit,
+    totalPages: wrapper.data?.totalPages,
+    hasNextPage: wrapper.data?.hasNextPage,
+    hasPreviousPage: wrapper.data?.hasPreviousPage,
   };
+}
+
+export async function fetchOutflowRecordDetail(
+  id: string,
+  options?: { signal?: AbortSignal },
+): Promise<OutflowRecordDetail> {
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<OutflowRecordDetail>>(`/inventory/outflow/${id}`, {
+    signal: options?.signal,
+  });
+  return wrapper.data;
+}
+
+export async function exportOutflowReport(
+  filters: OutflowFilters = {}
+): Promise<Blob> {
+  const { search = '', actionType = '', bloodType = '', performedById = '' } = filters;
+
+  const params: Record<string, any> = {};
+  if (search) params.search = search;
+  if (actionType && actionType !== 'all') params.actionType = actionType;
+  if (bloodType && bloodType !== 'all') params.bloodType = bloodType;
+  if (performedById) params.performedById = performedById;
+
+  const response = await apiClient.get('/inventory/outflow/export', {
+    params,
+    responseType: 'blob',
+  });
+  return response.data;
 }
 
 // ── Monthly Stats ──────────────────────────────────────────

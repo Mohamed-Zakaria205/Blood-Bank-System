@@ -1,4 +1,4 @@
-﻿import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import {
   Package,
   TrendingUp,
@@ -13,9 +13,10 @@ import { ar } from 'date-fns/locale';
 import { useAuth } from '../../contexts/AuthContext';
 import { BLOOD_TYPES } from '../../constants';
 import type { BloodType } from '../../types';
-import { useBloodBags, useOutflowRecords } from '../../hooks/useInventory';
+import { useBloodBags, useOutflowRecords, useBloodBagsStats } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
+import { formatLocalizedDateTime } from '../../utils/date';
 
 const TODAY = new Date();
 function daysUntil(d: string) {
@@ -26,13 +27,16 @@ export default function InventoryDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
+  const { data: statsData, isLoading: isLoadingStats, isError: isErrorStats } = useBloodBagsStats();
   const {
-    data: outflowRecords = [],
+    data: outflowResponse,
     isLoading: isLoadingOutflow,
     isError: isErrorOutflow,
-  } = useOutflowRecords();
+  } = useOutflowRecords({ page: 1, limit: 5 });
 
-  if (isLoadingBags || isLoadingOutflow)
+  const outflowRecords = outflowResponse?.data ?? [];
+
+  if (isLoadingBags || isLoadingOutflow || isLoadingStats)
     return (
       <div className="space-y-6 p-2">
         <div className="h-8 w-48 bg-muted rounded animate-pulse" />
@@ -40,7 +44,7 @@ export default function InventoryDashboard() {
         <TableSkeleton rows={5} cols={6} />
       </div>
     );
-  if (isErrorBags || isErrorOutflow)
+  if (isErrorBags || isErrorOutflow || isErrorStats)
     return (
       <ErrorState
         message="فشل في تحميل بيانات لوحة التحكم، يرجى المحاولة لاحقاً"
@@ -48,15 +52,15 @@ export default function InventoryDashboard() {
       />
     );
 
-  const available = bags.filter((b) => b.status === 'available').length;
+  const available = statsData?.availableCount ?? bags.filter((b) => b.status === 'available').length;
   const expired = bags.filter(
     (b) => b.status === 'available' && new Date(b.expiryDate) < TODAY,
   ).length;
   const nearExpiry = bags.filter(
     (b) => b.status === 'available' && daysUntil(b.expiryDate) >= 0 && daysUntil(b.expiryDate) <= 5,
   );
-  const totalExported = outflowRecords.filter((r) => r.actionType === 'exported').length;
-  const totalDisposed = outflowRecords.filter((r) => r.actionType === 'disposed').length;
+  const totalExported = statsData?.issuedCount ?? 0;
+  const totalDisposed = statsData?.disposedCount ?? 0;
 
   // Available by blood type
   const byType = BLOOD_TYPES.reduce(
@@ -70,8 +74,7 @@ export default function InventoryDashboard() {
 
   // Insights
   const totalBags = bags.filter((b) => b.status !== 'disposed').length;
-  const expiredRatio =
-    totalBags > 0 ? Math.round(((expired + totalDisposed) / totalBags) * 100) : 0;
+  const expiredRatio = statsData?.wastePercentage ?? 0;
 
   return (
     <div className="space-y-6">
@@ -360,7 +363,7 @@ export default function InventoryDashboard() {
                       className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded"
                       style={{ fontSize: '11px', fontWeight: 700 }}
                     >
-                      {r.id}
+                      {r.recordCode}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -381,10 +384,10 @@ export default function InventoryDashboard() {
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className={`px-2.5 py-0.5 rounded-full ${r.actionType === 'exported' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-600'}`}
+                      className={`px-2.5 py-0.5 rounded-full ${r.actionType === 'issued' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-600'}`}
                       style={{ fontSize: '11px', fontWeight: 700 }}
                     >
-                      {r.actionType === 'exported' ? '↑ تصدير' : '✕ إتلاف'}
+                      {r.actionType === 'issued' ? '↑ تصدير' : '✕ إتلاف'}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '12px' }}>
@@ -394,7 +397,7 @@ export default function InventoryDashboard() {
                     {(r.performedByName || '').split(' ').slice(1, 3).join(' ')}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '11px' }}>
-                    {r.timestamp}
+                    {formatLocalizedDateTime(r.performedAt)}
                   </td>
                 </tr>
               ))}

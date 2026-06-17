@@ -57,7 +57,19 @@ export interface Transaction {
 
 export interface OutflowRecord {
   id: string;
-  bagId: string;
+  recordCode: string;
+  bagCode: string;
+  bloodType: BloodType;
+  donationType: DonationType;
+  actionType: OutflowActionType;
+  recipientName?: string;
+  performedByName: string;
+  performedAt: string;
+}
+
+export interface OutflowRecordDetail {
+  id: string;
+  recordCode: string;
   bagCode: string;
   bloodType: BloodType;
   donationType: DonationType;
@@ -66,20 +78,9 @@ export interface OutflowRecord {
   nationalId?: string;
   phone?: string;
   reason: string;
-  disposalCategory?: string;
-  notes?: string;
-  performedBy: string;
+  performedById: string;
   performedByName: string;
-  timestamp: string;
-  disposedAt?: string;
-  disposedById?: string;
-  disposedByName?: string;
-  disposeReason?: string;
-  disposeNotes?: string;
-  issuedAt?: string;
-  issuedById?: string;
-  issuedByName?: string;
-  updatedAt?: string;
+  performedAt: string;
 }
 
 export interface MonthlyStats {

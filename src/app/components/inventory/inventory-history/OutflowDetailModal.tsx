@@ -9,21 +9,46 @@ import {
   Clock,
   UserCheck,
 } from 'lucide-react';
-import type { OutflowRecord } from '../../../types';
+import type { OutflowRecordDetail } from '../../../types';
 import { donTypeLabels } from './historyConstants';
 import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
+import { formatLocalizedDateTime } from '../../../utils/date';
 
 interface OutflowDetailModalProps {
-  record: OutflowRecord;
+  record?: OutflowRecordDetail;
+  isLoading: boolean;
   onClose: () => void;
 }
 
-export default function OutflowDetailModal({ record, onClose }: OutflowDetailModalProps) {
-  const isExport = record.actionType === 'exported';
+export default function OutflowDetailModal({ record, isLoading, onClose }: OutflowDetailModalProps) {
   const modalRef = useModalFocusTrap(onClose);
+
+  if (isLoading || !record) {
+    return (
+      <div
+        onClick={onClose}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+      >
+        <div
+          ref={modalRef}
+          role="dialog"
+          aria-modal="true"
+          className="bg-card rounded-2xl shadow-2xl w-full max-w-md p-8 flex flex-col items-center justify-center min-h-[300px]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="w-10 h-10 border-4 border-green-600 border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-muted-foreground text-sm">جاري تحميل التفاصيل...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const isExport = record.actionType === 'issued';
 
   return (
     <div
+      onClick={onClose}
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
     >
@@ -58,7 +83,7 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
                 {isExport ? 'تفاصيل عملية التصدير' : 'تفاصيل عملية الإتلاف'}
               </p>
               <p className="text-muted-foreground" style={{ fontSize: '11px' }}>
-                {record.id}
+                {record.recordCode}
               </p>
             </div>
           </div>
@@ -188,9 +213,7 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
                   المنفذ
                 </p>
                 <p className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
-                  {record.actionType === 'disposed'
-                    ? record.disposedByName || record.performedByName
-                    : record.issuedByName || record.performedByName}
+                  {record.performedByName}
                 </p>
               </div>
             </div>
@@ -206,7 +229,7 @@ export default function OutflowDetailModal({ record, onClose }: OutflowDetailMod
                   className="text-foreground font-mono"
                   style={{ fontSize: '13px', fontWeight: 600 }}
                 >
-                  {record.timestamp}
+                  {formatLocalizedDateTime(record.performedAt)}
                 </p>
               </div>
             </div>
