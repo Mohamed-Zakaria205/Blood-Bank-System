@@ -106,6 +106,6 @@ export type DonationType = 'wholeblood' | 'plasma' | 'platelets';
 export type DonorStatus = 'eligible' | 'rejected' | 'deferred';
 export type CampaignStatus = 'active' | 'notactive' | 'completed';
 export type InventoryStatus = 'normal' | 'low' | 'critical';
-export type BloodBagStatus = 'available' | 'expired' | 'issued' | 'disposed';
+export type BloodBagStatus = 'available' | 'expired' | 'issued' | 'disposed' | 'testing';
 export type TransactionType = 'issue' | 'return' | 'disposal' | 'receive' | 'reserve';
 export type OutflowActionType = 'exported' | 'disposed';

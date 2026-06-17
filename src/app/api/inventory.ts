@@ -133,6 +133,7 @@ export interface BloodBagsStats {
   expiredCount: number;
   issuedCount: number;
   disposedCount: number;
+  testingCount?: number;
 }
 
 export async function fetchBloodBagsStats(): Promise<BloodBagsStats> {

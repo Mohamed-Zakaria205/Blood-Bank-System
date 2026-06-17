@@ -88,6 +88,7 @@ export default function InventoryBags() {
 
   const availableCount = statsData?.availableCount ?? 0;
   const expiredCount = statsData?.expiredCount ?? 0;
+  const testingCount = statsData?.testingCount ?? 0;
   const issuedCount = statsData?.issuedCount ?? 0;
   const disposedCount = statsData?.disposedCount ?? 0;
 
@@ -248,7 +249,7 @@ export default function InventoryBags() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {[
           {
             label: 'متاحة وصالحة',
@@ -265,6 +266,14 @@ export default function InventoryBags() {
             bg: 'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/40',
             ring: 'ring-red-400',
             filter: 'expired' as const,
+          },
+          {
+            label: 'يتم اختبارها',
+            value: testingCount,
+            color: 'text-purple-700 dark:text-purple-400',
+            bg: 'bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900/40',
+            ring: 'ring-purple-400',
+            filter: 'testing' as const,
           },
           {
             label: 'مُصرَّفة',
@@ -535,7 +544,7 @@ export default function InventoryBags() {
                         className="px-2 py-0.5 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded"
                         style={{ fontSize: '12px', fontWeight: 800 }}
                       >
-                        {bag.bloodType}
+                        {bag.bloodType || '—'}
                       </span>
                     </td>
                     {/* Donation Type column */}
@@ -593,8 +602,8 @@ export default function InventoryBags() {
                           <button
                             onClick={() => setBagsToDispose([bag])}
                             className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg transition-all ${isExpired
-                                ? 'bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-500/20'
-                                : 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-500/20'
+                              ? 'bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-500/20'
+                              : 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-500/20'
                               }`}
                             style={{ fontSize: '11px', fontWeight: 700 }}
                           >

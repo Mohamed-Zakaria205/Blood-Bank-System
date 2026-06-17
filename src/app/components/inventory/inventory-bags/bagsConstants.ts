@@ -51,6 +51,14 @@ export function getBagStatus(bag: BloodBag) {
       isAvailable: false,
     };
   }
+  if (bag.status === 'testing') {
+    return {
+      label: 'يتم اختبارها',
+      cls: 'bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400',
+      isExpired: false,
+      isAvailable: false,
+    };
+  }
   if (bag.status === 'disposed') {
     return {
       label: 'مُتلَف',
