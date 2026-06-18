@@ -306,33 +306,6 @@ export async function sendDonorNotifications(
 //  DONATIONS  — donation-event endpoints
 // ═══════════════════════════════════════════════════════════
 
-/** Fetch ALL donations (unpaginated — used by dashboards for statistics) */
-export async function fetchAllDonations(): Promise<PaginatedResponse<Donation>> {
-  try {
-    const { data: wrapper } = await apiClient.get<
-      ApiResponseWrapper<{
-        items?: Donation[];
-        data?: Donation[];
-        total: number;
-        page: number;
-        limit: number;
-      }>
-    >('/Donations', { params: { limit: 9999 } });
-
-    const rawItems = wrapper.data?.items || wrapper.data?.data || [];
-
-    return {
-      data: rawItems,
-      total: wrapper.data?.total || 0,
-      page: wrapper.data?.page || 1,
-      limit: wrapper.data?.limit || 10,
-    };
-  } catch (error) {
-    console.error('Error in fetchAllDonations:', error);
-    throw error;
-  }
-}
-
 /**
  * Fetch donations with pagination, search and filtering.
  */

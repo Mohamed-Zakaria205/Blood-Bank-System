@@ -6,34 +6,13 @@ import {
   Droplets,
   BarChart3,
   Settings,
-  AlertTriangle,
 } from 'lucide-react';
-import { useState } from 'react';
 import DashboardLayout, { type NavItem } from './DashboardLayout';
 import { useBloodInventory } from '../../hooks/useInventory';
 
 export default function AdminLayout() {
-  const [dismissedNotifs, setDismissedNotifs] = useState<Set<string>>(new Set());
   const { data: bloodInventory = [] } = useBloodInventory();
   const criticalItems = bloodInventory.filter((b) => b.status === 'critical');
-  const lowItems = bloodInventory.filter((b) => b.status === 'low');
-
-  const notifications = [
-    ...criticalItems.map((b) => ({
-      id: `crit-${b.type}`,
-      title: `فصيلة ${b.type} — مستوى حرج`,
-      subtitle: `متبقي ${b.units} وحدات فقط (الحد الأدنى: ${b.minRequired})`,
-      icon: <AlertTriangle className="w-4 h-4" />,
-      color: 'red' as const,
-    })),
-    ...lowItems.map((b) => ({
-      id: `low-${b.type}`,
-      title: `فصيلة ${b.type} — مخزون منخفض`,
-      subtitle: `متبقي ${b.units} وحدات (الحد الأدنى: ${b.minRequired})`,
-      icon: <Droplets className="w-4 h-4" />,
-      color: 'yellow' as const,
-    })),
-  ].filter((n) => !dismissedNotifs.has(n.id));
 
   const navItems: NavItem[] = [
     { path: '/admin', label: 'لوحة التحكم', icon: LayoutDashboard, end: true },
@@ -67,13 +46,7 @@ export default function AdminLayout() {
       roleLabel="مدير عام"
       accentColor="#15803d"
       accentGradient="linear-gradient(135deg, #15803d, #22c55e)"
-      notifications={notifications}
       headerAlert={headerAlert}
-      onMarkAllRead={() => {
-        const newSet = new Set(dismissedNotifs);
-        notifications.forEach((n) => newSet.add(n.id));
-        setDismissedNotifs(newSet);
-      }}
     />
   );
 }

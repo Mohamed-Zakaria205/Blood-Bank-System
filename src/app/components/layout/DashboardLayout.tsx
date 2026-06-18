@@ -2,7 +2,6 @@ import { useState, ReactNode } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router';
 import { LogOut, Menu, X, Droplet } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import NotificationDropdown, { Notification } from './NotificationDropdown';
 import { ThemeToggle } from '../shared/ThemeToggle';
 import { formatLocalizedDate } from '../../utils/date';
 import { useModalFocusTrap } from '../../hooks/useModalFocusTrap';
@@ -21,11 +20,9 @@ export interface DashboardLayoutProps {
   roleLabel: string;
   accentColor: string;
   accentGradient?: string;
-  notifications: Notification[];
   headerAlert?: ReactNode;
   sidebarExtra?: ReactNode;
   showDateInHeader?: boolean;
-  onMarkAllRead?: () => void;
 }
 
 export default function DashboardLayout({
@@ -33,16 +30,13 @@ export default function DashboardLayout({
   roleLabel,
   accentColor,
   accentGradient,
-  notifications,
   headerAlert,
   sidebarExtra,
   showDateInHeader = true,
-  onMarkAllRead,
 }: DashboardLayoutProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
   const mobileSidebarRef = useModalFocusTrap(() => setSidebarOpen(false), sidebarOpen);
 
   const handleLogout = () => {
@@ -214,13 +208,6 @@ export default function DashboardLayout({
             </div>
             <div className="flex items-center gap-2">
               {headerAlert}
-              <NotificationDropdown
-                notifications={notifications}
-                open={notifOpen}
-                onToggle={() => setNotifOpen((p) => !p)}
-                onClose={() => setNotifOpen(false)}
-                onMarkAllRead={onMarkAllRead}
-              />
               {/* ── Theme Toggle ── */}
               <ThemeToggle />
               {/* ── User Info ── */}

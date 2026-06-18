@@ -2,7 +2,7 @@
 // React Query hooks — Donors & Donations
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchDonors, fetchDonorById, updateDonor, fetchPaginatedDonors, fetchPaginatedEligibleDonors, fetchPaginatedDonations, fetchAllDonations, searchDonorByNationalId, addDonation, addMedicalRecord, deleteDonation, confirmDonation, fetchDonationCenters, fetchDonorEligibilityStats, fetchEligibilitySettings, updateEligibilitySettings, sendDonorNotifications } from '../api/donors';
+import { fetchDonors, fetchDonorById, updateDonor, fetchPaginatedDonors, fetchPaginatedEligibleDonors, fetchPaginatedDonations, searchDonorByNationalId, addDonation, addMedicalRecord, deleteDonation, confirmDonation, fetchDonationCenters, fetchDonorEligibilityStats, fetchEligibilitySettings, updateEligibilitySettings, sendDonorNotifications } from '../api/donors';
 import type { BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest, SendNotificationRequest, EligibilitySettings } from '../types/donor';
 import type { DonationFilters, DonorFilters } from '../types/common';
 
@@ -116,15 +116,6 @@ export function useUpdateEligibilitySettings() {
 // ═══════════════════════════════════════════════════════════
 //  DONATIONS  — donation-event hooks
 // ═══════════════════════════════════════════════════════════
-
-/** Fetch ALL donations (unpaginated — for dashboard statistics) */
-export function useDonations() {
-  return useQuery({
-    queryKey: ['donations', 'all'],
-    queryFn: fetchAllDonations,
-    select: (res) => res.data,
-  });
-}
 
 export function usePaginatedDonations(filters: DonationFilters = {}) {
   return useQuery({

@@ -1,10 +1,9 @@
-import { Building2, Lock, Bell, Shield, Clock } from 'lucide-react';
+import { Building2, Lock, Shield, Clock } from 'lucide-react';
 
 /** Sidebar tab definitions */
 export const settingsTabs = [
   { id: 'system', label: 'بيانات المنشأة', icon: Building2 },
   { id: 'security', label: 'الأمان', icon: Lock },
-  { id: 'notifications', label: 'الإشعارات', icon: Bell },
   { id: 'permissions', label: 'الصلاحيات', icon: Shield },
   { id: 'eligibility', label: 'مؤهلية التبرع', icon: Clock },
 ] as const;
@@ -32,44 +31,6 @@ export const defaultFacilityInfo: FacilityInfo = {
   phone: '082-2320000',
   email: 'info@bsgh.gov.eg',
   workingHours: '8:00 صباحاً - 4:00 مساءاً',
-};
-
-/** Notification toggle definitions */
-export const notificationOptions = [
-  {
-    key: 'criticalInventory',
-    label: 'تنبيه المخزون الحرج',
-    desc: 'إشعار عند انخفاض مخزون أي فصيلة لمستوى حرج',
-  },
-  {
-    key: 'newDonor',
-    label: 'متبرع جديد',
-    desc: 'إشعار عند تسجيل متبرع جديد في النظام',
-  },
-  {
-    key: 'campaignUpdate',
-    label: 'تحديثات الحملات',
-    desc: 'إشعار عند إنشاء أو تحديث حملة تبرع',
-  },
-  {
-    key: 'dailyReport',
-    label: 'التقرير اليومي',
-    desc: 'إرسال ملخص يومي بإحصاءات النظام',
-  },
-] as const;
-
-export interface NotifSettings {
-  criticalInventory: boolean;
-  newDonor: boolean;
-  campaignUpdate: boolean;
-  dailyReport: boolean;
-}
-
-export const defaultNotifSettings: NotifSettings = {
-  criticalInventory: true,
-  newDonor: true,
-  campaignUpdate: true,
-  dailyReport: false,
 };
 
 /** Permissions matrix: [label, admin, doctor, lab] */

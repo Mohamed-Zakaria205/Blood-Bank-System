@@ -3,17 +3,15 @@ import { toast } from 'sonner';
 import { useAuth } from '../../contexts/AuthContext';
 
 // ── Constants & types ──
-import type { FacilityInfo, NotifSettings } from './admin-settings/settingsConstants';
+import type { FacilityInfo } from './admin-settings/settingsConstants';
 import {
   settingsTabs,
   defaultFacilityInfo,
-  defaultNotifSettings,
 } from './admin-settings/settingsConstants';
 
 // ── Tab sub-components ──
 import FacilityTab from './admin-settings/FacilityTab';
 import SecurityTab from './admin-settings/SecurityTab';
-import NotificationsTab from './admin-settings/NotificationsTab';
 import PermissionsTab from './admin-settings/PermissionsTab';
 import EligibilityTab from './admin-settings/EligibilityTab';
 
@@ -23,7 +21,6 @@ export default function AdminSettings() {
   const [activeTab, setActiveTab] = useState('system');
   const [saved, setSaved] = useState(false);
   const [sysInfo, setSysInfo] = useState<FacilityInfo>(defaultFacilityInfo);
-  const [notifSettings, setNotifSettings] = useState<NotifSettings>(defaultNotifSettings);
 
   const handleSave = () => {
     toast.success('تم حفظ الإعدادات بنجاح');
@@ -80,14 +77,6 @@ export default function AdminSettings() {
             />
           )}
           {activeTab === 'security' && <SecurityTab />}
-          {activeTab === 'notifications' && (
-            <NotificationsTab
-              settings={notifSettings}
-              onChange={setNotifSettings}
-              saved={saved}
-              onSave={handleSave}
-            />
-          )}
 
           {activeTab === 'permissions' && <PermissionsTab />}
           {activeTab === 'eligibility' && <EligibilityTab />}

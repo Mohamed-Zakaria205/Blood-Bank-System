@@ -1,25 +1,11 @@
-import { LayoutDashboard, BarChart2, FlaskConical } from 'lucide-react';
-import { useState } from 'react';
+import { LayoutDashboard, BarChart2 } from 'lucide-react';
 import DashboardLayout, { type NavItem } from './DashboardLayout';
-import { useFilteredLabTests, useLabDashboardStats } from '../../hooks/useLabTests';
+import { useLabDashboardStats } from '../../hooks/useLabTests';
 
 export default function LabLayout() {
-  const [dismissedNotifs, setDismissedNotifs] = useState<Set<string>>(new Set());
-  const { data: pendingResponse } = useFilteredLabTests({ status: 'pending', limit: 10 });
   const { data: statsData } = useLabDashboardStats();
 
-  const pendingTests = pendingResponse?.data || [];
   const pendingCount = statsData?.tests.pending || 0;
-
-  const notifications = pendingTests
-    .map((t) => ({
-      id: `lab-${t.id}`,
-      title: `عينة ${t.donationCode} — فصيلة ${t.bloodType}`,
-      subtitle: 'في انتظار إدخال نتائج الفحص',
-      icon: <FlaskConical className="w-4 h-4" />,
-      color: 'yellow' as const,
-    }))
-    .filter((n) => !dismissedNotifs.has(n.id));
 
   const navItems: NavItem[] = [
     {
@@ -49,13 +35,7 @@ export default function LabLayout() {
       roleLabel="فني مختبر"
       accentColor="#d97706"
       accentGradient="linear-gradient(135deg, #d97706, #fbbf24)"
-      notifications={notifications}
       headerAlert={headerAlert}
-      onMarkAllRead={() => {
-        const newSet = new Set(dismissedNotifs);
-        notifications.forEach((n) => newSet.add(n.id));
-        setDismissedNotifs(newSet);
-      }}
     />
   );
 }
