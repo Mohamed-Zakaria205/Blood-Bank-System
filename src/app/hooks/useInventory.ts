@@ -17,6 +17,7 @@ import {
   fetchInventoryAnalytics,
   fetchInventoryThresholds,
   updateInventoryThresholds,
+  fetchInventoryDashboard,
 } from '../api/inventory';
 import type { BagFilters, TransactionFilters, OutflowFilters } from '../types/common';
 
@@ -179,4 +180,12 @@ export function useUpdateInventoryThresholds() {
     },
   });
 }
+
+export function useInventoryDashboard() {
+  return useQuery({
+    queryKey: ['inventory-dashboard'],
+    queryFn: fetchInventoryDashboard,
+  });
+}
+
 

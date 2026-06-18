@@ -142,3 +142,55 @@ export interface InventoryAnalyticsResponse {
   consumptionByBloodType: ConsumptionByBloodTypeItem[];
 }
 
+export interface InventoryDashboardSummary {
+  availableCount: number;
+  issuedCount: number;
+  disposedCount: number;
+  expiringSoonCount: number;
+  testingCount: number;
+}
+
+export interface NearExpiryPreviewItem {
+  bagCode: string;
+  bloodType: BloodType;
+}
+
+export interface InventoryDashboardAlerts {
+  expiredCount: number;
+  nearExpiryCount: number;
+  nearExpiryPreview: NearExpiryPreviewItem[];
+}
+
+export interface InventoryDashboardBloodTypeItem {
+  bloodType: BloodType;
+  availableUnits: number;
+  minimumThreshold: number;
+  status: 'normal' | 'critical' | 'out_of_stock';
+}
+
+export interface InventoryDashboardIndicators {
+  totalBags: number;
+  wastePercentage: number;
+  testingCount: number;
+}
+
+export interface InventoryDashboardActivityItem {
+  id: string;
+  recordCode: string;
+  bagCode: string;
+  bloodType: BloodType;
+  actionType: 'issued' | 'disposed';
+  recipientName: string | null;
+  performedByName: string;
+  performedAt: string;
+}
+
+export interface InventoryDashboardResponse {
+  summary: InventoryDashboardSummary;
+  alerts: InventoryDashboardAlerts;
+  inventoryByBloodType: InventoryDashboardBloodTypeItem[];
+  indicators: InventoryDashboardIndicators;
+  recentActivities: InventoryDashboardActivityItem[];
+}
+
+

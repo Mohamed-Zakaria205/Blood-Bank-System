@@ -13,30 +13,17 @@ import { ar } from 'date-fns/locale';
 import { useAuth } from '../../contexts/AuthContext';
 import { BLOOD_TYPES } from '../../constants';
 import type { BloodType } from '../../types';
-import { useBloodBags, useOutflowRecords, useBloodBagsStats } from '../../hooks/useInventory';
+import { useInventoryDashboard } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 import { formatLocalizedDateTime } from '../../utils/date';
 
-const TODAY = new Date();
-function daysUntil(d: string) {
-  return Math.ceil((new Date(d).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24));
-}
-
 export default function InventoryDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
-  const { data: statsData, isLoading: isLoadingStats, isError: isErrorStats } = useBloodBagsStats();
-  const {
-    data: outflowResponse,
-    isLoading: isLoadingOutflow,
-    isError: isErrorOutflow,
-  } = useOutflowRecords({ page: 1, limit: 5 });
+  const { data: responseData, isLoading, isError } = useInventoryDashboard();
 
-  const outflowRecords = outflowResponse?.data ?? [];
-
-  if (isLoadingBags || isLoadingOutflow || isLoadingStats)
+  if (isLoading)
     return (
       <div className="space-y-6 p-2">
         <div className="h-8 w-48 bg-muted rounded animate-pulse" />
@@ -44,7 +31,7 @@ export default function InventoryDashboard() {
         <TableSkeleton rows={5} cols={6} />
       </div>
     );
-  if (isErrorBags || isErrorOutflow || isErrorStats)
+  if (isError || !responseData)
     return (
       <ErrorState
         message="فشل في تحميل بيانات لوحة التحكم، يرجى المحاولة لاحقاً"
@@ -52,29 +39,29 @@ export default function InventoryDashboard() {
       />
     );
 
-  const available = statsData?.availableCount ?? bags.filter((b) => b.status === 'available').length;
-  const expired = bags.filter(
-    (b) => b.status === 'available' && new Date(b.expiryDate) < TODAY,
-  ).length;
-  const nearExpiry = bags.filter(
-    (b) => b.status === 'available' && daysUntil(b.expiryDate) >= 0 && daysUntil(b.expiryDate) <= 5,
-  );
-  const totalExported = statsData?.issuedCount ?? 0;
-  const totalDisposed = statsData?.disposedCount ?? 0;
+  const { summary, alerts, inventoryByBloodType, indicators, recentActivities } = responseData;
 
-  // Available by blood type
-  const byType = BLOOD_TYPES.reduce(
-    (acc, t) => {
-      acc[t] = bags.filter((b) => b.bloodType === t && b.status === 'available').length;
+  const available = summary.availableCount;
+  const expired = alerts.expiredCount;
+  const nearExpiryCount = alerts.nearExpiryCount;
+  const nearExpiryPreview = alerts.nearExpiryPreview || [];
+  const totalExported = summary.issuedCount;
+  const totalDisposed = summary.disposedCount;
+  const testingCount = summary.testingCount ?? 0;
+
+  // Available by blood type mapping
+  const byTypeMap = (inventoryByBloodType || []).reduce(
+    (acc, item) => {
+      acc[item.bloodType] = item;
       return acc;
     },
-    {} as Record<BloodType, number>,
+    {} as Record<BloodType, (typeof inventoryByBloodType)[0]>,
   );
-  const maxUnits = Math.max(...Object.values(byType), 1);
 
   // Insights
-  const totalBags = bags.filter((b) => b.status !== 'disposed').length;
-  const expiredRatio = statsData?.wastePercentage ?? 0;
+  const totalBags = indicators.totalBags;
+  const expiredRatio = indicators.wastePercentage;
+  const grandTotal = totalBags + totalExported + totalDisposed;
 
   return (
     <div className="space-y-6">
@@ -90,7 +77,7 @@ export default function InventoryDashboard() {
       </div>
 
       {/* Critical alerts */}
-      {(expired > 0 || nearExpiry.length > 0) && (
+      {(expired > 0 || nearExpiryCount > 0) && (
         <div className="space-y-2">
           {expired > 0 && (
             <div className="flex items-center gap-3 p-4 bg-red-50 border-2 border-red-300 rounded-2xl">
@@ -109,13 +96,12 @@ export default function InventoryDashboard() {
               </button>
             </div>
           )}
-          {nearExpiry.length > 0 && (
+          {nearExpiryCount > 0 && (
             <div className="flex items-center gap-3 p-4 bg-orange-50 border border-orange-200 rounded-2xl">
               <Clock className="w-5 h-5 text-orange-500 flex-shrink-0" />
               <p className="text-orange-700 flex-1" style={{ fontSize: '13px', fontWeight: 600 }}>
-                {nearExpiry.length} حقيبة تنتهي خلال 5 أيام:{' '}
-                {nearExpiry
-                  .slice(0, 3)
+                {nearExpiryCount} حقيبة تنتهي خلال 5 أيام:{' '}
+                {nearExpiryPreview
                   .map((b) => `${b.bagCode} (${b.bloodType})`)
                   .join(' • ')}
               </p>
@@ -139,7 +125,6 @@ export default function InventoryDashboard() {
           {
             label: 'مُصدَّرة',
             value: totalExported,
-            total: totalBags + totalExported + totalDisposed,
             icon: TrendingUp,
             color: 'text-blue-600',
             bg: 'bg-blue-50',
@@ -157,7 +142,7 @@ export default function InventoryDashboard() {
           },
           {
             label: 'قريبة الانتهاء',
-            value: nearExpiry.length,
+            value: nearExpiryCount,
             icon: Clock,
             color: 'text-orange-600',
             bg: 'bg-orange-50',
@@ -200,16 +185,17 @@ export default function InventoryDashboard() {
           </div>
           <div className="space-y-3">
             {BLOOD_TYPES.map((type) => {
-              const count = byType[type];
-              const pct = (count / maxUnits) * 100;
+              const item = byTypeMap[type];
+              const count = item?.availableUnits ?? 0;
+              const status = item?.status ?? 'normal';
+              const threshold = item?.minimumThreshold ?? 10;
+              const pct = threshold > 0 ? Math.min((count / threshold) * 100, 100) : 0;
               const color =
-                count === 0
+                status === 'out_of_stock'
                   ? 'bg-red-500'
-                  : count <= 3
+                  : status === 'critical'
                     ? 'bg-orange-400'
-                    : count <= 8
-                      ? 'bg-yellow-400'
-                      : 'bg-green-500';
+                    : 'bg-green-500';
               return (
                 <div key={type} className="flex items-center gap-3">
                   <div className="w-12 h-8 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -233,7 +219,7 @@ export default function InventoryDashboard() {
                   >
                     {count}
                   </span>
-                  {count === 0 && (
+                  {status === 'out_of_stock' && (
                     <span
                       className="px-1.5 py-0.5 bg-red-100 text-red-600 rounded"
                       style={{ fontSize: '10px', fontWeight: 700 }}
@@ -271,16 +257,23 @@ export default function InventoryDashboard() {
                 bar: 'bg-green-500',
               },
               {
+                label: 'تحت الفحص المخبري',
+                value: testingCount,
+                total: totalBags,
+                color: 'text-purple-600',
+                bar: 'bg-purple-500',
+              },
+              {
                 label: 'مُصدَّرة',
                 value: totalExported,
-                total: totalBags + totalExported + totalDisposed,
+                total: grandTotal,
                 color: 'text-blue-600',
                 bar: 'bg-blue-500',
               },
               {
                 label: 'مُتلَفة (إتلاف / منتهية)',
                 value: totalDisposed,
-                total: totalBags + totalExported + totalDisposed,
+                total: grandTotal,
                 color: 'text-red-600',
                 bar: 'bg-red-500',
               },
@@ -356,7 +349,7 @@ export default function InventoryDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {outflowRecords.slice(0, 5).map((r) => (
+              {recentActivities.map((r) => (
                 <tr key={r.id} className="hover:bg-muted/40 transition-colors">
                   <td className="px-4 py-3">
                     <span
@@ -401,7 +394,7 @@ export default function InventoryDashboard() {
                   </td>
                 </tr>
               ))}
-              {outflowRecords.length === 0 && (
+              {recentActivities.length === 0 && (
                 <EmptyState colSpan={7} message="لا توجد حركات مسجلة" />
               )}
             </tbody>
@@ -411,3 +404,4 @@ export default function InventoryDashboard() {
     </div>
   );
 }
+

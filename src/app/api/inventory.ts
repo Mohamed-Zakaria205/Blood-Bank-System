@@ -10,6 +10,7 @@ import type {
   OutflowRecordDetail,
   MonthlyStats,
   InventoryAnalyticsResponse,
+  InventoryDashboardResponse,
 } from '../types/inventory';
 import type { PaginatedResponse, BagFilters, TransactionFilters, OutflowFilters } from '../types/common';
 import type { ApiResponseWrapper } from '../types/auth';
@@ -312,6 +313,11 @@ export async function fetchInventoryThresholds(): Promise<Record<string, number>
 
 export async function updateInventoryThresholds(thresholds: Record<string, number>): Promise<Record<string, number>> {
   const { data: wrapper } = await apiClient.put<ApiResponseWrapper<Record<string, number>>>('/inventory/thresholds', { thresholds });
+  return wrapper.data;
+}
+
+export async function fetchInventoryDashboard(): Promise<InventoryDashboardResponse> {
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<InventoryDashboardResponse>>('/inventory/dashboard');
   return wrapper.data;
 }
 
