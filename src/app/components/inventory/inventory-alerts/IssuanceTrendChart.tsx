@@ -9,6 +9,8 @@ import {
   Legend,
 } from 'recharts';
 import { useChartTheme } from '../../../hooks/useChartTheme';
+import { format } from 'date-fns';
+import { ar } from 'date-fns/locale';
 
 interface TrendData {
   month: string;
@@ -23,6 +25,16 @@ interface IssuanceTrendChartProps {
 export default function IssuanceTrendChart({ data }: IssuanceTrendChartProps) {
   const chart = useChartTheme();
 
+  const formatMonth = (value: string) => {
+    try {
+      const date = new Date(`${value}-02`);
+      if (isNaN(date.getTime())) return value;
+      return format(date, 'MMMM yyyy', { locale: ar });
+    } catch {
+      return value;
+    }
+  };
+
   return (
     <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
       <h2 className="text-foreground mb-5" style={{ fontSize: '16px', fontWeight: 700 }}>
@@ -34,11 +46,13 @@ export default function IssuanceTrendChart({ data }: IssuanceTrendChartProps) {
           <XAxis
             key="x-axis"
             dataKey="month"
+            tickFormatter={formatMonth}
             tick={{ fontSize: 10, fill: chart.tickFill, fontFamily: 'Tajawal' }}
           />
           <YAxis key="y-axis" tick={{ fontSize: 11, fill: chart.tickFill }} />
           <Tooltip
             key="tooltip"
+            labelFormatter={formatMonth}
             contentStyle={{
               fontFamily: 'Tajawal',
               borderRadius: '12px',

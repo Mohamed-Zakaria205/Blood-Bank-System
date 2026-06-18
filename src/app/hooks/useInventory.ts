@@ -14,6 +14,9 @@ import {
   fetchOutflowRecords,
   fetchOutflowRecordDetail,
   fetchMonthlyStats,
+  fetchInventoryAnalytics,
+  fetchInventoryThresholds,
+  updateInventoryThresholds,
 } from '../api/inventory';
 import type { BagFilters, TransactionFilters, OutflowFilters } from '../types/common';
 
@@ -148,3 +151,32 @@ export function useMonthlyStats() {
     select: (res) => res.data,
   });
 }
+
+// ── Analytics & Thresholds ───────────────────────────────────
+
+export function useInventoryAnalytics() {
+  return useQuery({
+    queryKey: ['inventory-analytics'],
+    queryFn: fetchInventoryAnalytics,
+  });
+}
+
+export function useInventoryThresholds() {
+  return useQuery({
+    queryKey: ['inventory-thresholds'],
+    queryFn: fetchInventoryThresholds,
+  });
+}
+
+export function useUpdateInventoryThresholds() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (thresholds: Record<string, number>) => updateInventoryThresholds(thresholds),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['inventory-analytics'] });
+      qc.invalidateQueries({ queryKey: ['inventory-thresholds'] });
+      qc.invalidateQueries({ queryKey: ['inventory'] });
+    },
+  });
+}
+

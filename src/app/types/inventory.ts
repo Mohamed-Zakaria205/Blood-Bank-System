@@ -91,3 +91,54 @@ export interface MonthlyStats {
   issued?: number;
   wasted?: number;
 }
+
+export interface InventoryAnalyticsSummary {
+  availableCount: number;
+  issuedCount: number;
+  expiringSoonCount: number;
+  disposedCount: number;
+}
+
+export interface BloodTypeAlert {
+  bloodType: BloodType;
+  availableUnits: number;
+  minimumThreshold: number;
+  alertStatus: 'normal' | 'critical' | 'out_of_stock';
+}
+
+export interface MonthlyTrendItem {
+  month: string; // YYYY-MM
+  issued: number;
+  wasted: number;
+}
+
+export interface InventoryByBloodTypeItem {
+  bloodType: BloodType;
+  availableUnits: number;
+  issuedUnits: number;
+  minimumThreshold: number;
+}
+
+export interface ExpiringSoonBagItem {
+  bagId: string;
+  bagCode: string;
+  bloodType: BloodType;
+  expiryDate: string;
+  daysRemaining: number;
+}
+
+export interface ConsumptionByBloodTypeItem {
+  bloodType: BloodType;
+  issuedUnits: number;
+  consumptionStatus: 'normal' | 'high';
+}
+
+export interface InventoryAnalyticsResponse {
+  summary: InventoryAnalyticsSummary;
+  bloodTypeAlerts: BloodTypeAlert[];
+  monthlyTrends: MonthlyTrendItem[];
+  inventoryByBloodType: InventoryByBloodTypeItem[];
+  expiringSoonBags: ExpiringSoonBagItem[];
+  consumptionByBloodType: ConsumptionByBloodTypeItem[];
+}
+

@@ -9,6 +9,7 @@ import type {
   OutflowRecord,
   OutflowRecordDetail,
   MonthlyStats,
+  InventoryAnalyticsResponse,
 } from '../types/inventory';
 import type { PaginatedResponse, BagFilters, TransactionFilters, OutflowFilters } from '../types/common';
 import type { ApiResponseWrapper } from '../types/auth';
@@ -296,3 +297,21 @@ export async function fetchMonthlyStats(): Promise<PaginatedResponse<MonthlyStat
     limit: wrapper.data?.limit ?? items.length,
   };
 }
+
+// ── Analytics & Thresholds ───────────────────────────────────
+
+export async function fetchInventoryAnalytics(): Promise<InventoryAnalyticsResponse> {
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<InventoryAnalyticsResponse>>('/inventory/analytics');
+  return wrapper.data;
+}
+
+export async function fetchInventoryThresholds(): Promise<Record<string, number>> {
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<Record<string, number>>>('/inventory/thresholds');
+  return wrapper.data;
+}
+
+export async function updateInventoryThresholds(thresholds: Record<string, number>): Promise<Record<string, number>> {
+  const { data: wrapper } = await apiClient.put<ApiResponseWrapper<Record<string, number>>>('/inventory/thresholds', { thresholds });
+  return wrapper.data;
+}
+

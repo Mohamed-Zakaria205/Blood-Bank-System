@@ -1,32 +1,18 @@
-﻿import { Clock } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { EmptyState } from '../../shared/EmptyState';
-import type { BloodBag } from '../../../types';
-
-const TODAY = new Date();
-
-function daysUntil(d: string) {
-  return Math.ceil((new Date(d).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24));
-}
+import type { ExpiringSoonBagItem } from '../../../types';
 
 interface NearExpiryTableProps {
-  bags: BloodBag[];
+  bags: ExpiringSoonBagItem[];
 }
 
 export default function NearExpiryTable({ bags }: NearExpiryTableProps) {
-  const nearExpiry = bags
-    .filter((b) => {
-      if (b.status !== 'available') return false;
-      const d = daysUntil(b.expiryDate);
-      return d >= 0 && d <= 5;
-    })
-    .sort((a, b) => daysUntil(a.expiryDate) - daysUntil(b.expiryDate));
-
   return (
     <div className="bg-card rounded-2xl border border-orange-200 shadow-sm overflow-hidden">
       <div className="p-5 border-b border-orange-100 flex items-center gap-2">
         <Clock className="w-5 h-5 text-orange-500" />
         <h2 className="text-foreground" style={{ fontSize: '16px', fontWeight: 700 }}>
-          حقائب قريبة الانتهاء (خلال 5 أيام)
+          حقائب قريبة الانتهاء
         </h2>
       </div>
       <div className="overflow-x-auto">
@@ -45,10 +31,10 @@ export default function NearExpiryTable({ bags }: NearExpiryTableProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-orange-50">
-            {nearExpiry.map((bag) => {
-              const d = daysUntil(bag.expiryDate);
+            {bags.map((bag) => {
+              const d = bag.daysRemaining;
               return (
-                <tr key={bag.id} className="hover:bg-orange-50">
+                <tr key={bag.bagId} className="hover:bg-orange-50">
                   <td className="px-4 py-3">
                     <span
                       className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded"
@@ -79,7 +65,7 @@ export default function NearExpiryTable({ bags }: NearExpiryTableProps) {
                 </tr>
               );
             })}
-            {nearExpiry.length === 0 && (
+            {bags.length === 0 && (
               <EmptyState colSpan={4} message="لا توجد حقائب قريبة الانتهاء" />
             )}
           </tbody>

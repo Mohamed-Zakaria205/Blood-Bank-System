@@ -3,10 +3,9 @@ import { Settings2, Save, Check } from 'lucide-react';
 import { BLOOD_TYPES } from '../../constants';
 import type { BloodType } from '../../types';
 import {
-  useBloodBags,
-  useBloodInventory,
-  useTransactions,
-  useMonthlyStats,
+  useInventoryAnalytics,
+  useInventoryThresholds,
+  useUpdateInventoryThresholds,
 } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 
@@ -16,28 +15,23 @@ import IssuanceTrendChart from './inventory-alerts/IssuanceTrendChart';
 import ConsumptionByTypePanel from './inventory-alerts/ConsumptionByTypePanel';
 import NearExpiryTable from './inventory-alerts/NearExpiryTable';
 
-const TODAY = new Date();
 const DEFAULT_MIN = 10;
 
-function daysUntil(d: string) {
-  return Math.ceil((new Date(d).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24));
-}
-
 export default function InventoryAlerts() {
-  const { data: bags = [], isLoading: isLoadingBags, isError: isErrorBags } = useBloodBags();
   const {
-    data: inventoryData = [],
-    isLoading: isLoadingInv,
-    isError: isErrorInv,
-  } = useBloodInventory();
-  const { data: transactions = [], isLoading: isLoadingTx, isError: isErrorTx } = useTransactions();
-  const {
-    data: monthlyStats = [],
-    isLoading: isLoadingStats,
-    isError: isErrorStats,
-  } = useMonthlyStats();
+    data: analytics,
+    isLoading: isLoadingAnalytics,
+    isError: isErrorAnalytics,
+  } = useInventoryAnalytics();
 
-  // Initialise thresholds from API data (once)
+  const {
+    data: currentThresholds,
+    isLoading: isLoadingThresholds,
+    isError: isErrorThresholds,
+  } = useInventoryThresholds();
+
+  const updateThresholdsMutation = useUpdateInventoryThresholds();
+
   const thresholdsInitialised = useRef(false);
   const [thresholds, setThresholds] = useState<Record<BloodType, number>>(() =>
     BLOOD_TYPES.reduce(
@@ -49,23 +43,23 @@ export default function InventoryAlerts() {
     ),
   );
 
-  if (!thresholdsInitialised.current && inventoryData.length > 0) {
-    thresholdsInitialised.current = true;
-    const fromApi = inventoryData.reduce(
-      (acc, b) => {
-        acc[b.type] = b.minRequired;
-        return acc;
-      },
-      {} as Record<BloodType, number>,
-    );
-    setThresholds(fromApi);
-  }
-
   const [editThresholds, setEditThresholds] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const isLoading = isLoadingBags || isLoadingInv || isLoadingTx || isLoadingStats;
-  const isError = isErrorBags || isErrorInv || isErrorTx || isErrorStats;
+  // Sync thresholds from API once loaded
+  if (!thresholdsInitialised.current && currentThresholds) {
+    thresholdsInitialised.current = true;
+    const merged = { ...thresholds };
+    BLOOD_TYPES.forEach((t) => {
+      if (currentThresholds[t] !== undefined) {
+        merged[t] = currentThresholds[t];
+      }
+    });
+    setThresholds(merged);
+  }
+
+  const isLoading = isLoadingAnalytics || isLoadingThresholds;
+  const isError = isErrorAnalytics || isErrorThresholds;
 
   if (isLoading)
     return (
@@ -75,47 +69,42 @@ export default function InventoryAlerts() {
         <TableSkeleton rows={5} cols={6} />
       </div>
     );
-  if (isError)
+
+  if (isError || !analytics)
     return (
       <ErrorState
-        message="فشل في تحميل التنبيهات، يرجى المحاولة لاحقاً"
+        message="فشل في تحميل التحليلات والتنبيهات، يرجى المحاولة لاحقاً"
         onRetry={() => window.location.reload()}
       />
     );
 
-  // Compute live inventory from bags
-  const liveInventory = BLOOD_TYPES.map((t) => ({
-    type: t,
-    available: bags.filter((b) => b.bloodType === t && b.status === 'available').length,
-    issued: bags.filter((b) => b.bloodType === t && b.status === 'issued').length,
-    min: thresholds[t] ?? DEFAULT_MIN,
-  }));
+  // Extract alerts directly calculated by the backend
+  const bloodTypeAlerts = analytics.bloodTypeAlerts ?? [];
+  const outOfStock = bloodTypeAlerts.filter((i) => i.alertStatus === 'out_of_stock');
+  const critical = bloodTypeAlerts.filter((i) => i.alertStatus === 'critical');
 
-  const outOfStock = liveInventory.filter((i) => i.available === 0);
-  const critical = liveInventory.filter((i) => i.available > 0 && i.available < i.min * 0.5);
+  const nearExpiryBags = analytics.expiringSoonBags ?? [];
+  const expiringSoonCount = analytics.summary?.expiringSoonCount ?? 0;
+  const totalAlerts = outOfStock.length + critical.length + expiringSoonCount;
 
-  const nearExpiry = bags.filter((b) => {
-    if (b.status !== 'available') return false;
-    const d = daysUntil(b.expiryDate);
-    return d >= 0 && d <= 5;
-  });
-  const wasted = bags.filter((b) => b.status === 'disposed' || b.status === 'expired');
-
-  // Consumption trend: issues per blood type
-  const issuedByType = BLOOD_TYPES.map((t) => ({
-    type: t,
-    issued: transactions
-      .filter((tx) => tx.type === 'issue' && tx.bloodType === t)
-      .reduce((s, tx) => s + tx.quantity, 0),
-  }));
-
-  const handleSaveThresholds = () => {
-    setSaved(true);
-    setEditThresholds(false);
-    setTimeout(() => setSaved(false), 2000);
+  const handleSaveThresholds = async () => {
+    try {
+      await updateThresholdsMutation.mutateAsync(thresholds);
+      setSaved(true);
+      setEditThresholds(false);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const totalAlerts = outOfStock.length + critical.length + nearExpiry.length;
+  const availableUnitsMap = analytics.inventoryByBloodType.reduce(
+    (acc, item) => {
+      acc[item.bloodType] = item.availableUnits;
+      return acc;
+    },
+    {} as Record<BloodType, number>,
+  );
 
   return (
     <div className="space-y-6">
@@ -144,40 +133,40 @@ export default function InventoryAlerts() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {outOfStock.map((i) => (
             <div
-              key={i.type}
+              key={i.bloodType}
               className="flex items-center gap-3 p-4 bg-red-50 border-2 border-red-300 rounded-2xl"
             >
               <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
                 <span className="text-red-700" style={{ fontSize: '14px', fontWeight: 800 }}>
-                  {i.type}
+                  {i.bloodType}
                 </span>
               </div>
               <div className="flex-1">
                 <p className="text-red-700" style={{ fontSize: '14px', fontWeight: 700 }}>
-                  ⛔ نفدت فصيلة {i.type} من المخزون
+                  ⛔ نفدت فصيلة {i.bloodType} من المخزون
                 </p>
                 <p className="text-red-500" style={{ fontSize: '12px' }}>
-                  الحد الأدنى المطلوب: {i.min} وحدة
+                  الحد الأدنى المطلوب: {i.minimumThreshold} وحدة
                 </p>
               </div>
             </div>
           ))}
           {critical.map((i) => (
             <div
-              key={i.type}
+              key={i.bloodType}
               className="flex items-center gap-3 p-4 bg-orange-50 border-2 border-orange-300 rounded-2xl"
             >
               <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
                 <span className="text-orange-700" style={{ fontSize: '14px', fontWeight: 800 }}>
-                  {i.type}
+                  {i.bloodType}
                 </span>
               </div>
               <div className="flex-1">
                 <p className="text-orange-700" style={{ fontSize: '14px', fontWeight: 700 }}>
-                  ⚠ مخزون {i.type} في مستوى حرج
+                  ⚠ مخزون {i.bloodType} في مستوى حرج
                 </p>
                 <p className="text-orange-500" style={{ fontSize: '12px' }}>
-                  متاح: {i.available} — الحد الأدنى: {i.min}
+                  متاح: {i.availableUnits} — الحد الأدنى: {i.minimumThreshold}
                 </p>
               </div>
             </div>
@@ -247,28 +236,28 @@ export default function InventoryAlerts() {
         {[
           {
             label: 'إجمالي المتاح',
-            value: bags.filter((b) => b.status === 'available').length,
+            value: analytics.summary?.availableCount ?? 0,
             color: 'text-green-600',
             bg: 'bg-green-50',
             border: 'border-green-100',
           },
           {
             label: 'صادر',
-            value: bags.filter((b) => b.status === 'issued').length,
+            value: analytics.summary?.issuedCount ?? 0,
             color: 'text-blue-600',
             bg: 'bg-blue-50',
             border: 'border-blue-100',
           },
           {
             label: 'قريبة الانتهاء',
-            value: nearExpiry.length,
+            value: expiringSoonCount,
             color: 'text-orange-600',
             bg: 'bg-orange-50',
             border: 'border-orange-200',
           },
           {
             label: 'مُتلفة',
-            value: wasted.length,
+            value: analytics.summary?.disposedCount ?? 0,
             color: 'text-red-600',
             bg: 'bg-red-50',
             border: 'border-red-100',
@@ -290,15 +279,18 @@ export default function InventoryAlerts() {
 
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <InventoryBarChart data={liveInventory} />
-        <IssuanceTrendChart data={monthlyStats} />
+        <InventoryBarChart data={analytics.inventoryByBloodType ?? []} />
+        <IssuanceTrendChart data={analytics.monthlyTrends ?? []} />
       </div>
 
       {/* Near-expiry table */}
-      <NearExpiryTable bags={bags} />
+      <NearExpiryTable bags={nearExpiryBags} />
 
       {/* Consumption by blood type */}
-      <ConsumptionByTypePanel issuedByType={issuedByType} liveInventory={liveInventory} />
+      <ConsumptionByTypePanel
+        data={analytics.consumptionByBloodType ?? []}
+        availableUnitsMap={availableUnitsMap}
+      />
     </div>
   );
 }

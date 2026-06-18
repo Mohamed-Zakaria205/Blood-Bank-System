@@ -9,16 +9,10 @@ import {
   Legend,
 } from 'recharts';
 import { useChartTheme } from '../../../hooks/useChartTheme';
-
-interface InventoryItem {
-  type: string;
-  available: number;
-  issued: number;
-  min: number;
-}
+import type { InventoryByBloodTypeItem } from '../../../types';
 
 interface InventoryBarChartProps {
-  data: InventoryItem[];
+  data: InventoryByBloodTypeItem[];
 }
 
 export default function InventoryBarChart({ data }: InventoryBarChartProps) {
@@ -34,7 +28,7 @@ export default function InventoryBarChart({ data }: InventoryBarChartProps) {
           <CartesianGrid key="grid" strokeDasharray="3 3" stroke={chart.gridStroke} />
           <XAxis
             key="x-axis"
-            dataKey="type"
+            dataKey="bloodType"
             tick={{ fontSize: 11, fill: chart.tickFill, fontFamily: 'Tajawal' }}
           />
           <YAxis key="y-axis" tick={{ fontSize: 11, fill: chart.tickFill }} />
@@ -52,14 +46,14 @@ export default function InventoryBarChart({ data }: InventoryBarChartProps) {
           />
           <Bar
             key="bar-available"
-            dataKey="available"
+            dataKey="availableUnits"
             name="متاح"
             fill={chart.primary}
             radius={[4, 4, 0, 0]}
           />
           <Bar
             key="bar-issued"
-            dataKey="issued"
+            dataKey="issuedUnits"
             name="صادر"
             fill={chart.quaternary}
             radius={[4, 4, 0, 0]}

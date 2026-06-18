@@ -1,23 +1,14 @@
-﻿import { AlertTriangle } from 'lucide-react';
-
-interface ConsumptionItem {
-  type: string;
-  issued: number;
-}
-
-interface InventoryItem {
-  type: string;
-  available: number;
-}
+import { AlertTriangle } from 'lucide-react';
+import type { ConsumptionByBloodTypeItem, BloodType } from '../../../types';
 
 interface ConsumptionByTypePanelProps {
-  issuedByType: ConsumptionItem[];
-  liveInventory: InventoryItem[];
+  data: ConsumptionByBloodTypeItem[];
+  availableUnitsMap: Record<BloodType, number>;
 }
 
 export default function ConsumptionByTypePanel({
-  issuedByType,
-  liveInventory,
+  data,
+  availableUnitsMap,
 }: ConsumptionByTypePanelProps) {
   return (
     <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
@@ -28,10 +19,14 @@ export default function ConsumptionByTypePanel({
         </h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {issuedByType.map(({ type, issued }) => {
-          const inv = liveInventory.find((i) => i.type === type)!;
-          const ratio = inv.available > 0 ? issued / (issued + inv.available) : 1;
-          const isHigh = ratio > 0.7;
+        {data.map((item) => {
+          const type = item.bloodType;
+          const issued = item.issuedUnits;
+          const isHigh = item.consumptionStatus === 'high';
+          const available = availableUnitsMap[type] || 0;
+          const total = issued + available;
+          const ratio = total > 0 ? issued / total : 0;
+
           return (
             <div
               key={type}
