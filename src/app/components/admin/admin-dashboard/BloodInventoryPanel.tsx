@@ -44,7 +44,7 @@ export default function BloodInventoryPanel({ inventory, onViewAll }: BloodInven
                   className={`px-2 py-0.5 rounded-full text-white ${bloodStatusColor[b.status]}`}
                   style={{ fontSize: '10px', fontWeight: 700 }}
                 >
-                  {b.status === 'normal' ? 'طبيعي' : b.status === 'low' ? 'منخفض' : 'حرج'}
+                  {b.status === 'normal' ? 'طبيعي' : b.status === 'low' ? 'منخفض' : b.status === 'out_of_stock' ? 'نفد' : 'حرج'}
                 </span>
               </div>
               <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">

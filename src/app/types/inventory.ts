@@ -193,4 +193,29 @@ export interface InventoryDashboardResponse {
   recentActivities: InventoryDashboardActivityItem[];
 }
 
+export interface AdminInventoryDashboardData {
+  generatedAt: string;
+  summary: {
+    totalUnits: number;
+    normalCount: number;
+    lowCount: number;
+    criticalCount: number;
+    outOfStockCount: number;
+  };
+  inventory: {
+    bloodType: BloodType;
+    availableUnits: number;
+    minimumThreshold: number;
+    status: 'normal' | 'low' | 'critical' | 'out_of_stock';
+    lastUpdated: string;
+  }[];
+  alerts: {
+    bloodType: BloodType;
+    availableUnits: number;
+    minimumThreshold: number;
+    status: 'low' | 'critical' | 'out_of_stock';
+  }[];
+}
+
+
 

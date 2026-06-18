@@ -23,20 +23,20 @@ export default function SystemAlertsPanel({ bloodInventory }: SystemAlertsPanelP
           .map((b) => (
             <div
               key={`alert-${b.type}`}
-              className={`flex items-start gap-3 p-3 rounded-xl ${b.status === 'critical' ? 'bg-red-50 border border-red-100' : 'bg-yellow-50 border border-yellow-100'}`}
+              className={`flex items-start gap-3 p-3 rounded-xl ${b.status === 'critical' || b.status === 'out_of_stock' ? 'bg-red-50 border border-red-100' : 'bg-yellow-50 border border-yellow-100'}`}
             >
               <AlertTriangle
-                className={`w-4 h-4 flex-shrink-0 mt-0.5 ${b.status === 'critical' ? 'text-red-500' : 'text-yellow-500'}`}
+                className={`w-4 h-4 flex-shrink-0 mt-0.5 ${b.status === 'critical' || b.status === 'out_of_stock' ? 'text-red-500' : 'text-yellow-500'}`}
               />
               <div>
                 <p
-                  className={`${b.status === 'critical' ? 'text-red-700' : 'text-yellow-700'}`}
+                  className={`${b.status === 'critical' || b.status === 'out_of_stock' ? 'text-red-700' : 'text-yellow-700'}`}
                   style={{ fontSize: '13px', fontWeight: 600 }}
                 >
-                  مخزون {b.type} {b.status === 'critical' ? 'حرج' : 'منخفض'}
+                  مخزون {b.type} {b.status === 'critical' ? 'حرج' : b.status === 'out_of_stock' ? 'نفد تماماً' : 'منخفض'}
                 </p>
                 <p
-                  className={`${b.status === 'critical' ? 'text-red-500' : 'text-yellow-600'}`}
+                  className={`${b.status === 'critical' || b.status === 'out_of_stock' ? 'text-red-500' : 'text-yellow-600'}`}
                   style={{ fontSize: '12px' }}
                 >
                   متبقي {b.units} وحدات (الحد الأدنى: {b.minRequired})

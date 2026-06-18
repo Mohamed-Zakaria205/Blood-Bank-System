@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useDonors } from '../../../hooks/useDonors';
 import { useCampaigns } from '../../../hooks/useCampaigns';
 import { useStaff } from '../../../hooks/useStaff';
-import { useBloodInventory, useMonthlyStats } from '../../../hooks/useInventory';
+import { useAdminInventoryDashboard, useMonthlyStats } from '../../../hooks/useInventory';
 
 export function useAdminDashboardData() {
   const {
@@ -14,8 +14,18 @@ export function useAdminDashboardData() {
 
   const { data: campaignsData = [], isLoading: loadingCampaigns } = useCampaigns();
   const { data: staffData = [], isLoading: loadingStaff } = useStaff();
-  const { data: bloodInventory = [], isLoading: loadingInventory } = useBloodInventory();
+  const { data: dashboardData, isLoading: loadingInventory } = useAdminInventoryDashboard();
   const { data: monthlyStatsData = [], isLoading: loadingStats } = useMonthlyStats();
+
+  const bloodInventory = useMemo(() => {
+    return (dashboardData?.inventory ?? []).map((item) => ({
+      type: item.bloodType,
+      units: item.availableUnits,
+      status: item.status,
+      minRequired: item.minimumThreshold,
+      lastUpdated: item.lastUpdated,
+    }));
+  }, [dashboardData]);
 
   const isLoading =
     loadingDonors || loadingCampaigns || loadingStaff || loadingInventory || loadingStats;
@@ -24,8 +34,8 @@ export function useAdminDashboardData() {
   const derivedData = useMemo(() => {
     const doctors = staffData.filter((u) => u.role === 'doctor');
     const labDoctors = staffData.filter((u) => u.role === 'lab');
-    const totalUnits = bloodInventory.reduce((s, b) => s + b.units, 0);
-    const criticalCount = bloodInventory.filter((b) => b.status === 'critical').length;
+    const totalUnits = dashboardData?.summary.totalUnits ?? 0;
+    const criticalCount = (dashboardData?.summary.criticalCount ?? 0) + (dashboardData?.summary.outOfStockCount ?? 0);
 
     const recentDonors = [...donors]
       .sort(
@@ -52,7 +62,7 @@ export function useAdminDashboardData() {
       totalCampaigns: campaignsData.length,
       activeCampaigns: campaignsData.filter((c) => c.status === 'active').length,
     };
-  }, [donors, campaignsData, staffData, bloodInventory]);
+  }, [donors, campaignsData, staffData, bloodInventory, dashboardData]);
 
   return {
     donors,

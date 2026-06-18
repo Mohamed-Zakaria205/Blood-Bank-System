@@ -8,11 +8,11 @@ import {
   Settings,
 } from 'lucide-react';
 import DashboardLayout, { type NavItem } from './DashboardLayout';
-import { useBloodInventory } from '../../hooks/useInventory';
+import { useAdminInventoryDashboard } from '../../hooks/useInventory';
 
 export default function AdminLayout() {
-  const { data: bloodInventory = [] } = useBloodInventory();
-  const criticalItems = bloodInventory.filter((b) => b.status === 'critical');
+  const { data: dashboardData } = useAdminInventoryDashboard();
+  const criticalItems = dashboardData?.inventory.filter((b) => b.status === 'critical' || b.status === 'out_of_stock') || [];
 
   const navItems: NavItem[] = [
     { path: '/admin', label: 'لوحة التحكم', icon: LayoutDashboard, end: true },
