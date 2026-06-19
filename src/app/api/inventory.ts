@@ -43,7 +43,7 @@ export async function fetchPaginatedBloodBags(
   const { page = 1, limit = 10, search = '', bloodType = '', bloodTypes = '', donationType = '', status = '', sortBy = 'createdAt', sortOrder = 'desc' } = filters;
 
   // ── Real API: forward all params as query-string ─────────
-  const params: Record<string, any> = {
+  const params: Record<string, string | number | boolean | undefined> = {
     page,
     limit,
     sortBy,
@@ -55,7 +55,16 @@ export async function fetchPaginatedBloodBags(
   if (donationType && donationType !== 'all') params.donationType = donationType;
   if (status && status !== 'active') params.status = status;
 
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/blood-bags', {
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
+    items?: BloodBag[];
+    data?: BloodBag[];
+    total?: number;
+    page?: number;
+    limit?: number;
+    totalPages?: number;
+    hasNextPage?: boolean;
+    hasPreviousPage?: boolean;
+  }>>('/inventory/blood-bags', {
     params,
     signal: options?.signal,
   });
@@ -127,7 +136,13 @@ export async function fetchFilteredTransactions(
     dateTo = '',
   } = filters;
 
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/transactions', {
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
+    items?: Transaction[];
+    data?: Transaction[];
+    total?: number;
+    page?: number;
+    limit?: number;
+  }>>('/inventory/transactions', {
     params: { page, limit, search, type, bloodType, dateFrom, dateTo }, signal: options?.signal,
   });
   const items = wrapper.data?.items || wrapper.data?.data || [];
@@ -146,7 +161,7 @@ export async function fetchOutflowRecords(
 ): Promise<PaginatedResponse<OutflowRecord>> {
   const { page = 1, limit = 10, search = '', actionType = '', bloodType = '', performedById = '' } = filters;
 
-  const params: Record<string, any> = {
+  const params: Record<string, string | number | boolean | undefined> = {
     page,
     limit,
   };
@@ -155,7 +170,16 @@ export async function fetchOutflowRecords(
   if (bloodType && bloodType !== 'all') params.bloodType = bloodType;
   if (performedById) params.performedById = performedById;
 
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/outflow', {
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
+    items?: OutflowRecord[];
+    data?: OutflowRecord[];
+    total?: number;
+    page?: number;
+    limit?: number;
+    totalPages?: number;
+    hasNextPage?: boolean;
+    hasPreviousPage?: boolean;
+  }>>('/inventory/outflow', {
     params,
     signal: options?.signal,
   });
@@ -186,7 +210,7 @@ export async function exportOutflowReport(
 ): Promise<Blob> {
   const { search = '', actionType = '', bloodType = '', performedById = '' } = filters;
 
-  const params: Record<string, any> = {};
+  const params: Record<string, string | number | boolean | undefined> = {};
   if (search) params.search = search;
   if (actionType && actionType !== 'all') params.actionType = actionType;
   if (bloodType && bloodType !== 'all') params.bloodType = bloodType;

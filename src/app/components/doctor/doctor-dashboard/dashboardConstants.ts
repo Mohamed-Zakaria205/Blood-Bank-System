@@ -68,10 +68,10 @@ export function buildQuickActions(navigate: (path: string) => void) {
       action: () => navigate('/doctor/campaigns'),
     },
     {
-      label: 'عرض المتبرعين',
+      label: 'عرض التبرعات',
       icon: Users,
       color: 'bg-orange-50 text-orange-600 border-orange-100',
-      action: () => navigate('/doctor/eligibility'),
+      action: () => navigate('/doctor/donations'),
     },
     {
       label: 'مؤهلية المتبرعين',

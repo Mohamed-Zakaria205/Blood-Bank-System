@@ -45,7 +45,7 @@ export const normalizeDateToISO = (raw: string | undefined | null): string => {
     return strictValidate(yyyy, mm, dd);
   }
   // dd/MM/yyyy or dd-MM-yyyy
-  const dmyMatch = trimmed.match(/^(\d{2})[\/-](\d{2})[\/-](\d{4})$/);
+  const dmyMatch = trimmed.match(/^(\d{2})[/-](\d{2})[/-](\d{4})$/);
   if (dmyMatch) {
     const [, dd, mm, yyyy] = dmyMatch;
     return strictValidate(yyyy, mm, dd);
