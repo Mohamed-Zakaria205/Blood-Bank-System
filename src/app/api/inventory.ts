@@ -12,6 +12,7 @@ import type {
   InventoryAnalyticsResponse,
   InventoryDashboardResponse,
   AdminInventoryDashboardData,
+  AdminDashboardResponse,
 } from '../types/inventory';
 import type { PaginatedResponse, BagFilters, TransactionFilters, OutflowFilters } from '../types/common';
 import type { ApiResponseWrapper } from '../types/auth';
@@ -326,5 +327,11 @@ export async function fetchAdminInventoryDashboard(): Promise<AdminInventoryDash
   const { data: wrapper } = await apiClient.get<ApiResponseWrapper<AdminInventoryDashboardData>>('/admin/inventory/dashboard');
   return wrapper.data;
 }
+
+export async function fetchAdminDashboard(): Promise<AdminDashboardResponse> {
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<AdminDashboardResponse>>('/admin/dashboard');
+  return wrapper.data;
+}
+
 
 

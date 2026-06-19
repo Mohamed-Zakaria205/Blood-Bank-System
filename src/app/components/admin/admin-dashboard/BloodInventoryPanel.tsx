@@ -1,10 +1,10 @@
 import { bloodStatusColor } from './dashboardConstants';
 
 interface BloodInventoryItem {
-  type: string;
-  units: number;
+  bloodType: string;
+  availableUnits: number;
   status: string;
-  minRequired: number;
+  minimumThreshold: number;
 }
 
 interface BloodInventoryPanelProps {
@@ -29,16 +29,16 @@ export default function BloodInventoryPanel({ inventory, onViewAll }: BloodInven
       </div>
       <div className="space-y-3">
         {inventory.map((b) => (
-          <div key={`inv-${b.type}`} className="flex items-center gap-3">
+          <div key={`inv-${b.bloodType}`} className="flex items-center gap-3">
             <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
               <span className="text-red-600" style={{ fontSize: '12px', fontWeight: 800 }}>
-                {b.type}
+                {b.bloodType}
               </span>
             </div>
             <div className="flex-1">
               <div className="flex justify-between mb-1">
                 <span className="text-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
-                  {b.units} وحدة
+                  {b.availableUnits} وحدة
                 </span>
                 <span
                   className={`px-2 py-0.5 rounded-full text-white ${bloodStatusColor[b.status]}`}
@@ -50,7 +50,7 @@ export default function BloodInventoryPanel({ inventory, onViewAll }: BloodInven
               <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full ${bloodStatusColor[b.status]}`}
-                  style={{ width: `${Math.min((b.units / 50) * 100, 100)}%` }}
+                  style={{ width: `${Math.min((b.availableUnits / 50) * 100, 100)}%` }}
                 />
               </div>
             </div>

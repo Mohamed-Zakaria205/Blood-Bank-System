@@ -12,7 +12,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
-import { useAdminDashboardData } from './hooks/useAdminDashboardData';
+import { useAdminDashboard } from '../../hooks/useInventory';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 
@@ -26,29 +26,10 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // ── React Query hook + Derived Data ────────────────────────────────────
-  const {
-    donors,
-    bloodInventory,
-    monthlyStatsData,
-    isLoading,
-    errorDonors,
-    refetchDonors,
-    doctors,
-    labDoctors,
-    totalUnits,
-    criticalCount,
-    recentDonors,
-    campaignDonors,
-    walkinDonors,
-    appDonors,
-    totalDonors,
-    eligibleDonors,
-    totalCampaigns,
-    activeCampaigns,
-  } = useAdminDashboardData();
+  // ── React Query hook ────────────────────────────────────
+  const { data: dashboardData, isLoading, isError, refetch } = useAdminDashboard();
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="space-y-6 p-2">
         <div className="h-8 w-48 bg-muted rounded animate-pulse" />
@@ -63,14 +44,19 @@ export default function AdminDashboard() {
         </div>
       </div>
     );
-  if (errorDonors)
-    return <ErrorState message="تعذر تحميل بيانات المتبرعين" onRetry={() => refetchDonors()} />;
+  }
+
+  if (isError || !dashboardData) {
+    return <ErrorState message="تعذر تحميل بيانات لوحة التحكم" onRetry={() => refetch()} />;
+  }
+
+  const { summary, inventory, donationTrends, notifications, recentDonors } = dashboardData;
 
   const stats = [
     {
       label: 'إجمالي المتبرعين',
-      value: totalDonors,
-      sub: `${eligibleDonors} مؤهل`,
+      value: summary.totalDonors,
+      sub: `${summary.activeDonors} مؤهل`,
       icon: Heart,
       color: 'text-green-600',
       bg: 'bg-green-50',
@@ -79,8 +65,8 @@ export default function AdminDashboard() {
     },
     {
       label: 'حملات التبرع',
-      value: totalCampaigns,
-      sub: `${activeCampaigns} نشطة`,
+      value: summary.campaignsCount,
+      sub: `${summary.campaignsCount} حملة`,
       icon: Megaphone,
       color: 'text-blue-600',
       bg: 'bg-blue-50',
@@ -89,8 +75,8 @@ export default function AdminDashboard() {
     },
     {
       label: 'الكوادر الطبية',
-      value: doctors.length + labDoctors.length,
-      sub: `${doctors.length} طبيب • ${labDoctors.length} تحاليل`,
+      value: summary.medicalStaffCount,
+      sub: `${summary.doctorsCount} طبيب • ${summary.labWorkersCount} تحاليل`,
       icon: UserCog,
       color: 'text-purple-600',
       bg: 'bg-purple-50',
@@ -99,8 +85,8 @@ export default function AdminDashboard() {
     },
     {
       label: 'وحدات الدم المتاحة',
-      value: totalUnits,
-      sub: `${criticalCount} فصائل حرجة`,
+      value: summary.availableBloodUnits,
+      sub: `${summary.criticalBloodTypesCount} فصائل حرجة`,
       icon: Droplets,
       color: 'text-red-600',
       bg: 'bg-red-50',
@@ -108,6 +94,10 @@ export default function AdminDashboard() {
       action: () => navigate('/admin/inventory'),
     },
   ];
+
+  const formattedDate = dashboardData.generatedAt
+    ? format(new Date(dashboardData.generatedAt), 'EEEE، d MMMM yyyy', { locale: ar })
+    : format(new Date(), 'EEEE، d MMMM yyyy', { locale: ar });
 
   return (
     <div className="space-y-6">
@@ -118,17 +108,17 @@ export default function AdminDashboard() {
             لوحة التحكم
           </h1>
           <p className="text-muted-foreground mt-0.5" style={{ fontSize: '14px' }}>
-            مرحباً {user?.name} — {format(new Date(), 'EEEE، d MMMM yyyy', { locale: ar })}
+            مرحباً {user?.name} — {formattedDate}
           </p>
         </div>
-        {criticalCount > 0 && (
+        {summary.criticalBloodTypesCount > 0 && (
           <button
             onClick={() => navigate('/admin/inventory')}
             className="flex items-center gap-2 px-4 py-2.5 bg-red-50 border border-red-200 text-red-600 rounded-xl hover:bg-red-100 transition-all"
             style={{ fontSize: '13px', fontWeight: 600 }}
           >
             <AlertTriangle className="w-4 h-4" />
-            {criticalCount} فصائل تحتاج تجديد
+            {summary.criticalBloodTypesCount} فصائل تحتاج تجديد
           </button>
         )}
       </div>
@@ -165,14 +155,13 @@ export default function AdminDashboard() {
           </div>
           <div>
             <div className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
-              {walkinDonors.length}
+              {summary.walkInDonations}
             </div>
             <div className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
               تبرع داخل البنك
             </div>
             <div className="text-muted-foreground" style={{ fontSize: '11px' }}>
-              {donors.length > 0 ? Math.round((walkinDonors.length / donors.length) * 100) : 0}% من
-              الإجمالي
+              {summary.walkInDonationsPercentage}% من الإجمالي
             </div>
           </div>
         </div>
@@ -182,14 +171,13 @@ export default function AdminDashboard() {
           </div>
           <div>
             <div className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
-              {campaignDonors.length}
+              {summary.campaignDonations}
             </div>
             <div className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
               عن طريق حملة
             </div>
             <div className="text-muted-foreground" style={{ fontSize: '11px' }}>
-              {donors.length > 0 ? Math.round((campaignDonors.length / donors.length) * 100) : 0}%
-              من الإجمالي
+              {summary.campaignDonationsPercentage}% من الإجمالي
             </div>
           </div>
         </div>
@@ -199,14 +187,13 @@ export default function AdminDashboard() {
           </div>
           <div>
             <div className="text-foreground" style={{ fontSize: '26px', fontWeight: 800 }}>
-              {appDonors.length}
+              {summary.appDonations}
             </div>
             <div className="text-foreground" style={{ fontSize: '13px', fontWeight: 600 }}>
               حجز من التطبيق
             </div>
             <div className="text-muted-foreground" style={{ fontSize: '11px' }}>
-              {donors.length > 0 ? Math.round((appDonors.length / donors.length) * 100) : 0}% من
-              الإجمالي
+              {summary.appDonationsPercentage}% من الإجمالي
             </div>
           </div>
         </div>
@@ -214,9 +201,9 @@ export default function AdminDashboard() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <DonationTrendsChart data={monthlyStatsData} />
+        <DonationTrendsChart data={donationTrends} />
         <BloodInventoryPanel
-          inventory={bloodInventory}
+          inventory={inventory}
           onViewAll={() => navigate('/admin/inventory')}
         />
       </div>
@@ -268,12 +255,12 @@ export default function AdminDashboard() {
                         className="text-foreground"
                         style={{ fontSize: '13px', fontWeight: 600 }}
                       >
-                        {d.name}
+                        {d.fullName}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-muted-foreground" style={{ fontSize: '13px' }}>
-                        {d.district}
+                        {d.city}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -290,7 +277,7 @@ export default function AdminDashboard() {
                         className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700"
                         style={{ fontSize: '11px', fontWeight: 600 }}
                       >
-                        {d.registeredAt}
+                        {d.lastDonationDate}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -312,7 +299,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <SystemAlertsPanel bloodInventory={bloodInventory} />
+        <SystemAlertsPanel notifications={notifications} />
       </div>
     </div>
   );

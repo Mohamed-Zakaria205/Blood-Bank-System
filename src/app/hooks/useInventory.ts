@@ -19,6 +19,7 @@ import {
   updateInventoryThresholds,
   fetchInventoryDashboard,
   fetchAdminInventoryDashboard,
+  fetchAdminDashboard,
 } from '../api/inventory';
 import type { BagFilters, TransactionFilters, OutflowFilters } from '../types/common';
 
@@ -193,6 +194,13 @@ export function useAdminInventoryDashboard() {
   return useQuery({
     queryKey: ['admin-inventory-dashboard'],
     queryFn: fetchAdminInventoryDashboard,
+  });
+}
+
+export function useAdminDashboard() {
+  return useQuery({
+    queryKey: ['admin-dashboard'],
+    queryFn: fetchAdminDashboard,
   });
 }
 

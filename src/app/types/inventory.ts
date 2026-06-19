@@ -217,5 +217,54 @@ export interface AdminInventoryDashboardData {
   }[];
 }
 
+export interface AdminDashboardResponse {
+  generatedAt: string;
+  summary: {
+    totalDonors: number;
+    activeDonors: number;
+    campaignsCount: number;
+    doctorsCount: number;
+    labWorkersCount: number;
+    medicalStaffCount: number;
+    availableBloodUnits: number;
+    criticalBloodTypesCount: number;
+    totalDonations: number;
+    campaignDonations: number;
+    campaignDonationsPercentage: number;
+    walkInDonations: number;
+    walkInDonationsPercentage: number;
+    appDonations: number;
+    appDonationsPercentage: number;
+  };
+  inventory: {
+    bloodType: BloodType;
+    availableUnits: number;
+    minimumThreshold: number;
+    status: 'normal' | 'low' | 'critical' | 'out_of_stock';
+  }[];
+  donationTrends: {
+    month: string;
+    donations: number;
+    newDonors: number;
+  }[];
+  notifications: {
+    id: string;
+    type: 'inventory' | 'system';
+    severity: 'info' | 'warning' | 'critical';
+    title: string;
+    message: string;
+  }[];
+  recentDonors: {
+    id: string;
+    donorCode: string;
+    fullName: string;
+    bloodType: BloodType;
+    city: string;
+    lastDonationDate: string;
+    status: 'eligible' | 'deferred' | 'rejected';
+  }[];
+}
+
+
 
 
