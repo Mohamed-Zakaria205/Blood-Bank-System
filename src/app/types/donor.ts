@@ -108,7 +108,7 @@ export interface Donation {
   isAllergic?: boolean;
   donorCode?: string;
   sentToLab?: boolean;
-  status?: string;
+  status?: 'pending' | 'confirmed' | 'completed' | 'cancelled';
 }
 
 /**

@@ -26,9 +26,9 @@ export default function EditDonorModal({
   errors,
 }: EditDonorModalProps) {
   const { egyptData } = useEgyptData();
-  const currentGovernorateObj = egyptData.find((g: any) => g.name_ar === form.governorate);
+  const currentGovernorateObj = egyptData.find((g) => g.name_ar === form.governorate);
   const currentCities = currentGovernorateObj?.cities || [];
-  const currentDistrictObj = currentCities.find((c: any) => c.city_name_ar === form.district);
+  const currentDistrictObj = currentCities.find((c) => c.city_name_ar === form.district);
   const currentAreas = currentDistrictObj?.areas || [];
   const modalRef = useModalFocusTrap(onCancel);
 
@@ -234,7 +234,7 @@ export default function EditDonorModal({
                     style={{ fontSize: '13px' }}
                   >
                     <option value="">— اختر المركز —</option>
-                    {currentCities.map((d: any) => (
+                    {currentCities.map((d) => (
                       <option key={d.id} value={d.city_name_ar}>
                         {d.city_name_ar}
                       </option>
@@ -258,7 +258,7 @@ export default function EditDonorModal({
                       style={{ fontSize: '13px' }}
                     >
                       <option value="">— اختر المنطقة —</option>
-                      {currentAreas.map((a: any) => (
+                      {currentAreas.map((a) => (
                         <option key={a.id} value={a.name_ar}>
                           {a.name_ar}
                         </option>

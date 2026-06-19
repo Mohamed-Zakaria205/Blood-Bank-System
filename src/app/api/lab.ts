@@ -14,8 +14,59 @@ import type { ApiResponseWrapper } from '../types/auth';
 
 const labBaseURL = apiClient.defaults.baseURL?.replace('/system', '') ?? '/api/v1';
 
-function mapRawLabTest(item: any): LabTest {
-  if (!item) return item;
+// ── Raw backend shapes for lab data ─────────────────────────
+interface RawLabTestResult {
+  outcome?: string;
+  hcv?: string;
+  hbv?: string;
+  syphilis?: string;
+  hiv?: string;
+  notes?: string;
+  completedAt?: string;
+  completedById?: string;
+  completedByName?: string;
+  confirmedBloodType?: string;
+  [key: string]: unknown;
+}
+
+interface RawLabTest {
+  id?: string;
+  donorId?: string;
+  donorName?: string;
+  donationCode?: string;
+  bloodType?: string;
+  donationType?: string;
+  city?: string;
+  requestedAt?: string;
+  status?: string;
+  result?: RawLabTestResult | null;
+  [key: string]: unknown;
+}
+
+interface RawTestResult {
+  id?: string;
+  sampleId?: string;
+  donationCode?: string;
+  donorName?: string;
+  bloodType?: string;
+  confirmedBloodType?: string;
+  hcv?: string;
+  hbv?: string;
+  syphilis?: string;
+  hiv?: string;
+  outcome?: string;
+  labDoctor?: string;
+  date?: string;
+  notes?: string;
+  nationalId?: string;
+  national_id?: string;
+  donorNationalId?: string;
+  NationalId?: string;
+  [key: string]: unknown;
+}
+
+function mapRawLabTest(item: RawLabTest): LabTest {
+  if (!item) return item as unknown as LabTest;
   return {
     ...item,
     status: item.status?.toLowerCase() as 'pending' | 'completed',
@@ -29,12 +80,12 @@ function mapRawLabTest(item: any): LabTest {
           hiv: item.result.hiv?.toLowerCase() as 'negative' | 'positive',
         }
       : null,
-  };
+  } as LabTest;
 }
 
 
-function mapRawTestResult(item: any): TestResult {
-  if (!item) return item;
+function mapRawTestResult(item: RawTestResult): TestResult {
+  if (!item) return item as unknown as TestResult;
   return {
     ...item,
     hcv: item.hcv?.toLowerCase() as 'negative' | 'positive',
@@ -44,7 +95,7 @@ function mapRawTestResult(item: any): TestResult {
     outcome: item.outcome?.toLowerCase() as 'safe' | 'rejected',
     nationalId:
       item.nationalId || item.national_id || item.donorNationalId || item.NationalId || '',
-  };
+  } as TestResult;
 }
 
 // ── Lab Tests (blood bag screening) ────────────────────────
@@ -59,7 +110,7 @@ export async function fetchLabTests(): Promise<PaginatedResponse<LabTest>> {
   >('/lab/tests', { baseURL: labBaseURL });
 
   const rawItems = wrapper.data?.items || [];
-  const data = rawItems.map(mapRawLabTest);
+  const data = (rawItems as unknown as RawLabTest[]).map(mapRawLabTest);
   const total = wrapper.data?.total ?? data.length;
   const page = wrapper.data?.page ?? 1;
   const limit = wrapper.data?.limit ?? data.length;
@@ -92,7 +143,7 @@ export async function fetchFilteredLabTests(
   });
 
   const rawItems = wrapper.data?.items || [];
-  const data = rawItems.map(mapRawLabTest);
+  const data = (rawItems as unknown as RawLabTest[]).map(mapRawLabTest);
   const total = wrapper.data?.total ?? 0;
   const returnedPage = wrapper.data?.page ?? page;
   const returnedLimit = wrapper.data?.limit ?? limit;
@@ -114,7 +165,7 @@ export async function submitLabTestResult(
     { baseURL: labBaseURL },
   );
   return {
-    data: mapRawLabTest(wrapper.data),
+    data: mapRawLabTest(wrapper.data as unknown as RawLabTest),
     message: wrapper.message,
   };
 }
@@ -148,7 +199,7 @@ export async function fetchTestResults(
   });
 
   const rawItems = wrapper.data?.items || [];
-  const data = rawItems.map(mapRawTestResult);
+  const data = (rawItems as unknown as RawTestResult[]).map(mapRawTestResult);
   const total = wrapper.data?.total ?? 0;
   const returnedPage = wrapper.data?.page ?? page;
   const returnedLimit = wrapper.data?.limit ?? limit;
@@ -165,5 +216,8 @@ export async function fetchLabDashboardStats(): Promise<LabDashboardStats> {
     },
   );
 
-  return wrapper.data!;
+  if (!wrapper.data) {
+    throw new Error('Invalid response from lab dashboard stats endpoint');
+  }
+  return wrapper.data;
 }

@@ -29,26 +29,44 @@ import axios from 'axios';
 //  DONORS  — profile-level endpoints
 // ═══════════════════════════════════════════════════════════
 
-export function mapRawDonor(item: any): Donor {
-  if (!item) return item;
+// ── Raw backend donor shape ──────────────────────────────────
+interface RawDonorFromBackend {
+  id?: string;
+  name?: string;
+  gender?: string;
+  eligibility?: {
+    status?: string;
+    daysLeft?: number;
+    daysAgo?: number;
+    eligibleDate?: string;
+  };
+  eligibilityStatus?: string;
+  status?: string;
+  donationsNumber?: number;
+  donations?: number;
+  [key: string]: unknown;
+}
+
+export function mapRawDonor(item: RawDonorFromBackend): Donor {
+  if (!item) return item as unknown as Donor;
   const normalizeStatus = (s: string) => (s || '').toLowerCase();
 
   const normalizedEligibility = item.eligibility ? {
-    status: normalizeStatus(item.eligibility.status) as any,
+    status: normalizeStatus(item.eligibility.status ?? '') as import('../types/donor').EligibilityStatus,
     daysLeft: Number(item.eligibility.daysLeft ?? 0),
     daysAgo: Number(item.eligibility.daysAgo ?? 0),
     eligibleDate: item.eligibility.eligibleDate ? item.eligibility.eligibleDate.split('T')[0] : '',
   } : undefined;
 
-  const rawStatus = normalizeStatus(item.eligibilityStatus || item.status);
+  const rawStatus = normalizeStatus((item.eligibilityStatus || item.status || '') as string);
   const status = rawStatus === 'ineligible' ? 'rejected' : rawStatus;
 
   return {
     ...item,
-    status: status as any,
-    donations: item.donationsNumber !== undefined ? item.donationsNumber : item.donations,
+    status: status as import('../types/common').DonorStatus,
+    donations: item.donationsNumber !== undefined ? item.donationsNumber : (item.donations as number | undefined),
     eligibility: normalizedEligibility,
-  };
+  } as Donor;
 }
 
 
@@ -64,7 +82,7 @@ export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
     }>
   >('/donors');
   const rawItems = wrapper.data?.items || wrapper.data?.data || [];
-  const mappedItems: Donor[] = rawItems.map(mapRawDonor);
+  const mappedItems: Donor[] = (rawItems as unknown as RawDonorFromBackend[]).map(mapRawDonor);
   const total = wrapper.data?.total || mappedItems.length;
   const result = {
     data: mappedItems,
@@ -88,7 +106,7 @@ export async function fetchPaginatedDonors(
 
 
   // ── Real API: forward all params as query-string ─────────
-  const params: Record<string, any> = { page, limit };
+  const params: Record<string, string | number | undefined> = { page, limit };
   if (search) params.search = search;
   if (bloodType) params.bloodType = bloodType;
   if (status) params.status = status === 'rejected' ? 'ineligible' : status;
@@ -109,7 +127,7 @@ export async function fetchPaginatedDonors(
     });
 
     const rawItems = wrapper.data?.items || wrapper.data?.data || [];
-    const mappedItems: Donor[] = rawItems.map(mapRawDonor);
+    const mappedItems: Donor[] = (rawItems as unknown as RawDonorFromBackend[]).map(mapRawDonor);
 
     return {
       data: mappedItems,
@@ -117,8 +135,8 @@ export async function fetchPaginatedDonors(
       page: wrapper.data?.page || 1,
       limit: wrapper.data?.limit || 10,
     };
-  } catch (error) {
-    if (!axios.isCancel(error) && (error as any)?.message !== 'canceled') {
+  } catch (error: unknown) {
+    if (!axios.isCancel(error) && !(error instanceof Error && error.message === 'canceled')) {
       console.error('Error in fetchPaginatedDonors:', error);
     }
     throw error;
@@ -135,7 +153,7 @@ export async function fetchPaginatedEligibleDonors(
 ): Promise<PaginatedResponse<Donor>> {
   const { page = 1, limit = 10, search = '', bloodType = '', status = '', district = '', gender = '' } = filters;
 
-  const params: Record<string, any> = { page, limit };
+  const params: Record<string, string | number | undefined> = { page, limit };
   if (search) params.search = search;
   if (bloodType) params.bloodType = bloodType;
   if (status && status !== 'all') params.status = status;
@@ -156,7 +174,7 @@ export async function fetchPaginatedEligibleDonors(
     });
 
     const rawItems = wrapper.data?.items || wrapper.data?.data || [];
-    const mappedItems: Donor[] = rawItems.map(mapRawDonor);
+    const mappedItems: Donor[] = (rawItems as unknown as RawDonorFromBackend[]).map(mapRawDonor);
 
     const result = {
       data: mappedItems,
@@ -167,8 +185,8 @@ export async function fetchPaginatedEligibleDonors(
     };
     validateContract('Eligible Donors List', createPaginatedSchema(DonorContractSchema), result);
     return result;
-  } catch (error) {
-    if (!axios.isCancel(error) && (error as any)?.message !== 'canceled') {
+  } catch (error: unknown) {
+    if (!axios.isCancel(error) && !(error instanceof Error && error.message === 'canceled')) {
       console.error('Error in fetchPaginatedEligibleDonors:', error);
     }
     throw error;
@@ -177,10 +195,10 @@ export async function fetchPaginatedEligibleDonors(
 
 export async function fetchDonorById(id: string): Promise<ApiResponse<Donor>> {
   try {
-    const { data: wrapper } = await apiClient.get<any>(`/Donors/${id}`);
+    const { data: wrapper } = await apiClient.get<ApiResponseWrapper<Donor>>(`/Donors/${id}`);
     // Handle both wrapped { success, data: {...} } and bare donor responses
-    const rawDonor = wrapper?.data ?? wrapper;
-    const donor: Donor = mapRawDonor(rawDonor);
+    const rawDonor = wrapper?.data ?? (wrapper as unknown as RawDonorFromBackend);
+    const donor: Donor = mapRawDonor(rawDonor as unknown as RawDonorFromBackend);
     return { data: donor };
   } catch (error) {
     console.error('[API] fetchDonorById error:', error);
@@ -196,11 +214,11 @@ export async function searchDonorByNationalId(
       params: { nationalId },
     });
     if (data && data.data) {
-      data.data = mapRawDonor(data.data);
+      data.data = mapRawDonor(data.data as unknown as RawDonorFromBackend);
     }
     return data;
-  } catch (error: any) {
-    if (error.response?.status === 404) {
+  } catch (error: unknown) {
+    if ((error as { response?: { status?: number } }).response?.status === 404) {
       return { data: null };
     }
     throw error;
@@ -215,7 +233,11 @@ export async function updateDonor(
   // Build patch payload — only send the fields the modal allows to change.
   // DO NOT send governorate/area/address: they are not stored on Donor and
   // sending them without a valid governorate causes a 500 on the backend.
-  const patchPayload: Record<string, any> = {};
+  type PatchableDonorFields = Pick<
+    UpdateDonorRequest,
+    'name' | 'phone' | 'bloodType' | 'district' | 'governorate' | 'area' | 'nationalId' | 'dateOfBirth'
+  >;
+  const patchPayload: Partial<PatchableDonorFields> = {};
   if (payload.name !== undefined) patchPayload.name = payload.name;
   if (payload.phone !== undefined) patchPayload.phone = payload.phone;
   if (payload.bloodType !== undefined) patchPayload.bloodType = payload.bloodType;
@@ -240,7 +262,19 @@ export async function updateDonor(
 /** Fetch eligibility statistics for status cards and blood type bar */
 export async function fetchDonorEligibilityStats(): Promise<ApiResponse<EligibilityStats>> {
   try {
-    const { data } = await apiClient.get<ApiResponseWrapper<any>>('/donors/eligibility/stats');
+    interface RawEligibilityStats {
+      statusCounts?: {
+        all?: number;
+        eligible?: number;
+        soon?: number;
+        not_yet?: number;
+        notYet?: number;
+        deferred?: number;
+        ineligible?: number;
+      };
+      bloodTypeCounts?: Record<import('../types/common').BloodType, { eligible: number; total: number }>;
+    }
+    const { data } = await apiClient.get<ApiResponseWrapper<RawEligibilityStats>>('/donors/eligibility/stats');
     const rawCounts = data.data?.statusCounts || {};
     const normalizedStats: EligibilityStats = {
       statusCounts: {
@@ -251,7 +285,16 @@ export async function fetchDonorEligibilityStats(): Promise<ApiResponse<Eligibil
         deferred: Number(rawCounts.deferred ?? 0),
         ineligible: Number(rawCounts.ineligible ?? 0),
       },
-      bloodTypeCounts: data.data?.bloodTypeCounts || {},
+      bloodTypeCounts: data.data?.bloodTypeCounts || {
+        'A+': { eligible: 0, total: 0 },
+        'A-': { eligible: 0, total: 0 },
+        'B+': { eligible: 0, total: 0 },
+        'B-': { eligible: 0, total: 0 },
+        'AB+': { eligible: 0, total: 0 },
+        'AB-': { eligible: 0, total: 0 },
+        'O+': { eligible: 0, total: 0 },
+        'O-': { eligible: 0, total: 0 },
+      },
     };
     validateContract('Eligibility Stats', EligibilityStatsContractSchema, normalizedStats);
     return { data: normalizedStats };
@@ -322,7 +365,7 @@ export async function fetchPaginatedDonations(
     toDate = '',
   } = filters;
 
-  const params: Record<string, any> = { page, limit };
+  const params: Record<string, string | number | undefined> = { page, limit };
   if (search) params.search = search;
   if (bloodType) params.bloodType = bloodType;
   if (donationSource) params.donationSource = donationSource;
@@ -357,8 +400,8 @@ export async function fetchPaginatedDonations(
       page: wrapper.data?.page || 1,
       limit: wrapper.data?.limit || 10,
     };
-  } catch (error) {
-    if (!axios.isCancel(error) && (error as any)?.message !== 'canceled') {
+  } catch (error: unknown) {
+    if (!axios.isCancel(error) && !(error instanceof Error && error.message === 'canceled')) {
       console.error('Error in fetchPaginatedDonations:', error);
     }
     throw error;
@@ -389,11 +432,11 @@ export async function addMedicalRecord(
 }
 
 /** DELETE /donations/:id — remove a donation */
-export async function deleteDonation(donationId: string): Promise<ApiResponse<void>> {
+export async function deleteDonation(donationId: string): Promise<ApiResponse<null>> {
   try {
-    const { data } = await apiClient.delete<ApiResponseWrapper<any>>(`/Donations/${donationId}`);
+    const { data } = await apiClient.delete<ApiResponseWrapper<null>>(`/Donations/${donationId}`);
     return {
-      data: undefined as any,
+      data: null,
       message: data.message || 'تم حذف التبرع بنجاح',
     };
   } catch (error) {
@@ -403,13 +446,13 @@ export async function deleteDonation(donationId: string): Promise<ApiResponse<vo
 }
 
 /** POST /donations/:id/confirm — mark donation as sent to lab */
-export async function confirmDonation(donationId: string): Promise<ApiResponse<void>> {
+export async function confirmDonation(donationId: string): Promise<ApiResponse<null>> {
   try {
-    const { data } = await apiClient.post<ApiResponseWrapper<any>>(
+    const { data } = await apiClient.post<ApiResponseWrapper<null>>(
       `/Donations/${donationId}/confirm`,
     );
     return {
-      data: undefined as any,
+      data: null,
       message: data.message || 'تم إرسال التبرع للمختبر بنجاح',
     };
   } catch (error) {

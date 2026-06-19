@@ -41,7 +41,7 @@ export interface UpcomingAppointment {
   donorName: string;
   donorNationalId: string;
   donorBloodType: BloodType;
-  status: string;
+  status: 'booked' | 'completed' | 'missed' | 'cancelled';
 }
 
 export interface RecentDonation {

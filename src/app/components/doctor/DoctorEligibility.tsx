@@ -202,8 +202,9 @@ export default function DoctorEligibility() {
           setNotifModal(null);
           setSelectedDonors(new Set());
         },
-        onError: (err: any) => {
-          toast.error(err.response?.data?.message || 'تعذر إرسال الإشعار. يرجى المحاولة لاحقاً');
+        onError: (err: unknown) => {
+          const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+          toast.error(msg || 'تعذر إرسال الإشعار. يرجى المحاولة لاحقاً');
         },
       },
     );

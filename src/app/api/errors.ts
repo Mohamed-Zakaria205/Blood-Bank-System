@@ -2,9 +2,9 @@ import { AxiosError } from 'axios';
 
 export class ApiError extends Error {
   public status?: number;
-  public data?: any;
+  public data?: Record<string, unknown>;
 
-  constructor(message: string, status?: number, data?: any) {
+  constructor(message: string, status?: number, data?: Record<string, unknown>) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
@@ -163,7 +163,11 @@ export function handleApiError(error: unknown): ApiError {
   }
 
   // Fallback for ad-hoc throws (if any missed)
-  const fallback = error as any;
+  interface UnknownError {
+    response?: { status?: number; data?: { message?: string } };
+    message?: string;
+  }
+  const fallback = error as UnknownError;
   const status = fallback?.response?.status;
   const data = fallback?.response?.data;
   let isCustom = false;

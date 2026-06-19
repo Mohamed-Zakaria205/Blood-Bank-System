@@ -22,9 +22,11 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // Data considered fresh for 5 min
-      retry: (failureCount, error: any) => {
+      retry: (failureCount, error: unknown) => {
         // Do not retry on client errors (especially 401/403) to prevent DDOS loops
-        const status = error?.response?.status || error?.status;
+        const status =
+          (error as { response?: { status?: number } })?.response?.status ??
+          (error as { status?: number })?.status;
         if (status && [400, 401, 403, 404, 422].includes(status)) {
           return false;
         }

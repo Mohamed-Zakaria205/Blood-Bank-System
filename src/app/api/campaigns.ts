@@ -75,7 +75,7 @@ export async function fetchCampaignAppointments(
     `/Campaigns/${id}/appointments`,
   );
 
-  const mappedData = (data.data || []).map((item: any) => {
+  const mappedData = (data.data || []).map((item: AppointmentSlot) => {
     let normalizedStatus = (item.status || '').toLowerCase();
     if (normalizedStatus === 'noshow') normalizedStatus = 'missed';
     return {

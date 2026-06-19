@@ -36,8 +36,18 @@ export async function fetchFilteredStaff(
 
   const mappedRole = role ? roleMap[role] || role : '';
 
-  // Use 'any' for the generic to bypass strict typing because the backend sends 'items' instead of 'data'
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/Staff', {
+  /**
+   * The backend sends a paginated response with 'items' instead of 'data'.
+   * We use a dedicated interface to make this contract explicit.
+   */
+  interface RawStaffResponse {
+    items: Array<Omit<User, 'role'> & { role: string }>;
+    total: number;
+    page: number;
+    limit: number;
+  }
+
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<RawStaffResponse>>('/Staff', {
     params: { page, limit, search, role: mappedRole, status },
     signal: options?.signal,
   });
@@ -53,10 +63,9 @@ export async function fetchFilteredStaff(
     InventoryManager: 'inventory',
   };
 
-  // The backend returns an array in `items`, but our frontend `PaginatedResponse` expects it in `data`
   const rawItems = wrapper.data.items || [];
 
-  const mappedData = rawItems.map((u: any) => ({
+  const mappedData = rawItems.map((u) => ({
     ...u,
     role: (reverseRoleMap[u.role] || u.role) as User['role'],
   }));
@@ -116,7 +125,7 @@ export async function updateStaff(id: string, payload: UpdateStaffRequest): Prom
 }
 
 export async function deleteStaff(id: string): Promise<void> {
-  const { data: wrapper } = await apiClient.delete<ApiResponseWrapper<any>>(`/Staff/${id}`);
+  const { data: wrapper } = await apiClient.delete<ApiResponseWrapper<null>>(`/Staff/${id}`);
   if (!wrapper.success) {
     throw new ApiError(wrapper.message || 'حدث خطأ أثناء الحذف');
   }

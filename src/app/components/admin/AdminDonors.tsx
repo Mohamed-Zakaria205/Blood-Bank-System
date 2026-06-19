@@ -194,11 +194,12 @@ export default function AdminDonors() {
 
           const validationErrors = apiErr.data?.errors;
           if (validationErrors && typeof validationErrors === 'object') {
-            Object.keys(validationErrors).forEach((key) => {
+            const errorsRecord = validationErrors as Record<string, unknown>;
+            Object.keys(errorsRecord).forEach((key) => {
               const fieldName = key.charAt(0).toLowerCase() + key.slice(1);
-              const msgs = validationErrors[key];
+              const msgs = errorsRecord[key];
               if (Array.isArray(msgs) && msgs.length > 0) {
-                backendErrors[fieldName] = msgs[0];
+                backendErrors[fieldName] = String(msgs[0]);
               } else if (typeof msgs === 'string') {
                 backendErrors[fieldName] = msgs;
               }

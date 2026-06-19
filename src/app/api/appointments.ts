@@ -26,6 +26,33 @@ export interface AppointmentFilters {
 // the response with empty "available" slots.
 // ─────────────────────────────────────────────────────────────
 
+interface RawAppointmentSlot {
+  id: string;
+  date: string;
+  time: string;
+  donorName?: string;
+  donorCode?: string;
+  donorNationalId?: string;
+  donorPhone?: string;
+  donorBloodType?: import('../types/common').BloodType;
+  donorGender?: string;
+  donorAge?: number;
+  donorDateOfBirth?: string;
+  donorGovernorate?: string;
+  donorDistrict?: string;
+  donorArea?: string;
+  donationType?: import('../types/common').DonationType;
+  status?: string;
+  campaignId?: string;
+  centerId?: string;
+  notes?: string;
+  completedAt?: string;
+  cancelledAt?: string;
+  cancelledBy?: string;
+  cancelledByName?: string;
+  cancellationReason?: string;
+}
+
 /** Internal helper — single request to /Appointments/slots */
 async function _fetchSlots(
   filters?: AppointmentFilters,
@@ -38,8 +65,8 @@ async function _fetchSlots(
 
   const { data: wrapper } = await apiClient.get<
     ApiResponseWrapper<{
-      items?: AppointmentSlot[];
-      data?: AppointmentSlot[];
+      items?: RawAppointmentSlot[];
+      data?: RawAppointmentSlot[];
       total: number;
       page: number;
       limit: number;
@@ -47,7 +74,7 @@ async function _fetchSlots(
   >('/Appointments/slots', { params: apiFilters });
 
   const rawItems = wrapper.data?.items || wrapper.data?.data || [];
-  const mappedItems: AppointmentSlot[] = rawItems.map((item: any) => {
+  const mappedItems: AppointmentSlot[] = rawItems.map((item: RawAppointmentSlot) => {
     let normalizedStatus = (item.status || '').toLowerCase();
     // Map backend's 'noshow' to our internal 'missed' state
     if (normalizedStatus === 'noshow') {
@@ -91,13 +118,13 @@ export async function fetchAppointmentSlotById(slotId: string): Promise<Appointm
     `/Appointments/slots/${slotId}`,
   );
   if (!wrapper.data) return null;
-  const item: any = wrapper.data;
+  const item = wrapper.data;
   return {
     ...item,
     status: (item.status || '').toLowerCase() as AppointmentSlot['status'],
     date: item.date ? item.date.split('T')[0] : item.date,
     donorGender: item.donorGender
-      ? ((item.donorGender as string).toLowerCase() as 'male' | 'female')
+      ? (item.donorGender.toLowerCase() as 'male' | 'female')
       : undefined,
     centerId: item.centerId,
   };

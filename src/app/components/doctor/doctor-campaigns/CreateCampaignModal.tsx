@@ -615,7 +615,7 @@ export default function CreateCampaignModal({
                   onChange={(e) =>
                     onUpdateForm((p) => ({
                       ...p,
-                      recurrenceType: e.target.value as any,
+                      recurrenceType: e.target.value as CampaignFormState['recurrenceType'],
                       recurrenceDays: [],
                     }))
                   }

@@ -43,11 +43,11 @@ export default function StepOne({
   const { egyptData } = useEgyptData();
   const normalize = (s: string) => s.trim().replace(/\s+/g, ' ');
   const currentGovernorateObj = egyptData.find(
-    (g: any) => normalize(g.name_ar) === normalize(form.governorate || ''),
+    (g) => normalize(g.name_ar) === normalize(form.governorate || ''),
   );
   const currentCities = currentGovernorateObj?.cities || [];
   const currentDistrictObj = currentCities.find(
-    (c: any) => normalize(c.city_name_ar) === normalize(form.district || ''),
+    (c) => normalize(c.city_name_ar) === normalize(form.district || ''),
   );
   const currentAreas = currentDistrictObj?.areas || [];
 
@@ -373,7 +373,7 @@ export default function StepOne({
               style={{ fontSize: '13px' }}
             >
               <option value="">— اختر المركز —</option>
-              {currentCities.map((d: any) => (
+              {currentCities.map((d) => (
                 <option key={d.id} value={d.city_name_ar}>
                   {d.city_name_ar}
                 </option>
@@ -396,7 +396,7 @@ export default function StepOne({
                 style={{ fontSize: '13px' }}
               >
                 <option value="">— اختر المنطقة —</option>
-                {currentAreas.map((a: any) => (
+                {currentAreas.map((a) => (
                   <option key={a.id} value={a.name_ar}>
                     {a.name_ar}
                   </option>

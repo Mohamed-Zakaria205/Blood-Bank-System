@@ -2,6 +2,7 @@ import { MapPin, Calendar, Users, TrendingUp, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useFilteredCampaigns } from '../../hooks/useCampaigns';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
+import type { Campaign } from '../../types/campaign';
 import {
   DONATION_TYPE_LABELS,
   statusColors,
@@ -21,7 +22,7 @@ import {
 export default function AdminCampaigns() {
   const [page, setPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState('');
-  const [selected, setSelected] = useState<any | null>(null);
+  const [selected, setSelected] = useState<Campaign | null>(null);
 
   const {
     data: response,
