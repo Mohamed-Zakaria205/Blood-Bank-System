@@ -3,17 +3,13 @@
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  fetchBloodBags,
   fetchPaginatedBloodBags,
   fetchBloodBagsStats,
   exportBags,
   disposeBags,
-  fetchBloodInventory,
-  fetchTransactions,
   fetchFilteredTransactions,
   fetchOutflowRecords,
   fetchOutflowRecordDetail,
-  fetchMonthlyStats,
   fetchInventoryAnalytics,
   fetchInventoryThresholds,
   updateInventoryThresholds,
@@ -25,14 +21,6 @@ import type { BagFilters, TransactionFilters, OutflowFilters } from '../types/co
 
 // ── Blood Bags ─────────────────────────────────────────────
 
-/** Fetch all blood bags (unpaginated) */
-export function useBloodBags() {
-  return useQuery({
-    queryKey: ['bags'],
-    queryFn: fetchBloodBags,
-    select: (res) => res.data,
-  });
-}
 
 /**
  * Fetch blood bags with server-ready pagination, search and filtering.
@@ -99,23 +87,7 @@ export function useDisposeBag() {
   });
 }
 
-// ── Blood Inventory Summary ────────────────────────────────
-export function useBloodInventory() {
-  return useQuery({
-    queryKey: ['inventory'],
-    queryFn: fetchBloodInventory,
-    select: (res) => res.data,
-  });
-}
 
-// ── Transactions ──────────────────────────────────────────────
-export function useTransactions() {
-  return useQuery({
-    queryKey: ['transactions'],
-    queryFn: fetchTransactions,
-    select: (res) => res.data,
-  });
-}
 
 /**
  * Fetch transactions with server-ready filtering and pagination.
@@ -146,14 +118,6 @@ export function useOutflowRecordDetail(id: string | null) {
   });
 }
 
-// ── Monthly Stats ──────────────────────────────────────────
-export function useMonthlyStats() {
-  return useQuery({
-    queryKey: ['monthly-stats'],
-    queryFn: fetchMonthlyStats,
-    select: (res) => res.data,
-  });
-}
 
 // ── Analytics & Thresholds ───────────────────────────────────
 

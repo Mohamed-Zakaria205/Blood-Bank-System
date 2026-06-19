@@ -4,11 +4,9 @@
 import apiClient from './client';
 import type {
   BloodBag,
-  BloodInventoryItem,
   Transaction,
   OutflowRecord,
   OutflowRecordDetail,
-  MonthlyStats,
   InventoryAnalyticsResponse,
   InventoryDashboardResponse,
   AdminInventoryDashboardData,
@@ -16,13 +14,6 @@ import type {
 } from '../types/inventory';
 import type { PaginatedResponse, BagFilters, TransactionFilters, OutflowFilters } from '../types/common';
 import type { ApiResponseWrapper } from '../types/auth';
-import {
-  bloodInventory as MOCK_INVENTORY,
-  initialTransactions as MOCK_TRANSACTIONS,
-  monthlyStats as MOCK_MONTHLY_STATS,
-} from '../data/inventory.mock';
-
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 
 export interface BulkOperationResult {
@@ -40,18 +31,6 @@ export interface BulkOperationResponse {
 }
 
 // ── Blood Bags ─────────────────────────────────────────────
-
-/** Fetch all blood bags (unpaginated — used when the full list is needed) */
-export async function fetchBloodBags(): Promise<PaginatedResponse<BloodBag>> {
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/blood-bags');
-  const items = wrapper.data?.items || wrapper.data?.data || [];
-  return {
-    data: items,
-    total: wrapper.data?.total ?? items.length,
-    page: wrapper.data?.page ?? 1,
-    limit: wrapper.data?.limit ?? items.length,
-  };
-}
 
 /**
  * Fetch blood bags with pagination, search and filtering.
@@ -128,53 +107,11 @@ export async function fetchBloodBagsStats(): Promise<BloodBagsStats> {
   return wrapper.data;
 }
 
-// ── Blood Inventory Summary ────────────────────────────────
-export async function fetchBloodInventory(): Promise<PaginatedResponse<BloodInventoryItem>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 200));
-    return {
-      data: MOCK_INVENTORY,
-      total: MOCK_INVENTORY.length,
-      page: 1,
-      limit: MOCK_INVENTORY.length,
-    };
-  }
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/summary');
-  const items = wrapper.data?.items || wrapper.data?.data || [];
-  return {
-    data: items,
-    total: wrapper.data?.total ?? items.length,
-    page: wrapper.data?.page ?? 1,
-    limit: wrapper.data?.limit ?? items.length,
-  };
-}
-
 // ── Transactions ───────────────────────────────────────────
-
-/** Fetch all transactions (unpaginated) */
-export async function fetchTransactions(): Promise<PaginatedResponse<Transaction>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return {
-      data: MOCK_TRANSACTIONS,
-      total: MOCK_TRANSACTIONS.length,
-      page: 1,
-      limit: MOCK_TRANSACTIONS.length,
-    };
-  }
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/transactions');
-  const items = wrapper.data?.items || wrapper.data?.data || [];
-  return {
-    data: items,
-    total: wrapper.data?.total ?? items.length,
-    page: wrapper.data?.page ?? 1,
-    limit: wrapper.data?.limit ?? items.length,
-  };
-}
 
 /**
  * Fetch transactions with filtering and pagination.
- * Mock: client-side filter + slice. Real API: forwarded as query-string.
+ * Real API: forwarded as query-string.
  */
 export async function fetchFilteredTransactions(
   filters: TransactionFilters = {},
@@ -189,24 +126,6 @@ export async function fetchFilteredTransactions(
     dateFrom = '',
     dateTo = '',
   } = filters;
-
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-
-    let result = MOCK_TRANSACTIONS;
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter((t) => t.bagCodes.some((c) => c.toLowerCase().includes(q)));
-    }
-    if (type) result = result.filter((t) => t.type === type);
-    if (bloodType) result = result.filter((t) => t.bloodType === bloodType);
-    if (dateFrom) result = result.filter((t) => t.timestamp >= dateFrom);
-    if (dateTo) result = result.filter((t) => t.timestamp <= dateTo);
-
-    const total = result.length;
-    const data = result.slice((page - 1) * limit, page * limit);
-    return { data, total, page, limit };
-  }
 
   const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/inventory/transactions', {
     params: { page, limit, search, type, bloodType, dateFrom, dateTo }, signal: options?.signal,
@@ -278,27 +197,6 @@ export async function exportOutflowReport(
     responseType: 'blob',
   });
   return response.data;
-}
-
-// ── Monthly Stats ──────────────────────────────────────────
-export async function fetchMonthlyStats(): Promise<PaginatedResponse<MonthlyStats>> {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 200));
-    return {
-      data: MOCK_MONTHLY_STATS,
-      total: MOCK_MONTHLY_STATS.length,
-      page: 1,
-      limit: MOCK_MONTHLY_STATS.length,
-    };
-  }
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/stats/monthly');
-  const items = wrapper.data?.items || wrapper.data?.data || [];
-  return {
-    data: items,
-    total: wrapper.data?.total ?? items.length,
-    page: wrapper.data?.page ?? 1,
-    limit: wrapper.data?.limit ?? items.length,
-  };
 }
 
 // ── Analytics & Thresholds ───────────────────────────────────

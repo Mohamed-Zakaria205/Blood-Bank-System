@@ -84,6 +84,3 @@ export function useMarkNoShow() {
   });
 }
 
-// ── Legacy aliases — kept for backward compatibility during migration ──
-// @deprecated Use useAppointmentSlots instead
-export const useSlot15Data = useAppointmentSlots;

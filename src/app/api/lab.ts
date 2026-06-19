@@ -2,12 +2,11 @@
 // Lab API service — tests, samples, results
 // ═══════════════════════════════════════════════════════════
 import apiClient from './client';
-import type { LabResultData, LabTest, Sample, TestResult, LabDashboardStats } from '../types/lab';
+import type { LabResultData, LabTest, TestResult, LabDashboardStats } from '../types/lab';
 import type {
   PaginatedResponse,
   ApiResponse,
   LabTestFilters,
-  SampleFilters,
   ResultFilters,
 } from '../types/common';
 import { validateContract, createPaginatedSchema, LabTestContractSchema } from './contract';
@@ -33,15 +32,6 @@ function mapRawLabTest(item: any): LabTest {
   };
 }
 
-function mapRawSample(item: any): Sample {
-  if (!item) return item;
-  return {
-    ...item,
-    status: item.status?.toLowerCase() as 'pending' | 'testing' | 'completed',
-    nationalId:
-      item.nationalId || item.national_id || item.donorNationalId || item.NationalId || '',
-  };
-}
 
 function mapRawTestResult(item: any): TestResult {
   if (!item) return item;
@@ -127,37 +117,6 @@ export async function submitLabTestResult(
     data: mapRawLabTest(wrapper.data),
     message: wrapper.message,
   };
-}
-
-// ── Samples ────────────────────────────────────────────────
-export async function fetchSamples(
-  filters: SampleFilters = {},
-): Promise<PaginatedResponse<Sample>> {
-  const { page = 1, limit = 100, search = '', status = '', bloodType = '' } = filters;
-  const params = Object.fromEntries(
-    Object.entries({ page, limit, search, status, bloodType }).filter(
-      ([_, v]) => v !== '' && v !== null && v !== undefined,
-    ),
-  );
-  const { data: wrapper } = await apiClient.get<
-    ApiResponseWrapper<{
-      items?: Sample[];
-      total: number;
-      page: number;
-      limit: number;
-    }>
-  >('/lab/samples', {
-    baseURL: labBaseURL,
-    params,
-  });
-
-  const rawItems = wrapper.data?.items || [];
-  const data = rawItems.map(mapRawSample);
-  const total = wrapper.data?.total ?? 0;
-  const returnedPage = wrapper.data?.page ?? page;
-  const returnedLimit = wrapper.data?.limit ?? limit;
-
-  return { data, total, page: returnedPage, limit: returnedLimit };
 }
 
 // ── Test Results ───────────────────────────────────────────

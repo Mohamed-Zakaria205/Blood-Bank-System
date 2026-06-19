@@ -51,6 +51,7 @@ export function mapRawDonor(item: any): Donor {
   };
 }
 
+
 /** Fetch all donors (unpaginated — used by components that need the full list) */
 export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
   const { data: wrapper } = await apiClient.get<
@@ -77,10 +78,6 @@ export async function fetchDonors(): Promise<PaginatedResponse<Donor>> {
 
 /**
  * Fetch donors with pagination, search and filtering.
- *
- * Mock mode: applies client-side slicing so the UI behaves
- * identically to a real paginated API during development.
- *
  * Real API: all params are forwarded as query-string parameters.
  */
 export async function fetchPaginatedDonors(

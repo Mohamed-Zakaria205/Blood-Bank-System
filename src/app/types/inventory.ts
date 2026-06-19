@@ -6,17 +6,9 @@ import type {
   DonationType,
   BloodBagStatus,
   TransactionType,
-  InventoryStatus,
   OutflowActionType,
 } from './common';
 
-export interface BloodInventoryItem {
-  type: BloodType;
-  units: number;
-  status: InventoryStatus;
-  minRequired: number;
-  lastUpdated: string;
-}
 
 export interface BloodBag {
   id: string;
@@ -83,14 +75,6 @@ export interface OutflowRecordDetail {
   performedAt: string;
 }
 
-export interface MonthlyStats {
-  month: string;
-  donations: number;
-  newDonors: number;
-  campaigns: number;
-  issued?: number;
-  wasted?: number;
-}
 
 export interface InventoryAnalyticsSummary {
   availableCount: number;

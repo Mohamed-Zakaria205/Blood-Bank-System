@@ -32,18 +32,6 @@ export interface LabTest {
   result?: LabTestResult;
 }
 
-export interface Sample {
-  id: string;
-  donationCode: string;
-  donorName: string;
-  bloodType: BloodType;
-  donationType: DonationType;
-  collectedDate: string;
-  status: 'pending' | 'testing' | 'completed';
-  labDoctor?: string;
-  city?: string;
-  nationalId?: string;
-}
 
 export interface TestResult {
   id: string;

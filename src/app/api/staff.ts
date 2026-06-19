@@ -19,7 +19,7 @@ export async function fetchStaff(): Promise<PaginatedResponse<User>> {
 
 /**
  * Fetch staff with filtering and pagination.
- * Mock: client-side filter + slice. Real API: forwarded as query-string.
+ * Real API: forwarded as query-string.
  */
 export async function fetchFilteredStaff(
   filters: StaffFilters = {},

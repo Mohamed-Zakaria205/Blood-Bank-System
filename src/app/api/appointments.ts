@@ -117,22 +117,7 @@ export interface AppointmentStatsParams {
 export async function fetchAppointmentStats(
   params?: AppointmentStatsParams,
 ): Promise<{ data: AppointmentStats }> {
-  // if (USE_MOCK) {
-  //   await new Promise((r) => setTimeout(r, 200));
-  //   // Calculate live stats from mock data for the requested date
-  //   const today = new Date().toISOString().split('T')[0];
-  //   const targetDate = params?.date ?? today;
-  //   const daySlots = mockSlots.filter((s) => s.date === targetDate);
-  //   const stats: AppointmentStats = {
-  //     booked: daySlots.filter((s) => s.status === 'booked').length,
-  //     completed: daySlots.filter((s) => s.status === 'completed').length,
-  //     missed: daySlots.filter((s) => s.status === 'missed').length,
-  //     cancelled: daySlots.filter((s) => s.status === 'cancelled').length,
-  //     available: 0, // not tracked in mock — server computes from capacity
-  //     total: daySlots.length,
-  //   };
-  //   return { data: stats };
-  // }
+
 
   const { data: wrapper } = await apiClient.get<ApiResponseWrapper<AppointmentStats>>(
     '/Appointments/stats',

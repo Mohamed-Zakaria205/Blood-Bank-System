@@ -9,11 +9,9 @@ import { useAuth } from '../contexts/AuthContext';
 /**
  * Mutation hook for changing the current user's password.
  *
- * - In mock mode: validates currentPassword against the in-memory
- *   MOCK_USERS store (server-side simulation, never touches User object).
- * - In real mode: POSTs { currentPassword, newPassword } to
- *   POST /auth/change-password. The backend validates against the
- *   stored hash and returns 422 on mismatch.
+ * POSTs { currentPassword, newPassword } to
+ * POST /auth/change-password. The backend validates against the
+ * stored hash and returns 422 on mismatch.
  *
  * Usage:
  *   const { mutateAsync, isPending, isError } = useChangePassword();
