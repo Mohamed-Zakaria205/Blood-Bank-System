@@ -314,7 +314,7 @@ export default function DoctorDonations() {
       {/* Table */}
       <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-right" style={{ fontSize: '13px' }}>
+          <table className="w-full min-w-[900px] text-right" style={{ fontSize: '13px' }}>
             <thead>
               <tr className="bg-muted/40 border-b border-border">
                 {tableHeaders.map((h) => (

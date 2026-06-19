@@ -457,7 +457,7 @@ export default function InventoryBags() {
       {/* Table */}
       <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[900px]">
             <thead>
               <tr className="bg-muted/40">
                 <th className="px-4 py-3" style={{ width: '44px' }}>

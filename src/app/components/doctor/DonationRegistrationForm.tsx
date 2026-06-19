@@ -17,7 +17,7 @@ import { Form } from '../ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { BloodType, DonationType, DonorStatus } from '../../types/common';
 import type { Donor } from '../../types/donor';
-import { EGYPT_DATA } from '../../data/egypt';
+import { useEgyptData } from '../../hooks/useEgyptData';
 
 import { extractDobFromNationalId, normalizeDateToISO } from '../../utils/dateUtils';
 // ── Sub-components ──
@@ -32,6 +32,7 @@ import StepTwo from './donation-registration/StepTwo';
 export default function DonationRegistrationForm() {
   const navigate = useNavigate();
   useAuth();
+  const { egyptData } = useEgyptData();
   const [searchParams] = useSearchParams();
   const { data: filteredCampaigns } = useFilteredCampaigns({ status: 'active', limit: 100 });
   const { data: donationCenters = [] } = useDonationCenters();
@@ -269,12 +270,12 @@ export default function DonationRegistrationForm() {
           const gov = d.governorate || 'بني سويف';
           let dist = d.district || 'مركز وبندر بني سويف';
 
-          const govObj = EGYPT_DATA.find((g) => g.name_ar === gov);
+          const govObj = egyptData.find((g: any) => g.name_ar === gov);
           if (govObj) {
-            const exactDist = govObj.cities.find((c) => c.city_name_ar === dist);
+            const exactDist = govObj.cities.find((c: any) => c.city_name_ar === dist);
             if (!exactDist) {
               const partialDist = govObj.cities.find(
-                (c) => c.city_name_ar.includes(dist) || dist.includes(c.city_name_ar),
+                (c: any) => c.city_name_ar.includes(dist) || dist.includes(c.city_name_ar),
               );
               if (partialDist) dist = partialDist.city_name_ar;
             }

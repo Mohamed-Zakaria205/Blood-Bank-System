@@ -23,9 +23,9 @@ export function useLabDashboardForm() {
 
   const isRejected = form
     ? form.hcv === 'positive' ||
-      form.hbv === 'positive' ||
-      form.syphilis === 'positive' ||
-      form.hiv === 'positive'
+    form.hbv === 'positive' ||
+    form.syphilis === 'positive' ||
+    form.hiv === 'positive'
     : false;
 
   const validate = () => {

@@ -332,7 +332,7 @@ export default function InventoryDashboard() {
           </button>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[800px]">
             <thead>
               <tr className="bg-muted/40">
                 {['رقم السجل', 'الكود', 'الفصيلة', 'النوع', 'المستلم', 'المنفذ', 'التوقيت'].map(

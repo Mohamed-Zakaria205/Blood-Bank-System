@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import type { UseFormRegister, FieldErrors } from 'react-hook-form';
 import type { SimpleForm } from './donationFormSchema';
-import { EGYPT_DATA } from '../../../data/egypt';
+import { useEgyptData } from '../../../hooks/useEgyptData';
 import type { Campaign } from '../../../types';
 import type { DonationCenter } from '../../../types/donationCenter';
 
@@ -40,13 +40,14 @@ export default function StepOne({
   onNext,
   submitting,
 }: StepOneProps) {
+  const { egyptData } = useEgyptData();
   const normalize = (s: string) => s.trim().replace(/\s+/g, ' ');
-  const currentGovernorateObj = EGYPT_DATA.find(
-    (g) => normalize(g.name_ar) === normalize(form.governorate || ''),
+  const currentGovernorateObj = egyptData.find(
+    (g: any) => normalize(g.name_ar) === normalize(form.governorate || ''),
   );
   const currentCities = currentGovernorateObj?.cities || [];
   const currentDistrictObj = currentCities.find(
-    (c) => normalize(c.city_name_ar) === normalize(form.district || ''),
+    (c: any) => normalize(c.city_name_ar) === normalize(form.district || ''),
   );
   const currentAreas = currentDistrictObj?.areas || [];
 
@@ -347,7 +348,7 @@ export default function StepOne({
               style={{ fontSize: '13px' }}
             >
               <option value="">— اختر المحافظة —</option>
-              {EGYPT_DATA.map((g) => (
+              {egyptData.map((g) => (
                 <option key={g.id} value={g.name_ar}>
                   {g.name_ar}
                 </option>
@@ -372,7 +373,7 @@ export default function StepOne({
               style={{ fontSize: '13px' }}
             >
               <option value="">— اختر المركز —</option>
-              {currentCities.map((d) => (
+              {currentCities.map((d: any) => (
                 <option key={d.id} value={d.city_name_ar}>
                   {d.city_name_ar}
                 </option>
@@ -395,7 +396,7 @@ export default function StepOne({
                 style={{ fontSize: '13px' }}
               >
                 <option value="">— اختر المنطقة —</option>
-                {currentAreas.map((a) => (
+                {currentAreas.map((a: any) => (
                   <option key={a.id} value={a.name_ar}>
                     {a.name_ar}
                   </option>

@@ -1,7 +1,7 @@
 import { X, Save } from 'lucide-react';
 import { BLOOD_TYPES } from '../../../constants';
 import type { Donor } from '../../../types';
-import { EGYPT_DATA } from '../../../data/egypt';
+import { useEgyptData } from '../../../hooks/useEgyptData';
 import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
 
 interface EditDonorModalProps {
@@ -25,9 +25,10 @@ export default function EditDonorModal({
   saved,
   errors,
 }: EditDonorModalProps) {
-  const currentGovernorateObj = EGYPT_DATA.find((g) => g.name_ar === form.governorate);
+  const { egyptData } = useEgyptData();
+  const currentGovernorateObj = egyptData.find((g: any) => g.name_ar === form.governorate);
   const currentCities = currentGovernorateObj?.cities || [];
-  const currentDistrictObj = currentCities.find((c) => c.city_name_ar === form.district);
+  const currentDistrictObj = currentCities.find((c: any) => c.city_name_ar === form.district);
   const currentAreas = currentDistrictObj?.areas || [];
   const modalRef = useModalFocusTrap(onCancel);
 
@@ -204,7 +205,7 @@ export default function EditDonorModal({
                     style={{ fontSize: '13px' }}
                   >
                     <option value="">— اختر المحافظة —</option>
-                    {EGYPT_DATA.map((g) => (
+                    {egyptData.map((g) => (
                       <option key={g.id} value={g.name_ar}>
                         {g.name_ar}
                       </option>
@@ -233,7 +234,7 @@ export default function EditDonorModal({
                     style={{ fontSize: '13px' }}
                   >
                     <option value="">— اختر المركز —</option>
-                    {currentCities.map((d) => (
+                    {currentCities.map((d: any) => (
                       <option key={d.id} value={d.city_name_ar}>
                         {d.city_name_ar}
                       </option>
@@ -257,7 +258,7 @@ export default function EditDonorModal({
                       style={{ fontSize: '13px' }}
                     >
                       <option value="">— اختر المنطقة —</option>
-                      {currentAreas.map((a) => (
+                      {currentAreas.map((a: any) => (
                         <option key={a.id} value={a.name_ar}>
                           {a.name_ar}
                         </option>

@@ -80,7 +80,7 @@ export default function DoctorCampaigns() {
     title: '',
     message: '',
     variant: 'danger',
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
 
   const handleFilterStatus = (status: string) => {

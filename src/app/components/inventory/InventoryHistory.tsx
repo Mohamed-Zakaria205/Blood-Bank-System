@@ -298,7 +298,7 @@ export default function InventoryHistory() {
 
       <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[900px]">
             <thead>
               <tr className="bg-muted/40">
                 {historyTableHeaders.map((h) => (
