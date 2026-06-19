@@ -2,7 +2,11 @@ import { MapPin, Calendar, Users, TrendingUp, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useFilteredCampaigns } from '../../hooks/useCampaigns';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
-import { DONATION_TYPE_LABELS } from '../doctor/doctor-campaigns/campaignConstants';
+import {
+  DONATION_TYPE_LABELS,
+  statusColors,
+  statusLabels,
+} from '../doctor/doctor-campaigns/campaignConstants';
 import {
   Pagination,
   PaginationContent,
@@ -13,12 +17,6 @@ import {
   PaginationEllipsis,
   generatePaginationNumbers,
 } from '../ui/pagination';
-
-const statusColors: Record<string, string> = {
-  active: 'bg-emerald-100 text-emerald-700',
-  completed: 'bg-muted text-muted-foreground',
-};
-const statusLabels: Record<string, string> = { active: 'نشطة', completed: 'منتهية' };
 
 export default function AdminCampaigns() {
   const [page, setPage] = useState(1);
@@ -75,13 +73,19 @@ export default function AdminCampaigns() {
       </div>
 
       {/* Stats/Filters */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         {[
           {
             label: 'حملات نشطة',
             color: 'text-emerald-700 dark:text-emerald-400',
             bg: 'bg-emerald-50 dark:bg-emerald-500/10',
             val: 'active',
+          },
+          {
+            label: 'حملات غير نشطة',
+            color: 'text-amber-700 dark:text-amber-400',
+            bg: 'bg-amber-50 dark:bg-amber-500/10',
+            val: 'notactive',
           },
           {
             label: 'حملات منتهية',
@@ -213,6 +217,11 @@ export default function AdminCampaigns() {
             </div>
           );
         })}
+        {campaigns.length === 0 && (
+          <div className="col-span-2 py-16 text-center text-muted-foreground bg-card rounded-2xl border border-border">
+            <p style={{ fontSize: '14px' }}>لا توجد حملات</p>
+          </div>
+        )}
       </div>
 
       {/* Pagination UI */}
