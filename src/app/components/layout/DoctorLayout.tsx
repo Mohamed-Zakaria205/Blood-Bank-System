@@ -6,6 +6,7 @@ import {
   CalendarDays,
   HeartPulse,
   Megaphone,
+  Settings,
 } from 'lucide-react';
 import DashboardLayout, { type NavItem } from './DashboardLayout';
 import { useCampaigns } from '../../hooks/useCampaigns';
@@ -28,6 +29,7 @@ export default function DoctorLayout() {
       badgeCount: activeCampaigns.length,
       badgeColor: 'bg-green-100 text-green-700',
     },
+    { path: '/doctor/settings', label: 'الإعدادات', icon: Settings },
   ];
 
   const sidebarExtra = (

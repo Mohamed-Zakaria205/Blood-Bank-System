@@ -32,6 +32,7 @@ const DonationRegistrationForm = lazy(() => import('./components/doctor/Donation
 const DoctorCampaigns = lazy(() => import('./components/doctor/DoctorCampaigns'));
 const DoctorAppointments = lazy(() => import('./components/doctor/DoctorAppointments'));
 const DoctorEligibility = lazy(() => import('./components/doctor/DoctorEligibility'));
+const DoctorSettings = lazy(() => import('./components/doctor/DoctorSettings'));
 
 // ── Lab Pages (lazy loaded) ──
 const LabDashboard = lazy(() => import('./components/lab/LabDashboard'));
@@ -134,6 +135,7 @@ export const router = createBrowserRouter([
                   { path: 'campaigns', Component: DoctorCampaigns },
                   { path: 'appointments', Component: DoctorAppointments },
                   { path: 'eligibility', Component: DoctorEligibility },
+                  { path: 'settings', Component: DoctorSettings },
                 ],
               },
             ],

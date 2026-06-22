@@ -1,10 +1,9 @@
-import { Building2, Lock, Clock } from 'lucide-react';
+import { Building2, Lock } from 'lucide-react';
 
 /** Sidebar tab definitions */
 export const settingsTabs = [
   { id: 'system', label: 'بيانات المنشأة', icon: Building2 },
   { id: 'security', label: 'الأمان', icon: Lock },
-  { id: 'eligibility', label: 'مؤهلية التبرع', icon: Clock },
 ] as const;
 
 /** Facility form field definitions */

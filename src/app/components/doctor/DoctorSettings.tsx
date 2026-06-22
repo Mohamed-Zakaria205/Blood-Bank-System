@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-
-// ── Constants & types ──
-import { settingsTabs } from './admin-settings/settingsConstants';
+import { Clock } from 'lucide-react';
 
 // ── Tab sub-components ──
-import FacilityTab from './admin-settings/FacilityTab';
-import SecurityTab from './admin-settings/SecurityTab';
+import EligibilityTab from './doctor-settings/EligibilityTab';
 
-export default function AdminSettings() {
+export default function DoctorSettings() {
   useAuth();
 
-  const [activeTab, setActiveTab] = useState('system');
+  const [activeTab, setActiveTab] = useState('eligibility');
+
+  const settingsTabs = [
+    { id: 'eligibility', label: 'مؤهلية التبرع', icon: Clock },
+  ] as const;
 
   return (
     <div className="space-y-6">
@@ -21,7 +22,7 @@ export default function AdminSettings() {
           الإعدادات
         </h1>
         <p className="text-muted-foreground" style={{ fontSize: '14px' }}>
-          إدارة إعدادات النظام والمنشأة
+          إدارة إعدادات مؤهلية التبرع
         </p>
       </div>
 
@@ -53,11 +54,9 @@ export default function AdminSettings() {
 
         {/* Tab Content */}
         <div className="lg:col-span-3">
-          {activeTab === 'system' && <FacilityTab />}
-          {activeTab === 'security' && <SecurityTab />}
+          {activeTab === 'eligibility' && <EligibilityTab />}
         </div>
       </div>
     </div>
   );
 }
-
