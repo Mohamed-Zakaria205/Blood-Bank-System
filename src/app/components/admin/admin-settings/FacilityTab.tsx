@@ -700,7 +700,13 @@ export default function FacilityTab() {
                   type="date"
                   value={modalState.date}
                   min={new Date().toISOString().split('T')[0]}
-                  onChange={(e) => setModalState({ ...modalState, date: e.target.value })}
+                  max="9999-12-31"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const year = val.split('-')[0];
+                    if (year && year.length > 4) return;
+                    setModalState({ ...modalState, date: val });
+                  }}
                   className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground text-sm focus:border-green-400 focus:outline-none"
                 />
               </div>
