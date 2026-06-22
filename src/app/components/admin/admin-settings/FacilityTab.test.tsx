@@ -169,4 +169,55 @@ describe('FacilityTab Component', () => {
     expect(toast.error).toHaveBeenCalledWith('اسم الفرع مطلوب');
     expect(mockMutate).not.toHaveBeenCalled();
   });
+
+  it('restricts setting exception date to the past', () => {
+    render(<FacilityTab />);
+
+    // Go to exclusions tab
+    const exclusionsTabButton = screen.getByText('أيام الإجازات والاستثناءات');
+    fireEvent.click(exclusionsTabButton);
+
+    // Open modal
+    const addBtn = screen.getByText('إضافة استثناء جديد');
+    fireEvent.click(addBtn);
+
+    // Enter a past date
+    const dateInput = screen.getByDisplayValue(new Date().toISOString().split('T')[0]);
+    const pastDate = '2020-01-01';
+    fireEvent.change(dateInput, { target: { value: pastDate } });
+
+    // Enter a reason
+    const reasonInput = screen.getByPlaceholderText('مثال: إجازة عيد الأضحى، صيانة دورية...');
+    fireEvent.change(reasonInput, { target: { value: 'إجازة قديمة' } });
+
+    // Confirm
+    const confirmBtn = screen.getByText('تأكيد');
+    fireEvent.click(confirmBtn);
+
+    expect(toast.error).toHaveBeenCalledWith('التاريخ لا يمكن أن يكون في الماضي');
+  });
+
+  it('closes the modal when clicking on the backdrop', () => {
+    render(<FacilityTab />);
+
+    // Go to exclusions tab
+    const exclusionsTabButton = screen.getByText('أيام الإجازات والاستثناءات');
+    fireEvent.click(exclusionsTabButton);
+
+    // Open modal
+    const addBtn = screen.getByText('إضافة استثناء جديد');
+    fireEvent.click(addBtn);
+
+    expect(screen.getByText('إضافة استثناء ساعات عمل جديد')).toBeInTheDocument();
+
+    const modalTitle = screen.getByText('إضافة استثناء ساعات عمل جديد');
+    const modalHeader = modalTitle.parentElement!;
+    const modalContainer = modalHeader.parentElement!; // inner modal
+    const backdrop = modalContainer.parentElement!; // backdrop overlay
+
+    fireEvent.click(backdrop);
+
+    // Verify modal is closed
+    expect(screen.queryByText('إضافة استثناء ساعات عمل جديد')).not.toBeInTheDocument();
+  });
 });

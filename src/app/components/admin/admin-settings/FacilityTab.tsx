@@ -134,6 +134,11 @@ export default function FacilityTab() {
       toast.error('التاريخ مطلوب');
       return;
     }
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (modalState.date < todayStr) {
+      toast.error('التاريخ لا يمكن أن يكون في الماضي');
+      return;
+    }
     if (!modalState.reason.trim()) {
       toast.error('السبب مطلوب');
       return;
@@ -664,8 +669,14 @@ export default function FacilityTab() {
 
       {/* EXCLUSION MODAL DIALOG */}
       {modalState.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-card border border-border w-full max-w-lg rounded-2xl shadow-xl overflow-hidden flex flex-col">
+        <div 
+          onClick={closeModal}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-card border border-border w-full max-w-lg rounded-2xl shadow-xl overflow-hidden flex flex-col"
+          >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border bg-muted/10">
               <h3 className="text-foreground font-bold text-base">
@@ -686,6 +697,7 @@ export default function FacilityTab() {
                 <input
                   type="date"
                   value={modalState.date}
+                  min={new Date().toISOString().split('T')[0]}
                   onChange={(e) => setModalState({ ...modalState, date: e.target.value })}
                   className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/40 text-foreground text-sm focus:border-green-400 focus:outline-none"
                 />
