@@ -59,8 +59,11 @@ export const EligibilityStatsContractSchema = z.object({
 });
 
 export const EligibilitySettingsContractSchema = z.object({
-  donorMaleWaitDays: z.number(),
-  donorFemaleWaitDays: z.number(),
+  wholeBloodMaleDays: z.number(),
+  wholeBloodFemaleDays: z.number(),
+  plasmaDays: z.number(),
+  plateletsDays: z.number(),
+  defaultScreeningLockoutDays: z.number(),
 });
 
 export const LabTestResultContractSchema = z.object({
@@ -153,6 +156,39 @@ export const DoctorDashboardContractSchema = z.object({
       donationDate: z.string(),
     }),
   ),
+});
+
+export const WeeklyHoursContractSchema = z.object({
+  dayOfWeek: z.number(),
+  isClosed: z.boolean(),
+  openingTime: z.string(),
+  closingTime: z.string(),
+  maxDonorsPerSlot: z.number().nullable(),
+});
+
+export const ExclusionContractSchema = z.object({
+  id: z.string().optional(),
+  date: z.string(),
+  isClosed: z.boolean(),
+  specialOpeningTime: z.string().nullable(),
+  specialClosingTime: z.string().nullable(),
+  reason: z.string(),
+});
+
+export const MainBranchSettingsContractSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  location: z.string(),
+  addressDetails: z.string().optional().nullable(),
+  phoneNumber: z.string(),
+  email: z.string(),
+  supportedDonationTypes: z.array(z.string()),
+  slotDurationMinutes: z.number(),
+  maxDonorsPerSlot: z.number(),
+  weeklyHours: z.array(WeeklyHoursContractSchema),
+  exclusions: z.array(ExclusionContractSchema),
+  updatedAt: z.string().optional().nullable(),
+  version: z.number().optional().nullable(),
 });
 
 /**

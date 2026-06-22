@@ -1,32 +1,18 @@
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { useAuth } from '../../contexts/AuthContext';
 
 // ── Constants & types ──
-import type { FacilityInfo } from './admin-settings/settingsConstants';
-import {
-  settingsTabs,
-  defaultFacilityInfo,
-} from './admin-settings/settingsConstants';
+import { settingsTabs } from './admin-settings/settingsConstants';
 
 // ── Tab sub-components ──
 import FacilityTab from './admin-settings/FacilityTab';
 import SecurityTab from './admin-settings/SecurityTab';
-import PermissionsTab from './admin-settings/PermissionsTab';
 import EligibilityTab from './admin-settings/EligibilityTab';
 
 export default function AdminSettings() {
   useAuth();
 
   const [activeTab, setActiveTab] = useState('system');
-  const [saved, setSaved] = useState(false);
-  const [sysInfo, setSysInfo] = useState<FacilityInfo>(defaultFacilityInfo);
-
-  const handleSave = () => {
-    toast.success('تم حفظ الإعدادات بنجاح');
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-  };
 
   return (
     <div className="space-y-6">
@@ -68,20 +54,12 @@ export default function AdminSettings() {
 
         {/* Tab Content */}
         <div className="lg:col-span-3">
-          {activeTab === 'system' && (
-            <FacilityTab
-              sysInfo={sysInfo}
-              onChange={setSysInfo}
-              saved={saved}
-              onSave={handleSave}
-            />
-          )}
+          {activeTab === 'system' && <FacilityTab />}
           {activeTab === 'security' && <SecurityTab />}
-
-          {activeTab === 'permissions' && <PermissionsTab />}
           {activeTab === 'eligibility' && <EligibilityTab />}
         </div>
       </div>
     </div>
   );
 }
+

@@ -155,6 +155,9 @@ export type UpdateDonorRequest = Partial<
 >;
 
 export interface EligibilitySettings {
-  donorMaleWaitDays: number;
-  donorFemaleWaitDays: number;
+  wholeBloodMaleDays: number;
+  wholeBloodFemaleDays: number;
+  plasmaDays: number;
+  plateletsDays: number;
+  defaultScreeningLockoutDays: number;
 }

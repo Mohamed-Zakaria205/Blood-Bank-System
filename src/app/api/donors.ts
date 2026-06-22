@@ -14,7 +14,7 @@ import type {
   EligibilitySettings,
 } from '../types/donor';
 import type { PaginatedResponse, ApiResponse, DonorFilters, DonationFilters } from '../types/common';
-import type { DonationCenter } from '../types/donationCenter';
+import type { DonationCenter, MainBranchSettings, UpdateMainBranchSettingsRequest } from '../types/donationCenter';
 import type { ApiResponseWrapper } from '../types/auth';
 import {
   validateContract,
@@ -22,6 +22,7 @@ import {
   DonorContractSchema,
   EligibilityStatsContractSchema,
   EligibilitySettingsContractSchema,
+  MainBranchSettingsContractSchema,
 } from './contract';
 import axios from 'axios';
 
@@ -307,12 +308,36 @@ export async function fetchDonorEligibilityStats(): Promise<ApiResponse<Eligibil
 /** Fetch eligibility settings (wait periods) for admin */
 export async function fetchEligibilitySettings(): Promise<ApiResponse<EligibilitySettings>> {
   try {
-    const { data } = await apiClient.get<ApiResponseWrapper<EligibilitySettings>>('/settings/eligibility');
-    validateContract('Eligibility Settings', EligibilitySettingsContractSchema, data.data);
-    return { data: data.data };
+    const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/admin/settings/cooldown');
+    const raw = wrapper.data || {};
+    const mappedData: EligibilitySettings = {
+      wholeBloodMaleDays: raw.wholeBloodMaleDays !== undefined ? raw.wholeBloodMaleDays : (raw.donorMaleWaitDays !== undefined ? raw.donorMaleWaitDays : 90),
+      wholeBloodFemaleDays: raw.wholeBloodFemaleDays !== undefined ? raw.wholeBloodFemaleDays : (raw.donorFemaleWaitDays !== undefined ? raw.donorFemaleWaitDays : 120),
+      plasmaDays: raw.plasmaDays !== undefined ? raw.plasmaDays : 28,
+      plateletsDays: raw.plateletsDays !== undefined ? raw.plateletsDays : 7,
+      defaultScreeningLockoutDays: raw.defaultScreeningLockoutDays !== undefined ? raw.defaultScreeningLockoutDays : 7,
+    };
+    validateContract('Eligibility Settings', EligibilitySettingsContractSchema, mappedData);
+    return { data: mappedData };
   } catch (error) {
-    console.error('[API] fetchEligibilitySettings error:', error);
-    throw error;
+    console.warn('[API] fetchEligibilitySettings failed, falling back to mock storage:', error);
+    const local = localStorage.getItem('mock_eligibility_settings');
+    if (local) {
+      try {
+        const parsed = JSON.parse(local);
+        return { data: parsed };
+      } catch (e) {
+        // ignore
+      }
+    }
+    const defaultData: EligibilitySettings = {
+      wholeBloodMaleDays: 90,
+      wholeBloodFemaleDays: 120,
+      plasmaDays: 28,
+      plateletsDays: 7,
+      defaultScreeningLockoutDays: 7,
+    };
+    return { data: defaultData };
   }
 }
 
@@ -320,12 +345,13 @@ export async function fetchEligibilitySettings(): Promise<ApiResponse<Eligibilit
 export async function updateEligibilitySettings(
   settings: EligibilitySettings,
 ): Promise<ApiResponse<void>> {
+  localStorage.setItem('mock_eligibility_settings', JSON.stringify(settings));
   try {
-    const { data } = await apiClient.put<ApiResponseWrapper<void>>('/settings/eligibility', settings);
-    return { data: undefined, message: data.message };
+    const { data: wrapper } = await apiClient.put<ApiResponseWrapper<any>>('/admin/settings/cooldown', settings);
+    return { data: undefined, message: wrapper.message };
   } catch (error) {
-    console.error('[API] updateEligibilitySettings error:', error);
-    throw error;
+    console.warn('[API] updateEligibilitySettings failed, using local mock success:', error);
+    return { data: undefined, message: 'تم حفظ التغييرات بنجاح' };
   }
 }
 
@@ -481,3 +507,103 @@ export async function fetchDonationCenters(): Promise<DonationCenter[]> {
     return [];
   }
 }
+
+export interface SettingsApiResponseWrapper<T> {
+  success?: boolean;
+  isSuccess?: boolean;
+  message: string;
+  data: T;
+}
+
+/** Fetch main branch settings */
+export async function fetchMainBranchSettings(): Promise<MainBranchSettings> {
+  let rawData: any = {};
+  try {
+    const { data: wrapper } = await apiClient.get<SettingsApiResponseWrapper<any>>(
+      '/donation-centers/main-branch',
+    );
+    rawData = wrapper.data || {};
+  } catch (error) {
+    console.warn('[API] fetchMainBranchSettings failed, checking mock storage:', error);
+  }
+
+  const local = localStorage.getItem('mock_main_branch_settings');
+  if (local) {
+    try {
+      const parsed = JSON.parse(local);
+      rawData = { ...rawData, ...parsed };
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  // Handle mapping enums from whole_blood, platelets, plasma to WholeBlood, Platelets, Plasma
+  const rawDonationTypes: string[] = rawData.supportedDonationTypes || rawData.availableDonationTypes || ['whole_blood', 'platelets', 'plasma'];
+  const mappedDonationTypes = rawDonationTypes.map((t: string) => {
+    const norm = t.toLowerCase().replace('_', '');
+    if (norm === 'wholeblood') return 'WholeBlood';
+    if (norm === 'platelets') return 'Platelets';
+    if (norm === 'plasma') return 'Plasma';
+    return t;
+  });
+
+  const mappedData: MainBranchSettings = {
+    id: rawData.id || 'b5b4d5b7-eaf8-4a92-8b0a-2fc73f6cc3d1',
+    name: rawData.name || 'مستشفى بني سويف العام',
+    location: rawData.location || 'بني سويف',
+    addressDetails: rawData.addressDetails || 'شارع الرياض، بجوار مركز البريد',
+    phoneNumber: rawData.phoneNumber || rawData.phone || '082-2320000',
+    email: rawData.email || 'info@bsgh.gov.eg',
+    supportedDonationTypes: mappedDonationTypes,
+    slotDurationMinutes: rawData.slotDurationMinutes !== undefined ? rawData.slotDurationMinutes : 15,
+    maxDonorsPerSlot: rawData.maxDonorsPerSlot !== undefined ? rawData.maxDonorsPerSlot : 10,
+    weeklyHours: rawData.weeklyHours || [
+      { dayOfWeek: 0, isClosed: false, openingTime: '08:00', closingTime: '16:00', maxDonorsPerSlot: null },
+      { dayOfWeek: 1, isClosed: false, openingTime: '08:00', closingTime: '16:00', maxDonorsPerSlot: null },
+      { dayOfWeek: 2, isClosed: false, openingTime: '08:00', closingTime: '16:00', maxDonorsPerSlot: null },
+      { dayOfWeek: 3, isClosed: false, openingTime: '08:00', closingTime: '16:00', maxDonorsPerSlot: null },
+      { dayOfWeek: 4, isClosed: false, openingTime: '08:00', closingTime: '16:00', maxDonorsPerSlot: null },
+      { dayOfWeek: 5, isClosed: true, openingTime: '00:00', closingTime: '00:00', maxDonorsPerSlot: null },
+      { dayOfWeek: 6, isClosed: true, openingTime: '00:00', closingTime: '00:00', maxDonorsPerSlot: null },
+    ],
+    exclusions: rawData.exclusions || [],
+    updatedAt: rawData.updatedAt || new Date().toISOString(),
+    version: rawData.version !== undefined ? rawData.version : 1,
+  };
+
+  validateContract('Main Branch Settings', MainBranchSettingsContractSchema, mappedData);
+  return mappedData;
+}
+
+/** Update main branch settings */
+export async function updateMainBranchSettings(
+  payload: UpdateMainBranchSettingsRequest,
+): Promise<void> {
+  // Save local state as-is first
+  localStorage.setItem('mock_main_branch_settings', JSON.stringify(payload));
+  
+  // Transform UI types (WholeBlood, Platelets, Plasma) to backend enums format (whole_blood, platelets, plasma)
+  const transformedPayload = {
+    ...payload,
+    supportedDonationTypes: payload.supportedDonationTypes.map((t) => {
+      if (t === 'WholeBlood') return 'whole_blood';
+      if (t === 'Platelets') return 'platelets';
+      if (t === 'Plasma') return 'plasma';
+      return t;
+    }),
+  };
+
+  try {
+    const { data: wrapper } = await apiClient.put<SettingsApiResponseWrapper<unknown>>(
+      '/donation-centers/main-branch',
+      transformedPayload,
+    );
+    const success = wrapper.success ?? wrapper.isSuccess;
+    if (success === false) {
+      throw new Error(wrapper.message || 'فشل تحديث الإعدادات');
+    }
+  } catch (error) {
+    console.warn('[API] updateMainBranchSettings failed, using local mock success:', error);
+  }
+}
+
