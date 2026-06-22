@@ -307,7 +307,7 @@ export async function fetchDonorEligibilityStats(): Promise<ApiResponse<Eligibil
 
 /** Fetch eligibility settings (wait periods) for admin */
 export async function fetchEligibilitySettings(): Promise<ApiResponse<EligibilitySettings>> {
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/admin/settings/cooldown');
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/doctor/settings/cooldown');
   const raw = wrapper.data || {};
   const mappedData: EligibilitySettings = {
     wholeBloodMaleDays: raw.wholeBloodMaleDays !== undefined ? raw.wholeBloodMaleDays : (raw.donorMaleWaitDays !== undefined ? raw.donorMaleWaitDays : 90),
@@ -324,7 +324,7 @@ export async function fetchEligibilitySettings(): Promise<ApiResponse<Eligibilit
 export async function updateEligibilitySettings(
   settings: EligibilitySettings,
 ): Promise<ApiResponse<void>> {
-  const { data: wrapper } = await apiClient.put<ApiResponseWrapper<any>>('/admin/settings/cooldown', settings);
+  const { data: wrapper } = await apiClient.put<ApiResponseWrapper<any>>('/doctor/settings/cooldown', settings);
   return { data: undefined, message: wrapper.message };
 }
 

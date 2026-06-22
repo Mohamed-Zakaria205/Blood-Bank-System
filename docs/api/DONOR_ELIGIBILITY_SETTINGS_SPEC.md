@@ -36,7 +36,7 @@ Arrange the inputs in a clean grid or form layout. All fields are numeric:
 Call this API when the panel is loaded to populate the form fields.
 
 * **HTTP Method:** `GET`
-* **Endpoint URL:** `/api/v1/system/admin/settings/cooldown`
+* **Endpoint URL:** `/api/v1/system/doctor/settings/cooldown`
 * **Headers:**
   ```http
   Authorization: Bearer <JWT_ACCESS_TOKEN>
@@ -64,7 +64,7 @@ Call this API when the panel is loaded to populate the form fields.
 Call this API when the administrator clicks the **حفظ التغييرات** (Save Changes) button.
 
 * **HTTP Method:** `PUT`
-* **Endpoint URL:** `/api/v1/system/admin/settings/cooldown`
+* **Endpoint URL:** `/api/v1/system/doctor/settings/cooldown`
 * **Headers:**
   ```http
   Authorization: Bearer <JWT_ACCESS_TOKEN>
