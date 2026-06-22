@@ -307,52 +307,25 @@ export async function fetchDonorEligibilityStats(): Promise<ApiResponse<Eligibil
 
 /** Fetch eligibility settings (wait periods) for admin */
 export async function fetchEligibilitySettings(): Promise<ApiResponse<EligibilitySettings>> {
-  try {
-    const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/admin/settings/cooldown');
-    const raw = wrapper.data || {};
-    const mappedData: EligibilitySettings = {
-      wholeBloodMaleDays: raw.wholeBloodMaleDays !== undefined ? raw.wholeBloodMaleDays : (raw.donorMaleWaitDays !== undefined ? raw.donorMaleWaitDays : 90),
-      wholeBloodFemaleDays: raw.wholeBloodFemaleDays !== undefined ? raw.wholeBloodFemaleDays : (raw.donorFemaleWaitDays !== undefined ? raw.donorFemaleWaitDays : 120),
-      plasmaDays: raw.plasmaDays !== undefined ? raw.plasmaDays : 28,
-      plateletsDays: raw.plateletsDays !== undefined ? raw.plateletsDays : 7,
-      defaultScreeningLockoutDays: raw.defaultScreeningLockoutDays !== undefined ? raw.defaultScreeningLockoutDays : 7,
-    };
-    validateContract('Eligibility Settings', EligibilitySettingsContractSchema, mappedData);
-    return { data: mappedData };
-  } catch (error) {
-    console.warn('[API] fetchEligibilitySettings failed, falling back to mock storage:', error);
-    const local = localStorage.getItem('mock_eligibility_settings');
-    if (local) {
-      try {
-        const parsed = JSON.parse(local);
-        return { data: parsed };
-      } catch (e) {
-        // ignore
-      }
-    }
-    const defaultData: EligibilitySettings = {
-      wholeBloodMaleDays: 90,
-      wholeBloodFemaleDays: 120,
-      plasmaDays: 28,
-      plateletsDays: 7,
-      defaultScreeningLockoutDays: 7,
-    };
-    return { data: defaultData };
-  }
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/admin/settings/cooldown');
+  const raw = wrapper.data || {};
+  const mappedData: EligibilitySettings = {
+    wholeBloodMaleDays: raw.wholeBloodMaleDays !== undefined ? raw.wholeBloodMaleDays : (raw.donorMaleWaitDays !== undefined ? raw.donorMaleWaitDays : 90),
+    wholeBloodFemaleDays: raw.wholeBloodFemaleDays !== undefined ? raw.wholeBloodFemaleDays : (raw.donorFemaleWaitDays !== undefined ? raw.donorFemaleWaitDays : 120),
+    plasmaDays: raw.plasmaDays !== undefined ? raw.plasmaDays : 28,
+    plateletsDays: raw.plateletsDays !== undefined ? raw.plateletsDays : 7,
+    defaultScreeningLockoutDays: raw.defaultScreeningLockoutDays !== undefined ? raw.defaultScreeningLockoutDays : 7,
+  };
+  validateContract('Eligibility Settings', EligibilitySettingsContractSchema, mappedData);
+  return { data: mappedData };
 }
 
 /** Update eligibility settings (wait periods) for admin */
 export async function updateEligibilitySettings(
   settings: EligibilitySettings,
 ): Promise<ApiResponse<void>> {
-  localStorage.setItem('mock_eligibility_settings', JSON.stringify(settings));
-  try {
-    const { data: wrapper } = await apiClient.put<ApiResponseWrapper<any>>('/admin/settings/cooldown', settings);
-    return { data: undefined, message: wrapper.message };
-  } catch (error) {
-    console.warn('[API] updateEligibilitySettings failed, using local mock success:', error);
-    return { data: undefined, message: 'تم حفظ التغييرات بنجاح' };
-  }
+  const { data: wrapper } = await apiClient.put<ApiResponseWrapper<any>>('/admin/settings/cooldown', settings);
+  return { data: undefined, message: wrapper.message };
 }
 
 /** Send SMS / App notification to one or more donors */
@@ -517,25 +490,10 @@ export interface SettingsApiResponseWrapper<T> {
 
 /** Fetch main branch settings */
 export async function fetchMainBranchSettings(): Promise<MainBranchSettings> {
-  let rawData: any = {};
-  try {
-    const { data: wrapper } = await apiClient.get<SettingsApiResponseWrapper<any>>(
-      '/donation-centers/main-branch',
-    );
-    rawData = wrapper.data || {};
-  } catch (error) {
-    console.warn('[API] fetchMainBranchSettings failed, checking mock storage:', error);
-  }
-
-  const local = localStorage.getItem('mock_main_branch_settings');
-  if (local) {
-    try {
-      const parsed = JSON.parse(local);
-      rawData = { ...rawData, ...parsed };
-    } catch (e) {
-      // ignore
-    }
-  }
+  const { data: wrapper } = await apiClient.get<SettingsApiResponseWrapper<any>>(
+    '/donation-centers/main-branch',
+  );
+  const rawData = wrapper.data || {};
 
   // Handle mapping enums from whole_blood, platelets, plasma to WholeBlood, Platelets, Plasma
   const rawDonationTypes: string[] = rawData.supportedDonationTypes || rawData.availableDonationTypes || ['whole_blood', 'platelets', 'plasma'];
@@ -579,9 +537,6 @@ export async function fetchMainBranchSettings(): Promise<MainBranchSettings> {
 export async function updateMainBranchSettings(
   payload: UpdateMainBranchSettingsRequest,
 ): Promise<void> {
-  // Save local state as-is first
-  localStorage.setItem('mock_main_branch_settings', JSON.stringify(payload));
-  
   // Transform UI types (WholeBlood, Platelets, Plasma) to backend enums format (whole_blood, platelets, plasma)
   const transformedPayload = {
     ...payload,
@@ -593,17 +548,13 @@ export async function updateMainBranchSettings(
     }),
   };
 
-  try {
-    const { data: wrapper } = await apiClient.put<SettingsApiResponseWrapper<unknown>>(
-      '/donation-centers/main-branch',
-      transformedPayload,
-    );
-    const success = wrapper.success ?? wrapper.isSuccess;
-    if (success === false) {
-      throw new Error(wrapper.message || 'فشل تحديث الإعدادات');
-    }
-  } catch (error) {
-    console.warn('[API] updateMainBranchSettings failed, using local mock success:', error);
+  const { data: wrapper } = await apiClient.put<SettingsApiResponseWrapper<unknown>>(
+    '/donation-centers/main-branch',
+    transformedPayload,
+  );
+  const success = wrapper.success ?? wrapper.isSuccess;
+  if (success === false) {
+    throw new Error(wrapper.message || 'فشل تحديث الإعدادات');
   }
 }
 
