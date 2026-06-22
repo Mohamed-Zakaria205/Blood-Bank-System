@@ -14,6 +14,8 @@ const DAYS_OF_WEEK_NAMES = [
   'السبت',
 ];
 
+const DISPLAY_ORDER = [6, 0, 1, 2, 3, 4, 5];
+
 interface ExclusionModalState {
   isOpen: boolean;
   exclusionIndex: number | null; // index of edited exclusion, or null if creating new
@@ -294,13 +296,12 @@ export default function FacilityTab() {
         <button
           onClick={handleSaveAll}
           disabled={updateMutation.isPending || !hasUnsavedChanges}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-white transition-all text-sm font-semibold select-none ${
-            !hasUnsavedChanges
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-white transition-all text-sm font-semibold select-none ${!hasUnsavedChanges
               ? 'bg-muted text-muted-foreground cursor-not-allowed border border-border'
               : savedSuccess
-              ? 'bg-green-500'
-              : 'bg-green-600 hover:bg-green-700 active:scale-95 shadow-sm'
-          }`}
+                ? 'bg-green-500'
+                : 'bg-green-600 hover:bg-green-700 active:scale-95 shadow-sm'
+            }`}
         >
           {updateMutation.isPending ? (
             <>
@@ -323,11 +324,10 @@ export default function FacilityTab() {
         <button
           type="button"
           onClick={() => setActiveSubTab('info')}
-          className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition-all ${
-            activeSubTab === 'info'
+          className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition-all ${activeSubTab === 'info'
               ? 'border-green-600 text-green-700 bg-green-50/10'
               : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
+            }`}
         >
           <Calendar className="w-4 h-4" />
           بيانات الفرع والجدولة
@@ -335,11 +335,10 @@ export default function FacilityTab() {
         <button
           type="button"
           onClick={() => setActiveSubTab('weekly')}
-          className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition-all ${
-            activeSubTab === 'weekly'
+          className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition-all ${activeSubTab === 'weekly'
               ? 'border-green-600 text-green-700 bg-green-50/10'
               : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
+            }`}
         >
           <Clock className="w-4 h-4" />
           ساعات العمل الأسبوعية
@@ -347,11 +346,10 @@ export default function FacilityTab() {
         <button
           type="button"
           onClick={() => setActiveSubTab('exclusions')}
-          className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition-all ${
-            activeSubTab === 'exclusions'
+          className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition-all ${activeSubTab === 'exclusions'
               ? 'border-green-600 text-green-700 bg-green-50/10'
               : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
+            }`}
         >
           <AlertTriangle className="w-4 h-4" />
           أيام الإجازات والاستثناءات
@@ -496,81 +494,86 @@ export default function FacilityTab() {
                 </tr>
               </thead>
               <tbody>
-                {formState.weeklyHours.map((wh, idx) => (
-                  <tr key={wh.dayOfWeek} className="border-b border-border last:border-0 hover:bg-muted/10">
-                    <td className="py-4 text-sm font-bold text-foreground">
-                      {DAYS_OF_WEEK_NAMES[wh.dayOfWeek]}
-                    </td>
-                    <td className="py-4">
-                      <label className="flex items-center gap-2 cursor-pointer text-sm text-foreground select-none">
+                {DISPLAY_ORDER.map((dayOfWeek) => {
+                  const idx = formState.weeklyHours.findIndex((wh) => wh.dayOfWeek === dayOfWeek);
+                  if (idx === -1) return null;
+                  const wh = formState.weeklyHours[idx];
+                  return (
+                    <tr key={wh.dayOfWeek} className="border-b border-border last:border-0 hover:bg-muted/10">
+                      <td className="py-4 text-sm font-bold text-foreground">
+                        {DAYS_OF_WEEK_NAMES[wh.dayOfWeek]}
+                      </td>
+                      <td className="py-4">
+                        <label className="flex items-center gap-2 cursor-pointer text-sm text-foreground select-none">
+                          <input
+                            type="checkbox"
+                            checked={!wh.isClosed}
+                            onChange={(e) => {
+                              const open = e.target.checked;
+                              const updated = [...formState.weeklyHours];
+                              updated[idx] = {
+                                ...wh,
+                                isClosed: !open,
+                                // If closing, set times to 00:00 to match backend
+                                openingTime: open ? (wh.openingTime === '00:00' ? '08:00' : wh.openingTime) : '00:00',
+                                closingTime: open ? (wh.closingTime === '00:00' ? '16:00' : wh.closingTime) : '00:00',
+                              };
+                              setFormState({ ...formState, weeklyHours: updated });
+                            }}
+                            className="w-4 h-4 rounded border-border text-green-600 focus:ring-green-500 bg-muted/40"
+                          />
+                          {wh.isClosed ? (
+                            <span className="text-red-600 font-semibold">مغلق</span>
+                          ) : (
+                            <span className="text-green-600 font-semibold">مفتوح</span>
+                          )}
+                        </label>
+                      </td>
+                      <td className="py-4">
                         <input
-                          type="checkbox"
-                          checked={!wh.isClosed}
+                          type="time"
+                          value={wh.isClosed ? '00:00' : wh.openingTime}
+                          disabled={wh.isClosed}
                           onChange={(e) => {
-                            const open = e.target.checked;
                             const updated = [...formState.weeklyHours];
-                            updated[idx] = {
-                              ...wh,
-                              isClosed: !open,
-                              // If closing, set times to 00:00 to match backend
-                              openingTime: open ? (wh.openingTime === '00:00' ? '08:00' : wh.openingTime) : '00:00',
-                              closingTime: open ? (wh.closingTime === '00:00' ? '16:00' : wh.closingTime) : '00:00',
-                            };
+                            updated[idx] = { ...wh, openingTime: e.target.value };
                             setFormState({ ...formState, weeklyHours: updated });
                           }}
-                          className="w-4 h-4 rounded border-border text-green-600 focus:ring-green-500 bg-muted/40"
+                          className="px-3 py-1.5 border border-border rounded-xl bg-muted/40 text-foreground text-sm focus:border-green-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                         />
-                        {wh.isClosed ? (
-                          <span className="text-red-600 font-semibold">مغلق</span>
-                        ) : (
-                          <span className="text-green-600 font-semibold">مفتوح</span>
-                        )}
-                      </label>
-                    </td>
-                    <td className="py-4">
-                      <input
-                        type="time"
-                        value={wh.isClosed ? '00:00' : wh.openingTime}
-                        disabled={wh.isClosed}
-                        onChange={(e) => {
-                          const updated = [...formState.weeklyHours];
-                          updated[idx] = { ...wh, openingTime: e.target.value };
-                          setFormState({ ...formState, weeklyHours: updated });
-                        }}
-                        className="px-3 py-1.5 border border-border rounded-xl bg-muted/40 text-foreground text-sm focus:border-green-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                      />
-                    </td>
-                    <td className="py-4">
-                      <input
-                        type="time"
-                        value={wh.isClosed ? '00:00' : wh.closingTime}
-                        disabled={wh.isClosed}
-                        onChange={(e) => {
-                          const updated = [...formState.weeklyHours];
-                          updated[idx] = { ...wh, closingTime: e.target.value };
-                          setFormState({ ...formState, weeklyHours: updated });
-                        }}
-                        className="px-3 py-1.5 border border-border rounded-xl bg-muted/40 text-foreground text-sm focus:border-green-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                      />
-                    </td>
-                    <td className="py-4">
-                      <input
-                        type="number"
-                        min={1}
-                        placeholder="الافتراضي"
-                        value={wh.maxDonorsPerSlot === null ? '' : wh.maxDonorsPerSlot}
-                        disabled={wh.isClosed}
-                        onChange={(e) => {
-                          const val = e.target.value === '' ? null : Number(e.target.value);
-                          const updated = [...formState.weeklyHours];
-                          updated[idx] = { ...wh, maxDonorsPerSlot: val };
-                          setFormState({ ...formState, weeklyHours: updated });
-                        }}
-                        className="w-28 px-3 py-1.5 border border-border rounded-xl bg-muted/40 text-foreground text-sm focus:border-green-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                      />
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="py-4">
+                        <input
+                          type="time"
+                          value={wh.isClosed ? '00:00' : wh.closingTime}
+                          disabled={wh.isClosed}
+                          onChange={(e) => {
+                            const updated = [...formState.weeklyHours];
+                            updated[idx] = { ...wh, closingTime: e.target.value };
+                            setFormState({ ...formState, weeklyHours: updated });
+                          }}
+                          className="px-3 py-1.5 border border-border rounded-xl bg-muted/40 text-foreground text-sm focus:border-green-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        />
+                      </td>
+                      <td className="py-4">
+                        <input
+                          type="number"
+                          min={1}
+                          placeholder="الافتراضي"
+                          value={wh.maxDonorsPerSlot === null ? '' : wh.maxDonorsPerSlot}
+                          disabled={wh.isClosed}
+                          onChange={(e) => {
+                            const val = e.target.value === '' ? null : Number(e.target.value);
+                            const updated = [...formState.weeklyHours];
+                            updated[idx] = { ...wh, maxDonorsPerSlot: val };
+                            setFormState({ ...formState, weeklyHours: updated });
+                          }}
+                          className="w-28 px-3 py-1.5 border border-border rounded-xl bg-muted/40 text-foreground text-sm focus:border-green-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -613,11 +616,10 @@ export default function FacilityTab() {
                         <td className="py-3.5 px-4 text-foreground font-semibold">{ex.date}</td>
                         <td className="py-3.5 px-4">
                           <span
-                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
-                              ex.isClosed
+                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${ex.isClosed
                                 ? 'bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400'
                                 : 'bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400'
-                            }`}
+                              }`}
                           >
                             {ex.isClosed ? 'مغلق بالكامل' : 'ساعات عمل خاصة'}
                           </span>
@@ -669,11 +671,11 @@ export default function FacilityTab() {
 
       {/* EXCLUSION MODAL DIALOG */}
       {modalState.isOpen && (
-        <div 
+        <div
           onClick={closeModal}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
         >
-          <div 
+          <div
             onClick={(e) => e.stopPropagation()}
             className="bg-card border border-border w-full max-w-lg rounded-2xl shadow-xl overflow-hidden flex flex-col"
           >

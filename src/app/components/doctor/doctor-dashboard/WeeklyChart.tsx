@@ -6,7 +6,11 @@ interface WeeklyChartProps {
 }
 
 export default function WeeklyChart({ data }: WeeklyChartProps) {
-  const weekData = data.map((w) => ({
+  const dayOrder = ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+  const sortedData = [...data].sort(
+    (a, b) => dayOrder.indexOf(a.dayName) - dayOrder.indexOf(b.dayName)
+  );
+  const weekData = sortedData.map((w) => ({
     day: w.dayName,
     donors: w.donationsCount,
   }));

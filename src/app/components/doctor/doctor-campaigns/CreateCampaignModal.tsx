@@ -639,22 +639,30 @@ export default function CreateCampaignModal({
                     أيام التكرار
                   </label>
                   <div className="flex flex-row-reverse flex-wrap gap-2 text-center" dir="ltr">
-                    {['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].map(
-                      (day, idx) => (
+                    {[
+                      { name: 'السبت', value: 6 },
+                      { name: 'الأحد', value: 0 },
+                      { name: 'الإثنين', value: 1 },
+                      { name: 'الثلاثاء', value: 2 },
+                      { name: 'الأربعاء', value: 3 },
+                      { name: 'الخميس', value: 4 },
+                      { name: 'الجمعة', value: 5 }
+                    ].map(
+                      (item) => (
                         <button
-                          key={idx}
+                          key={item.value}
                           type="button"
                           onClick={() => {
-                            const isSelected = form.recurrenceDays.includes(idx);
+                            const isSelected = form.recurrenceDays.includes(item.value);
                             const newDays = isSelected
-                              ? form.recurrenceDays.filter((d) => d !== idx)
-                              : [...form.recurrenceDays, idx];
+                              ? form.recurrenceDays.filter((d) => d !== item.value)
+                              : [...form.recurrenceDays, item.value];
                             onUpdateForm((p) => ({ ...p, recurrenceDays: newDays }));
                           }}
-                          className={`flex-1 min-w-[40px] py-2 px-2 rounded-lg border transition-all ${form.recurrenceDays.includes(idx) ? 'bg-green-600 text-white border-green-600 shadow-sm' : 'bg-muted/40 text-muted-foreground border-border hover:bg-muted'}`}
+                          className={`flex-1 min-w-[40px] py-2 px-2 rounded-lg border transition-all ${form.recurrenceDays.includes(item.value) ? 'bg-green-600 text-white border-green-600 shadow-sm' : 'bg-muted/40 text-muted-foreground border-border hover:bg-muted'}`}
                           style={{ fontSize: '12px', fontWeight: 600 }}
                         >
-                          {day}
+                          {item.name}
                         </button>
                       ),
                     )}
