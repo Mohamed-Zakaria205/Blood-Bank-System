@@ -305,9 +305,21 @@ export async function fetchDonorEligibilityStats(): Promise<ApiResponse<Eligibil
   }
 }
 
+// Raw eligibility settings as returned by the backend (may use legacy field names).
+interface RawEligibilitySettings {
+  wholeBloodMaleDays?: number;
+  wholeBloodFemaleDays?: number;
+  plasmaDays?: number;
+  plateletsDays?: number;
+  defaultScreeningLockoutDays?: number;
+  // Legacy field names the backend sometimes sends
+  donorMaleWaitDays?: number;
+  donorFemaleWaitDays?: number;
+}
+
 /** Fetch eligibility settings (wait periods) for admin */
 export async function fetchEligibilitySettings(): Promise<ApiResponse<EligibilitySettings>> {
-  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<any>>('/doctor/settings/cooldown');
+  const { data: wrapper } = await apiClient.get<ApiResponseWrapper<RawEligibilitySettings>>('/doctor/settings/cooldown');
   const raw = wrapper.data || {};
   const mappedData: EligibilitySettings = {
     wholeBloodMaleDays: raw.wholeBloodMaleDays !== undefined ? raw.wholeBloodMaleDays : (raw.donorMaleWaitDays !== undefined ? raw.donorMaleWaitDays : 90),
@@ -324,7 +336,7 @@ export async function fetchEligibilitySettings(): Promise<ApiResponse<Eligibilit
 export async function updateEligibilitySettings(
   settings: EligibilitySettings,
 ): Promise<ApiResponse<void>> {
-  const { data: wrapper } = await apiClient.put<ApiResponseWrapper<any>>('/doctor/settings/cooldown', settings);
+  const { data: wrapper } = await apiClient.put<ApiResponseWrapper<unknown>>('/doctor/settings/cooldown', settings);
   return { data: undefined, message: wrapper.message };
 }
 
@@ -490,6 +502,7 @@ export interface SettingsApiResponseWrapper<T> {
 
 /** Fetch main branch settings */
 export async function fetchMainBranchSettings(): Promise<MainBranchSettings> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: wrapper } = await apiClient.get<SettingsApiResponseWrapper<any>>(
     '/donation-centers/main-branch',
   );

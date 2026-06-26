@@ -11,6 +11,20 @@ import type {
 } from '../types/auth';
 import type { PaginatedResponse, StaffFilters } from '../types/common';
 
+const ROLE_MAP: Record<string, string> = {
+  admin: 'Admin',
+  doctor: 'Doctor',
+  lab: 'LabDoctor',
+  inventory: 'InventoryManager',
+};
+
+const REVERSE_ROLE_MAP: Record<string, string> = {
+  Admin: 'admin',
+  Doctor: 'doctor',
+  LabDoctor: 'lab',
+  InventoryManager: 'inventory',
+};
+
 /** Fetch all staff members (excludes admins) */
 export async function fetchStaff(): Promise<PaginatedResponse<User>> {
   // Delegate to fetchFilteredStaff to ensure the wrapper and role mappings are applied correctly
@@ -27,14 +41,7 @@ export async function fetchFilteredStaff(
 ): Promise<PaginatedResponse<User>> {
   const { page = 1, limit = 10, search = '', role = '', status = '' } = filters;
 
-  const roleMap: Record<string, string> = {
-    admin: 'Admin',
-    doctor: 'Doctor',
-    lab: 'LabDoctor',
-    inventory: 'InventoryManager',
-  };
-
-  const mappedRole = role ? roleMap[role] || role : '';
+  const mappedRole = role ? ROLE_MAP[role] || role : '';
 
   /**
    * The backend sends a paginated response with 'items' instead of 'data'.
@@ -56,18 +63,11 @@ export async function fetchFilteredStaff(
     throw new ApiError(wrapper.message || 'حدث خطأ أثناء جلب بيانات فريق العمل');
   }
 
-  const reverseRoleMap: Record<string, string> = {
-    Admin: 'admin',
-    Doctor: 'doctor',
-    LabDoctor: 'lab',
-    InventoryManager: 'inventory',
-  };
-
   const rawItems = wrapper.data.items || [];
 
   const mappedData = rawItems.map((u) => ({
     ...u,
-    role: (reverseRoleMap[u.role] || u.role) as User['role'],
+    role: (REVERSE_ROLE_MAP[u.role] || u.role) as User['role'],
   }));
 
   return {
@@ -79,16 +79,9 @@ export async function fetchFilteredStaff(
 }
 
 export async function createStaff(payload: CreateStaffRequest): Promise<string> {
-  const roleMap: Record<string, string> = {
-    admin: 'Admin',
-    doctor: 'Doctor',
-    lab: 'LabDoctor',
-    inventory: 'InventoryManager',
-  };
-
   const backendPayload = {
     ...payload,
-    role: roleMap[payload.role] || payload.role,
+    role: ROLE_MAP[payload.role] || payload.role,
   };
 
   const { data: wrapper } = await apiClient.post<ApiResponseWrapper<string>>(
@@ -102,16 +95,9 @@ export async function createStaff(payload: CreateStaffRequest): Promise<string> 
 }
 
 export async function updateStaff(id: string, payload: UpdateStaffRequest): Promise<string> {
-  const roleMap: Record<string, string> = {
-    admin: 'Admin',
-    doctor: 'Doctor',
-    lab: 'LabDoctor',
-    inventory: 'InventoryManager',
-  };
-
   const backendPayload = {
     ...payload,
-    role: payload.role ? roleMap[payload.role] || payload.role : undefined,
+    role: payload.role ? ROLE_MAP[payload.role] || payload.role : undefined,
   };
 
   const { data: wrapper } = await apiClient.patch<ApiResponseWrapper<string>>(

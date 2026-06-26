@@ -72,6 +72,7 @@ export default function LoginForm({ authError, loading, onSubmit, onInputChange 
               <input
                 id="email"
                 type="email"
+                autoComplete="email"
                 {...register('email', {
                   onChange: () => {
                     handleFieldChange();
@@ -106,6 +107,7 @@ export default function LoginForm({ authError, loading, onSubmit, onInputChange 
               <input
                 id="password"
                 type={showPass ? 'text' : 'password'}
+                autoComplete="current-password"
                 {...register('password', {
                   onChange: () => {
                     handleFieldChange();
