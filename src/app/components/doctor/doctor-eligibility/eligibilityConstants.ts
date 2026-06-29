@@ -90,4 +90,6 @@ export const statusCfg = {
 export interface NotifModal {
   donors: Donor[];
   type: 'emergency' | 'ready';
+  selectionMode?: 'selected' | 'filtered';
+  totalCount?: number;
 }

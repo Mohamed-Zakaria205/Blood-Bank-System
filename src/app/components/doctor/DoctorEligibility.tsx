@@ -53,9 +53,12 @@ export default function DoctorEligibility() {
   const [filterBlood, setFilterBlood] = useState<BloodType | 'all'>('all');
   const [filterGender, setFilterGender] = useState<string>('all');
   const [filterDistrict, setFilterDistrict] = useState<string>('all');
+  const [filterAppAccount, setFilterAppAccount] = useState<'all' | 'has_app' | 'no_app'>('all');
   const [page, setPage] = useState(1);
   const [notifModal, setNotifModal] = useState<NotifModal | null>(null);
+  const [selectionMode, setSelectionMode] = useState<'selected' | 'filtered'>('selected');
   const [selectedDonors, setSelectedDonors] = useState<Set<string>>(new Set());
+  const [excludedDonors, setExcludedDonors] = useState<Set<string>>(new Set());
   const [sentNotifs, setSentNotifs] = useState<Set<string>>(() => {
     if (typeof window === 'undefined') return new Set();
     try {
@@ -74,10 +77,25 @@ export default function DoctorEligibility() {
     }
   }, [sentNotifs]);
 
-  // Reset selection whenever filters or page change to avoid stale selected IDs
+  // Reset selection whenever filters change
   useEffect(() => {
     setSelectedDonors(new Set());
-  }, [debouncedSearch, filterStatus, filterBlood, filterGender, filterDistrict, page]);
+    setExcludedDonors(new Set());
+    setSelectionMode('selected');
+  }, [debouncedSearch, filterStatus, filterBlood, filterGender, filterDistrict, filterAppAccount]);
+
+  // Reset selected donors on page change only in 'selected' selectionMode
+  useEffect(() => {
+    if (selectionMode === 'selected') {
+      setSelectedDonors(new Set());
+    }
+  }, [page, selectionMode]);
+
+  const hasMobileApp = useMemo(() => {
+    if (filterAppAccount === 'has_app') return true;
+    if (filterAppAccount === 'no_app') return false;
+    return undefined;
+  }, [filterAppAccount]);
 
   const {
     data: response,
@@ -92,6 +110,7 @@ export default function DoctorEligibility() {
     status: filterStatus === 'all' ? '' : filterStatus,
     gender: filterGender === 'all' ? '' : filterGender,
     district: filterDistrict === 'all' ? '' : filterDistrict,
+    hasMobileApp,
   });
 
   const {
@@ -113,6 +132,32 @@ export default function DoctorEligibility() {
 
   // We no longer need client-side filtering since we are using the paginated backend endpoint
   const donorsList = enriched;
+
+  const selectableOnPage = useMemo(() =>
+    donorsList.filter(d => (d.eligibility.status === 'eligible' || d.eligibility.status === 'soon') && d.hasAppAccount),
+    [donorsList]
+  );
+
+  const previewPayload = useMemo(() => {
+    if (!notifModal) return null;
+    return notifModal.selectionMode === 'filtered'
+      ? {
+          selectionMode: 'filtered' as const,
+          filters: {
+            search: debouncedSearch,
+            bloodType: filterBlood === 'all' ? '' : filterBlood,
+            status: filterStatus === 'all' ? '' : filterStatus,
+            district: filterDistrict === 'all' ? '' : filterDistrict,
+            gender: filterGender === 'all' ? '' : filterGender,
+            hasMobileApp: true,
+          },
+          excludedDonorIds: Array.from(excludedDonors),
+        }
+      : {
+          selectionMode: 'selected' as const,
+          donorIds: notifModal.donors.map(d => d.id),
+        };
+  }, [notifModal, debouncedSearch, filterBlood, filterStatus, filterDistrict, filterGender, excludedDonors]);
 
   if (isLoading || statsLoading)
     return (
@@ -143,46 +188,32 @@ export default function DoctorEligibility() {
   };
 
   const sendNotification = () => {
-    if (!notifModal) return;
-
-    const isBulk = notifModal.donors.length > 1;
-    const singleDonor = isBulk ? null : notifModal.donors[0];
-
-    const message = notifModal.type === 'emergency'
-      ? `🚨 طلب دم طارئ — بنك دم بني سويف\nفصيلة الدم: ${isBulk ? 'حسب احتياجنا الطارئ' : singleDonor!.bloodType}\nيرجى التواصل فوراً على: 082-XXXXXXX`
-      : `💚 أنت الآن مؤهل للتبرع بالدم مجدداً!\nآخر تبرع: ${isBulk ? 'موضح في سجلك لدينا' : (singleDonor!.lastDonationDate ?? 'لم يتبرع')}\nاحجز موعدك عبر التطبيق أو تواصل معنا.`;
-
-    if (message.length > 320) {
-      toast.error('محتوى الرسالة طويل جداً (الحد الأقصى 320 حرف)');
-      return;
-    }
+    if (!previewPayload) return;
 
     sendNotifMutation.mutate(
-      {
-        donorIds: notifModal.donors.map(d => d.id),
-        type: notifModal.type,
-        message,
-      },
+      previewPayload,
       {
         onSuccess: (res: ApiResponse<SendNotificationResponse>) => {
           const failedIds = new Set<string>(res.data?.failedDonorIds || []);
           const sentNotifIds: string[] = [];
 
-          notifModal.donors.forEach(d => {
-            if (!failedIds.has(d.id)) {
-              sentNotifIds.push(`${d.id}-${notifModal.type}`);
-            }
-          });
+          if (notifModal?.selectionMode !== 'filtered') {
+            notifModal?.donors.forEach(d => {
+              if (!failedIds.has(d.id)) {
+                sentNotifIds.push(`${d.id}-${notifModal.type}`);
+              }
+            });
 
-          setSentNotifs((prev: Set<string>) => {
-            const next = new Set(prev);
-            sentNotifIds.forEach(id => next.add(id));
-            return next;
-          });
+            setSentNotifs((prev: Set<string>) => {
+              const next = new Set(prev);
+              sentNotifIds.forEach(id => next.add(id));
+              return next;
+            });
+          }
 
-          const requestedCount = res.data?.requested ?? notifModal.donors.length;
-          const sentCount = res.data?.sent ?? (requestedCount - failedIds.size);
-          const failedCount = res.data?.failed ?? failedIds.size;
+          const requestedCount = res.data?.requested ?? 0;
+          const sentCount = res.data?.sent ?? 0;
+          const failedCount = res.data?.failed ?? 0;
 
           if (failedCount > 0) {
             if (sentCount > 0) {
@@ -190,10 +221,12 @@ export default function DoctorEligibility() {
             } else {
               toast.error(`تعذر إرسال الإشعار لجميع المتبرعين المستهدفين (${failedCount} متبرع).`);
             }
+          } else if (requestedCount === 0) {
+            toast.success('لم يتم العثور على أي متبرعين مطابقين لإرسال الإشعار إليهم.');
           } else {
             toast.success(
               res.message || (
-                notifModal.type === 'emergency'
+                notifModal?.type === 'emergency'
                   ? `تم إرسال الإشعار الطارئ بنجاح إلى ${sentCount} متبرع.`
                   : `تم إرسال إشعار الجاهزية بنجاح إلى ${sentCount} متبرع.`
               )
@@ -201,6 +234,8 @@ export default function DoctorEligibility() {
           }
           setNotifModal(null);
           setSelectedDonors(new Set());
+          setExcludedDonors(new Set());
+          setSelectionMode('selected');
         },
         onError: (err: unknown) => {
           const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
@@ -216,25 +251,61 @@ export default function DoctorEligibility() {
         .filter(d => (d.eligibility.status === 'eligible' || d.eligibility.status === 'soon') && d.hasAppAccount)
         .map(d => d.id);
       setSelectedDonors(new Set(eligibleIds));
+      setSelectionMode('selected');
+      setExcludedDonors(new Set());
     } else {
       setSelectedDonors(new Set());
+      setExcludedDonors(new Set());
+      setSelectionMode('selected');
     }
   };
 
   const handleSelectDonor = (id: string, checked: boolean) => {
-    setSelectedDonors(prev => {
-      const next = new Set(prev);
-      if (checked) next.add(id);
-      else next.delete(id);
-      return next;
-    });
+    if (selectionMode === 'filtered') {
+      setExcludedDonors(prev => {
+        const next = new Set(prev);
+        if (checked) {
+          next.delete(id);
+        } else {
+          next.add(id);
+        }
+        return next;
+      });
+    } else {
+      setSelectedDonors(prev => {
+        const next = new Set(prev);
+        if (checked) next.add(id);
+        else next.delete(id);
+        return next;
+      });
+    }
   };
 
   const openBulkModal = (type: 'emergency' | 'ready') => {
-    const selected = donorsList.filter(d => selectedDonors.has(d.id));
-    if (selected.length === 0) return;
-    setNotifModal({ donors: selected, type });
+    if (selectionMode === 'filtered') {
+      const remainingCount = Math.max(0, total - excludedDonors.size);
+      setNotifModal({
+        donors: [],
+        type,
+        selectionMode: 'filtered',
+        totalCount: remainingCount,
+      });
+    } else {
+      const selected = donorsList.filter(d => selectedDonors.has(d.id));
+      if (selected.length === 0) return;
+      setNotifModal({
+        donors: selected,
+        type,
+        selectionMode: 'selected',
+      });
+    }
   };
+
+  const isHeaderChecked = selectableOnPage.length > 0 && (
+    selectionMode === 'filtered'
+      ? selectableOnPage.every(d => !excludedDonors.has(d.id))
+      : selectableOnPage.every(d => selectedDonors.has(d.id))
+  );
 
   return (
     <div className="space-y-6">
@@ -403,6 +474,20 @@ export default function DoctorEligibility() {
           </select>
           <ChevronDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
         </div>
+
+        <div className="relative">
+          <select
+            value={filterAppAccount}
+            onChange={(e) => { setFilterAppAccount(e.target.value as 'all' | 'has_app' | 'no_app'); setPage(1); }}
+            className="appearance-none px-4 py-2.5 pr-3 pl-8 border border-border rounded-xl bg-card text-foreground outline-none focus:border-green-400 w-full sm:w-auto cursor-pointer hover:border-green-400/50 dark:hover:border-green-500/30 transition-all duration-200"
+            style={{ fontSize: '13px' }}
+          >
+            <option value="all">الكل (حساب التطبيق)</option>
+            <option value="has_app">لديه حساب على التطبيق</option>
+            <option value="no_app">ليس لديه حساب</option>
+          </select>
+          <ChevronDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+        </div>
       </div>
 
       {/* Total results count & Bulk Actions */}
@@ -411,21 +496,18 @@ export default function DoctorEligibility() {
           <label className="flex items-center gap-2 cursor-pointer text-foreground font-semibold">
             <input
               type="checkbox"
-              className="w-4 h-4 rounded border-border text-green-600 focus:ring-green-500"
-              checked={
-                donorsList.filter(d => (d.eligibility.status === 'eligible' || d.eligibility.status === 'soon') && d.hasAppAccount).length > 0 &&
-                selectedDonors.size === donorsList.filter(d => (d.eligibility.status === 'eligible' || d.eligibility.status === 'soon') && d.hasAppAccount).length
-              }
+              className="w-4 h-4 rounded border-border text-green-600 focus:ring-green-500 cursor-pointer"
+              checked={isHeaderChecked}
               onChange={(e) => handleSelectAll(e.target.checked)}
             />
             تحديد الكل <span className="text-muted-foreground font-normal">(هذه الصفحة)</span>
           </label>
           <span className="text-muted-foreground">تم العثور على {total} نتيجة</span>
         </div>
-        {selectedDonors.size > 0 && (
+        {(selectionMode === 'filtered' || selectedDonors.size > 0) && (
           <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-200">
-            <span className="text-green-700 font-bold bg-green-50 px-2 py-1 rounded-md">
-              {selectedDonors.size} محدد
+            <span className="text-green-700 font-bold bg-green-50 px-2 py-1 rounded-md dark:bg-green-950/40 dark:text-green-400">
+              {selectionMode === 'filtered' ? Math.max(0, total - excludedDonors.size) : selectedDonors.size} محدد
             </span>
             <button
               onClick={() => openBulkModal('emergency')}
@@ -436,6 +518,38 @@ export default function DoctorEligibility() {
           </div>
         )}
       </div>
+
+      {/* Selection Banner */}
+      {selectionMode === 'selected' && selectedDonors.size > 0 && total > selectedDonors.size && (
+        <div className="bg-green-50/80 dark:bg-green-950/20 border border-green-200/50 dark:border-green-800/30 rounded-xl p-3 text-center text-green-800 dark:text-green-300 animate-in fade-in slide-in-from-top-2 duration-200 font-bold" style={{ fontSize: '13px' }}>
+          <span>تم تحديد {selectedDonors.size} متبرع في هذه الصفحة. </span>
+          <button
+            onClick={() => {
+              setSelectionMode('filtered');
+              setExcludedDonors(new Set());
+            }}
+            className="underline font-bold text-green-700 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 cursor-pointer ml-1"
+          >
+            تحديد جميع المتبرعين الـ {total} المطابقين للفلاتر؟
+          </button>
+        </div>
+      )}
+
+      {selectionMode === 'filtered' && (
+        <div className="bg-green-50/80 dark:bg-green-950/20 border border-green-200/50 dark:border-green-800/30 rounded-xl p-3 text-center text-green-800 dark:text-green-300 animate-in fade-in slide-in-from-top-2 duration-200 font-bold" style={{ fontSize: '13px' }}>
+          <span>تم تحديد جميع المتبرعين الـ {Math.max(0, total - excludedDonors.size)} المطابقين للفلاتر. </span>
+          <button
+            onClick={() => {
+              setSelectionMode('selected');
+              setSelectedDonors(new Set());
+              setExcludedDonors(new Set());
+            }}
+            className="underline font-bold text-green-700 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 cursor-pointer ml-1"
+          >
+            إلغاء التحديد
+          </button>
+        </div>
+      )}
 
       {/* Donors list */}
       <div className="space-y-3">
@@ -456,7 +570,11 @@ export default function DoctorEligibility() {
                     <div className="pt-2">
                       <input
                         type="checkbox"
-                        checked={selectedDonors.has(donor.id)}
+                        checked={
+                          selectionMode === 'filtered'
+                            ? !excludedDonors.has(donor.id)
+                            : selectedDonors.has(donor.id)
+                        }
                         onChange={(e) => handleSelectDonor(donor.id, e.target.checked)}
                         className="w-4 h-4 rounded border-border text-green-600 focus:ring-green-500 cursor-pointer"
                       />
@@ -666,6 +784,7 @@ export default function DoctorEligibility() {
       {notifModal && (
         <NotifyDonorModal
           modal={notifModal}
+          previewPayload={previewPayload}
           onSend={sendNotification}
           onCancel={() => setNotifModal(null)}
           isPending={sendNotifMutation.isPending}

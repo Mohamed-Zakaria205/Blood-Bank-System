@@ -2,8 +2,8 @@
 // React Query hooks — Donors & Donations
 // ═══════════════════════════════════════════════════════════
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchDonors, fetchDonorById, updateDonor, fetchPaginatedDonors, fetchPaginatedEligibleDonors, fetchPaginatedDonations, searchDonorByNationalId, addDonation, addMedicalRecord, deleteDonation, confirmDonation, fetchDonationCenters, fetchDonorEligibilityStats, fetchEligibilitySettings, updateEligibilitySettings, sendDonorNotifications } from '../api/donors';
-import type { BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest, SendNotificationRequest, EligibilitySettings } from '../types/donor';
+import { fetchDonors, fetchDonorById, updateDonor, fetchPaginatedDonors, fetchPaginatedEligibleDonors, fetchPaginatedDonations, searchDonorByNationalId, addDonation, addMedicalRecord, deleteDonation, confirmDonation, fetchDonationCenters, fetchDonorEligibilityStats, fetchEligibilitySettings, updateEligibilitySettings, sendDonorNotifications, previewDonorNotifications } from '../api/donors';
+import type { BasicDonationRequest, MedicalRecordRequest, UpdateDonorRequest, SendNotificationRequest, EligibilitySettings, NotificationPreviewRequest } from '../types/donor';
 import type { DonationFilters, DonorFilters } from '../types/common';
 
 // ═══════════════════════════════════════════════════════════
@@ -76,6 +76,16 @@ export function useDonorEligibilityStats() {
   });
 }
 
+/** Preview bulk or selected notification content and recipient counts */
+export function useDonorNotificationPreview(payload: NotificationPreviewRequest | null) {
+  return useQuery({
+    queryKey: ['donorNotificationPreview', payload],
+    queryFn: () => previewDonorNotifications(payload!),
+    enabled: !!payload,
+    staleTime: 0,
+  });
+}
+
 /** Send standard readiness or emergency notification to one or more donors */
 export function useSendDonorNotifications() {
   const qc = useQueryClient();
@@ -85,7 +95,9 @@ export function useSendDonorNotifications() {
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: ['donors', 'eligibility'] });
       qc.invalidateQueries({ queryKey: ['donors', 'eligibility-stats'] });
-      variables.donorIds.forEach((id) => qc.invalidateQueries({ queryKey: ['donors', id] }));
+      if (variables.selectionMode !== 'filtered' && 'donorIds' in variables && variables.donorIds) {
+        variables.donorIds.forEach((id) => qc.invalidateQueries({ queryKey: ['donors', id] }));
+      }
     },
   });
 }

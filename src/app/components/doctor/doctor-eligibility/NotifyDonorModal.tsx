@@ -1,9 +1,12 @@
 import { Bell, Zap, Send, Smartphone, Users } from 'lucide-react';
 import type { NotifModal } from './eligibilityConstants';
 import { useModalFocusTrap } from '../../../hooks/useModalFocusTrap';
+import { useDonorNotificationPreview } from '../../../hooks/useDonors';
+import type { NotificationPreviewRequest } from '../../../types/donor';
 
 interface NotifyDonorModalProps {
   modal: NotifModal;
+  previewPayload: NotificationPreviewRequest | null;
   onSend: () => void;
   onCancel: () => void;
   isPending?: boolean;
@@ -11,18 +14,19 @@ interface NotifyDonorModalProps {
 
 export default function NotifyDonorModal({
   modal,
+  previewPayload,
   onSend,
   onCancel,
   isPending = false,
 }: NotifyDonorModalProps) {
   const isEmergency = modal.type === 'emergency';
   const modalRef = useModalFocusTrap(onCancel);
-  const isBulk = modal.donors.length > 1;
+  const isBulk = modal.selectionMode === 'filtered' || modal.donors.length > 1;
   const singleDonor = isBulk ? null : modal.donors[0];
 
-  const previewMessage = isEmergency
-    ? `🚨 طلب دم طارئ — بنك دم بني سويف\nفصيلة الدم: ${isBulk ? 'حسب احتياجنا الطارئ' : singleDonor!.bloodType}\nيرجى التواصل فوراً على: 082-XXXXXXX`
-    : `💚 أنت الآن مؤهل للتبرع بالدم مجدداً!\nآخر تبرع: ${isBulk ? 'موضح في سجلك لدينا' : (singleDonor!.lastDonationDate ?? 'لم يتبرع')}\nاحجز موعدك عبر التطبيق أو تواصل معنا.`;
+  const { data: previewResponse, isLoading: isPreviewLoading, isError: isPreviewError } = useDonorNotificationPreview(previewPayload);
+  const previewData = previewResponse?.data;
+  const recipientCount = previewData?.recipientCount ?? (modal.selectionMode === 'filtered' ? modal.totalCount ?? 0 : modal.donors.length);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -56,7 +60,7 @@ export default function NotifyDonorModal({
                 {isEmergency ? 'إشعار طارئ' : 'إشعار جاهزية للتبرع'}
               </h3>
               <p className="text-muted-foreground" style={{ fontSize: '12px' }}>
-                {isBulk ? `إرسال إلى ${modal.donors.length} متبرع` : singleDonor!.name}
+                {isBulk ? `إرسال إلى ${isPreviewLoading ? '...' : recipientCount} متبرع` : singleDonor!.name}
               </p>
             </div>
           </div>
@@ -74,7 +78,7 @@ export default function NotifyDonorModal({
                   </span>
                 </div>
                 <span className="text-foreground" style={{ fontSize: '14px', fontWeight: 700 }}>
-                  {modal.donors.length}
+                  {isPreviewLoading ? '...' : recipientCount}
                 </span>
               </div>
             ) : (
@@ -104,12 +108,24 @@ export default function NotifyDonorModal({
               className="block text-foreground mb-2"
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
-              محتوى الإشعار
+              {isPreviewLoading ? 'محتوى الإشعار' : (previewData?.title ?? 'محتوى الإشعار')}
             </label>
             <div id="message-preview" className="p-3 bg-muted/40 border border-border rounded-xl">
-              <p className="text-foreground" style={{ fontSize: '13px', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
-                {previewMessage}
-              </p>
+              {isPreviewLoading ? (
+                <div className="space-y-2 animate-pulse py-2">
+                  <div className="h-3.5 bg-muted-foreground/20 rounded w-3/4" />
+                  <div className="h-3.5 bg-muted-foreground/20 rounded w-5/6" />
+                  <div className="h-3.5 bg-muted-foreground/20 rounded w-2/3" />
+                </div>
+              ) : isPreviewError ? (
+                <p className="text-red-500 text-xs text-center py-2">
+                  تعذر تحميل معاينة الإشعار.
+                </p>
+              ) : (
+                <p className="text-foreground" style={{ fontSize: '13px', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
+                  {previewData?.message}
+                </p>
+              )}
             </div>
           </div>
 
@@ -124,8 +140,8 @@ export default function NotifyDonorModal({
         <div className="flex gap-3 px-5 pb-5">
           <button
             onClick={onSend}
-            disabled={isPending}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-white rounded-xl transition-all ${isEmergency ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} ${isPending ? 'opacity-70 cursor-not-allowed' : ''}`}
+            disabled={isPending || isPreviewLoading || isPreviewError}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-white rounded-xl transition-all ${isEmergency ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} ${isPending || isPreviewLoading || isPreviewError ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
             style={{ fontSize: '14px', fontWeight: 700 }}
           >
             <Send className="w-4 h-4" /> {isPending ? 'جاري الإرسال...' : 'إرسال الإشعار'}
@@ -133,7 +149,7 @@ export default function NotifyDonorModal({
           <button
             onClick={onCancel}
             disabled={isPending}
-            className="flex-1 py-2.5 bg-muted text-foreground rounded-xl hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-2.5 bg-muted text-foreground rounded-xl hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
             إلغاء

@@ -32,10 +32,34 @@ export interface EligibilityStats {
   bloodTypeCounts: Record<BloodType, { eligible: number; total: number }>;
 }
 
-export interface SendNotificationRequest {
+export interface DonorEligibilityFilters {
+  search?: string;
+  bloodType?: string;
+  status?: string;
+  district?: string;
+  gender?: string;
+  hasMobileApp?: boolean;
+}
+
+export type SendNotificationRequest = SelectedNotificationRequest | FilteredNotificationRequest;
+
+export interface SelectedNotificationRequest {
+  selectionMode?: 'selected';
   donorIds: string[];
-  type: 'emergency' | 'ready';
+}
+
+export interface FilteredNotificationRequest {
+  selectionMode: 'filtered';
+  filters: DonorEligibilityFilters;
+  excludedDonorIds: string[];
+}
+
+export type NotificationPreviewRequest = SendNotificationRequest;
+
+export interface NotificationPreviewResponse {
+  title: string;
   message: string;
+  recipientCount: number;
 }
 
 export interface SendNotificationResponse {

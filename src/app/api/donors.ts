@@ -12,6 +12,8 @@ import type {
   SendNotificationRequest,
   SendNotificationResponse,
   EligibilitySettings,
+  NotificationPreviewRequest,
+  NotificationPreviewResponse,
 } from '../types/donor';
 import type { PaginatedResponse, ApiResponse, DonorFilters, DonationFilters } from '../types/common';
 import type { DonationCenter, MainBranchSettings, UpdateMainBranchSettingsRequest } from '../types/donationCenter';
@@ -152,14 +154,15 @@ export async function fetchPaginatedEligibleDonors(
   filters: DonorFilters = {},
   options?: { signal?: AbortSignal },
 ): Promise<PaginatedResponse<Donor>> {
-  const { page = 1, limit = 10, search = '', bloodType = '', status = '', district = '', gender = '' } = filters;
+  const { page = 1, limit = 10, search = '', bloodType = '', status = '', district = '', gender = '', hasMobileApp } = filters;
 
-  const params: Record<string, string | number | undefined> = { page, limit };
+  const params: Record<string, string | number | boolean | undefined> = { page, limit };
   if (search) params.search = search;
   if (bloodType) params.bloodType = bloodType;
   if (status && status !== 'all') params.status = status;
   if (district && district !== 'all') params.district = district;
   if (gender && gender !== 'all') params.gender = gender;
+  if (hasMobileApp !== undefined) params.hasMobileApp = hasMobileApp;
 
   try {
     const { data: wrapper } = await apiClient.get<ApiResponseWrapper<{
@@ -338,6 +341,22 @@ export async function updateEligibilitySettings(
 ): Promise<ApiResponse<void>> {
   const { data: wrapper } = await apiClient.put<ApiResponseWrapper<unknown>>('/doctor/settings/cooldown', settings);
   return { data: undefined, message: wrapper.message };
+}
+
+/** Preview bulk or selected notification content and recipient counts */
+export async function previewDonorNotifications(
+  payload: NotificationPreviewRequest,
+): Promise<ApiResponse<NotificationPreviewResponse>> {
+  try {
+    const { data } = await apiClient.post<ApiResponseWrapper<NotificationPreviewResponse>>(
+      `/donors/eligibility/notifications/preview`,
+      payload,
+    );
+    return { data: data.data, message: data.message };
+  } catch (error) {
+    console.error('[API] previewDonorNotifications error:', error);
+    throw error;
+  }
 }
 
 /** Send SMS / App notification to one or more donors */

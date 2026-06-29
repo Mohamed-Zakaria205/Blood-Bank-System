@@ -32,6 +32,7 @@ export interface DonorFilters extends PaginationParams {
   status?: string;
   district?: string;
   gender?: string;
+  hasMobileApp?: boolean;
 }
 
 /** Donation-specific filter params */
