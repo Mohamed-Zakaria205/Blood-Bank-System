@@ -191,6 +191,14 @@ export const MainBranchSettingsContractSchema = z.object({
   version: z.number().optional().nullable(),
 });
 
+export const WeeklyTargetItemSchema = z.object({
+  bloodType: z.string(),
+  targetCount: z.number(),
+  currentDonationsCount: z.number().optional(),
+});
+
+export const WeeklyTargetsSchema = z.array(WeeklyTargetItemSchema);
+
 /**
 
  * Helper to validate API responses without throwing errors that break the UI.
