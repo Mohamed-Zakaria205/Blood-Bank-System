@@ -87,11 +87,16 @@ export async function exportBags(
     nationalId: string;
     phone?: string;
     reason: string;
+    bloodDemandId?: string;
   },
 ): Promise<BulkOperationResponse> {
+
   const { data: wrapper } = await apiClient.post<ApiResponseWrapper<BulkOperationResponse>>('/inventory/blood-bags/issue', { bagIds, ...recipient });
   return wrapper.data;
 }
+
+
+
 
 export async function disposeBags(
   bagIds: string[],

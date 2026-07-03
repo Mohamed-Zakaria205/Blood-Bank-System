@@ -10,6 +10,9 @@ interface ExportBagsModalProps {
   isPending: boolean;
   onConfirm: (form: ExportFormState) => void;
   onClose: () => void;
+  initialRecipientName?: string;
+  initialReason?: string;
+  isFulfillmentMode?: boolean;
 }
 
 export default function ExportBagsModal({
@@ -17,14 +20,18 @@ export default function ExportBagsModal({
   isPending,
   onConfirm,
   onClose,
+  initialRecipientName = '',
+  initialReason = '',
+  isFulfillmentMode = false,
 }: ExportBagsModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState<ExportFormState>({
-    recipientName: '',
+    recipientName: initialRecipientName,
     nationalId: '',
     phone: '',
-    reason: '',
+    reason: initialReason,
   });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validate = () => {
@@ -178,11 +185,18 @@ export default function ExportBagsModal({
                     recipientName: e.target.value,
                   }))
                 }
+                disabled={isFulfillmentMode}
                 placeholder="الاسم بالكامل"
-                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400
+                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 disabled:opacity-75 disabled:bg-muted/20 disabled:cursor-not-allowed
                   ${errors.recipientName ? 'border-red-300' : 'border-border'}`}
                 style={{ fontSize: '13px' }}
               />
+              {isFulfillmentMode && (
+                <p className="text-muted-foreground mt-1" style={{ fontSize: '10px' }}>
+                  💡 تم الملء تلقائياً بناءً على طلب الدم وقفل التعديل
+                </p>
+              )}
+
               {errors.recipientName && (
                 <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
                   {errors.recipientName}
@@ -252,12 +266,19 @@ export default function ExportBagsModal({
               <textarea
                 value={form.reason}
                 onChange={(e) => setForm((p) => ({ ...p, reason: e.target.value }))}
+                disabled={isFulfillmentMode}
                 rows={2}
                 placeholder="مثال: نقل دم بعد عملية جراحية"
-                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 resize-none
+                className={`w-full px-4 py-2.5 border rounded-xl bg-muted/40 text-foreground outline-none focus:border-green-400 resize-none disabled:opacity-75 disabled:bg-muted/20 disabled:cursor-not-allowed
                   ${errors.reason ? 'border-red-300' : 'border-border'}`}
                 style={{ fontSize: '13px' }}
               />
+              {isFulfillmentMode && (
+                <p className="text-muted-foreground mt-1" style={{ fontSize: '10px' }}>
+                  💡 تم الملء تلقائياً بناءً على طلب الدم وقفل التعديل
+                </p>
+              )}
+
               {errors.reason && (
                 <p className="text-red-500 mt-1" style={{ fontSize: '11px' }}>
                   {errors.reason}

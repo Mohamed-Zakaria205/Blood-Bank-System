@@ -55,16 +55,25 @@ export function useExportBags() {
         nationalId: string;
         phone?: string;
         reason: string;
+        bloodDemandId?: string;
       };
     }) => exportBags(bagIds, recipient),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       qc.invalidateQueries({ queryKey: ['bags'] });
       qc.invalidateQueries({ queryKey: ['transactions'] });
       qc.invalidateQueries({ queryKey: ['outflow'] });
       qc.invalidateQueries({ queryKey: ['inventory'] });
+      qc.invalidateQueries({ queryKey: ['blood-demands'] });
+      qc.invalidateQueries({ queryKey: ['blood-demands-dashboard'] });
+      if (variables.recipient.bloodDemandId) {
+        qc.invalidateQueries({
+          queryKey: ['blood-demand-detail', variables.recipient.bloodDemandId],
+        });
+      }
     },
   });
 }
+
 
 export function useDisposeBag() {
   const qc = useQueryClient();

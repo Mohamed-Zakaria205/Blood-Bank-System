@@ -199,7 +199,44 @@ export const WeeklyTargetItemSchema = z.object({
 
 export const WeeklyTargetsSchema = z.array(WeeklyTargetItemSchema);
 
+export const BloodDemandContractSchema = z.object({
+  id: z.string(),
+  requestDate: z.string(),
+  bloodType: z.string(),
+  requesterName: z.string(),
+  requestedUnits: z.number(),
+  issuedUnits: z.number(),
+  remainingUnits: z.number(),
+  priority: z.enum(['Low', 'Medium', 'High']),
+  status: z.enum(['Pending', 'Approved', 'PartiallyFulfilled', 'Fulfilled', 'Cancelled']),
+  notes: z.string().optional().nullable(),
+  createdAt: z.string().optional(),
+});
+
+export const IssuanceHistoryItemContractSchema = z.object({
+  issuanceId: z.string(),
+  issuedAt: z.string(),
+  issuedByName: z.string(),
+  serialNumber: z.string(),
+  recipientName: z.string(),
+  nationalId: z.string().optional().nullable(),
+  phone: z.string().optional().nullable(),
+  reason: z.string().optional().nullable(),
+});
+
+export const BloodDemandDetailContractSchema = BloodDemandContractSchema.extend({
+  issuanceHistory: z.array(IssuanceHistoryItemContractSchema),
+});
+
+export const BloodDemandDashboardStatsSchema = z.object({
+  total: z.number(),
+  pending: z.number(),
+  partiallyFulfilled: z.number(),
+  fulfilled: z.number(),
+});
+
 /**
+
 
  * Helper to validate API responses without throwing errors that break the UI.
  * It logs a vivid warning in the console if the contract is violated.

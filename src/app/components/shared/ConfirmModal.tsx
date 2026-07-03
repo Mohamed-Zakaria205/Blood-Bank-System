@@ -1,123 +1,110 @@
-import { AlertTriangle, Info, CheckCircle, Trash2 } from 'lucide-react';
+import { X, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useModalFocusTrap } from '../../hooks/useModalFocusTrap';
 
-export type ConfirmModalVariant = 'danger' | 'warning' | 'info' | 'success';
-
 interface ConfirmModalProps {
-  isOpen: boolean;
+  isOpen?: boolean;
   title: string;
   message: string;
-  confirmText?: string;
-  cancelText?: string;
-  variant?: ConfirmModalVariant;
-  onConfirm: () => void;
-  onCancel: () => void;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  onConfirm: () => void | Promise<void>;
+  onClose?: () => void;
+  onCancel?: () => void;
+  isDestructive?: boolean;
+  variant?: 'success' | 'danger';
+  isLoading?: boolean;
 }
 
 export function ConfirmModal({
-  isOpen,
+  isOpen = true,
   title,
   message,
-  confirmText = 'تأكيد',
-  cancelText = 'إلغاء',
-  variant = 'warning',
+  confirmLabel,
+  cancelLabel = 'تراجع',
   onConfirm,
+  onClose,
   onCancel,
+  isDestructive = false,
+  variant,
+  isLoading = false,
 }: ConfirmModalProps) {
-  const modalRef = useModalFocusTrap(onCancel, isOpen);
+  // Support both cancel actions
+  const handleCancel = onCancel || onClose || (() => {});
+  const modalRef = useModalFocusTrap(handleCancel);
+
+  // Map variant to isDestructive
+  const finalDestructive = isDestructive || variant === 'danger';
+  const finalConfirmLabel = confirmLabel || (finalDestructive ? 'تأكيد الإجراء' : 'تأكيد');
 
   if (!isOpen) return null;
 
-  const getVariantStyles = () => {
-    switch (variant) {
-      case 'danger':
-        return {
-          icon: <Trash2 className="w-6 h-6 text-red-600" />,
-          bgIcon: 'bg-red-100',
-          btnConfirm:
-            'bg-red-600 hover:bg-red-700 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600',
-        };
-      case 'success':
-        return {
-          icon: <CheckCircle className="w-6 h-6 text-emerald-600" />,
-          bgIcon: 'bg-emerald-100',
-          btnConfirm:
-            'bg-emerald-600 hover:bg-emerald-700 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600',
-        };
-      case 'info':
-        return {
-          icon: <Info className="w-6 h-6 text-blue-600" />,
-          bgIcon: 'bg-blue-100',
-          btnConfirm:
-            'bg-blue-600 hover:bg-blue-700 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600',
-        };
-      case 'warning':
-      default:
-        return {
-          icon: <AlertTriangle className="w-6 h-6 text-amber-600" />,
-          bgIcon: 'bg-amber-100',
-          btnConfirm:
-            'bg-amber-600 hover:bg-amber-700 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-600',
-        };
-    }
-  };
-
-  const styles = getVariantStyles();
-
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-200"
       onClick={(e) => {
-        if (e.target === e.currentTarget) onCancel();
+        if (e.target === e.currentTarget) handleCancel();
       }}
     >
       <div
         ref={modalRef}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="modal-title"
-        className="bg-card rounded-2xl shadow-xl w-full max-w-sm overflow-hidden outline-none animate-in zoom-in-95 duration-200"
+        aria-labelledby="confirm-modal-title"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-border outline-none animate-in scale-in duration-200"
       >
-        <div className="p-6">
-          <div className="flex items-start gap-4">
-            <div
-              className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${styles.bgIcon}`}
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <div className="flex items-center gap-2.5">
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${finalDestructive ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
+              {finalDestructive ? (
+                <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
+              ) : (
+                <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+              )}
+            </div>
+            <h3
+              id="confirm-modal-title"
+              className="text-foreground font-bold"
+              style={{ fontSize: '15px' }}
             >
-              {styles.icon}
-            </div>
-            <div className="flex-1 pt-1">
-              <h3
-                id="modal-title"
-                className="text-foreground"
-                style={{ fontSize: '18px', fontWeight: 800 }}
-              >
-                {title}
-              </h3>
-              <p
-                className="text-muted-foreground mt-2 leading-relaxed"
-                style={{ fontSize: '14px' }}
-              >
-                {message}
-              </p>
-            </div>
+              {title}
+            </h3>
           </div>
+          <button
+            onClick={handleCancel}
+            className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        <div className="px-6 py-4 bg-muted/30 border-t border-border flex justify-end gap-3">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 rounded-xl text-foreground hover:bg-muted border border-border transition-colors font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600"
-            style={{ fontSize: '14px' }}
-          >
-            {cancelText}
-          </button>
-          <button
-            onClick={onConfirm}
-            className={`px-4 py-2 rounded-xl transition-colors font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background ${styles.btnConfirm}`}
-            style={{ fontSize: '14px' }}
-          >
-            {confirmText}
-          </button>
+        {/* Content */}
+        <div className="p-6 space-y-4">
+          <p className="text-muted-foreground text-sm leading-relaxed text-right">
+            {message}
+          </p>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={handleCancel}
+              disabled={isLoading}
+              className="flex-1 py-2.5 border border-border text-muted-foreground rounded-xl hover:bg-muted transition-all text-sm font-semibold disabled:opacity-50"
+            >
+              {cancelLabel}
+            </button>
+            <button
+              onClick={onConfirm}
+              disabled={isLoading}
+              className={`flex-1 py-2.5 text-white rounded-xl transition-all font-bold text-sm shadow-sm disabled:opacity-70
+                ${finalDestructive
+                  ? 'bg-red-600 hover:bg-red-700'
+                  : 'bg-green-600 hover:bg-green-700'
+                }`}
+            >
+              {isLoading ? 'جاري المعالجة...' : finalConfirmLabel}
+            </button>
+          </div>
         </div>
       </div>
     </div>

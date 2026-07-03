@@ -44,6 +44,8 @@ const InventoryDashboard = lazy(() => import('./components/inventory/InventoryDa
 const InventoryBags = lazy(() => import('./components/inventory/InventoryBags'));
 const InventoryHistory = lazy(() => import('./components/inventory/InventoryHistory'));
 const InventoryAlerts = lazy(() => import('./components/inventory/InventoryAlerts'));
+const BloodRequests = lazy(() => import('./components/inventory/BloodRequests'));
+
 
 // ── Suspense wrapper — shows PageLoader while a lazy chunk is loading ──
 function SuspenseOutlet() {
@@ -180,6 +182,8 @@ export const router = createBrowserRouter([
                   { path: 'bags', Component: InventoryBags },
                   { path: 'history', Component: InventoryHistory },
                   { path: 'inventory-alerts', Component: InventoryAlerts },
+                  { path: 'requests', Component: BloodRequests },
+
                 ],
               },
             ],

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Search,
   Check,
@@ -8,10 +8,14 @@ import {
   ShoppingCart,
   ArrowUp,
   ArrowDown,
+  X,
+  ClipboardList,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate, useSearchParams } from 'react-router';
 import type { BloodBag, BloodType, BloodBagStatus } from '../../types';
 import { useBloodBagsStats, usePaginatedBloodBags, useExportBags, useDisposeBag } from '../../hooks/useInventory';
+import { useBloodDemandDetail } from '../../hooks/useBloodDemands';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 import { EmptyState } from '../shared/EmptyState';
 import { BLOOD_TYPES } from '../../constants';
@@ -23,6 +27,13 @@ import ExportBagsModal from './inventory-bags/ExportBagsModal';
 import DisposeBagModal from './inventory-bags/DisposeBagModal';
 
 export default function InventoryBags() {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Entry point parameter for fulfillment mode
+  const demandId = searchParams.get('demandId');
+  const isFulfilling = !!demandId;
+
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [selectedBloodTypes, setSelectedBloodTypes] = useState<BloodType[]>([]);
@@ -33,18 +44,33 @@ export default function InventoryBags() {
   // Fetch backend-driven statistics counts
   const { data: statsData, isLoading: isLoadingStats, isError: isErrorStats } = useBloodBagsStats();
 
+  // Fetch latest demand details if in fulfillment mode
+  const {
+    data: demandDetail,
+    isLoading: isLoadingDemand,
+    isError: isErrorDemand,
+    refetch: refetchDemand,
+  } = useBloodDemandDetail(demandId);
+
+  const targetBloodType = demandDetail?.bloodType;
+  const remainingUnits = demandDetail?.remainingUnits ?? 0;
+  const requesterName = demandDetail?.requesterName ?? '';
+
   // Fetch paginated, filtered bags from server
   const {
     data: paginatedResponse,
     isLoading: isLoadingPaginated,
     isError: isErrorPaginated,
+    refetch: refetchPaginated,
   } = usePaginatedBloodBags({
     page,
     limit: 10,
     search: search.trim() || undefined,
-    bloodTypes: selectedBloodTypes.length > 0 ? selectedBloodTypes.join(',') : undefined,
+    bloodTypes: isFulfilling
+      ? (targetBloodType || 'O+')
+      : (selectedBloodTypes.length > 0 ? selectedBloodTypes.join(',') : undefined),
     donationType: donationType === 'all' ? undefined : donationType,
-    status: filterStatus === 'active' ? 'all' : filterStatus,
+    status: isFulfilling ? 'available' : (filterStatus === 'active' ? 'all' : filterStatus),
     sortBy: 'createdAt',
     sortOrder,
   });
@@ -56,14 +82,20 @@ export default function InventoryBags() {
   const [selectedBagIds, setSelectedBagIds] = useState<string[]>([]);
   const [selectedBags, setSelectedBags] = useState<BloodBag[]>([]);
 
+  // Clear selections if entering/exiting fulfillment mode
+  useEffect(() => {
+    setSelectedBagIds([]);
+    setSelectedBags([]);
+  }, [demandId]);
+
   // ── Export modal ──
   const [exportModalOpen, setExportModalOpen] = useState(false);
 
   // ── Dispose modal ──
   const [bagsToDispose, setBagsToDispose] = useState<BloodBag[] | null>(null);
 
-  const isLoading = isLoadingStats || isLoadingPaginated;
-  const isError = isErrorStats || isErrorPaginated;
+  const isLoading = isLoadingStats || isLoadingPaginated || (isFulfilling && isLoadingDemand);
+  const isError = isErrorStats || isErrorPaginated || (isFulfilling && isErrorDemand);
 
   if (isLoading)
     return (
@@ -76,7 +108,7 @@ export default function InventoryBags() {
   if (isError)
     return (
       <ErrorState
-        message="فشل في تحميل حقائب الدم، يرجى المحاولة لاحقاً"
+        message={isErrorDemand ? "فشل في تحميل تفاصيل طلب الدم، يرجى المحاولة لاحقاً" : "فشل في تحميل حقائب الدم، يرجى المحاولة لاحقاً"}
         onRetry={() => window.location.reload()}
       />
     );
@@ -152,11 +184,20 @@ export default function InventoryBags() {
     setExportModalOpen(true);
   };
 
+  const handleCancelFulfillment = () => {
+    setSelectedBagIds([]);
+    setSelectedBags([]);
+    setSearchParams({});
+  };
+
   const handleConfirmExport = async (form: ExportFormState) => {
     try {
       const res = await exportBagsMutation.mutateAsync({
         bagIds: selectedBagIds,
-        recipient: form,
+        recipient: {
+          ...form,
+          bloodDemandId: demandId || undefined,
+        },
       });
 
       if (res.processed > 0 && res.failed > 0) {
@@ -164,15 +205,25 @@ export default function InventoryBags() {
       } else if (res.processed === 0) {
         toast.error(`فشل صرف جميع الحقائب المحددة (${res.failed} حقائب)`);
       } else {
-        toast.success(`تم صرف ${res.processed} حقيبة بنجاح`);
+        toast.success(isFulfilling ? 'تم صرف الحقائب وتحديث حالة الطلب بنجاح' : `تم صرف ${res.processed} حقيبة بنجاح`);
       }
 
       setExportModalOpen(false);
       setSelectedBagIds([]);
       setSelectedBags([]);
-    } catch (err) {
+
+      if (isFulfilling) {
+        setSearchParams({});
+        navigate('/inventory/requests');
+      }
+    } catch (err: any) {
       console.error(err);
-      toast.error('حدث خطأ أثناء إتمام عملية الصرف');
+      // Race condition handling: catch rejections, show toast, and sync state
+      const errorMsg = err?.response?.data?.message || err?.message || 'حدث خطأ أثناء إتمام عملية الصرف';
+      toast.error(errorMsg);
+      
+      refetchPaginated();
+      refetchDemand();
     }
   };
 
@@ -209,6 +260,7 @@ export default function InventoryBags() {
   };
 
   const toggleBloodTypeSelection = (type: BloodType) => {
+    if (isFulfilling) return;
     setSelectedBloodTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
@@ -231,6 +283,7 @@ export default function InventoryBags() {
   };
 
   const handleStatusFilterChange = (statusVal: BloodBagStatus | 'active') => {
+    if (isFulfilling) return;
     setFilterStatus(statusVal);
     setPage(1);
   };
@@ -247,6 +300,32 @@ export default function InventoryBags() {
           جرد شامل لجميع الحقائب المخزنة
         </p>
       </div>
+
+      {/* Fulfillment Mode Top Banner */}
+      {isFulfilling && demandDetail && (
+        <div className="flex items-center justify-between p-4 bg-green-500/10 border border-green-500/30 rounded-2xl shadow-sm animate-in slide-in-from-top duration-200">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-green-500/20 rounded-xl flex items-center justify-center">
+              <ClipboardList className="w-5 h-5 text-green-600 dark:text-green-400" />
+            </div>
+            <div>
+              <p className="text-green-800 dark:text-green-300 font-bold" style={{ fontSize: '14px' }}>
+                جاري تلبية طلب الدم للجهة: <span className="underline">{requesterName}</span>
+              </p>
+              <p className="text-green-600 dark:text-green-400 text-xs mt-0.5">
+                الفصيلة المطلوبة: <strong className="font-mono">{targetBloodType}</strong> | تم تحديد <strong className="text-foreground">{selectedBagIds.length}</strong> من <strong className="text-foreground">{remainingUnits}</strong> حقيبة مطلوبة
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleCancelFulfillment}
+            className="p-1.5 hover:bg-green-500/20 text-green-700 dark:text-green-400 rounded-lg transition-all"
+            title="إلغاء نمط تلبية الطلب"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -294,9 +373,10 @@ export default function InventoryBags() {
         ].map((s) => (
           <button
             key={s.label}
-            onClick={() => handleStatusFilterChange(filterStatus === s.filter ? 'active' : s.filter)}
+            disabled={isFulfilling}
+            onClick={() => !isFulfilling && handleStatusFilterChange(filterStatus === s.filter ? 'active' : s.filter)}
             className={`${s.bg} border rounded-2xl p-4 text-right transition-all hover:scale-[1.01] duration-200 ${filterStatus === s.filter ? `ring-2 ${s.ring} ring-offset-1` : ''
-              }`}
+              } ${isFulfilling ? 'opacity-65 cursor-not-allowed' : ''}`}
           >
             <div className={s.color} style={{ fontSize: '26px', fontWeight: 800 }}>
               {s.value}
@@ -318,7 +398,7 @@ export default function InventoryBags() {
             <div>
               <p className="text-green-800 dark:text-green-300 font-bold" style={{ fontSize: '14px' }}>
                 {selectedBagIds.length}{' '}
-                {selectedBagIds.length === 1 ? 'حقيبة محددة' : 'حقائب محددة للعمليات الجماعية'}
+                {selectedBagIds.length === 1 ? 'حقيبة محددة' : 'حقائب محددة'}
               </p>
               <p className="text-green-600 dark:text-green-400 font-mono text-xs truncate max-w-md">
                 {selectedBagsData.map((b) => b.bagCode).join(' · ')}
@@ -336,21 +416,23 @@ export default function InventoryBags() {
             >
               إلغاء التحديد
             </button>
-            <button
-              onClick={() => setBagsToDispose(selectedBagsData)}
-              className="flex items-center gap-2 px-3 py-2 bg-red-600 dark:bg-red-700 text-white rounded-xl hover:bg-red-700 dark:hover:bg-red-600 transition-all shadow-sm"
-              style={{ fontSize: '12px', fontWeight: 700 }}
-            >
-              <Trash2 className="w-4 h-4" />
-              إتلاف ({selectedBagIds.length})
-            </button>
+            {!isFulfilling && (
+              <button
+                onClick={() => setBagsToDispose(selectedBagsData)}
+                className="flex items-center gap-2 px-3 py-2 bg-red-600 dark:bg-red-700 text-white rounded-xl hover:bg-red-700 dark:hover:bg-red-600 transition-all shadow-sm"
+                style={{ fontSize: '12px', fontWeight: 700 }}
+              >
+                <Trash2 className="w-4 h-4" />
+                إتلاف ({selectedBagIds.length})
+              </button>
+            )}
             <button
               onClick={() => setExportModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 dark:bg-green-700 text-white rounded-xl hover:bg-green-700 dark:hover:bg-green-600 transition-all shadow-sm"
-              style={{ fontSize: '13px', fontWeight: 700 }}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 dark:bg-green-700 text-white rounded-xl hover:bg-green-700 dark:hover:bg-green-600 transition-all shadow-sm font-bold"
+              style={{ fontSize: '13px' }}
             >
               <Upload className="w-4 h-4" />
-              صرف ({selectedBagIds.length})
+              {isFulfilling ? `متابعة الصرف (${selectedBagIds.length})` : `صرف (${selectedBagIds.length})`}
             </button>
           </div>
         </div>
@@ -412,22 +494,23 @@ export default function InventoryBags() {
           </span>
           <div className="flex flex-wrap gap-1.5">
             {BLOOD_TYPES.map((type) => {
-              const isSelected = selectedBloodTypes.includes(type);
+              const isSelected = isFulfilling ? type === targetBloodType : selectedBloodTypes.includes(type);
               return (
                 <button
                   key={type}
+                  disabled={isFulfilling}
                   onClick={() => toggleBloodTypeSelection(type)}
                   className={`px-3 py-1 rounded-full text-xs font-bold transition-all border
                     ${isSelected
                       ? 'bg-red-600 border-red-600 text-white shadow-sm'
                       : 'bg-card border-border text-foreground hover:bg-muted/50'
-                    }`}
+                    } ${isFulfilling && type !== targetBloodType ? 'opacity-40 cursor-not-allowed' : ''}`}
                 >
                   {type}
                 </button>
               );
             })}
-            {selectedBloodTypes.length > 0 && (
+            {!isFulfilling && selectedBloodTypes.length > 0 && (
               <button
                 onClick={clearBloodTypes}
                 className="px-2.5 py-1 text-xs text-muted-foreground hover:text-red-500 transition-all font-semibold"
@@ -435,7 +518,7 @@ export default function InventoryBags() {
                 إلغاء التحديد
               </button>
             )}
-            {hasActiveFilters && (
+            {!isFulfilling && hasActiveFilters && (
               <button
                 onClick={() => {
                   setSearch('');
@@ -461,7 +544,7 @@ export default function InventoryBags() {
             <thead>
               <tr className="bg-muted/40">
                 <th className="px-4 py-3" style={{ width: '44px' }}>
-                  {selectablePageIds.length > 0 && (
+                  {selectablePageIds.length > 0 && !isFulfilling && (
                     <button
                       onClick={toggleSelectAllPage}
                       className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all
@@ -500,6 +583,10 @@ export default function InventoryBags() {
                 // Proximity warning: expires in 5 days or less (and is available status)
                 const isNear = isAvailable && days >= 0 && days <= 5;
                 const isSelected = selectedBagIds.includes(bag.id);
+                
+                // Prevent selection over the required remaining units limit
+                const isCheckboxDisabled = isFulfilling && !isSelected && selectedBagIds.length >= remainingUnits;
+
                 return (
                   <tr
                     key={bag.id}
@@ -511,12 +598,13 @@ export default function InventoryBags() {
                     <td className="px-4 py-3">
                       {(bag.status === 'available' || bag.status === 'expired') && (
                         <button
+                          disabled={isCheckboxDisabled}
                           onClick={() => toggleSelect(bag)}
                           className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all
                             ${isSelected
                               ? 'bg-green-600 border-green-600'
                               : 'border-border hover:border-green-400'
-                            }`}
+                            } ${isCheckboxDisabled ? 'opacity-40 cursor-not-allowed border-muted-foreground/30' : ''}`}
                         >
                           {isSelected && <Check className="w-3 h-3 text-white" />}
                         </button>
@@ -588,29 +676,33 @@ export default function InventoryBags() {
                     </td>
                     {/* Action buttons column */}
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1.5">
-                        {isAvailable && (
-                          <button
-                            onClick={() => openExportForBag(bag)}
-                            className="flex items-center gap-1 px-2.5 py-1.5 bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 rounded-lg hover:bg-green-200 dark:hover:bg-green-500/20 transition-all"
-                            style={{ fontSize: '11px', fontWeight: 700 }}
-                          >
-                            <Upload className="w-3.5 h-3.5" /> صرف
-                          </button>
-                        )}
-                        {(isAvailable || isExpired) && (
-                          <button
-                            onClick={() => setBagsToDispose([bag])}
-                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg transition-all ${isExpired
-                              ? 'bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-500/20'
-                              : 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-500/20'
-                              }`}
-                            style={{ fontSize: '11px', fontWeight: 700 }}
-                          >
-                            <Trash2 className="w-3.5 h-3.5" /> إتلاف
-                          </button>
-                        )}
-                      </div>
+                      {!isFulfilling ? (
+                        <div className="flex items-center gap-1.5">
+                          {isAvailable && (
+                            <button
+                              onClick={() => openExportForBag(bag)}
+                              className="flex items-center gap-1 px-2.5 py-1.5 bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 rounded-lg hover:bg-green-200 dark:hover:bg-green-500/20 transition-all"
+                              style={{ fontSize: '11px', fontWeight: 700 }}
+                            >
+                              <Upload className="w-3.5 h-3.5" /> صرف
+                            </button>
+                          )}
+                          {(isAvailable || isExpired) && (
+                            <button
+                              onClick={() => setBagsToDispose([bag])}
+                              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg transition-all ${isExpired
+                                ? 'bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-500/20'
+                                : 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-500/20'
+                                }`}
+                              style={{ fontSize: '11px', fontWeight: 700 }}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" /> إتلاف
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground text-xs font-semibold">متاح للصرف</span>
+                      )}
                     </td>
                   </tr>
                 );
@@ -655,6 +747,9 @@ export default function InventoryBags() {
           onClose={() => {
             setExportModalOpen(false);
           }}
+          initialRecipientName={isFulfilling ? requesterName : ''}
+          initialReason={isFulfilling ? `تلبية طلب الدم رقم #${demandId}` : ''}
+          isFulfillmentMode={isFulfilling}
         />
       )}
 
