@@ -62,12 +62,23 @@ export interface NotificationPreviewResponse {
   recipientCount: number;
 }
 
+export interface FailedDonorDetail {
+  donorId: string;
+  fullName: string;
+  phoneNumber: string;
+  bloodType: string;
+  failureReason: string;
+}
+
 export interface SendNotificationResponse {
+  appealId?: string;
   requested: number;
   sent: number;
   failed: number;
   failedDonorIds: string[];
+  failedDonors?: FailedDonorDetail[];
 }
+
 
 /**
  * Persistent donor profile (returned by GET /donors).

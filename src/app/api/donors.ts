@@ -365,12 +365,30 @@ export async function sendDonorNotifications(
 ): Promise<ApiResponse<SendNotificationResponse>> {
   try {
     const { data } = await apiClient.post<ApiResponseWrapper<SendNotificationResponse>>(`/donors/eligibility/notifications`, payload);
-    return { data: data.data, message: data.message };
+    const mappedData: SendNotificationResponse = data.data ? {
+      ...data.data,
+      failedDonorIds: data.data.failedDonorIds || data.data.failedDonors?.map(d => d.donorId) || [],
+    } : {
+      requested: 0,
+      sent: 0,
+      failed: 0,
+      failedDonorIds: [],
+    };
+    return { data: mappedData, message: data.message };
   } catch (error) {
     console.error('[API] sendDonorNotifications error:', error);
     throw error;
   }
 }
+
+/** Export failed donor notification report to PDF */
+export async function exportFailedDonorsPdf(appealId: string): Promise<Blob> {
+  const response = await apiClient.get(`/donors/eligibility/notifications/export-failed-pdf/${appealId}`, {
+    responseType: 'blob',
+  });
+  return response.data;
+}
+
 
 // ═══════════════════════════════════════════════════════════
 //  DONATIONS  — donation-event endpoints

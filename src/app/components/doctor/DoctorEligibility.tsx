@@ -11,7 +11,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Donor, SendNotificationResponse } from '../../types/donor';
+import type { Donor, SendNotificationResponse, FailedDonorDetail } from '../../types/donor';
 import type { BloodType } from '../../types/common';
 import type { ApiResponse } from '../../types/common';
 // import type { AxiosError } from 'axios';
@@ -43,6 +43,7 @@ import {
 } from './doctor-eligibility/eligibilityConstants';
 import NotifyDonorModal from './doctor-eligibility/NotifyDonorModal';
 import BloodTypeBar from './doctor-eligibility/BloodTypeBar';
+import FailedDonorsDrawer from './doctor-eligibility/FailedDonorsDrawer';
 
 export default function DoctorEligibility() {
   const [search, setSearch] = useState('');
@@ -59,23 +60,11 @@ export default function DoctorEligibility() {
   const [selectionMode, setSelectionMode] = useState<'selected' | 'filtered'>('selected');
   const [selectedDonors, setSelectedDonors] = useState<Set<string>>(new Set());
   const [excludedDonors, setExcludedDonors] = useState<Set<string>>(new Set());
-  const [sentNotifs, setSentNotifs] = useState<Set<string>>(() => {
-    if (typeof window === 'undefined') return new Set();
-    try {
-      const stored = sessionStorage.getItem('donor_sent_notifications');
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch {
-      return new Set();
-    }
-  });
-
-  useEffect(() => {
-    try {
-      sessionStorage.setItem('donor_sent_notifications', JSON.stringify(Array.from(sentNotifs)));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [sentNotifs]);
+  const [failedOutreach, setFailedOutreach] = useState<{
+    appealId: string;
+    failedDonors: FailedDonorDetail[];
+  } | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Reset selection whenever filters change
   useEffect(() => {
@@ -138,25 +127,42 @@ export default function DoctorEligibility() {
     [donorsList]
   );
 
+  const selectedCount = useMemo(() => {
+    return selectionMode === 'filtered'
+      ? Math.max(0, total - excludedDonors.size)
+      : selectedDonors.size;
+  }, [selectionMode, total, excludedDonors.size, selectedDonors.size]);
+
+  const isAnythingSelected = useMemo(() => {
+    return selectionMode === 'filtered' || selectedDonors.size > 0;
+  }, [selectionMode, selectedDonors.size]);
+
+  const isHeaderChecked = useMemo(() => {
+    if (selectableOnPage.length === 0) return false;
+    return selectionMode === 'filtered'
+      ? selectableOnPage.every(d => !excludedDonors.has(d.id))
+      : selectableOnPage.every(d => selectedDonors.has(d.id));
+  }, [selectableOnPage, selectionMode, excludedDonors, selectedDonors]);
+
   const previewPayload = useMemo(() => {
     if (!notifModal) return null;
     return notifModal.selectionMode === 'filtered'
       ? {
-          selectionMode: 'filtered' as const,
-          filters: {
-            search: debouncedSearch,
-            bloodType: filterBlood === 'all' ? '' : filterBlood,
-            status: filterStatus === 'all' ? '' : filterStatus,
-            district: filterDistrict === 'all' ? '' : filterDistrict,
-            gender: filterGender === 'all' ? '' : filterGender,
-            hasMobileApp: true,
-          },
-          excludedDonorIds: Array.from(excludedDonors),
-        }
+        selectionMode: 'filtered' as const,
+        filters: {
+          search: debouncedSearch,
+          bloodType: filterBlood === 'all' ? '' : filterBlood,
+          status: filterStatus === 'all' ? '' : filterStatus,
+          district: filterDistrict === 'all' ? '' : filterDistrict,
+          gender: filterGender === 'all' ? '' : filterGender,
+          hasMobileApp: true,
+        },
+        excludedDonorIds: Array.from(excludedDonors),
+      }
       : {
-          selectionMode: 'selected' as const,
-          donorIds: notifModal.donors.map(d => d.id),
-        };
+        selectionMode: 'selected' as const,
+        donorIds: notifModal.donors.map(d => d.id),
+      };
   }, [notifModal, debouncedSearch, filterBlood, filterStatus, filterDistrict, filterGender, excludedDonors]);
 
   if (isLoading || statsLoading)
@@ -190,47 +196,60 @@ export default function DoctorEligibility() {
   const sendNotification = () => {
     if (!previewPayload) return;
 
+    // Reset previous failed outreach session at the start of a new send operation
+    setFailedOutreach(null);
+    setIsDrawerOpen(false);
+
     sendNotifMutation.mutate(
       previewPayload,
       {
         onSuccess: (res: ApiResponse<SendNotificationResponse>) => {
-          const failedIds = new Set<string>(res.data?.failedDonorIds || []);
-          const sentNotifIds: string[] = [];
-
-          if (notifModal?.selectionMode !== 'filtered') {
-            notifModal?.donors.forEach(d => {
-              if (!failedIds.has(d.id)) {
-                sentNotifIds.push(`${d.id}-${notifModal.type}`);
-              }
-            });
-
-            setSentNotifs((prev: Set<string>) => {
-              const next = new Set(prev);
-              sentNotifIds.forEach(id => next.add(id));
-              return next;
-            });
-          }
-
           const requestedCount = res.data?.requested ?? 0;
           const sentCount = res.data?.sent ?? 0;
           const failedCount = res.data?.failed ?? 0;
+          const failedDonors = res.data?.failedDonors || [];
+          const appealId = res.data?.appealId || '';
 
-          if (failedCount > 0) {
+          if (failedCount > 0 && failedDonors.length > 0) {
+            setFailedOutreach({ appealId, failedDonors });
+            setIsDrawerOpen(true); // Open the drawer immediately on failures
+            const message = sentCount > 0
+              ? `تم إرسال الإشعار إلى ${sentCount} من المتبرعين بنجاح، بينما فشل إرساله إلى ${failedCount}.`
+              : `تعذر إرسال الإشعار لجميع المتبرعين المستهدفين (${failedCount} متبرع).`;
+
             if (sentCount > 0) {
-              toast.warning(`تم إرسال الإشعار إلى ${sentCount} من المتبرعين بنجاح، بينما فشل إرساله إلى ${failedCount}.`);
+              toast.warning(message, {
+                duration: Infinity,
+                onDismiss: () => setFailedOutreach(null),
+                action: {
+                  label: 'مراجعة الأخطاء',
+                  onClick: () => setIsDrawerOpen(true),
+                },
+              });
             } else {
-              toast.error(`تعذر إرسال الإشعار لجميع المتبرعين المستهدفين (${failedCount} متبرع).`);
+              toast.error(message, {
+                duration: Infinity,
+                onDismiss: () => setFailedOutreach(null),
+                action: {
+                  label: 'مراجعة الأخطاء',
+                  onClick: () => setIsDrawerOpen(true),
+                },
+              });
             }
-          } else if (requestedCount === 0) {
-            toast.success('لم يتم العثور على أي متبرعين مطابقين لإرسال الإشعار إليهم.');
           } else {
-            toast.success(
-              res.message || (
-                notifModal?.type === 'emergency'
-                  ? `تم إرسال الإشعار الطارئ بنجاح إلى ${sentCount} متبرع.`
-                  : `تم إرسال إشعار الجاهزية بنجاح إلى ${sentCount} متبرع.`
-              )
-            );
+            setFailedOutreach(null);
+            setIsDrawerOpen(false);
+            if (requestedCount === 0) {
+              toast.success('لم يتم العثور على أي متبرعين مطابقين لإرسال الإشعار إليهم.');
+            } else {
+              toast.success(
+                res.message || (
+                  notifModal?.type === 'emergency'
+                    ? `تم إرسال الإشعار الطارئ بنجاح إلى ${sentCount} متبرع.`
+                    : `تم إرسال إشعار الجاهزية بنجاح إلى ${sentCount} متبرع.`
+                )
+              );
+            }
           }
           setNotifModal(null);
           setSelectedDonors(new Set());
@@ -301,11 +320,6 @@ export default function DoctorEligibility() {
     }
   };
 
-  const isHeaderChecked = selectableOnPage.length > 0 && (
-    selectionMode === 'filtered'
-      ? selectableOnPage.every(d => !excludedDonors.has(d.id))
-      : selectableOnPage.every(d => selectedDonors.has(d.id))
-  );
 
   return (
     <div className="space-y-6">
@@ -504,10 +518,10 @@ export default function DoctorEligibility() {
           </label>
           <span className="text-muted-foreground">تم العثور على {total} نتيجة</span>
         </div>
-        {(selectionMode === 'filtered' || selectedDonors.size > 0) && (
+        {isAnythingSelected && (
           <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-200">
             <span className="text-green-700 font-bold bg-green-50 px-2 py-1 rounded-md dark:bg-green-950/40 dark:text-green-400">
-              {selectionMode === 'filtered' ? Math.max(0, total - excludedDonors.size) : selectedDonors.size} محدد
+              {selectedCount} محدد
             </span>
             <button
               onClick={() => openBulkModal('emergency')}
@@ -556,7 +570,6 @@ export default function DoctorEligibility() {
         {donorsList.map((donor) => {
           const { eligibility } = donor;
           const cfg = statusCfg[eligibility.status];
-          const hasSentEmergency = sentNotifs.has(`${donor.id}-emergency`);
           return (
             <div
               key={donor.id}
@@ -699,14 +712,12 @@ export default function DoctorEligibility() {
                   {donor.hasAppAccount ? (
                     (eligibility.status === 'eligible' || eligibility.status === 'soon') && (
                       <button
-                        onClick={() =>
-                          !hasSentEmergency && setNotifModal({ donors: [donor], type: 'emergency' })
-                        }
-                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all shadow-sm ${hasSentEmergency ? 'bg-muted text-muted-foreground border-border cursor-not-allowed' : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:scale-105 active:scale-95 dark:bg-red-950/80 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-700 dark:hover:border-red-600 dark:hover:text-white cursor-pointer'}`}
+                        onClick={() => setNotifModal({ donors: [donor], type: 'emergency' })}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all shadow-sm bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:scale-105 active:scale-95 dark:bg-red-950/80 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-700 dark:hover:border-red-600 dark:hover:text-white cursor-pointer"
                         style={{ fontSize: '11px', fontWeight: 700 }}
                       >
                         <Zap className="w-3.5 h-3.5" />
-                        {hasSentEmergency ? 'أُرسل' : 'طارئ'}
+                        طارئ
                       </button>
                     )
                   ) : (
@@ -788,6 +799,16 @@ export default function DoctorEligibility() {
           onSend={sendNotification}
           onCancel={() => setNotifModal(null)}
           isPending={sendNotifMutation.isPending}
+        />
+      )}
+
+      {/* Failed outreach drawer */}
+      {failedOutreach && (
+        <FailedDonorsDrawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          appealId={failedOutreach.appealId}
+          failedDonors={failedOutreach.failedDonors}
         />
       )}
     </div>
