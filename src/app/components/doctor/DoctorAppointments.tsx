@@ -346,6 +346,15 @@ export default function DoctorAppointments() {
       if (!grouped[s.date]) grouped[s.date] = [];
       grouped[s.date].push(s);
     });
+
+    if (Object.keys(grouped).length === 0) {
+      return (
+        <div className="py-12 text-center text-muted-foreground bg-card rounded-2xl border border-border">
+          <p style={{ fontSize: '14px' }}>لا توجد مواعيد اليوم</p>
+        </div>
+      );
+    }
+
     return (
       <div className="space-y-4">
         {Object.entries(grouped)

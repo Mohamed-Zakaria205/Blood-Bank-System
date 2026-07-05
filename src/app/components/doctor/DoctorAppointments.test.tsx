@@ -437,6 +437,12 @@ describe('DoctorAppointments Component', () => {
     });
     const { unmount: unmountEmpty } = render(<DoctorAppointments />);
     expect(screen.getByText('لا توجد مواعيد اليوم')).toBeInTheDocument();
+
+    // Verify Month view empty state
+    const monthBtn = screen.getByRole('button', { name: 'الشهر' });
+    fireEvent.click(monthBtn);
+    expect(screen.getByText('لا توجد مواعيد اليوم')).toBeInTheDocument();
+
     unmountEmpty();
   });
 
