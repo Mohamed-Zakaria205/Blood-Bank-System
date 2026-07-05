@@ -38,6 +38,7 @@ export default function DoctorCampaigns() {
   const [page, setPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showFinishedCampaigns, setShowFinishedCampaigns] = useState(true);
 
   const {
     data: response,
@@ -86,6 +87,13 @@ export default function DoctorCampaigns() {
   const handleFilterStatus = (status: string) => {
     setFilterStatus(filterStatus === status ? '' : status);
     setPage(1);
+  };
+
+  const handleToggleFinished = (checked: boolean) => {
+    setShowFinishedCampaigns(checked);
+    if (!checked && filterStatus === 'completed') {
+      setFilterStatus('');
+    }
   };
 
   if (isLoading)
@@ -265,22 +273,36 @@ export default function DoctorCampaigns() {
         </button>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative">
-        <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-          <Search className="w-5 h-5 text-muted-foreground" />
+      {/* Search Bar & Toggle */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="relative flex-1">
+          <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+            <Search className="w-5 h-5 text-muted-foreground" />
+          </div>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setPage(1);
+            }}
+            placeholder="ابحث عن حملة بالاسم أو المدينة..."
+            className="w-full pl-4 pr-12 py-3 border border-border rounded-xl bg-card text-foreground focus:ring-2 focus:ring-green-100 focus:border-green-400 outline-none transition-all"
+            style={{ fontSize: '14px' }}
+          />
         </div>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setPage(1);
-          }}
-          placeholder="ابحث عن حملة بالاسم أو المدينة..."
-          className="w-full pl-4 pr-12 py-3 border border-border rounded-xl bg-card text-foreground focus:ring-2 focus:ring-green-100 focus:border-green-400 outline-none transition-all"
-          style={{ fontSize: '14px' }}
-        />
+
+        <label className="flex items-center gap-2 cursor-pointer select-none bg-card px-3 py-3 rounded-xl border border-border hover:border-green-300 transition-all animate-in fade-in duration-200 self-start md:self-stretch justify-center">
+          <input
+            type="checkbox"
+            checked={showFinishedCampaigns}
+            onChange={(e) => handleToggleFinished(e.target.checked)}
+            className="w-4 h-4 rounded border-border text-green-600 focus:ring-green-500 cursor-pointer"
+          />
+          <span className="text-muted-foreground whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600 }}>
+            إظهار المواعيد الملغية
+          </span>
+        </label>
       </div>
 
       {/* Stats/Filters */}
@@ -331,6 +353,7 @@ export default function DoctorCampaigns() {
             onEdit={handleEditCampaign}
             onDelete={handleDeleteCampaign}
             onComplete={handleCompleteCampaign}
+            showCancelledAppointments={showFinishedCampaigns}
           />
         ))}
         {campaigns.length === 0 && (

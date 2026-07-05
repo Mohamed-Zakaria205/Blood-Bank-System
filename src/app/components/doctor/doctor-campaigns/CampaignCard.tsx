@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import {
   MapPin,
@@ -29,6 +30,7 @@ interface CampaignCardProps {
   onEdit?: (campaign: Campaign) => void;
   onDelete?: (campaign: Campaign) => void;
   onComplete?: (campaign: Campaign) => void;
+  showCancelledAppointments?: boolean;
 }
 
 export default function CampaignCard({
@@ -41,6 +43,7 @@ export default function CampaignCard({
   onEdit,
   onDelete,
   onComplete,
+  showCancelledAppointments = true,
 }: CampaignCardProps) {
   const navigate = useNavigate();
   const isExpanded = expandedCampaign === c.id;
@@ -50,8 +53,19 @@ export default function CampaignCard({
     isExpanded ? c.id : null,
   );
 
+  // Derived visible appointments:
+  const displayApts = useMemo(() => {
+    if (showCancelledAppointments) return campApts;
+    return campApts.filter((apt) => apt.status !== 'cancelled');
+  }, [campApts, showCancelledAppointments]);
+
   // Use server-provided count for the badge; fall back to fetched length after load
-  const badgeCount = c.appointmentsCount ?? campApts.length;
+  const badgeCount = useMemo(() => {
+    if (!showCancelledAppointments && campApts.length > 0) {
+      return displayApts.length;
+    }
+    return c.appointmentsCount ?? displayApts.length;
+  }, [c.appointmentsCount, displayApts.length, showCancelledAppointments, campApts.length]);
 
   const pct = Math.round((c.registeredDonors / c.targetDonors) * 100);
   const progressColor =
@@ -229,7 +243,7 @@ export default function CampaignCard({
                   ))}
                 </div>
               ) : (
-                campApts.map((apt) => {
+                displayApts.map((apt) => {
                   const isCancelled = apt.status === 'cancelled';
                   const isCompleted = apt.status === 'completed';
                   const isMissed = apt.status === 'missed';
