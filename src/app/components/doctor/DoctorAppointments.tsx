@@ -18,7 +18,7 @@ import { CancelModal } from '../shared/CancelModal';
 import { ErrorState, CardSkeleton, TableSkeleton } from '../shared/LoadingSkeleton';
 
 // ── Sub-components ──
-import { WEEK_DAY_NAMES, STATUS_CONFIG } from './doctor-appointments/appointmentConstants';
+import { WEEK_DAY_NAMES, STATUS_CONFIG, STATUS_CANCELLED } from './doctor-appointments/appointmentConstants';
 import type { EffectiveStatus } from './doctor-appointments/appointmentConstants';
 import AppointmentCard from './doctor-appointments/AppointmentCard';
 import AppointmentRow from './doctor-appointments/AppointmentRow';
@@ -33,6 +33,7 @@ export default function DoctorAppointments() {
   const [view, setView] = useState<'today' | 'week' | 'month'>('today');
   const [filterStatus, setFilterStatus] = useState<'all' | EffectiveStatus>('all');
   const [cancelTarget, setCancelTarget] = useState<AppointmentSlot | null>(null);
+  const [showCancelled, setShowCancelled] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
 
   // ── Force reactivity on date boundaries ──
@@ -146,6 +147,12 @@ export default function DoctorAppointments() {
   // Server already filters by status, so no client-side filtering needed
   const { data: slots = [], isLoading, isError, refetch } = useAppointmentSlots(slotsFilter);
 
+  // ── Derived filtered collection ──
+  const visibleAppointments = useMemo(() => {
+    if (showCancelled) return slots;
+    return slots.filter((s) => s.status !== STATUS_CANCELLED);
+  }, [slots, showCancelled]);
+
   const { data: stats } = useAppointmentStats(dateRange);
   const cancelMutation = useCancelAppointment();
   const noShowMutation = useMarkNoShow();
@@ -213,7 +220,7 @@ export default function DoctorAppointments() {
 
   // ── TODAY timeline — dynamic: render only slots the backend returned ──
   const renderToday = () => {
-    const todaySlots = slots
+    const todaySlots = visibleAppointments
       .filter((s) => s.date === TODAY)
       .sort((a, b) => a.time.localeCompare(b.time));
 
@@ -233,7 +240,7 @@ export default function DoctorAppointments() {
               <div
                 className={`flex-shrink-0 w-16 flex flex-col items-center justify-center rounded-xl py-2 ${slot.status === 'completed' ||
                     slot.status === 'missed' ||
-                    slot.status === 'cancelled'
+                    slot.status === STATUS_CANCELLED
                     ? 'bg-muted'
                     : 'bg-green-50 border border-green-100'
                   }`}
@@ -241,7 +248,7 @@ export default function DoctorAppointments() {
                 <span
                   className={`font-mono ${slot.status === 'completed' ||
                       slot.status === 'missed' ||
-                      slot.status === 'cancelled'
+                      slot.status === STATUS_CANCELLED
                       ? 'text-muted-foreground'
                       : 'text-green-700'
                     }`}
@@ -270,7 +277,11 @@ export default function DoctorAppointments() {
   const renderWeek = () => (
     <div className="space-y-6">
       {WEEK_DATES.map((date, idx) => {
-        const daySlots = slots.filter((s) => s.date === date);
+        const originalDaySlots = slots.filter((s) => s.date === date);
+        const hasOnlyCancelled = originalDaySlots.length > 0 && originalDaySlots.every((s) => s.status === STATUS_CANCELLED);
+        if (!showCancelled && hasOnlyCancelled) return null;
+
+        const daySlots = visibleAppointments.filter((s) => s.date === date);
         const filtered = applyFilter(daySlots);
         return (
           <div
@@ -331,7 +342,7 @@ export default function DoctorAppointments() {
   // ── MONTH view ──
   const renderMonth = () => {
     const grouped: Record<string, AppointmentSlot[]> = {};
-    slots.forEach((s) => {
+    visibleAppointments.forEach((s) => {
       if (!grouped[s.date]) grouped[s.date] = [];
       grouped[s.date].push(s);
     });
@@ -483,7 +494,7 @@ export default function DoctorAppointments() {
             label: 'ملغى',
             count:
               stats?.cancelled ??
-              slots.filter((s) => s.date === TODAY && s.status === 'cancelled').length,
+              slots.filter((s) => s.date === TODAY && s.status === STATUS_CANCELLED).length,
             color: 'bg-red-50 border-red-100 text-red-700',
           },
         ].map((s) => (
@@ -499,23 +510,37 @@ export default function DoctorAppointments() {
       </div>
 
       {/* Filter bar (all views) */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <span
-          className="flex items-center gap-1 text-muted-foreground"
-          style={{ fontSize: '13px' }}
-        >
-          <Filter className="w-4 h-4" /> فلتر:
-        </span>
-        {(['all', 'booked', 'completed', 'missed', 'cancelled'] as const).map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilterStatus(f)}
-            className={`px-3 py-1.5 rounded-xl border transition-all ${filterStatus === f ? 'bg-green-600 text-white border-green-600' : 'bg-card text-muted-foreground border-border hover:border-green-300'}`}
-            style={{ fontSize: '12px', fontWeight: 600 }}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span
+            className="flex items-center gap-1 text-muted-foreground"
+            style={{ fontSize: '13px' }}
           >
-            {f === 'all' ? 'الكل' : STATUS_CONFIG[f].label}
-          </button>
-        ))}
+            <Filter className="w-4 h-4" /> فلتر:
+          </span>
+          {(['all', 'booked', 'completed', 'missed', 'cancelled'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilterStatus(f)}
+              className={`px-3 py-1.5 rounded-xl border transition-all ${filterStatus === f ? 'bg-green-600 text-white border-green-600' : 'bg-card text-muted-foreground border-border hover:border-green-300'}`}
+              style={{ fontSize: '12px', fontWeight: 600 }}
+            >
+              {f === 'all' ? 'الكل' : STATUS_CONFIG[f].label}
+            </button>
+          ))}
+        </div>
+
+        <label className="flex items-center gap-2 cursor-pointer select-none bg-card px-3 py-1.5 rounded-xl border border-border hover:border-green-300 transition-all animate-in fade-in duration-200">
+          <input
+            type="checkbox"
+            checked={showCancelled}
+            onChange={(e) => setShowCancelled(e.target.checked)}
+            className="w-4 h-4 rounded border-border text-green-600 focus:ring-green-500 cursor-pointer"
+          />
+          <span className="text-muted-foreground" style={{ fontSize: '12px', fontWeight: 600 }}>
+            إظهار المواعيد الملغية
+          </span>
+        </label>
       </div>
 
       {/* Content */}

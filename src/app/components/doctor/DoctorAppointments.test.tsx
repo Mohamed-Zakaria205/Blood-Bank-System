@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import DoctorAppointments from './DoctorAppointments';
 import { toast } from 'sonner';
-import { TODAY, WEEK_DATES } from './doctor-appointments/appointmentConstants';
+import { TODAY, WEEK_DATES, STATUS_CANCELLED } from './doctor-appointments/appointmentConstants';
 
 // Setup hoisted mocks
 const {
@@ -498,5 +498,194 @@ describe('DoctorAppointments Component', () => {
     expect(within(approvedCard).queryByRole('button', { name: 'بدء التسجيل' })).not.toBeInTheDocument();
     expect(within(approvedCard).queryByRole('button', { name: 'إلغاء' })).not.toBeInTheDocument();
     expect(within(approvedCard).queryByRole('button', { name: 'لم يحضر' })).not.toBeInTheDocument();
+  });
+
+  it('toggles visibility of cancelled appointments using the "إظهار المواعيد الملغية" checkbox', async () => {
+    const customSlots = [
+      {
+        id: 'slot-1',
+        time: '10:00',
+        date: TODAY,
+        status: 'booked',
+        donorName: 'أحمد محمود',
+        donorAge: 30,
+        donorGender: 'male' as const,
+        donorPhone: '01011112222',
+        donorNationalId: '29601012409876',
+        donorBloodType: 'A+' as const,
+        donationType: 'wholeblood' as const,
+      },
+      {
+        id: 'slot-2',
+        time: '11:00',
+        date: TODAY,
+        status: STATUS_CANCELLED,
+        donorName: 'منى أحمد',
+        donorAge: 25,
+        donorGender: 'female' as const,
+        donorPhone: '01122223333',
+        donorNationalId: '30101012409876',
+        donorBloodType: 'O-' as const,
+        donationType: 'plasma' as const,
+      },
+    ];
+
+    mockUseAppointmentSlots.mockReturnValue({
+      data: customSlots,
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    render(<DoctorAppointments />);
+
+    // Checkbox is checked by default, so both are visible
+    const checkbox = screen.getByLabelText('إظهار المواعيد الملغية') as HTMLInputElement;
+    expect(checkbox).toBeInTheDocument();
+    expect(checkbox.checked).toBe(true);
+
+    expect(screen.getByText('أحمد محمود')).toBeInTheDocument();
+    expect(screen.getByText('منى أحمد')).toBeInTheDocument();
+
+    // Toggle the checkbox OFF
+    fireEvent.click(checkbox);
+    expect(checkbox.checked).toBe(false);
+
+    // Cancelled appointment should be hidden, but booked should still be visible
+    expect(screen.getByText('أحمد محمود')).toBeInTheDocument();
+    expect(screen.queryByText('منى أحمد')).not.toBeInTheDocument();
+
+    // Toggle it back ON
+    fireEvent.click(checkbox);
+    expect(checkbox.checked).toBe(true);
+    expect(screen.getByText('منى أحمد')).toBeInTheDocument();
+  });
+
+  it('removes date group from weekly and monthly views when all slots in that group are cancelled and toggle is OFF', () => {
+    const cancelledDate = WEEK_DATES[2]; // Pick a weekday date
+    const customSlots = [
+      {
+        id: 'slot-cancelled-1',
+        time: '10:00',
+        date: cancelledDate,
+        status: STATUS_CANCELLED,
+        donorName: 'متبرع ملغى 1',
+        donorAge: 30,
+        donorGender: 'male' as const,
+        donorPhone: '01011112222',
+        donorNationalId: '29601012409876',
+        donorBloodType: 'A+' as const,
+        donationType: 'wholeblood' as const,
+      },
+      {
+        id: 'slot-cancelled-2',
+        time: '11:00',
+        date: cancelledDate,
+        status: STATUS_CANCELLED,
+        donorName: 'متبرع ملغى 2',
+        donorAge: 25,
+        donorGender: 'female' as const,
+        donorPhone: '01122223333',
+        donorNationalId: '30101012409876',
+        donorBloodType: 'O-' as const,
+        donationType: 'plasma' as const,
+      },
+    ];
+
+    mockUseAppointmentSlots.mockReturnValue({
+      data: customSlots,
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    const { unmount } = render(<DoctorAppointments />);
+
+    // Switch to Week view
+    const weekBtn = screen.getByRole('button', { name: 'الأسبوع' });
+    fireEvent.click(weekBtn);
+
+    // Initially checkbox is checked, so the date section and names are visible
+    const checkbox = screen.getByLabelText('إظهار المواعيد الملغية') as HTMLInputElement;
+    expect(checkbox.checked).toBe(true);
+    expect(screen.getByText('متبرع ملغى 1')).toBeInTheDocument();
+    
+    // Toggle the checkbox OFF
+    fireEvent.click(checkbox);
+    expect(checkbox.checked).toBe(false);
+
+    // The entire date section should be removed from the UI
+    expect(screen.queryByText('متبرع ملغى 1')).not.toBeInTheDocument();
+    expect(screen.queryByText(cancelledDate)).not.toBeInTheDocument();
+
+    unmount();
+
+    // Re-render and test Month view
+    render(<DoctorAppointments />);
+    const monthBtn = screen.getByRole('button', { name: 'الشهر' });
+    fireEvent.click(monthBtn);
+
+    // Initially toggle is ON, date group header and items are visible
+    const checkboxMonth = screen.getByLabelText('إظهار المواعيد الملغية') as HTMLInputElement;
+    expect(checkboxMonth.checked).toBe(true);
+    expect(screen.getByText('متبرع ملغى 1')).toBeInTheDocument();
+
+    // Toggle the checkbox OFF
+    fireEvent.click(checkboxMonth);
+    expect(checkboxMonth.checked).toBe(false);
+
+    // In monthly view, the entire date section is removed
+    expect(screen.queryByText('متبرع ملغى 1')).not.toBeInTheDocument();
+    expect(screen.queryByText(cancelledDate)).not.toBeInTheDocument();
+  });
+
+  it('verifies that stats summary cards still use original backend stats/slots regardless of the toggle state', () => {
+    const customSlots = [
+      {
+        id: 'slot-cancelled',
+        time: '10:00',
+        date: TODAY,
+        status: STATUS_CANCELLED,
+        donorName: 'متبرع ملغى',
+        donorAge: 30,
+        donorGender: 'male' as const,
+        donorPhone: '01011112222',
+        donorNationalId: '29601012409876',
+        donorBloodType: 'A+' as const,
+        donationType: 'wholeblood' as const,
+      },
+    ];
+
+    const customStats = {
+      booked: 0,
+      completed: 0,
+      missed: 0,
+      cancelled: 1,
+    };
+
+    mockUseAppointmentSlots.mockReturnValue({
+      data: customSlots,
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    mockUseAppointmentStats.mockReturnValue({
+      data: customStats,
+    });
+
+    render(<DoctorAppointments />);
+
+    // Stats card "ملغى" should show "1"
+    const cancelledCard = screen.getAllByText('ملغى')[0].closest('div')!;
+    expect(within(cancelledCard).getByText('1')).toBeInTheDocument();
+
+    // Toggle the checkbox OFF
+    const checkbox = screen.getByLabelText('إظهار المواعيد الملغية') as HTMLInputElement;
+    fireEvent.click(checkbox);
+    expect(checkbox.checked).toBe(false);
+
+    // Cancelled card should STILL show "1" because statistics are unaffected by the toggle
+    expect(within(cancelledCard).getByText('1')).toBeInTheDocument();
   });
 });

@@ -53,6 +53,8 @@ export const WEEK_DAY_NAMES = [
 // No more client-side derivation (removed getEffectiveStatus + isSlotPast).
 export type EffectiveStatus = AppointmentSlotStatus;
 
+export const STATUS_CANCELLED: EffectiveStatus = 'cancelled';
+
 export const STATUS_CONFIG: Record<
   EffectiveStatus,
   {
