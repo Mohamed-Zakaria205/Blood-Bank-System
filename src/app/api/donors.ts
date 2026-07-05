@@ -367,12 +367,11 @@ export async function sendDonorNotifications(
     const { data } = await apiClient.post<ApiResponseWrapper<SendNotificationResponse>>(`/donors/eligibility/notifications`, payload);
     const mappedData: SendNotificationResponse = data.data ? {
       ...data.data,
-      failedDonorIds: data.data.failedDonorIds || data.data.failedDonors?.map(d => d.donorId) || [],
     } : {
       requested: 0,
       sent: 0,
       failed: 0,
-      failedDonorIds: [],
+      failedDonors: [],
     };
     return { data: mappedData, message: data.message };
   } catch (error) {

@@ -60,6 +60,8 @@ export interface NotificationPreviewResponse {
   title: string;
   message: string;
   recipientCount: number;
+  failedCount: number;
+  failedDonors: FailedDonorDetail[];
 }
 
 export interface FailedDonorDetail {
@@ -71,12 +73,11 @@ export interface FailedDonorDetail {
 }
 
 export interface SendNotificationResponse {
-  appealId?: string;
+  appealId?: string | null;
   requested: number;
   sent: number;
   failed: number;
-  failedDonorIds: string[];
-  failedDonors?: FailedDonorDetail[];
+  failedDonors: FailedDonorDetail[];
 }
 
 
