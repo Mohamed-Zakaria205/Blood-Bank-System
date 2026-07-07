@@ -11,7 +11,7 @@ import {
 // filterPaneEnabled=false: Hides the right-side filter pane.
 // actionBarEnabled=false: Hides the Power BI action bar.
 const POWERBI_REPORT_URL =
-  'https://app.powerbi.com/reportEmbed?reportId=7911900c-2a2d-4804-b37b-ad26eac092b1&autoAuth=true&ctid=d1aad15a-5724-45cd-a320-5e75718fa6bd&navContentPaneEnabled=false&filterPaneEnabled=false&actionBarEnabled=false';
+  'https://app.powerbi.com/reportEmbed?reportId=218fc288-f511-4cd9-aab1-ee594143d4f3&autoAuth=true&ctid=d1aad15a-5724-45cd-a320-5e75718fa6bd&navContentPaneEnabled=false&filterPaneEnabled=false&actionBarEnabled=false';
 
 export default function AdminReports() {
   const [loading, setLoading] = useState(true);
